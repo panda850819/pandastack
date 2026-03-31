@@ -13,16 +13,35 @@ Read pstack config from CLAUDE.md for: test command, tag format, release prefere
 
 ## Step 1: Pre-flight
 
-1. Run the project's test command. If tests fail, stop and report.
-2. Run `git diff --stat` to see uncommitted changes.
-3. Run `git log origin/{main}..HEAD --oneline` for commit history.
+1. Run `git pull` to sync with remote (avoid conflicts from auto-backup).
+2. Run the project's test/build command. If it fails, stop and report.
+3. Run `git diff --stat` to see uncommitted changes.
+4. Run `git log origin/{main}..HEAD --oneline` for commit history.
+5. Check current branch: `git branch --show-current`.
 
 ## Step 2: Load Learnings
 
 Search `{learnings_dir}` for `type: pitfall` related to the changed files.
 If any match, do a quick sanity check against the diff before proceeding.
 
-## Step 3: Commit
+## Step 3: Scope Check
+
+If a brief exists for this branch (check `docs/briefs/`):
+1. Read the brief's **Scope > In/Out** sections.
+2. Compare against `git diff origin/{main} --stat`.
+3. If changes exist outside the stated scope, warn the user and ask to confirm before proceeding.
+
+If no brief exists, skip silently.
+
+## Step 4: Review Gate
+
+If `/ps-review` has NOT been run on the current diff in this session:
+1. Warn: "Review not run. Run /ps-review first?"
+2. If user says skip, proceed. Otherwise run review.
+
+This prevents shipping unreviewed code by default.
+
+## Step 5: Commit
 
 If there are uncommitted changes:
 1. Analyze the diff
@@ -30,7 +49,18 @@ If there are uncommitted changes:
 3. Stage relevant files (never `git add -A`)
 4. Commit (don't amend, don't skip hooks)
 
-## Step 4: Tag (if configured)
+## Step 6: Branch (mandatory)
+
+**Never push directly to main/master.** Always ship via PR.
+
+1. If on main/master, create a feature branch:
+   - `fix/*` for bug fixes
+   - `feat/*` for features
+   - `refactor/*` for refactoring
+   - Branch name should be short and descriptive (e.g., `fix/mainnet-label`)
+2. If already on a feature branch, stay on it.
+
+## Step 7: Tag (if configured)
 
 If pstack config has `tag: semver`:
 1. Read current version from package.json, VERSION, or latest git tag
@@ -39,15 +69,16 @@ If pstack config has `tag: semver`:
 
 If `tag: none`: skip.
 
-## Step 5: Push + PR
+## Step 8: Push + PR
 
-1. Push the branch (and tags if created)
-2. Create PR with:
+1. Push the branch with `-u` (and tags if created)
+2. Create PR with `gh pr create`:
    - Title: short, under 70 chars
    - Body: what changed, why, how to test
    - If learnings were written this session, mention in PR body
+3. Return the PR URL to the user.
 
-## Step 6: Release (if configured)
+## Step 9: Release (if configured)
 
 If pstack config has `release: true`:
 - Create GitHub Release from the tag
@@ -55,7 +86,7 @@ If pstack config has `release: true`:
 
 If `release: false`: skip.
 
-## Step 7: Write Learnings (if applicable)
+## Step 10: Write Learnings (if applicable)
 
 If the ship process itself revealed something useful:
 - A test that caught a subtle bug

@@ -1,8 +1,8 @@
 ---
 name: ps-init
 description: |
-  One-time project setup. Detects project type, asks ship preferences,
-  writes pstack config to CLAUDE.md. Run once per project.
+  Use once per project to initialize pstack. Detects project type,
+  asks ship preferences, writes pstack config to CLAUDE.md.
 ---
 
 # Init

@@ -12,6 +12,8 @@ Agent-driven development with a learning loop.
 - `/ps-compound` — extract learnings from solved problems
 - `/ps-learn` — search and manage learnings
 - `/ps-retro` — weekly retrospective
+- `/ps-freeze` — restrict edits to specific paths (safety)
+- `/ps-careful` — confirm before destructive actions (safety)
 
 ## Available Commands
 
@@ -19,6 +21,10 @@ Agent-driven development with a learning loop.
 - `/ps-design` — design-driven flow
 - `/ps-fix` — debug + fix + review + ship + compound
 - `/ps-quick` — small change: review + ship
+
+## Session End
+
+When a session ends, run the checks in `lib/stop-check.md` to catch loose ends (uncommitted changes, unreviewed commits, new TODOs, failing tests). Silent if all clear.
 
 ## Agent Personas
 

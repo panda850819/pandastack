@@ -1,9 +1,9 @@
 ---
 name: ps-review
 description: |
-  Code review with learning integration. Searches past learnings
-  before reviewing, writes new learnings after. Use when asked to
-  "review", "check my code", or before creating a PR.
+  Use when asked to "review", "check my code", or before creating a PR.
+  Parallel 3-pass review (correctness, security, architecture) with
+  learning integration — searches past learnings before, writes after.
 ---
 
 # Code Review
@@ -32,28 +32,55 @@ Read matching files. For each match, note:
 
 Apply confidence decay per `lib/confidence.md` rules. Skip learnings with effective confidence < 3.
 
-## Step 3: Review
+## Step 3: Scope Drift Check
 
-Use the eng agent's judgment to review the diff. Focus on:
+If a brief exists for this branch (check `docs/briefs/` for a matching slug or date):
+
+1. Read the brief's **Scope > In** and **Scope > Out** sections.
+2. Compare against the diff. Flag any changed files or features that fall outside the stated scope.
+3. Output:
+   - "Scope: ON TRACK" if all changes match the brief.
+   - "SCOPE DRIFT: [description]" for each out-of-scope change. Ask user to confirm or revert.
+
+If no brief exists, skip this step silently.
+
+## Step 4: Parallel Review
+
+Launch 3 review passes in parallel using `context: fork` (isolated subagents — results flow back, intermediate work stays out of main context). Each reviews the same diff with a different lens:
+
+**Pass 1 — Correctness** (eng agent lens):
 - Bugs that pass CI but break production
 - Race conditions, N+1 queries, stale reads
-- Security issues (injection, auth bypass)
 - Missing error handling at system boundaries
 - Test gaps for changed code paths
 
-Output format per finding:
+**Pass 2 — Security**:
+- Injection (SQL, command, XSS)
+- Auth/authz bypass
+- Secrets in code or logs
+- Unsafe deserialization, SSRF
+
+**Pass 3 — Architecture**:
+- Coupling that will hurt later
+- Abstractions that don't earn their complexity
+- API surface changes that break consumers
+- Missing migrations or backwards-incompatible changes
+
+Each pass outputs findings in the same format:
 ```
 [P0-P3] (confidence: N/10) file:line — description
   Fix: what to do
   Action: AUTO-FIX | ASK
 ```
 
+Merge all findings, deduplicate, sort by priority.
+
 **AUTO-FIX**: mechanical fixes (typos, missing null checks, obvious bugs). Apply directly.
 **ASK**: judgment calls (architecture, design trade-offs). Batch all ASK items into one AskUserQuestion.
 
-If no issues found: "Review clean. No issues found."
+If no issues found across all passes: "Review clean. No issues found."
 
-## Step 4: Write Learnings
+## Step 5: Write Learnings
 
 After review completes, evaluate whether any non-obvious pattern was discovered.
 
