@@ -35,7 +35,7 @@ cd ~/.claude/skills/pstack && ./setup
 | `/ps-init` | One-time project setup |
 | `/ps-brief` | Structured requirement gathering |
 | `/ps-review` | Code review + read/write learnings |
-| `/ps-qa` | Browser-based QA |
+| `/ps-qa` | Browser-based QA with structured assertions and parallel testing |
 | `/ps-ship` | Test + commit + PR (+ tag/release if configured) |
 | `/ps-compound` | Extract learnings from solved problems |
 | `/ps-learn` | Search and manage learnings |

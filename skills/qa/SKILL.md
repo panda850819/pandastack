@@ -14,36 +14,91 @@ description: |
 2. Search `{learnings_dir}` for `type: pitfall` related to UI or the changed components.
 3. Read the brief (if exists in `docs/briefs/`) to understand expected behavior.
 
-## Step 2: Determine Flows
+## Step 2: Plan Tests
 
-From the diff, brief, or user instructions, identify what to test:
+From the diff, brief, or user instructions, identify what to test.
+
+**Round 1 - Functional:** What are the core user flows? Write each test as: action -> expected result.
 - Which pages/URLs changed?
-- What are the core user flows affected?
-- What are the edge cases? (empty states, error states, loading states)
+- What should work after this change?
 
-If unclear, ask the user: "What flows should I test?"
+**Round 2 - Adversarial:** Re-read Round 1. What did you miss?
+- Error paths, empty states, loading states
+- Edge inputs (empty, huge, special chars, rapid clicks)
+- Double-submit, Escape mid-flow, keyboard-only nav
+
+**Round 3 - Coverage gaps** (skip for small changes): Re-read Rounds 1-2.
+- Accessibility (keyboard nav, focus management)
+- Mobile viewport breakpoints
+- Console errors after interactions
+
+**Merge** into a single numbered test list. Remove overlaps.
+
+If unclear what to test, ask the user: "What flows should I test?"
 
 ## Step 3: Test
 
-Use the browser automation tool available in your environment to run real user flows:
+### Parallel Execution (for large changes)
 
-1. Navigate to the page
-2. Perform the core user flow (click, fill, submit)
-3. Check for:
-   - Console errors
-   - Visual regressions (screenshots if supported)
-   - Broken interactions (buttons that don't work, forms that don't submit)
-   - Missing states (loading, error, empty)
-   - Accessibility issues (contrast, keyboard nav)
-4. Test edge cases identified in Step 2
+When the merged test list has 3+ groups, fan out to parallel sub-agents:
 
-For each bug found:
+1. Assign each test group to a separate Agent (sub-agent).
+2. Each sub-agent gets its own browser session via `--session <name>` for isolation.
+3. Each sub-agent prompt must include:
+   - The exact numbered test list to run (no exploration beyond assigned tests)
+   - The assertion protocol below
+   - A step budget (~25 for targeted checks, ~40 for a full page, ~75 for multiple pages)
+4. The main agent does NOT run browser commands itself. It coordinates, merges results, and produces the final summary.
+5. When a sub-agent hits its budget, accept partial results as-is. Include STEP_SKIP for uncovered tests.
+
+For small changes (1-2 groups), run tests directly without sub-agents.
+
+### Assertion Protocol
+
+Every test step MUST produce a structured marker:
+
 ```
-[BUG] page/flow — description
+STEP_PASS|<step-id>|<evidence>
+STEP_FAIL|<step-id>|<expected> -> <actual>
+STEP_SKIP|<step-id>|<reason>
+```
+
+- `step-id`: short identifier like `homepage-cta`, `form-empty-submit`, `modal-escape`
+- `evidence`: what you observed that proves the step passed (element text, URL, eval result)
+
+### Verification (in order of rigor)
+
+1. **Deterministic check** (strongest): `eval` returns structured data (element count, field value, console errors)
+2. **Snapshot element match**: specific element with expected role/text exists in accessibility tree
+3. **Before/after comparison**: snapshot before action, act, snapshot after, verify expected change
+4. **Screenshot + visual judgment** (weakest): only for visual properties the accessibility tree cannot capture
+
+### Screenshot on Failure
+
+Every `STEP_FAIL` should have an accompanying screenshot captured at the moment of failure. Store in `.context/ui-test-screenshots/<step-id>.png`.
+
+```bash
+mkdir -p .context/ui-test-screenshots
+```
+
+### Bug Report Format
+
+For each STEP_FAIL, also produce:
+```
+[BUG] page/flow - description
   Steps to reproduce: ...
   Expected: ...
   Actual: ...
+  Screenshot: .context/ui-test-screenshots/<step-id>.png
   Action: AUTO-FIX | ASK
+```
+
+### Summary
+
+After all tests, output a summary line:
+
+```
+Tests: N | Passed: N | Failed: N | Skipped: N | Pass rate: N%
 ```
 
 ## Step 4: Fix
