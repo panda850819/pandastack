@@ -47,6 +47,7 @@ cd ~/.claude/skills/pstack && ./setup
 
 | Command | What It Runs |
 |---------|-------------|
+| `/ps-brainstorm` | New idea: diverge → filter → define → research → cost → go/no-go |
 | `/ps-sprint` | Full flow: brief → build → review → qa → ship → compound |
 | `/ps-design` | Design-driven: brief → design → build → review → qa → ship |
 | `/ps-fix` | Bug fix: debug → fix → review → ship → compound |

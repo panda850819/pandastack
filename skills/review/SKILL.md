@@ -121,9 +121,33 @@ Merge all findings, deduplicate, sort by priority. If multiple passes flag the s
 
 If no issues found across all passes: "Review clean. No issues found."
 
-## Step 6: Write Learnings
+## Step 6: Cold Review (Uncorrelated Context)
 
-After review completes, evaluate whether any non-obvious pattern was discovered.
+Spawn a fresh agent with `isolation: "worktree"` to review the same diff
+with zero knowledge of why the code was written. This catches issues that
+the in-session reviewer misses due to confirmation bias.
+
+The cold reviewer receives ONLY:
+- The raw diff (`git diff origin/{main}`)
+- The project's CLAUDE.md (for conventions, not intent)
+- This instruction: "Review this diff for bugs, security issues, and
+  design problems. You have no context about why these changes were made.
+  Report only findings with confidence >= 7/10. Format: [P0-P3] file:line — description."
+
+DO NOT pass: the brief, the conversation history, the task description,
+or any explanation of what the code is supposed to do.
+
+Merge cold review findings with Step 5 findings:
+- If cold reviewer flags something Step 5 missed → boost to P1 minimum,
+  tag as "COLD-CATCH"
+- If cold reviewer flags something Step 5 also caught → tag as
+  "CROSS-CONFIRMED" (highest confidence)
+- If cold reviewer flags something that Step 5 explicitly cleared →
+  present both opinions to user, don't auto-resolve
+
+## Step 7: Write Learnings
+
+After review completes (including cold review), evaluate whether any non-obvious pattern was discovered.
 
 Test: "Would this save time in a future session on this codebase?"
 

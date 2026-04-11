@@ -51,6 +51,26 @@ PREMISES:
 2. [statement] — agree/disagree?
 ```
 
+## Step 3.5: Assumption Dump
+
+After premises are confirmed, brain-dump everything the agent found
+and believes. User must confirm before moving to alternatives.
+
+```
+PATTERNS FOUND:
+- [relevant code patterns, conventions, or prior art discovered]
+
+ASSUMPTIONS:
+- [things I'm assuming to be true but haven't verified]
+
+OPEN QUESTIONS:
+- [things I don't know and need your input on]
+```
+
+This is the checkpoint for human-agent alignment. Surface everything
+so the user can do "brain surgery" before implementation direction
+is chosen.
+
 ## Step 4: Alternatives
 
 Generate 2-3 implementation approaches:

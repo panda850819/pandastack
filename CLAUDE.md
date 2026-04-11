@@ -17,6 +17,7 @@ Agent-driven development with a learning loop.
 
 ## Available Commands
 
+- `/ps-brainstorm` — evaluate new idea: diverge → filter → define → research → cost → go/no-go
 - `/ps-sprint` — full flow: brief → build → review → qa → ship → compound
 - `/ps-design` — design-driven flow
 - `/ps-fix` — debug + fix + review + ship + compound
