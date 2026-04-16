@@ -3,7 +3,7 @@ name: ps-review
 description: |
   Use when asked to "review", "check my code", or before creating a PR.
   Parallel 3-pass review (correctness, security, architecture) with
-  learning integration — searches past learnings before, writes after.
+  cold review, Codex adversarial cross-check, and learning integration.
 ---
 
 # Code Review
@@ -144,6 +144,35 @@ Merge cold review findings with Step 5 findings:
   "CROSS-CONFIRMED" (highest confidence)
 - If cold reviewer flags something that Step 5 explicitly cleared →
   present both opinions to user, don't auto-resolve
+
+## Step 6.5: Codex Adversarial Review (Cross-Model)
+
+Run Codex as an independent adversarial reviewer. This adds a second model's
+perspective (GPT) to Claude's review, catching blind spots from model-specific
+reasoning patterns.
+
+**Launch in parallel with Step 6** (both run in background):
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/codex-companion.mjs" adversarial-review --wait
+```
+
+If the Codex plugin is not available (command fails), skip this step silently
+and note "Codex: unavailable" in the final report.
+
+**Merge Codex findings with Steps 5-6 findings:**
+- Codex finding matches a Claude finding → tag as "CROSS-MODEL CONFIRMED"
+  (boost confidence to maximum)
+- Codex finding is novel (not caught by Claude) → tag as "CODEX-CATCH",
+  boost to P1 minimum
+- Codex finding contradicts a Claude "clean" assessment → present both
+  opinions to user, don't auto-resolve
+
+**Output format for Codex findings:**
+```
+[P0-P3] (CODEX-CATCH, confidence: N%) file:line — description
+  Fix: recommendation
+```
 
 ## Step 7: Write Learnings
 
