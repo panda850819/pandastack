@@ -93,6 +93,19 @@ RECOMMENDATION: {which and why}
 
 Ask user to choose before proceeding.
 
+## Step 4.5: Scope Completeness Check
+
+Before writing the brief, self-check each dimension. Flag any as `NEEDS CLARIFICATION` and return to Step 2 for one more round:
+
+- **Users** — who's affected? any segment missed?
+- **Data** — schema changes, migrations, backfill
+- **Edge cases** — empty states, failures, concurrency, partial rollouts
+- **Deploy & rollback** — how to ship, how to revert if wrong
+- **Observability** — logs/metrics/alerts to verify success
+- **Docs & handoff** — who else needs to know
+
+Do not proceed until all dimensions are `addressed` or `N/A`. This catches "narrow decomposition" — the failure where the brief scopes too tightly and misses a dimension the implementer then has to guess at.
+
 ## Step 5: Output
 
 Write a brief to `docs/briefs/YYYY-MM-DD-{slug}.md`:

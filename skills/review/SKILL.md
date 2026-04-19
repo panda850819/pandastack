@@ -32,15 +32,17 @@ Read matching files. For each match, note:
 
 Apply confidence decay per `lib/confidence.md` rules. Skip learnings with effective confidence < 3.
 
-## Step 3: Scope Drift Check
+## Step 3: Brief Alignment Check
 
 If a brief exists for this branch (check `docs/briefs/` for a matching slug or date):
 
-1. Read the brief's **Scope > In** and **Scope > Out** sections.
-2. Compare against the diff. Flag any changed files or features that fall outside the stated scope.
-3. Output:
-   - "Scope: ON TRACK" if all changes match the brief.
+1. Read the brief's **Problem**, **Success Metric**, **Scope > In**, and **Scope > Out** sections.
+2. **Drift check** — compare against the diff. Flag any changed files or features that fall outside the stated scope.
+3. **Coverage check** — for each In-scope item and the Success Metric, verify the diff addresses it. Flag any in-scope item with no visible implementation.
+4. Output:
+   - "Brief: ON TRACK" if drift and coverage both clean.
    - "SCOPE DRIFT: [description]" for each out-of-scope change. Ask user to confirm or revert.
+   - "COVERAGE GAP: [in-scope item with no matching change]" for each missing piece. Ask user to confirm intentional or flag as incomplete.
 
 If no brief exists, skip this step silently.
 
