@@ -17,6 +17,12 @@ description: |
 
 When skipped, the eng agent still searches learnings at review time.
 
+## Gate Points
+
+Steps 3 (Premise Challenge), 3.5 (Assumption Dump), and 4 (Alternatives) are user-facing gates. Use the four-option contract: **approve / edit / reject / skip**. See `lib/gate-contract.md`.
+
+Record gate outcomes in the brief's `## Gate Log` section so `/ps-review` and downstream skills can see what was decided and any edits applied.
+
 ## Step 1: Load Context
 
 Read the pstack config from CLAUDE.md to find the learnings directory.
@@ -126,4 +132,9 @@ Out: {what's explicitly excluded}
 
 ## Learnings Applied
 {any relevant past learnings that informed this brief}
+
+## Gate Log
+- Premises (Step 3): approve | edit: {what changed} | reject | skip
+- Assumption Dump (Step 3.5): approve | edit: {what changed} | reject | skip
+- Alternatives (Step 4): chose {A|B|C} — approve | edit: {what changed} | reject | skip
 ```

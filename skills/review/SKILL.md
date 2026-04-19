@@ -63,6 +63,13 @@ Log detected scopes: "Scope signals: {list}" (or "none" if only base code change
 
 Launch review passes in parallel using `context: fork` (isolated subagents — results flow back, intermediate work stays out of main context). Each reviews the same diff with a different lens.
 
+**Model routing** — pass `model: <name>` when spawning each Agent. Don't pay Opus tokens for mechanical checks; don't starve architecture with Haiku.
+
+| Pass | Model | Why |
+|---|---|---|
+| Correctness, Security, Migration, API, Auth, Infra | sonnet | Pattern-match against known bug shapes |
+| Architecture | opus | Deep reasoning about coupling and long-term trade-offs |
+
 **Always-on passes (run every time):**
 
 **Pass 1 — Correctness** (eng agent lens):
@@ -119,7 +126,7 @@ Each pass outputs findings in the same format:
 Merge all findings, deduplicate, sort by priority. If multiple passes flag the same file:line, boost confidence and mark "MULTI-PASS CONFIRMED".
 
 **AUTO-FIX**: mechanical fixes (typos, missing null checks, obvious bugs). Apply directly.
-**ASK**: judgment calls (architecture, design trade-offs). Batch all ASK items into one AskUserQuestion.
+**ASK**: judgment calls (architecture, design trade-offs). Batch all ASK items into one AskUserQuestion using the four-option gate contract (approve / edit / reject / skip). See `lib/gate-contract.md`.
 
 If no issues found across all passes: "Review clean. No issues found."
 
