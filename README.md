@@ -1,10 +1,10 @@
-# pstack
+# pandastack
 
-Agent-driven development with a learning loop. 4 agents, 10 skills, zero dependencies.
+Agent-driven development with a learning loop. 4 agent personas, 11 skills, 5 composite commands. Zero runtime dependencies.
 
 ## What It Does
 
-pstack turns Claude Code into a small team that gets smarter over time:
+pandastack turns Claude Code into a small team that gets smarter over time:
 
 ```
 brief → build → review → ship → compound
@@ -14,57 +14,66 @@ brief → build → review → ship → compound
 
 Every review searches past learnings. Every review can write new ones. The system compounds.
 
-## Quick Start
+## Install
 
-```bash
-# Install (30 seconds)
-git clone https://github.com/panda850819/pstack.git ~/.claude/skills/pstack
-cd ~/.claude/skills/pstack && ./setup
+pandastack is a Claude Code plugin. Install via the built-in marketplace system.
 
-# In your project
-/ps-init              # one-time setup
-# ... write some code ...
-/ps-review            # review with learnings
-/ps-ship              # test + commit + PR
 ```
+/plugin marketplace add panda850819/pandastack
+/plugin install pandastack@pandastack
+/reload-plugins
+```
+
+For local development (cloned the repo yourself):
+
+```
+/plugin marketplace add ~/path/to/pandastack
+/plugin install pandastack@pandastack
+/reload-plugins
+```
+
+Then in your project, run `/pandastack:init` once.
 
 ## Skills
 
+All skills are namespaced under `pandastack:*`.
+
 | Skill | What It Does |
 |-------|-------------|
-| `/ps-init` | One-time project setup |
-| `/ps-brief` | Structured requirement gathering |
-| `/ps-review` | Code review + read/write learnings |
-| `/ps-qa` | Browser-based QA with structured assertions and parallel testing |
-| `/ps-ship` | Test + commit + PR (+ tag/release if configured) |
-| `/ps-compound` | Extract learnings from solved problems |
-| `/ps-learn` | Search and manage learnings |
-| `/ps-retro` | Weekly retrospective + prune stale learnings |
-| `/ps-careful` | Confirmation gates for destructive commands on prod/shared code |
-| `/ps-freeze` | Lock editing scope to specific paths for the session |
+| `/pandastack:init` | One-time project setup |
+| `/pandastack:brief` | Structured requirement gathering |
+| `/pandastack:review` | Code review + read/write learnings |
+| `/pandastack:qa` | Browser-based QA with structured assertions and parallel testing |
+| `/pandastack:ship` | Test + commit + PR (+ tag/release if configured) |
+| `/pandastack:compound` | Extract learnings from solved problems |
+| `/pandastack:learn` | Search and manage learnings |
+| `/pandastack:retro` | Weekly retrospective + prune stale learnings |
+| `/pandastack:careful` | Confirmation gates for destructive commands on prod/shared code |
+| `/pandastack:freeze` | Lock editing scope to specific paths for the session |
+| `/pandastack:checkpoint` | Save or resume working state snapshots |
 
-## Commands (Shortcuts)
+## Commands (Composites)
 
 | Command | What It Runs |
 |---------|-------------|
-| `/ps-brainstorm` | New idea: diverge → filter → define → research → cost → go/no-go |
-| `/ps-sprint` | Full flow: brief → build → review → qa → ship → compound |
-| `/ps-design` | Design-driven: brief → design → build → review → qa → ship |
-| `/ps-fix` | Bug fix: debug → fix → review → ship → compound |
-| `/ps-quick` | Small change: review → ship |
+| `/brainstorm` | New idea: diverge → filter → define → research → cost → go/no-go |
+| `/sprint` | Full flow: brief → build → review → qa → ship → compound |
+| `/design` | Design-driven: brief → design → build → review → qa → ship |
+| `/fix` | Bug fix: debug → fix → review → ship → compound |
+| `/quick` | Small change: review → ship |
 
 ## Agents
 
-4 replaceable agent personas in `agents/`:
+4 replaceable agent personas in `plugins/pandastack/agents/`:
 
 | Agent | Role | When |
 |-------|------|------|
 | `eng.md` | Staff engineer — build, review, debug, ship | Every skill |
-| `product.md` | VP Product — requirements, scope, metrics | `/ps-brief` |
+| `product.md` | VP Product — requirements, scope, metrics | `/pandastack:brief` |
 | `design.md` | Senior designer — UI/UX, accessibility, anti-slop | UI work |
 | `ceo.md` | Strategic advisor — scope decisions, kill/pivot (read-only) | Large scope |
 
-Don't like the default eng persona? Replace `agents/eng.md` with your own. All skills that reference it will pick up the change.
+Don't like the default eng persona? Replace `agents/eng.md` with your own. All skills that reference it pick up the change.
 
 ## Learning System
 
@@ -95,12 +104,12 @@ Grep for `for.*await.*find` pattern during review.
 
 - **Confidence decay**: observed/inferred learnings lose 1 point per 30 days. User-stated preferences never decay.
 - **Dedup**: before writing, check for existing learnings with the same key. Update instead of duplicate.
-- **Prune**: `/ps-retro` flags learnings with confidence < 3 for user review.
+- **Prune**: `/pandastack:retro` flags learnings with confidence < 3 for user review.
 - **Storage**: defaults to `docs/learnings/` in your repo. Configurable to any path (global dir, Obsidian vault, etc.).
 
 ## Flows
 
-Not code — just reference docs in `flows/` that show how to combine skills:
+Reference docs in `plugins/pandastack/flows/` showing how to combine skills:
 
 - `solo.md` — daily solo development
 - `full.md` — complete sprint with all checkpoints
@@ -109,29 +118,53 @@ Not code — just reference docs in `flows/` that show how to combine skills:
 
 ### Replace an Agent
 
-Copy `agents/eng.md`, edit the Soul and Iron Laws, save. All skills that use the eng agent will pick up your changes.
+Copy `plugins/pandastack/agents/eng.md`, edit the Soul and Iron Laws, save. All skills that use the eng agent pick up your changes after `/reload-plugins`.
 
 ### Change Learnings Location
 
 In your project's CLAUDE.md:
 
 ```yaml
-## pstack
+## pandastack
 learnings: ~/my-vault/knowledge/learnings   # any path
 ```
 
 ### Add Your Own Skills
 
-pstack skills are just SKILL.md files. Add new ones to `skills/your-skill/SKILL.md` and re-run `./setup`.
+pandastack skills are just SKILL.md files. Add new ones to `plugins/pandastack/skills/your-skill/SKILL.md` and `/reload-plugins`.
+
+## Repo Layout
+
+```
+pandastack/
+├── .claude-plugin/
+│   └── marketplace.json          # marketplace manifest (single-plugin)
+├── plugins/
+│   └── pandastack/
+│       ├── .claude-plugin/
+│       │   └── plugin.json       # plugin manifest
+│       ├── agents/               # 4 agent personas
+│       ├── commands/             # 5 composite commands
+│       ├── skills/               # 11 skills (one dir per skill, each with SKILL.md)
+│       ├── flows/                # reference flow docs
+│       ├── lib/                  # shared snippets (confidence decay, gate contracts, etc.)
+│       ├── CLAUDE.md
+│       └── PHILOSOPHY.md
+└── README.md
+```
 
 ## Uninstall
 
-```bash
-cd ~/.claude/skills/pstack && ./setup --uninstall
+```
+/plugin uninstall pandastack
 ```
 
 ## Philosophy
 
-See [PHILOSOPHY.md](PHILOSOPHY.md).
+See [PHILOSOPHY.md](plugins/pandastack/PHILOSOPHY.md).
 
-**In one sentence**: pstack lets you coach your own team.
+**In one sentence**: pandastack lets you coach your own team.
+
+## History
+
+Renamed from `pstack` on 2026-04-29 as part of the pdctx framework split. The old `setup` script (gstack-style symlink installer with `ps-*` prefix) is sunset; Claude Code's native plugin marketplace replaces it.
