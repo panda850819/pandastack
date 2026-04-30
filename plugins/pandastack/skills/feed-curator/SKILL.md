@@ -11,7 +11,7 @@ Triage unprocessed feed items from feed-server, deep-read high-signal content, w
 
 - Feed server running at `localhost:3456`
 - CLI tools available: `bird`, `defuddle` (at `~/.bun/bin/defuddle`), `summarize`
-- Obsidian vault at `~/site/knowledge/obsidian-vault`
+- Obsidian vault at `<personal-vault>`
 
 ## Step 1: Fetch Unprocessed Items
 
@@ -84,7 +84,7 @@ COO at Yei Finance (DeFi lending protocol). Heavy Claude Code user. Trades stock
 
 For ALL items (P0-P3, not SKIP), write a raw file to the vault:
 
-**Path**: `~/site/knowledge/obsidian-vault/Inbox/feeds/raw/YYYY-MM-DD/{slug}.md`
+**Path**: `<personal-vault>/Inbox/feeds/raw/YYYY-MM-DD/{slug}.md`
 
 **Slug**: lowercase, non-alphanumeric replaced with hyphens, max 60 chars.
 
@@ -126,7 +126,7 @@ If a tool fails, skip that item's deep-read (still write the raw note with descr
 
 For each P1-P3 item after deep-read, write a knowledge note:
 
-**Path**: `~/site/knowledge/obsidian-vault/knowledge/{area}/{slug}.md`
+**Path**: `<personal-vault>/knowledge/{area}/{slug}.md`
 
 Area mapping from matched topic:
 - AI topics -> `ai/`
@@ -174,7 +174,7 @@ Write summaries in Traditional Chinese.
 
 ## Step 6: Update Daily Note
 
-Append a digest section to today's daily note at `~/site/knowledge/obsidian-vault/Blog/_daily/YYYY-MM-DD.md`.
+Append a digest section to today's daily note at `<personal-vault>/Blog/_daily/YYYY-MM-DD.md`.
 
 If the daily note doesn't exist, create it with frontmatter:
 ```markdown

@@ -12,7 +12,7 @@ CLI tool for Notion workspace management. Requires `NOTION_TOKEN` env var (alrea
 ## Run command
 
 ```bash
-cd ~/site/cli/notion-cli && uv run notion <command>
+cd <notion-cli-dir> && uv run notion <command>
 ```
 
 ## Extracting Page ID from URL
@@ -20,7 +20,7 @@ cd ~/site/cli/notion-cli && uv run notion <command>
 Notion URLs contain the page ID as the last 32-char hex string (with dashes inserted as 8-4-4-4-12):
 
 ```
-https://www.notion.so/yei-finance/Q2-Goal-32c88c20674a80f186efc8d56d099dea
+https://www.notion.so/<workspace>/Q2-Goal-32c88c20674a80f186efc8d56d099dea
                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Page ID = 32c88c20674a80f186efc8d56d099dea
 ```
@@ -122,7 +122,7 @@ cat > /tmp/notion-content.md << 'EOF'
 Some paragraph text.
 EOF
 
-cd ~/site/cli/notion-cli && uv run notion page update <page_id> --file /tmp/notion-content.md
+cd <notion-cli-dir> && uv run notion page update <page_id> --file /tmp/notion-content.md
 ```
 
 ## Usage strategy
@@ -134,7 +134,7 @@ cd ~/site/cli/notion-cli && uv run notion page update <page_id> --file /tmp/noti
 Partial update workflow:
 ```bash
 # 1. List all blocks on a page (use Python API — no CLI block list command)
-cd ~/site/cli/notion-cli && PYTHONPATH=src uv run python -c "
+cd <notion-cli-dir> && PYTHONPATH=src uv run python -c "
 from notion_cli import client
 blocks = client.get_page_content('<page_id>')
 for b in blocks:
@@ -171,7 +171,7 @@ Other operations:
 When CLI commands are insufficient, use the Python API directly:
 
 ```bash
-cd ~/site/cli/notion-cli && PYTHONPATH=src uv run python -c "
+cd <notion-cli-dir> && PYTHONPATH=src uv run python -c "
 from notion_cli import client
 # client.get_page_content(page_id) — list all child blocks
 # client.get_client() — raw Notion SDK client for any API call

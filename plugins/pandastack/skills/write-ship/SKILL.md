@@ -165,7 +165,7 @@ Store for Stage 3.
 |---|---|---|
 | Q1 thesis exists | Add entry to `knowledge/<domain>/_index.md` under "我的觀點" or "Published thesis" section. Format: `- [<title>](Blog/Published/<slug>.md) — <thesis> (<date>)` | `_index.md` |
 | Q2 lists byproducts | For each, draft a stub note at `Inbox/<slug>-aside-<n>.md` with the aside content + `source: <published-slug>` frontmatter. Daily-distill picks up next cycle. | `Inbox/` |
-| Q3 produces voice rule / structural pattern | Draft addition to `~/.claude/projects/-Users-panda-site-knowledge-obsidian-vault/memory/project_writing_style.md` (show diff, ask) | memory |
+| Q3 produces voice rule / structural pattern | Draft addition to `<memory-dir>/project_writing_style.md` (show diff, ask) | memory |
 | Q3 flags a slop pattern | Draft addition to `~/.claude/rules/voice.md` "Prohibited" list (show diff, ask) | rules |
 | Cited ≥3 different knowledge notes from same `knowledge/<domain>/` | Mark this published post as a "synthesizer" — add to `knowledge/<domain>/_index.md` "Synthesizer posts" section | `_index.md` |
 

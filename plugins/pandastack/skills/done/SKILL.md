@@ -19,7 +19,7 @@ BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
 if git rev-parse --show-toplevel &>/dev/null; then
   SESSION_DIR="$(git rev-parse --show-toplevel)/docs/sessions"
 else
-  SESSION_DIR="/Users/panda/site/knowledge/obsidian-vault/docs/sessions"
+  SESSION_DIR="<personal-vault>/docs/sessions"
 fi
 mkdir -p "$SESSION_DIR"
 # Filename: YYYY-MM-DD-<slug>.md (slug = branch name or topic in kebab-case)
@@ -61,17 +61,17 @@ Skip if session was purely mechanical.]
 
 After saving: run `qmd update` (only if session doc is inside the obsidian vault; skip for external repos).
 
-**If `qmd update` fails with `ERR_DLOPEN_FAILED` / `NODE_MODULE_VERSION` mismatch**, this is a recurring better-sqlite3 ABI drift (qmd is `bun link`-ed to `~/site/cli/qmd/`, so its `node_modules/better-sqlite3` must match the *current* Node ABI, not the Node version at `bun link` time). Auto-recover:
+**If `qmd update` fails with `ERR_DLOPEN_FAILED` / `NODE_MODULE_VERSION` mismatch**, this is a recurring better-sqlite3 ABI drift. If qmd was installed via `bun link` from a dev directory, the linked `node_modules/better-sqlite3` must match the *current* Node ABI, not the Node version at `bun link` time. Auto-recover from the qmd dev directory:
 
 ```bash
-cd ~/site/cli/qmd && npm rebuild better-sqlite3 && qmd update
+cd <qmd-cli-dir> && npm rebuild better-sqlite3 && qmd update
 ```
 
 Then continue. If recovery also fails (e.g. node-gyp toolchain broken), surface as a P1 follow-up in the daily note (`qmd broken: <error code> on Node <version>`) and continue with Step 3 sub-checks that don't need qmd.
 
 ### Sync to daily note
 
-Daily note path: `~/site/knowledge/obsidian-vault/Blog/_daily/YYYY-MM-DD.md`
+Daily note path: `<personal-vault>/Blog/_daily/YYYY-MM-DD.md`
 
 Append a concise summary to today's daily note. If the daily note already has session content, merge — don't duplicate. Format:
 
@@ -150,7 +150,7 @@ If results include sessions from > 7 days ago that look directly relevant:
 
 ### 3d. Feedback drift check
 
-Read `~/site/knowledge/obsidian-vault/knowledge/personal/feedback-log.md` (skip if missing).
+Read `<personal-vault>/knowledge/personal/feedback-log.md` (skip if missing).
 
 For each `## YYYY-MM-DD` heading in the file marked `status: active`:
 - Compare its **下次怎麼避** action against this session's behavior
@@ -213,7 +213,7 @@ Promotion is **draft-and-ask for knowledge/ + feedback**, auto-resolve for refer
 |-----------|--------|
 | No git repo | Use conversation topic as slug |
 | MEMORY.md > 190 lines | Slim down first |
-| qmd `ERR_DLOPEN_FAILED` / ABI mismatch | Auto-rebuild `better-sqlite3` in `~/site/cli/qmd/` (see Sync to daily note section), retry once |
+| qmd `ERR_DLOPEN_FAILED` / ABI mismatch | Auto-rebuild `better-sqlite3` in `<qmd-cli-dir>` (see Sync to daily note section), retry once |
 | qmd unavailable for other reason | Skip 3b/3c silently, still run 3a/3d, surface as P1 follow-up |
 | feedback-log.md missing | Skip 3d silently |
 | Session < 5 substantive turns | Skip Step 3 entirely |

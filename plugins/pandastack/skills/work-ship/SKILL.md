@@ -25,10 +25,10 @@ Close a work topic's lifecycle: a Yei or Sommet/Abyss issue, decision, project, 
 
 This skill **never writes to Notion, Jira, Linear, Slack, or any external system**. All output lands in the vault:
 
-- `~/site/knowledge/work-vault/decisions/` — decision log (SSOT for the decision itself)
-- `~/site/knowledge/work-vault/sop/` — SOP drafts
-- `~/site/knowledge/obsidian-vault/Inbox/ship-proposals/` — markdown drafts of what to update in Notion / Jira / Linear (you push them manually later, via `/process-decisions` or by hand)
-- `~/site/knowledge/obsidian-vault/Inbox/ship-log/` — audit log
+- `<work-vault>/decisions/` — decision log (SSOT for the decision itself)
+- `<work-vault>/sop/` — SOP drafts
+- `<personal-vault>/Inbox/ship-proposals/` — markdown drafts of what to update in Notion / Jira / Linear (you push them manually later, via `/process-decisions` or by hand)
+- `<personal-vault>/Inbox/ship-log/` — audit log
 
 Why: external mutations on team-visible systems should never be silent. Drafting to vault first means you can review the proposed update, edit wording, and push when ready — or not push at all.
 
@@ -70,7 +70,7 @@ Ask user:
 
 ### 1.3 Write decision log to work-vault
 
-Create `~/site/knowledge/work-vault/decisions/<YYYY-MM-DD>-<topic-slug>.md`:
+Create `<work-vault>/decisions/<YYYY-MM-DD>-<topic-slug>.md`:
 
 ```markdown
 ---

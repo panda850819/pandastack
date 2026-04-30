@@ -19,7 +19,7 @@ source: manual
 
 Scan `knowledge/` for hygiene issues. Report, don't fix.
 
-Run from the vault root (`~/site/knowledge/obsidian-vault`).
+Run from the vault root (`<personal-vault>`).
 
 ## Phase 1: Inventory
 
@@ -262,6 +262,6 @@ Dead redirects, redirect chains, and redirects into `_archive/`.
 - **Report in Traditional Chinese** for the narrative sections (summary, notes); keep tables' file paths as-is.
 - **Skip `_index.md`** in orphan scan (MOC files aren't expected to be linked-to).
 - **Also skip `_index.md` in duplicate scan / fallback heuristics** — MOC files often look identical by title and create false positives.
-- **If `qmd vsearch` is unavailable or broken** (for example Node / `better-sqlite3` ABI mismatch with `ERR_DLOPEN_FAILED` / `NODE_MODULE_VERSION X !== Y`), first try the self-heal in `~/.claude/rules/cli-doctor.md` (`cd ~/site/cli/qmd && npm rebuild better-sqlite3`) and retry once. If still broken, do not fail the whole lint: fall back to a lightweight duplicate heuristic using filename/title similarity over recent notes, mark the duplicate section as lower-confidence, and surface the qmd failure in the report header.
+- **If `qmd vsearch` is unavailable or broken** (for example Node / `better-sqlite3` ABI mismatch with `ERR_DLOPEN_FAILED` / `NODE_MODULE_VERSION X !== Y`), first try the self-heal in `~/.claude/rules/cli-doctor.md` (rebuild better-sqlite3 in the qmd dev directory if `bun link`-ed) and retry once. If still broken, do not fail the whole lint: fall back to a lightweight duplicate heuristic using filename/title similarity over recent notes, mark the duplicate section as lower-confidence, and surface the qmd failure in the report header.
 - **Clean up temp files** (`/tmp/wiki-*.txt`) when done.
 - **Do NOT run `qmd update` or `qmd embed`** — separate concern, not lint's job.

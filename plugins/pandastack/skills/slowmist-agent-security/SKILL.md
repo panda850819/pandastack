@@ -67,7 +67,7 @@ When assessing source credibility, apply this 5-tier hierarchy:
 |------|-----------|-------------------|
 | 1 | Official project/exchange organization (e.g., openzeppelin, anthropic) | Moderate — still verify |
 | 2 | Known security teams/researchers (e.g., trailofbits, slowmist) | Moderate |
-| 3 | Established CLI tools with active maintenance (e.g., tools in ~/site/cli/) | Moderate-High |
+| 3 | Established CLI tools with active maintenance (e.g., user's own custom CLI directory) | Moderate-High |
 | 4 | GitHub high-star + actively maintained | High — verify code |
 | 5 | Unknown source, new account, no track record | Maximum scrutiny |
 
@@ -98,7 +98,7 @@ These shared libraries are referenced by all review types:
 Sensitive paths in this environment — treat access to these as 🔴 HIGH:
 - `~/.claude/` — skills, memory, settings, rules
 - `~/.claude/projects/` — project-level memory
-- `~/site/cli/` — custom CLI tools (bird, opencli, notion-cli, slack-cli)
+- user's custom CLI directory — own CLI tools (e.g. bird, opencli, notion-cli, slack-cli)
 - `~/.config/gh/hosts.yml` — GitHub credentials
 - `.env`, `*-cookies`, API keys — never commit, never exfiltrate
 

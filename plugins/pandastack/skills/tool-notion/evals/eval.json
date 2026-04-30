@@ -2,7 +2,7 @@
   "checklist": [
     {"question": "Uses notion-cli (not WebFetch/browser) for all Notion operations", "verifiable_from": "session_doc", "dimension": "integration"},
     {"question": "Correctly extracts page ID from Notion URL (32-char hex, ignoring query params)", "verifiable_from": "session_doc", "dimension": "correctness"},
-    {"question": "Runs notion-cli from correct directory: cd ~/site/personal/cli/notion-cli && uv run notion", "verifiable_from": "session_doc", "dimension": "process"},
+    {"question": "Runs notion-cli from its install directory (e.g. cd <notion-cli-dir> && uv run notion)", "verifiable_from": "session_doc", "dimension": "process"},
     {"question": "Defaults to partial update (block list + delete + append) instead of full rewrite unless explicitly requested", "verifiable_from": "session_doc", "dimension": "correctness"},
     {"question": "Writes content to temp file before passing to page update/append/create --file", "verifiable_from": "session_doc", "dimension": "process"},
     {"question": "Respects user's language for content (does not auto-switch to English)", "verifiable_from": "session_doc", "dimension": "integration"},
@@ -19,7 +19,7 @@
     "last_improvement": "2026-03-27"
   },
   "meta": {
-    "generated_from": "/Users/panda/.claude/skills/tool-notion/SKILL.md",
+    "generated_from": "<skills-dir>/tool-notion/SKILL.md",
     "generated_at": "2026-03-27",
     "checklist_version": 1,
     "scoring": "binary: PASS(1.0) / FAIL(0.0)",

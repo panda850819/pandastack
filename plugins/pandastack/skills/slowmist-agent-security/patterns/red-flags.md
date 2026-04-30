@@ -55,7 +55,7 @@ grep -i key, grep -i token, grep -i secret, grep -i password
 ~/.ssh, ~/.aws, ~/.config, ~/.gnupg, /etc/ssh, /etc/shadow,
 /etc/passwd, ~/.claude, ~/.cursor, /proc/,
 ~/.claude/settings.json, ~/.claude/rules/, ~/.claude/projects/*/memory/,
-~/.config/gh/hosts.yml, ~/site/personal/cli/,
+~/.config/gh/hosts.yml, user's custom CLI directory,
 expanduser, os.path.join("..", ), path.resolve(".."),
 readFileSync, writeFileSync, open(, fs.read, fs.write
 ```

@@ -168,6 +168,42 @@ learnings: ~/my-vault/knowledge/learnings   # any path
 
 pandastack skills are just SKILL.md files. Add new ones to `plugins/pandastack/skills/your-skill/SKILL.md` and `/reload-plugins`.
 
+## Path tokens (for external users)
+
+Pandastack skills don't hardcode the author's filesystem layout. Instead, they reference paths via `<placeholder>` tokens that you bind to your own paths via a private overlay.
+
+Tokens in use across public skills:
+
+| Token | What it means |
+|---|---|
+| `<personal-vault>` | Your personal Obsidian / knowledge vault root |
+| `<work-vault>` | Your work vault root (separate from personal, for de-sensitive backflow) |
+| `<memory-dir>` | Your Claude Code per-project memory directory (e.g. `~/.claude/projects/<project>/memory/`) |
+| `<qmd-cli-dir>` | Where qmd is installed if `bun link`-ed from a dev directory (only relevant for qmd ABI rebuild recovery) |
+| `<notion-cli-dir>` | Where notion-cli is installed (used by `tool-notion`) |
+| `<slack-cli-dir>` | Where slack-cli is installed (used by `tool-slack`) |
+| `<your-handle>` | Your Slack handle (used in DM-to-self examples) |
+
+When the active runtime sees a token in a skill instruction, it substitutes from the active context's bindings. Today this happens via a private overlay markdown file appended at `SessionStart` (see the `using-pandastack` overlay extension). Tomorrow this is the contract a `pdctx` context loader will fill.
+
+### Bind tokens for yourself
+
+Either:
+
+1. **Use pdctx (planned)** — when pdctx ships its context loader, the contexts in `plugins/pandastack/contexts/*.toml` will resolve tokens against a user-level `~/.pdctx/config.toml` paths block. Until then, use option 2.
+2. **Write a private overlay** — create your own `pandastack-private` (or any name) repo with an `overlays/using-pandastack.md` file binding tokens to your paths. Wire it into the `using-pandastack` overlay extension via `${PANDASTACK_OVERLAY}` env var. Example overlay content:
+
+   ```markdown
+   ## Personal context bindings
+
+   - `<personal-vault>`: /Users/yourname/path/to/your/personal-vault
+   - `<work-vault>`: /Users/yourname/path/to/your/work-vault
+   - `<memory-dir>`: /Users/yourname/.claude/projects/<your-project>/memory/
+   - `<notion-cli-dir>`: /Users/yourname/path/to/notion-cli
+   ```
+
+The public skills are deliberately portable — no path in them encodes the author's layout. If you find one that does, that's a bug in the hygiene contract; please open an issue.
+
 ## Repo Layout
 
 ```

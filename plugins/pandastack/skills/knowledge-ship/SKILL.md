@@ -19,7 +19,7 @@ related_skills: [wiki-lint, daily-distill, feed-curator]
 
 Close a `knowledge/<domain>/<note>.md` note's lifecycle.
 
-Run from vault root (`~/site/knowledge/obsidian-vault`). Pass the note path as `$ARGUMENTS`. If empty, ask.
+Run from vault root (`<personal-vault>`). Pass the note path as `$ARGUMENTS`. If empty, ask.
 
 ## Scope: vault-only
 
@@ -149,9 +149,9 @@ Use the routing table below. Each row fires if its condition matches. Multiple r
 | Q3 produced a generalizable principle | Draft a `~/.claude/rules/<slug>.md` proposal (do NOT auto-write — show diff, ask) | `~/.claude/rules/` |
 | Q1 = debug pattern / pitfall / architecture decision (= compound territory) | Draft `docs/learnings/<category>/<slug>.md` (categories: patterns / pitfalls / architecture). Includes problem / failed-attempts / root-cause / fix / prevention. Replaces standalone `pandastack:compound` skill. | `docs/learnings/<category>/` |
 | citation count ≥3 AND knowledge type = framework/playbook | Add entry to `knowledge/<domain>/_index.md` under "Frequently referenced" section (create section if missing) | `_index.md` |
-| Q1 names a work problem AND principle is reusable | Draft SOP candidate at `~/site/knowledge/work-vault/sop/<slug>.md` (de-sensitive: strip company/person/$/ticker names from any draft) | `work-vault/sop/` |
+| Q1 names a work problem AND principle is reusable | Draft SOP candidate at `<work-vault>/sop/<slug>.md` (de-sensitive: strip company/person/$/ticker names from any draft) | `work-vault/sop/` |
 | source domain has ≥3 shipped notes | Append to `Inbox/feeds/source-quality.json` with `signal: high-quality-source` (one entry per domain, not per note) | feed-curator data |
-| Q2 = heuristic AND principle short enough (<200 chars) | Draft addition to user's memory `feedback_*` or `project_*` (show diff, ask) | `~/.claude/projects/-Users-panda-site-knowledge-obsidian-vault/memory/` |
+| Q2 = heuristic AND principle short enough (<200 chars) | Draft addition to user's memory `feedback_*` or `project_*` (show diff, ask) | `<memory-dir>` |
 
 **Critical**: Stage 3 NEVER writes destructively without showing a diff and asking. The point is reversible system update, not silent mutation.
 

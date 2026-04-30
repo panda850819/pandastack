@@ -6,7 +6,7 @@ allowed-tools: Bash(slack:*), Bash(rtk:*), Bash(security:*), Bash(python3:*)
 
 # Slack CLI
 
-Interact with Slack using the `slack` CLI tool (installed via pipx from `~/site/cli/slack-cli`).
+Interact with Slack using the `slack` CLI tool (installed via pipx from `<slack-cli-dir>`).
 
 ## Auth Bootstrap (run this first if `slack` fails)
 
@@ -34,7 +34,7 @@ slack search "keyword" -n 50              # Limit results (default: 20)
 
 # Send messages
 slack send "#channel" "message"           # Send to channel (name or ID)
-slack send "@panda" "message"             # Send DM to yourself
+slack send "@<your-handle>" "message"             # Send DM to yourself
 slack send "@username" "message"          # Send DM to any user
 slack send "#channel" "reply" -t 1234.56  # Reply in thread (thread_ts)
 
@@ -77,10 +77,10 @@ slack search "budget Q2" -c #people-ops -n 10
 slack send "#people-ops" "Sprint update: all tasks on track"
 
 # DM to yourself (preview before posting to channel)
-slack send "@panda" "Draft message to review"
+slack send "@<your-handle>" "Draft message to review"
 
 # DM to any user
-slack send "@rachel" "Hey, can you update your cards?"
+slack send "@<user>" "Hey, can you update your cards?"
 
 # Multi-line messages — use heredoc
 slack send "#channel" "$(cat <<'EOF'
@@ -98,14 +98,14 @@ EOF
 slack channel history "#general" -n 20
 
 # Check DM with a specific person
-slack dm history "@johnny.que" -n 20
+slack dm history "@<user>" -n 20
 ```
 
 ### Reply to a thread
 
 ```bash
 # By URL (from Slack "Copy link" on a message)
-slack reply "https://yei-finance.slack.com/archives/C0123/p1769571017" "Got it, will fix"
+slack reply "https://<your-workspace>.slack.com/archives/C0123/p1769571017" "Got it, will fix"
 
 # By thread timestamp in a channel
 slack send "#engineering" "Fixed in latest deploy" -t 1769571017.954789
@@ -142,16 +142,16 @@ Bot messages put content in `attachments[].text` (and/or `.fallback`), not top-l
 
 | Channel | ID |
 |---------|-----|
-| #people-ops | C0AB9E4NTND |
+| #people-ops (example) | C0XXXXXXXXX |
 
 ## Gotchas
 
 ### Sending DM to yourself
 
-`slack dm` has no send command. Use `slack send "@panda"` to send to your own DM:
+`slack dm` has no send command. Use `slack send "@<your-handle>"` (your own Slack handle) to send to your own DM:
 
 ```bash
-slack send "@panda" "Draft message to review"
+slack send "@<your-handle>" "Draft message to review"
 ```
 
 `slack send` accepts `@username` format — the Slack API resolves it to the user's DM channel automatically. This works for any user, not just yourself.
@@ -160,11 +160,11 @@ slack send "@panda" "Draft message to review"
 
 ### Installation
 
-Installed via pipx from `~/site/cli/slack-cli`. If broken (e.g. Python version upgrade):
+Installed via pipx from `<slack-cli-dir>`. If broken (e.g. Python version upgrade):
 
 ```bash
 pipx reinstall slack-cli  # may fail if path changed
-pipx install ~/site/cli/slack-cli  # reinstall from source
+pipx install <slack-cli-dir>  # reinstall from source
 ```
 
 If symlink conflict exists at `~/.local/bin/slack`:
@@ -209,14 +209,14 @@ Do NOT paste the full `slack search` or `slack channel history` output.
 | Doctor (auth) | `SLACK_CLI_TOKEN=$(security find-generic-password -s SLACK_CLI_TOKEN -w ~/Library/Keychains/login.keychain-db) slack channel info "#people-ops"` | Verifies token works end-to-end |
 | Search | `slack search "keyword"` | `-c #channel`, `-n 50`, `from:@user` in query |
 | Send to channel | `slack send "#channel" "msg"` | `-t <thread_ts>` for thread reply |
-| DM to self | `slack send "@panda" "msg"` | NOT `@slackbot`, NOT `slack dm send` |
+| DM to self | `slack send "@<your-handle>" "msg"` | NOT `@slackbot`, NOT `slack dm send` |
 | DM to user | `slack send "@username" "msg"` | |
 | Reply by URL | `slack reply "<url>" "msg"` | |
 | Channel history | `slack channel history "#channel"` | `-n 100` for more |
 | Channel info | `slack channel info "#channel"` | Shows members, topic, pins |
 | DM history | `slack dm history "@user"` | `-n 100` for more |
 | Read thread | `rtk proxy curl ... conversations.replies` | See "Read a thread" section |
-| Reinstall | `pipx install ~/site/cli/slack-cli` | Fix with `rm ~/.local/bin/slack` if conflict |
+| Reinstall | `pipx install <slack-cli-dir>` | Fix with `rm ~/.local/bin/slack` if conflict |
 
 ## Tips
 

@@ -298,7 +298,7 @@ qmd update && qmd embed
 
 This must run after every deep-research session, interactive or overnight. Forgetting this step makes new notes invisible to `qmd search` and `qmd vsearch`.
 
-If `qmd update` fails with `ERR_DLOPEN_FAILED` / `NODE_MODULE_VERSION` mismatch, follow the self-heal in `~/.claude/rules/cli-doctor.md` (rebuild better-sqlite3 in `~/site/cli/qmd/`), then retry once. If still broken, surface as a P1 follow-up — do NOT skip silently, the new notes will be invisible to search until reindexed.
+If `qmd update` fails with `ERR_DLOPEN_FAILED` / `NODE_MODULE_VERSION` mismatch, follow the self-heal in `~/.claude/rules/cli-doctor.md` (rebuild better-sqlite3 in the qmd dev directory if `bun link`-ed), then retry once. If still broken, surface as a P1 follow-up — do NOT skip silently, the new notes will be invisible to search until reindexed.
 
 ## Usage Modes
 

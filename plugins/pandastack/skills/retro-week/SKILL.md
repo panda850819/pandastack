@@ -27,7 +27,7 @@ Run all commands. Print the raw scan block to user before moving to Phase 2.
 
 ```bash
 SINCE="7 days ago"
-VAULT="$HOME/site/knowledge/obsidian-vault"
+VAULT="<personal-vault>"
 cd "$VAULT" && git log --since="$SINCE" --oneline --no-merges
 cd "$VAULT" && git shortlog --since="$SINCE" -sn
 ```
@@ -35,10 +35,10 @@ cd "$VAULT" && git shortlog --since="$SINCE" -sn
 Also scan additional repos if user has active work there this week:
 
 ```bash
-# Check pandastack repo if it exists
-[ -d "$HOME/site/skills/pandastack" ] && cd "$HOME/site/skills/pandastack" && git log --since="$SINCE" --oneline --no-merges 2>/dev/null | head -20
-# Check any other active ~/site/* repos (scan non-archive dirs)
-for d in "$HOME/site/apps/"* "$HOME/site/cli/"* "$HOME/site/trading/"*; do
+# Scan additional active repos. Default scan locations follow Panda's setup
+# (~/site/skills/, ~/site/apps/, ~/site/cli/, ~/site/trading/) — adjust to
+# your own layout in a private overlay if different.
+for d in "$HOME/site/skills/"* "$HOME/site/apps/"* "$HOME/site/cli/"* "$HOME/site/trading/"*; do
   [ -d "$d/.git" ] && echo "--- $d ---" && cd "$d" && git log --since="$SINCE" --oneline --no-merges 2>/dev/null | head -5
 done
 ```
@@ -48,7 +48,7 @@ Summarize: total commits across repos, key deliverables by repo name.
 ### 1b. Learnings health — vault learnings/ dir
 
 ```bash
-LEARNINGS_DIR="$HOME/site/knowledge/obsidian-vault/docs/learnings"
+LEARNINGS_DIR="<personal-vault>/docs/learnings"
 # Count total
 ls "$LEARNINGS_DIR"/*.md 2>/dev/null | wc -l
 # Count new this week (created in last 7 days)
@@ -62,7 +62,7 @@ If `$LEARNINGS_DIR` does not exist, note "learnings/ dir not found — skip heal
 ### 1c. Daily note highlights — past 7 days
 
 ```bash
-DAILY_DIR="$HOME/site/knowledge/obsidian-vault/Blog/_daily"
+DAILY_DIR="<personal-vault>/Blog/_daily"
 SINCE_DATE=$(date -v-7d +%Y-%m-%d)
 for f in $(ls "$DAILY_DIR"/*.md 2>/dev/null | sort -r | head -7); do
   echo "=== $(basename $f) ===" && grep -E "^##|^- \[x\]|P0|decision|ship" "$f" | head -10
@@ -105,7 +105,7 @@ WEEK_NUM=$(date +%V)
 YEAR=$(date +%Y)
 TODAY=$(date +%Y-%m-%d)
 # Cron writes prep to Inbox/cron-reports/$DATE-retro-week-prep.md (most recent Sunday)
-PREP=$(ls -t "$HOME/site/knowledge/obsidian-vault/Inbox/cron-reports/"*-retro-week-prep.md 2>/dev/null | head -1)
+PREP=$(ls -t "<personal-vault>/Inbox/cron-reports/"*-retro-week-prep.md 2>/dev/null | head -1)
 ```
 
 If prep file exists: read and print a compressed summary (Traditional Chinese, max 30 lines):
@@ -202,7 +202,7 @@ scan_data: true
 Ensure `docs/retros/weekly/` directory exists before writing:
 
 ```bash
-mkdir -p "$HOME/site/knowledge/obsidian-vault/docs/retros/weekly"
+mkdir -p "<personal-vault>/docs/retros/weekly"
 ```
 
 ### Step 3b: Updates to other files

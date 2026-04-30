@@ -20,7 +20,7 @@ Analyze GitHub repos and generate structured documentation with Mermaid architec
 
 | Parameter | Description | Example |
 |-----------|-------------|---------|
-| `repo` | GitHub repo URL or `org/name` format | `yei-finance/yei-lending` |
+| `repo` | GitHub repo URL or `org/name` format | `<org>/<repo>` |
 | `--output` | Output location (optional) | `notion`, `obsidian`, `./path` |
 
 ## Output Options
@@ -36,16 +36,16 @@ Analyze GitHub repos and generate structured documentation with Mermaid architec
 
 ```bash
 # Default: display in conversation
-/deepwiki yei-finance/yei-lending
+/deepwiki <org>/<repo>
 
 # Output to Notion
-/deepwiki yei-finance/clovis --output notion
+/deepwiki <org>/<repo> --output notion
 
 # Output to local file
-/deepwiki yei-finance/pit --output ./docs/pit.md
+/deepwiki <org>/<repo> --output ./docs/<repo>.md
 
 # Output to Obsidian
-/deepwiki yei-finance/yeiswap --output obsidian
+/deepwiki <org>/<repo> --output obsidian
 ```
 
 ---

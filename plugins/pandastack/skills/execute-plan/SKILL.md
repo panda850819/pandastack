@@ -141,9 +141,9 @@ When NOT to use subagents:
 | Read-only (search, read, grep) | low |
 | Vault file write (knowledge note, daily note) | low |
 | Config file edit in `~/.claude/` or `~/.agents/` | medium |
-| Code edit in `~/site/apps/` or `~/site/cli/` | medium |
+| Code edit in user's apps or custom CLI directories | medium |
 | Work vault write | medium |
-| Anything under `~/site/infra/` or `~/site/trading/` | high |
+| Anything under user's infra or trading directories | high |
 | External system (Notion, Linear, Slack, GitHub push) | high |
 | Yei/Abyss protocol ops (contracts, treasury) | high |
 | `rm`, `git reset --hard`, destructive ops | high — must confirm |

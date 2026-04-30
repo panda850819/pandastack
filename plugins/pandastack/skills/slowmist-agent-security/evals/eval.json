@@ -20,7 +20,7 @@
     "last_improvement": null
   },
   "meta": {
-    "generated_from": "/Users/panda/.claude/skills/slowmist-agent-security/SKILL.md",
+    "generated_from": "<skills-dir>/slowmist-agent-security/SKILL.md",
     "generated_at": "2026-03-27",
     "checklist_version": 1,
     "scoring": "binary: PASS(1.0) / FAIL(0.0)",

@@ -15,12 +15,12 @@ Closes the cron loop: the launchd jobs generate `## Top 3 Decisions` blocks with
 
 ## Scope
 
-Look at `~/site/knowledge/obsidian-vault/Inbox/cron-reports/*.md` only. Do NOT touch other Inbox files or vault knowledge notes except via the executed actions.
+Look at `<personal-vault>/Inbox/cron-reports/*.md` only. Do NOT touch other Inbox files or vault knowledge notes except via the executed actions.
 
 ## Step 1: Scan ticked items
 
 ```bash
-cd ~/site/knowledge/obsidian-vault
+cd <personal-vault>
 # Find all [x] lines inside ## Top 3 Decisions blocks, last 14 days, not already ✓ done
 find Inbox/cron-reports -name "*.md" -type f -mtime -14 | while read f; do
   awk '/^## Top 3 Decisions/{flag=1; next} /^## /{flag=0} flag && /^- \[x\]/ && !/✓/' "$f" | \
@@ -84,7 +84,7 @@ Append to today's daily note `Blog/_daily/YYYY-MM-DD.md` under `## Cron Actions`
 
 ## Related
 
-- `~/site/knowledge/obsidian-vault/Inbox/cron-reports/` — input
+- `<personal-vault>/Inbox/cron-reports/` — input
 - `~/.claude/skills/wiki-lint/SKILL.md` — produces wiki-lint decisions
 - `~/.claude/skills/harness-slim/SKILL.md` — produces harness-audit decisions
 - `~/.claude/rules/auto-resolver.md` — governs when to auto vs draft-first

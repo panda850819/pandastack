@@ -21,7 +21,7 @@
       "verifiable_from": "behavior"
     },
     {
-      "question": "DM to self uses `slack send \"@panda\"` \u2014 not `@slackbot` or `slack dm send`?",
+      "question": "DM to self uses `slack send \"@<your-handle>\"` \u2014 not `@slackbot` or `slack dm send`?",
       "verifiable_from": "behavior"
     },
     {
@@ -29,7 +29,7 @@
       "verifiable_from": "behavior"
     },
     {
-      "question": "Installation troubleshooting references pipx and correct source path `~/site/work/cli/slack-cli`?",
+      "question": "Installation troubleshooting references pipx and the user's slack-cli source directory?",
       "verifiable_from": "behavior"
     },
     {

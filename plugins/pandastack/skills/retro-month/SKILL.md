@@ -27,7 +27,7 @@ Run all commands. Print the raw scan block to user before Phase 2.
 
 ```bash
 SINCE="30 days ago"
-VAULT="$HOME/site/knowledge/obsidian-vault"
+VAULT="<personal-vault>"
 cd "$VAULT" && git log --since="$SINCE" --oneline --no-merges | wc -l
 cd "$VAULT" && git shortlog --since="$SINCE" -sn
 ```
@@ -35,7 +35,10 @@ cd "$VAULT" && git shortlog --since="$SINCE" -sn
 Also scan additional repos:
 
 ```bash
-[ -d "$HOME/site/skills/pandastack" ] && cd "$HOME/site/skills/pandastack" && git log --since="$SINCE" --oneline --no-merges 2>/dev/null | wc -l
+# Scan additional active repos. Default locations follow Panda's setup; adjust in private overlay if different.
+for d in "$HOME/site/skills/"* "$HOME/site/apps/"* "$HOME/site/cli/"* "$HOME/site/trading/"*; do
+  [ -d "$d/.git" ] && cd "$d" && git log --since="$SINCE" --oneline --no-merges 2>/dev/null | wc -l
+done
 for d in "$HOME/site/apps/"* "$HOME/site/cli/"* "$HOME/site/trading/"*; do
   [ -d "$d/.git" ] && echo "--- $d ---" && cd "$d" && git log --since="$SINCE" --oneline --no-merges 2>/dev/null | wc -l
 done
@@ -44,7 +47,7 @@ done
 ### 1b. Learnings health — past 30 days
 
 ```bash
-LEARNINGS_DIR="$HOME/site/knowledge/obsidian-vault/docs/learnings"
+LEARNINGS_DIR="<personal-vault>/docs/learnings"
 # Count total
 ls "$LEARNINGS_DIR"/*.md 2>/dev/null | wc -l
 # Count new this month
@@ -58,7 +61,7 @@ If `$LEARNINGS_DIR` not found: note "learnings/ dir not found — skip" and cont
 ### 1c. Reference last 4 retro-week files
 
 ```bash
-RETRO_WEEKLY="$HOME/site/knowledge/obsidian-vault/docs/retros/weekly"
+RETRO_WEEKLY="<personal-vault>/docs/retros/weekly"
 ls "$RETRO_WEEKLY"/*.md 2>/dev/null | sort -r | head -4
 ```
 
@@ -101,7 +104,7 @@ Then say: **"掃完了。要開始月度 interview 嗎？"** — wait for user.
 ```bash
 LAST_MONTH=$(date -v-1m +%Y-%m)
 # Cron writes prep to Inbox/cron-reports/$DATE-retro-month-prep.md (most recent month-end)
-PREP=$(ls -t "$HOME/site/knowledge/obsidian-vault/Inbox/cron-reports/"*-retro-month-prep.md 2>/dev/null | head -1)
+PREP=$(ls -t "<personal-vault>/Inbox/cron-reports/"*-retro-month-prep.md 2>/dev/null | head -1)
 ```
 
 If prep file exists: print compressed summary in Traditional Chinese, max 40 lines:
@@ -160,7 +163,7 @@ For each `status: active` pattern in feedback-log.md:
 Ensure output directory exists:
 
 ```bash
-mkdir -p "$HOME/site/knowledge/obsidian-vault/docs/retros/monthly"
+mkdir -p "<personal-vault>/docs/retros/monthly"
 ```
 
 Write `docs/retros/monthly/$YEAR-$MONTH.md`:
@@ -230,7 +233,7 @@ weekly_retros_referenced: [W$N, W$N-1, W$N-2, W$N-3]
 
 - Apply project memory edits (already done during interview; verify here)
 - Update feedback-log.md status changes
-- If goals in me.md need update: ask user to confirm new wording, then edit `~/.claude/projects/-Users-panda-site-knowledge-obsidian-vault/memory/user_*.md` accordingly, then run `bash ~/.claude/scripts/build-me.sh`
+- If goals in me.md need update: ask user to confirm new wording, then edit `<memory-dir>/user_*.md` accordingly, then run the user's `me.md` rebuild command (e.g. `bash ~/.claude/scripts/build-me.sh` if such a script exists in the harness)
 - Update prep brief frontmatter `status: complete` if prep file exists
 - `git add + commit "chore(personal): monthly retro $YEAR-$MONTH (interactive)" + push`
 
@@ -243,4 +246,4 @@ weekly_retros_referenced: [W$N, W$N-1, W$N-2, W$N-3]
 - Project memory updates: prefer **append + supersede** over **delete + rewrite**. Use `Edit` with frontmatter `superseded: $LAST_DAY` plus a new entry, not overwriting.
 - Never invent strategic shifts. They must trace to user statements.
 - If user says "短版" or "skip": still run Phase 1 fully, still ask goal-alignment questions (2b-i) at minimum — those are load-bearing. Skip 2b-ii through 2b-iv only.
-- If interview reveals a contradiction with `~/.claude/CLAUDE.md` rules or `user_*.md` memories, surface it explicitly: "這跟 X 規則衝突，要改規則還是改行為？"
+- If interview reveals a contradiction with the user's CLAUDE.md / AGENTS.md rules or `user_*.md` memories, surface it explicitly: "這跟 X 規則衝突，要改規則還是改行為？"
