@@ -29,6 +29,10 @@ Adversarial intake. Inspired by Matt Pocock's "grill me" prompt — see [[matt-p
 
 The point is NOT to fill a structured questionnaire (that's `--mode structured`). The point is to surface **unknown unknowns** by interrogating one angle at a time until the answer surprises you.
 
+## Pre-step: Goal Mapping (recommended)
+
+If goal mapping has not been done yet (e.g. you are running grill standalone, not after brief), run `lib/goal-mapping.md` first. Adversarial drilling lands better when the agent knows what is actually being protected — questions about edge cases hit different when L1 portability is the dominant goal vs L3 ship-this-week. Skip if user already established goal context this session.
+
 ## When to use
 
 - Feature scope is fuzzy ("I want a points system" → backfill? retroactive? UI placement? streak rules?)
@@ -128,19 +132,33 @@ When skipped, downstream skills (e.g. `pandastack:review`) still search learning
 
 ## Gate Points
 
-Steps 3 (Premise Challenge), 3.5 (Assumption Dump), and 4 (Alternatives) are user-facing gates. Use the four-option contract: **approve / edit / reject / skip**. Record gate outcomes in the brief's `## Gate Log` section.
+Steps 1.5 (Goal Mapping), 3 (Premise Challenge), 3.5 (Assumption Dump), and 4 (Alternatives) are user-facing gates. Use the four-option contract: **approve / edit / reject / skip**. Record gate outcomes in the brief's `## Gate Log` section.
 
 ## Step 1: Load context
 
 Search `docs/learnings/` (or whatever learnings dir is configured in the project's CLAUDE.md) for patterns related to the user's request. Note relevant learnings to inform later steps.
 
+## Step 1.5: Goal Mapping
+
+Before clarifying, identify which of the user's goals this task serves. Prevents solutioning in a goal vacuum and adapts every downstream step.
+
+Run `lib/goal-mapping.md` to:
+
+1. Read the user's goal hierarchy from `<memory-dir>/` and active session context
+2. Map current task to L1 / L2 / L3 layers
+3. Pick the dominant layer; flag wrong framing if no layer matches
+4. Output mapping block, gate user confirmation
+5. Pass dominant layer to Step 2 (Clarify) and Step 4 (Alternatives)
+
+If goal mapping flags wrong framing, reframe before continuing. If user says "skip", record in Gate Log; do not silently bypass.
+
 ## Step 2: Clarify
 
-Ask ONE AT A TIME. Push until specific. Smart-skip questions whose answers are obvious from context.
+Ask ONE AT A TIME. Push until specific. Smart-skip questions whose answers are obvious from context **or already derivable from Step 1.5's goal mapping** (see `lib/goal-mapping.md` Step 3 for which questions each dominant layer makes redundant).
 
-1. **Demand reality**: who needs this? (skip if obvious)
-2. **Status quo**: how is this solved now? (skip if greenfield)
-3. **Narrowest wedge**: what's the smallest useful version?
+1. **Demand reality**: who needs this? (skip if obvious or derivable)
+2. **Status quo**: how is this solved now? (skip if greenfield or known from goal context)
+3. **Narrowest wedge**: what's the smallest useful version? (skip if L1 dominant — wedge framing usually wrong for long-horizon work)
 
 If user expresses impatience: ask one more question, then proceed. If pushed back a second time: proceed immediately.
 
@@ -151,6 +169,7 @@ Before solutioning, challenge the premises:
 1. Is this the right problem? Could a different framing be simpler?
 2. What happens if we do nothing?
 3. What existing code already partially solves this?
+4. Is Step 1.5's dominant goal layer framing correct? (catches late-surfacing reframes the goal mapping itself missed)
 
 Present premises for user agreement:
 
@@ -179,7 +198,7 @@ This is the human-agent alignment checkpoint. Surface everything so the user can
 
 ## Step 4: Alternatives
 
-Generate 2-3 implementation approaches:
+Generate 2-3 implementation approaches **filtered to options that serve Step 1.5's dominant goal layer**. Flag any approach that violates a non-dominant layer's constraints (e.g. dominant=L3 but option breaks L1 portability) so user can weigh the trade-off.
 
 - One **minimal viable** (fewest files, ships fastest)
 - One **ideal** (best long-term architecture)
@@ -235,6 +254,7 @@ Out: {what's explicitly excluded}
 {relevant past learnings that informed this brief}
 
 ## Gate Log
+- Goal Mapping (Step 1.5): L1={...} L2={...} L3={...} → dominant={...} — approve | edit: {what changed} | reject | skip
 - Premises (Step 3): approve | edit: {what changed} | reject | skip
 - Assumption Dump (Step 3.5): approve | edit: {what changed} | reject | skip
 - Alternatives (Step 4): chose {A|B|C} — approve | edit: {what changed} | reject | skip

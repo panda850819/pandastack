@@ -19,7 +19,7 @@ When skipped, the eng agent still searches learnings at review time.
 
 ## Gate Points
 
-Steps 3 (Premise Challenge), 3.5 (Assumption Dump), and 4 (Alternatives) are user-facing gates. Use the four-option contract: **approve / edit / reject / skip**. See `lib/gate-contract.md`.
+Steps 1.5 (Goal Mapping), 3 (Premise Challenge), 3.5 (Assumption Dump), and 4 (Alternatives) are user-facing gates. Use the four-option contract: **approve / edit / reject / skip**. See `lib/gate-contract.md`.
 
 Record gate outcomes in the brief's `## Gate Log` section so `/ps-review` and downstream skills can see what was decided and any edits applied.
 
@@ -30,15 +30,41 @@ Read the pstack config from CLAUDE.md to find the learnings directory.
 Search `{learnings_dir}` for patterns related to the user's request.
 Note any relevant learnings for the product agent.
 
+## Step 1.5: Goal Mapping
+
+Before clarifying, identify which of the user's goals this task serves.
+Goal mapping prevents solutioning in a vacuum and adapts every
+downstream step to the user's actual goal hierarchy.
+
+Run `lib/goal-mapping.md` to:
+
+1. Read the user's goal hierarchy from `<memory-dir>/` (MEMORY.md +
+   `project_*.md` + `user_*.md`) and active session context
+2. Map the current task to L1 (long horizon) / L2 (this season) /
+   L3 (this week) layers
+3. Pick the dominant layer; flag wrong framing if no layer matches
+4. Output mapping block, gate user confirmation
+5. Pass dominant layer to Step 2 (Clarify) and Step 4 (Alternatives)
+
+If goal mapping flags wrong framing, reframe before continuing. Re-run
+mapping with corrected framing.
+
+If user says "skip", record in Gate Log so downstream skills know
+goal-aware shaping was waived; do not silently bypass.
+
 ## Step 2: Clarify
 
 Use the product agent's forcing questions to clarify the request.
 Ask ONE AT A TIME. Push until specific. Smart-skip questions
-whose answers are already obvious from context.
+whose answers are obvious from context **or already derivable from
+Step 1.5's goal mapping** (see `lib/goal-mapping.md` Step 3 for which
+questions each dominant layer makes redundant).
 
-1. **Demand Reality**: Who needs this? (skip if obvious)
-2. **Status Quo**: How is this solved now? (skip if greenfield)
-3. **Narrowest Wedge**: What's the smallest useful version?
+1. **Demand Reality**: Who needs this? (skip if obvious or derivable)
+2. **Status Quo**: How is this solved now? (skip if greenfield or
+   already known from goal context)
+3. **Narrowest Wedge**: What's the smallest useful version? (skip if
+   L1 dominant — wedge framing usually wrong for long-horizon work)
 
 If the user expresses impatience: ask one more question, then proceed.
 If the user pushes back a second time: proceed immediately.
@@ -49,6 +75,8 @@ Before solutioning, challenge the premises:
 1. Is this the right problem? Could a different framing be simpler?
 2. What happens if we do nothing?
 3. What existing code already partially solves this?
+4. Is Step 1.5's dominant goal layer framing correct? (catches
+   late-surfacing reframes the goal mapping itself missed)
 
 Present premises for user agreement:
 ```
@@ -79,7 +107,11 @@ is chosen.
 
 ## Step 4: Alternatives
 
-Generate 2-3 implementation approaches:
+Generate 2-3 implementation approaches **filtered to options that serve
+Step 1.5's dominant goal layer**. Flag any approach that violates a
+non-dominant layer's constraints (e.g. dominant=L3 but option breaks
+L1 portability — call it out so user can weigh the trade-off).
+
 - One **minimal viable** (fewest files, ships fastest)
 - One **ideal** (best long-term architecture)
 - One **creative** (unexpected framing — optional)
@@ -134,6 +166,7 @@ Out: {what's explicitly excluded}
 {any relevant past learnings that informed this brief}
 
 ## Gate Log
+- Goal Mapping (Step 1.5): L1={...} L2={...} L3={...} → dominant={...} — approve | edit: {what changed} | reject | skip
 - Premises (Step 3): approve | edit: {what changed} | reject | skip
 - Assumption Dump (Step 3.5): approve | edit: {what changed} | reject | skip
 - Alternatives (Step 4): chose {A|B|C} — approve | edit: {what changed} | reject | skip

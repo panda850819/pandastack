@@ -1,5 +1,40 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- `lib/goal-mapping.md` — shared module documenting goal-hierarchy
+  pre-step. Reads user's L1 (long horizon) / L2 (this season) /
+  L3 (this week) goals from `<memory-dir>/`, maps the current task to
+  each layer, picks the dominant layer, and feeds downstream Clarify +
+  Alternatives steps so questions adapt to the user's actual goal
+  hierarchy instead of running generic forcing questions in a goal
+  vacuum.
+
+### Changed
+
+- `skills/brief/SKILL.md` and `skills/grill/SKILL.md` (`--mode
+  structured`): inserted **Step 1.5 Goal Mapping** between Load
+  Context and Clarify. Step 2 Clarify now smart-skips forcing
+  questions answered by goal mapping. Step 3 Premise Challenge adds a
+  fourth premise checking dominant-layer framing. Step 4 Alternatives
+  filters options to the dominant layer and flags constraint
+  violations from non-dominant layers. Gate Log gains a Goal Mapping
+  line.
+- `skills/grill/SKILL.md` default (adversarial) mode: added "Pre-step:
+  Goal Mapping (recommended)" pointer so adversarial drilling lands
+  with awareness of what is actually being protected.
+
+### Why
+
+Brief and grill were jumping to "what / how" questions before
+establishing "why / for whom". Generic forcing questions (demand /
+status / wedge) got asked even when the user's goal context already
+implied the answers, and Alternatives sometimes proposed solutions
+that served no goal layer at all. Goal mapping makes the goal
+hierarchy explicit before solutioning.
+
 ## v1.0.0-rc.2 — 2026-04-30
 
 Codex CLI multi-CLI support. Skill content stays Claude-first; Codex consumes via tool-name mapping injected at session start. Modeled on Superpowers v5.0.7's per-CLI shim pattern.
