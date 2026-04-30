@@ -34,6 +34,10 @@ firewall_from = ["work/yei/*", "work/sommet/*", "personal/developer", "personal/
 [sources]
 vault = "personal-vault"
 
+[knowledge]
+allow  = ["knowledge", "blog", "lennys", "sessions"]
+forbid = ["work-vault"]
+
 [notes]
 # Public base: research + framing skills only. On-chain chip-structure analysis (chain-scout)
 # is sensitive position-adjacent logic and is added via overlay in pandastack-private.

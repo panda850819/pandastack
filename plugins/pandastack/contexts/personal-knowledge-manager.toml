@@ -37,6 +37,10 @@ firewall_from = ["work/yei/*", "work/sommet/*"]
 [sources]
 vault = "personal-vault"
 
+[knowledge]
+allow  = ["knowledge", "blog", "lennys", "sessions"]
+forbid = ["work-vault"]
+
 [notes]
 # Brain-first lookup rule applies: qmd query before fetching any URL or writing new notes.
 # Absorb-first: if 60%+ overlap with existing note, update existing rather than creating new.

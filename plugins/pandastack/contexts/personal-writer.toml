@@ -35,6 +35,13 @@ firewall_from = ["work/yei/*", "work/sommet/*"]
 [sources]
 vault = "personal-vault"
 
+[knowledge]
+# qmd collection allow/forbid for Layer 4 source firewall.
+# allow = pdctx query auto-expands to these collections when -c is omitted.
+# forbid = pdctx query rejects -c against any of these.
+allow  = ["knowledge", "blog", "lennys", "sessions"]
+forbid = ["work-vault"]
+
 [notes]
 # grill in adversarial (default) mode is the thesis stress-tester; run before content-write structure stage to catch weak arguments early.
 # write-ship handles the full publish loop including mv to Blog/Published/, reverse-citations, and X-thread draft routing to Inbox/x-drafts/.
