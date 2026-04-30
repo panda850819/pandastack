@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# SessionStart hook for pandastack plugin.
+# Inspired by superpowers v5.0.7 hook structure (obra/superpowers).
+# Injects the using-pandastack SKILL.md content as additionalContext so the
+# model is reminded to check pandastack skills BEFORE acting.
+#
+# Two-tier content:
+#   1. Public contract: ${PLUGIN_ROOT}/skills/using-pandastack/SKILL.md
+#   2. Optional private overlay: ${PANDASTACK_OVERLAY:-$HOME/site/skills/pandastack-private/overlays/using-pandastack.md}
+#
+# Overlay is appended to the public contract before injection. If the overlay
+# file is missing, the public contract is injected on its own.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+public_file="${PLUGIN_ROOT}/skills/using-pandastack/SKILL.md"
+overlay_file="${PANDASTACK_OVERLAY:-$HOME/site/skills/pandastack-private/overlays/using-pandastack.md}"
+
+if [ ! -f "$public_file" ]; then
+  printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":""}}\n'
+  exit 0
+fi
+
+skill_content=$(cat "$public_file")
+
+if [ -f "$overlay_file" ]; then
+  overlay_content=$(cat "$overlay_file")
+  skill_content="${skill_content}
+
+---
+
+# Personal overlay (appended by hook)
+
+${overlay_content}"
+fi
+
+escape_for_json() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  s="${s//$'\n'/\\n}"
+  s="${s//$'\r'/\\r}"
+  s="${s//$'\t'/\\t}"
+  printf '%s' "$s"
+}
+
+skill_escaped=$(escape_for_json "$skill_content")
+
+session_context="<EXTREMELY_IMPORTANT>\nYou have pandastack.\n\n**Below is the full content of the 'pandastack:using-pandastack' skill — your introduction to the pandastack skill contract. For all other pandastack skills, use the 'Skill' tool:**\n\n${skill_escaped}\n</EXTREMELY_IMPORTANT>"
+
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+else
+  printf '{\n  "additionalContext": "%s"\n}\n' "$session_context"
+fi
+
+exit 0
