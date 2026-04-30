@@ -1,7 +1,7 @@
 {
   "name": "pandastack",
   "description": "Personal AI operator OS for Claude Code. 5 agent personas, ~37 skills, 7 lifecycle flows, 8 context recipes. Covers dev / knowledge / writing / work / research / retro / decision lifecycles.",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "author": {
     "name": "Panda Zeng"
   },

@@ -1,6 +1,6 @@
 # pandastack
 
-Personal AI operator OS for Claude Code. 5 agent personas, ~37 skills, 7 lifecycle flows, 8 context recipes. Zero runtime dependencies.
+Personal AI operator OS for Claude Code, with Codex CLI compatibility. 5 agent personas, ~37 skills, 7 lifecycle flows, 8 context recipes. Zero runtime dependencies.
 
 ## What It Does
 
@@ -39,6 +39,10 @@ For local development (cloned the repo yourself):
 ```
 
 Then in your project, run `/pandastack:init` once.
+
+### Other runtimes
+
+Pandastack v1.0.0-rc.2+ also runs on Codex CLI via native skill discovery. See [`plugins/pandastack/.codex/INSTALL.md`](plugins/pandastack/.codex/INSTALL.md) for the clone + symlink install path. Tested on Codex CLI 0.124.0. Lifecycle skills are fully portable; `tool-*` skills depending on local CLIs (qmd / bird / notion-cli / slack / etc.) require those CLIs in the host environment.
 
 ## Skills
 
@@ -203,4 +207,6 @@ See [PHILOSOPHY.md](plugins/pandastack/PHILOSOPHY.md).
 
 Renamed from `pstack` on 2026-04-29 as part of the pdctx framework split. The old `setup` script (gstack-style symlink installer with `ps-*` prefix) is sunset; Claude Code's native plugin marketplace replaces it.
 
-v1.0.0-rc.1 (2026-04-29): scope expansion from dev-only to 7 lifecycles + 8 context recipes. See [CHANGELOG.md](CHANGELOG.md).
+v1.0.0-rc.1 (2026-04-29): scope expansion from dev-only to 7 lifecycles + 8 context recipes.
+v1.0.0-rc.2 (2026-04-30): Codex CLI multi-CLI support (Superpowers-pattern shim + tool-name mapping).
+See [CHANGELOG.md](CHANGELOG.md).
