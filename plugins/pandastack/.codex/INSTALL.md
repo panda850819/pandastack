@@ -69,6 +69,6 @@ Pandastack is designed Claude-Code-first but the lifecycle skills are CLI-agnost
 
 - **Fully portable** (no CLI-specific tools): `careful`, `knowledge-ship`, `write-ship`, `work-ship`, `review`, `ship`, `compound`, `learn`, `checkpoint`, `think-like-naval`, `think-like-alan-chan`, `think-like-karpathy`, `content-write`, `grill`, `brief`, `init`, `freeze`, `done`
 - **Needs Codex tool mapping** (uses `Skill` / `Agent` / subagent dispatch): see `skills/using-pandastack/references/codex-tools.md`
-- **Local-environment-bound** (depends on Panda's local CLIs like `qmd`, `bird`, `notion-cli`, `slack`, `gog`): `tool-*` skills, `chain-scout`, `feed-curator`, `wiki-lint`, `process-decisions`, `agent-browser`, `qa`. These will fail with clear "command not found" errors if dependencies are missing — that's intentional, not a bug.
+- **Local-environment-bound** (depends on Panda's local CLIs like `qmd`, `bird`, `notion-cli`, `slack`, `gog`): `tool-*` skills, `feed-curator`, `wiki-lint`, `process-decisions`, `agent-browser`, `qa`. These will fail with clear "command not found" errors if dependencies are missing — that's intentional, not a bug. (Skills in the private overlay have similar local-CLI dependencies.)
 
 If you want to use only the portable subset, you can symlink individual skill directories instead of the whole `skills/` folder.

@@ -2,7 +2,7 @@
 name        = "personal:trader"
 description = "Crypto/stock research, on-chain analysis, systematic trading signal work"
 domain      = "personal"
-private     = true   # chain-scout is sensitive; this context must stay in pandastack-private
+private     = false  # public base; sensitive on-chain skills attach via private overlay
 
 [persona]
 agent         = ""   # no persona
@@ -25,9 +25,7 @@ public = [
   "pandastack:retro-month",
   "pandastack:done",
 ]
-private = [
-  "pandastack-private:chain-scout",  # BSC token on-chain chip structure + cluster analysis
-]
+private = []  # extended by private overlay (see pandastack-private/contexts/personal-trader.overlay.toml)
 
 [memory]
 namespace    = "personal/trader"
@@ -37,6 +35,7 @@ firewall_from = ["work/yei/*", "work/sommet/*", "personal/developer", "personal/
 vault = "personal-vault"
 
 [notes]
-# private = true because chain-scout contains position/portfolio-sensitive logic that must not leak into other contexts.
+# Public base: research + framing skills only. On-chain chip-structure analysis (chain-scout)
+# is sensitive position-adjacent logic and is added via overlay in pandastack-private.
 # Firewall is wider than other personal contexts: trader memory must not bleed into developer or writer sessions either.
 # deep-research quality gate must be set before overnight runs to avoid accumulating stale research without distillation.

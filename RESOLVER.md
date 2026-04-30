@@ -38,8 +38,8 @@ This is the pattern used by gstack, gbrain, and alirezarezvani: monorepo + RESOL
 |---|---|---|
 | `pandastack:work-ship` | Close + Extract + Backflow on a work topic | close out this topic |
 | `pandastack:process-decisions` | Walk ticked items in Inbox/cron-reports/ | post-cron decision sweep |
-| `pandastack-private:misalignment` | Slack misalignment scan | weekly Slack scan |
-| `pandastack-private:yei-alert-triage` | Hypernative + on-chain risk triage | alert triage |
+
+Additional work-specific skills (alert triage, Slack scans) ship in the private overlay — see [Private supplement](#private-supplement) below.
 
 ### Dev workflow
 
@@ -94,21 +94,11 @@ This is the pattern used by gstack, gbrain, and alirezarezvani: monorepo + RESOL
 |---|---|
 | `pandastack:slowmist-agent-security` | Pre-adoption gate for external agents / MCP / repos / on-chain. NOT a code review skill. |
 
-### Trading (private only)
+---
 
-| Skill | Purpose |
-|---|---|
-| `pandastack-private:chain-scout` | BSC token chip + cluster + MM analysis |
+## Private supplement
 
-### Sommet (private)
-
-| Skill | Purpose |
-|---|---|
-| `pandastack-private:sommet:abyss-dry-run-init` | Abyss Phase 1 morning state |
-| `pandastack-private:sommet:abyss-dry-run-step` | Abyss Phase 1 single playbook step |
-| `pandastack-private:sommet:midnight-compact` | Midnight network compact validator |
-| `pandastack-private:sommet:midnight-dapp` | Midnight network dApp dev workflow |
-| `pandastack-private:sommet:wallet-smoke-test` | Wallet smoke test playbook |
+Some lifecycles (work alert triage, on-chain trading research, Sommet network ops) ship as a private overlay outside this index. If you have access to the private stack, its `RESOLVER.md` lists those skills with the same table format. The public index above stays self-contained: anything you can read here, you can install from this repo alone.
 
 ---
 
@@ -201,7 +191,7 @@ Each `.toml` file in `contexts/` binds a flow + persona + skill subset to a spec
 | `work-yei-finance` | Yei Finance | yes |
 | `work-sommet-abyss-po` | Sommet Abyss product owner | yes |
 
-Private contexts may reference `pandastack-private:*` skills. Public contexts may not.
+Private contexts (in the private overlay) may reference additional skills beyond this index. Public contexts only reference skills listed above.
 
 ---
 
