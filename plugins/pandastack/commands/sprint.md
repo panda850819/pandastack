@@ -19,4 +19,4 @@ Follow this sequence, pausing at taste gates for user approval:
      - **skip** → proceed to step 6, note the unresolved findings in the final report.
 6. If UI changed, run /ps-qa
 7. Run /ps-ship
-8. If a non-trivial pattern was discovered during this sprint, run /ps-compound
+8. If a non-trivial pattern was discovered during this sprint, run /pandastack:knowledge-ship or /pandastack:work-ship — Stage 2 Extract + Stage 3 Backflow will route the learning to docs/learnings/

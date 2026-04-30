@@ -1,37 +1,42 @@
-# pstack
+# pandastack (plugin internal)
 
-Agent-driven development with a learning loop.
+Personal AI operator OS for Claude Code, with Codex CLI compatibility. ~37 skills, 5 personas, 7 lifecycle flows, 8 context recipes.
 
-## Available Skills
+This file is the plugin-internal contract read by skill content. The user-facing README lives at the repo root.
 
-- `/ps-init` — one-time project setup
-- `/ps-brief` — structured requirement gathering
-- `/ps-review` — code review with learnings integration
-- `/ps-qa` — browser-based QA with structured assertions and parallel testing
-- `/ps-ship` — test + commit + PR
-- `/ps-compound` — extract learnings from solved problems
-- `/ps-learn` — search and manage learnings
-- `/ps-retro` — weekly retrospective
-- `/ps-freeze` — restrict edits to specific paths (safety)
-- `/ps-careful` — confirm before destructive actions (safety)
+## Skills (top-level surface)
 
-## Available Commands
+Full catalog in `RESOLVER.md` at the repo root. Dev-workflow primitives:
 
-- `/ps-brainstorm` — evaluate new idea: diverge → filter → define → research → cost → go/no-go
-- `/ps-sprint` — full flow: brief → build → review → qa → ship → compound
-- `/ps-design` — design-driven flow
-- `/ps-fix` — debug + fix + review + ship + compound
-- `/ps-quick` — small change: review + ship
+- `/pandastack:init` — one-time project setup
+- `/pandastack:grill` — adversarial requirement discovery (`--mode structured` for the formal-brief flow)
+- `/pandastack:review` — parallel 3-pass review + Codex cross-check + learnings
+- `/pandastack:qa` — browser-based QA with structured assertions
+- `/pandastack:ship` — test + commit + PR
+- `/pandastack:freeze` — restrict edits to specific paths (safety)
+- `/pandastack:careful` — confirm before destructive actions (safety)
+- `/pandastack:checkpoint` — save / resume working state snapshots
 
-## Session End
+Lifecycle skills (knowledge / writing / work / retro / decision / research) listed in `RESOLVER.md`.
 
-When a session ends, run the checks in `lib/stop-check.md` to catch loose ends (uncommitted changes, unreviewed commits, new TODOs, failing tests). Silent if all clear.
+## Composite commands
 
-## Agent Personas
+- `/brainstorm` — diverge → filter → define → research → cost → go/no-go
+- `/sprint` — full flow: brief → build → review → qa → ship + extract learning via knowledge-ship/work-ship
+- `/design` — design-driven: brief → design → build → review → qa → ship + extract
+- `/fix` — debug → fix → review → ship + extract
+- `/quick` — small change: review + ship
 
-Read from `agents/` directory. Use their Iron Laws and judgment, not generic prompts.
+## Agent personas
+
+Read from `agents/` directory. 5 personas: ceo / design / eng / ops / product. Use their Iron Laws and judgment, not generic prompts.
 
 ## Learnings
 
-Stored at the path configured in the project's CLAUDE.md under `## pstack > learnings`.
-Default: `docs/learnings/`. Format: see `lib/learning-format.md`.
+Stored at the path configured in the project's CLAUDE.md under `## pandastack > learnings`. Default: `docs/learnings/`. Format: see `lib/learning-format.md`.
+
+Compound logic (extract a debugging pattern / pitfall / architecture decision) is now part of `pandastack:knowledge-ship` and `pandastack:work-ship` Stage 3 Backflow — it routes to `docs/learnings/<category>/<slug>.md` automatically.
+
+## Goal mapping (new in v1.0.0-rc.3)
+
+`brief` and `grill --mode structured` run a Step 1.5 Goal Mapping pre-step that reads the user's goal hierarchy from memory and maps the current task to L1 (long horizon) / L2 (this season) / L3 (this week) layers. Downstream Clarify and Alternatives steps adapt to the dominant layer. See `lib/goal-mapping.md`.

@@ -45,14 +45,13 @@ Additional work-specific skills (alert triage, Slack scans) ship in the private 
 
 | Skill | Purpose | Trigger |
 |---|---|---|
-| `pandastack:grill` | Adversarial requirement discovery (default) + structured intake (`--mode structured`, replaces old `pandastack:brief`) | grill me, stress test, draft a brief |
+| `pandastack:grill` | Adversarial requirement discovery (default) + structured intake (`--mode structured`, replaces old `pandastack:brief`). Step 1.5 Goal Mapping reads user goal hierarchy from memory before clarifying. | grill me, stress test, draft a brief |
 | `pandastack:careful` | Confirmation gates for production / shared infra | working on prod |
 | `pandastack:checkpoint` | Save / resume working state snapshot | pausing work |
 | `pandastack:freeze` | Lock editing scope to specific paths | scope discipline |
 | `pandastack:qa` | Browser-based UI QA | test this UI |
 | `pandastack:review` | Parallel 3-pass review + Codex cross-check | review PR |
 | `pandastack:ship` | Test + commit + PR | code done, ship it |
-| `pandastack:learn` | Search / manage project learnings | what have we learned |
 
 ### Retro / session
 
@@ -160,7 +159,7 @@ All 5 are READ-ONLY personas. They recommend; user decides.
 
 ## Lifecycle flows (7)
 
-Read these when you need to know which skill chain handles a given lifecycle:
+Read these when you need to know which skill chain handles a given lifecycle. Each flow file lists Trigger / Phases / Exit / Anti-patterns / Skill choreography.
 
 | Flow | Trigger | File |
 |---|---|---|
@@ -172,7 +171,7 @@ Read these when you need to know which skill chain handles a given lifecycle:
 | retro | daily / weekly / monthly cadence | `flows/retro.md` |
 | decision | cron reports accumulated for triage | `flows/decision.md` |
 
-Flows are not skills — they're choreography spec. The skills they call ARE the work.
+Flows are not skills — they're choreography spec. The skills they call ARE the work. (`solo.md` and `full.md` from earlier versions removed in v1.0.0-rc.3 trim.)
 
 ---
 
@@ -199,7 +198,7 @@ Private contexts (in the private overlay) may reference additional skills beyond
 
 | Origin | Skills |
 |---|---|
-| Built in v0.16 | careful, checkpoint, compound (now absorbed), freeze, init, learn, qa, retro (now absorbed), review, ship, brief (now absorbed) |
+| Built in v0.16 | careful, checkpoint, freeze, init, qa, review, ship (compound / retro / brief / learn from v0.16 removed in v1.0.0-rc.3 — compound + brief absorbed into knowledge-ship/work-ship + grill --mode structured; retro absorbed into retro-week Phase 1; learn dropped, learning search is LLM-native) |
 | Added in v1 from `~/.claude/skills/` (local) | deep-research, feed-curator, grill, knowledge-ship, work-ship, write-ship, persona-pipeline, process-decisions, retro-week, retro-month, slowmist-agent-security, wiki-lint, tool-bird, tool-notion, tool-railway |
 | Added in v1 from `claude-skills` repo | agent-browser, content-write, done, think-like-naval, think-like-alan-chan, think-like-karpathy, tool-deepwiki, tool-pdf, tool-slack, tool-summarize, tool-web-extract |
 | New v1 agent | ops |

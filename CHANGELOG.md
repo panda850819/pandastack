@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Unreleased (v1.0.0-rc.3 candidate)
 
 ### Added
 
@@ -25,15 +25,51 @@
 - `skills/grill/SKILL.md` default (adversarial) mode: added "Pre-step:
   Goal Mapping (recommended)" pointer so adversarial drilling lands
   with awareness of what is actually being protected.
+- All public skill content went through a personal-info hygiene pass
+  (separate `chore(hygiene)` commit): hardcoded vault / CLI / memory /
+  skills paths replaced with `<placeholder>` tokens; team handles,
+  Slack workspace IDs, and Yei repo names replaced with generics;
+  README gained a "Path tokens" section documenting the convention
+  for external users to bind via private overlay.
+- `commands/sprint.md`, `commands/fix.md`, `commands/design.md`:
+  replaced `/ps-compound` references with `/pandastack:knowledge-ship`
+  or `/pandastack:work-ship` (compound logic was absorbed in v1.0.0
+  but the composite commands still pointed at the dead skill).
+- `plugins/pandastack/CLAUDE.md`: refreshed from stale `pstack`-era
+  content. Removed references to deleted skills, updated to v1
+  composite command names, mentioned new goal-mapping pre-step.
+- `README.md`: removed `/pandastack:learn` from Dev workflow primitives
+  table; removed `solo.md` / `full.md` mentions from Lifecycle Flows
+  (those files are deleted); fixed a stale `/pandastack:retro` ref to
+  `/pandastack:retro-week`.
+- `RESOLVER.md`: removed `pandastack:learn` from Dev workflow table;
+  noted `solo.md` + `full.md` removed; updated Provenance to reflect
+  the v1.0.0-rc.3 trim.
 
-### Why
+### Removed (over-scaffold trim)
 
-Brief and grill were jumping to "what / how" questions before
-establishing "why / for whom". Generic forcing questions (demand /
-status / wedge) got asked even when the user's goal context already
-implied the answers, and Alternatives sometimes proposed solutions
-that served no goal layer at all. Goal mapping makes the goal
-hierarchy explicit before solutioning.
+Audit pass identified zombie skills, orphan lib modules, and
+old-version flow files. Removed:
+
+| Removed | Why |
+|---|---|
+| `skills/compound/` | Logic absorbed into knowledge-ship/work-ship Stage 3 in v1.0.0; SKILL.md remained as a zombie |
+| `skills/retro/` | Logic absorbed into retro-week Phase 1 in v1.0.0; SKILL.md remained as a zombie |
+| `skills/learn/` | 0 dispatches anywhere; "search learnings" function is LLM-native (just grep + read) |
+| `lib/stop-check.md` | Orphan — 0 references; advisory checks rebuildable from prompt if needed |
+| `flows/full.md` | Earlier-version reference per README; superseded by `flows/dev.md` |
+| `flows/solo.md` | Earlier-version reference per README; superseded by `flows/dev.md` |
+
+### Why this matters
+
+`docs/sessions/2026-05-01` audit found ~12-15 dead-weight files in the
+public stack: 3 zombie skills (CHANGELOG declared removed but files
+still shipping), 1 orphan lib module, 2 old-version flow files, plus
+several stale dispatch references in composite commands. Trimming
+~20-30% of the dead surface area before alpha testers see the stack.
+The remaining substrate (pdctx hooks, memory firewall, using-pandastack
+contract, careful gate, etc.) was audited and judged justified — each
+solves something the model cannot do reliably from prompting alone.
 
 ## v1.0.0-rc.2 — 2026-04-30
 

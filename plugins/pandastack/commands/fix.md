@@ -44,6 +44,6 @@ Use the eng agent (read agents/eng.md). Do NOT shotgun-debug.
 1. Run /ps-review
 2. Run /ps-ship
 
-## Step 6: Compound
+## Step 6: Extract learning
 
-If the debug took > 10 minutes or the solution was non-obvious, run /ps-compound to extract a learning.
+If the debug took > 10 minutes or the solution was non-obvious, run /pandastack:knowledge-ship (or /pandastack:work-ship if work-context) — Stage 2 Extract surfaces what was learned and Stage 3 Backflow writes it to docs/learnings/.

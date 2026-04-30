@@ -11,4 +11,4 @@ Follow this sequence:
 4. Run /ps-review
 5. Run /ps-qa to verify the UI in a real browser
 6. Run /ps-ship
-7. If design patterns worth remembering were discovered, run /ps-compound
+7. If design patterns worth remembering were discovered, run /pandastack:knowledge-ship — Stage 2 Extract + Stage 3 Backflow will write the pattern to docs/learnings/.

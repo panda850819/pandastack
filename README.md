@@ -57,7 +57,6 @@ All skills are namespaced under `pandastack:*`. There are ~37 of them in v1, gro
 | `/pandastack:review` | Parallel 3-pass review + Codex cross-check + learnings |
 | `/pandastack:qa` | Browser-based QA with structured assertions and parallel testing |
 | `/pandastack:ship` | Test + commit + PR (+ tag/release if configured) |
-| `/pandastack:learn` | Search and manage learnings |
 | `/pandastack:careful` | Confirmation gates for destructive commands on prod/shared code |
 | `/pandastack:freeze` | Lock editing scope to specific paths for the session |
 | `/pandastack:checkpoint` | Save or resume working state snapshots |
@@ -115,7 +114,7 @@ Grep for `for.*await.*find` pattern during review.
 
 - **Confidence decay**: observed/inferred learnings lose 1 point per 30 days. User-stated preferences never decay.
 - **Dedup**: before writing, check for existing learnings with the same key. Update instead of duplicate.
-- **Prune**: `/pandastack:retro` flags learnings with confidence < 3 for user review.
+- **Prune**: `/pandastack:retro-week` flags learnings with confidence < 3 for user review.
 - **Storage**: defaults to `docs/learnings/` in your repo. Configurable to any path (global dir, Obsidian vault, etc.).
 
 ## Lifecycle Flows
@@ -129,8 +128,6 @@ Grep for `for.*await.*find` pattern during review.
 - `research.md` — unfamiliar concept → fetch → distill lifecycle
 - `retro.md` — daily / weekly / monthly cadence
 - `decision.md` — cron-driven decision triage
-
-Plus reference docs `solo.md` (daily solo development) and `full.md` (complete sprint with all checkpoints) from earlier versions.
 
 Each flow lists Trigger / Phases / Exit / Anti-patterns / Skill choreography. They're not skills — they're spec for which skill chain handles a given lifecycle.
 
