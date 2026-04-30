@@ -1,0 +1,39 @@
+[context]
+name        = "work:yei:finance"
+description = "Yei Finance financial reporting, treasury tracking, budget review"
+domain      = "work:yei"
+private     = true
+
+[persona]
+agent         = "pandastack:ceo"
+voice_override = ""
+
+[flow]
+main = "work"
+side = ["retro"]
+
+[skills]
+public = [
+  "pandastack:tool-notion",   # finance DB, budget pages, treasury records
+  "pandastack:tool-slack",    # #finance channel, treasury alerts
+  "pandastack:work-ship",     # Close → Extract → Backflow for financial decisions
+  "pandastack:grill",         # adversarial mode to pressure-test financial assumptions
+  "pandastack:tool-pdf",      # invoices, financial statements, audit docs
+  "pandastack:done",
+  "pandastack:retro-week",
+  "pandastack:retro-month",
+]
+private = []
+
+[memory]
+namespace    = "work/yei/finance"
+firewall_from = ["personal/*", "work/sommet/*", "work/yei/ops", "work/yei/hr"]
+
+[sources]
+vault            = "work-vault"
+notion_workspace = "yei-finance"
+
+[notes]
+# Escalate without acting on any treasury/contract decision above $1k or involving protocol governance.
+# ceo-lead persona reflects CFO-adjacent decision framing; Bob (CEO) is the final financial authority.
+# Finance memory is isolated from ops/hr even within work:yei — budget figures must not leak across sub-contexts.

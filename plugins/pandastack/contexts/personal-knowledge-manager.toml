@@ -1,0 +1,43 @@
+[context]
+name        = "personal:knowledge-manager"
+description = "Vault hygiene, feed intake, note distillation, and knowledge publishing"
+domain      = "personal"
+private     = false
+
+[persona]
+agent         = ""   # no persona
+voice_override = ""
+
+[flow]
+main = "knowledge"
+side = ["research", "retro"]
+
+[skills]
+public = [
+  "pandastack:deep-research",    # planner + researcher with quality gates
+  "pandastack:feed-curator",     # feed intake and triage
+  "pandastack:knowledge-ship",   # Close → Extract → Backflow for knowledge/ notes
+  "pandastack:wiki-lint",        # stale / orphan / superseded detection
+  "pandastack:tool-web-extract", # pull clean markdown from URLs
+  "pandastack:tool-summarize",   # summarize long-form content
+  "pandastack:tool-pdf",         # read PDFs, specs, papers
+  "pandastack:tool-deepwiki",    # GitHub repo docs for technical deep-dives
+  "pandastack:tool-bird",        # X/Twitter read for signal capture
+  "pandastack:grill",            # adversarial mode to scope research questions
+  "pandastack:retro-week",
+  "pandastack:retro-month",
+  "pandastack:done",
+]
+private = []
+
+[memory]
+namespace    = "personal/knowledge"
+firewall_from = ["work/yei/*", "work/sommet/*"]
+
+[sources]
+vault = "personal-vault"
+
+[notes]
+# Brain-first lookup rule applies: qmd query before fetching any URL or writing new notes.
+# Absorb-first: if 60%+ overlap with existing note, update existing rather than creating new.
+# wiki-lint is monthly cadence; knowledge-ship runs per note at distill time.

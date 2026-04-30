@@ -1,0 +1,42 @@
+[context]
+name        = "personal:trader"
+description = "Crypto/stock research, on-chain analysis, systematic trading signal work"
+domain      = "personal"
+private     = true   # chain-scout is sensitive; this context must stay in pandastack-private
+
+[persona]
+agent         = ""   # no persona
+voice_override = ""
+
+[flow]
+main = "research"
+side = ["retro"]
+
+[skills]
+public = [
+  "pandastack:think-like-naval",  # first-principles framing on market structure
+  "pandastack:deep-research",     # macro / protocol research
+  "pandastack:tool-web-extract",  # pull clean markdown from research URLs
+  "pandastack:tool-summarize",    # summarize research PDFs / threads
+  "pandastack:tool-bird",         # X/Twitter read for alpha signal
+  "pandastack:tool-pdf",          # whitepapers, reports
+  "pandastack:grill",             # adversarial scope lock before research dive
+  "pandastack:retro-week",
+  "pandastack:retro-month",
+  "pandastack:done",
+]
+private = [
+  "pandastack-private:chain-scout",  # BSC token on-chain chip structure + cluster analysis
+]
+
+[memory]
+namespace    = "personal/trader"
+firewall_from = ["work/yei/*", "work/sommet/*", "personal/developer", "personal/writer"]
+
+[sources]
+vault = "personal-vault"
+
+[notes]
+# private = true because chain-scout contains position/portfolio-sensitive logic that must not leak into other contexts.
+# Firewall is wider than other personal contexts: trader memory must not bleed into developer or writer sessions either.
+# deep-research quality gate must be set before overnight runs to avoid accumulating stale research without distillation.

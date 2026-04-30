@@ -1,0 +1,34 @@
+{
+  "checklist": [
+    {"question": "Was a session MD file created at the correct path (docs/sessions/YYYY-MM-DD-<slug>.md)?", "verifiable_from": "artifact"},
+    {"question": "Does the session MD contain frontmatter with date, branch, project, and tags fields?", "verifiable_from": "artifact"},
+    {"question": "Does 'What happened' use narrative prose (not bullet lists)?", "verifiable_from": "artifact"},
+    {"question": "Does 'Current state' describe specific progress (not vague descriptions like 'working on X')?", "verifiable_from": "artifact"},
+    {"question": "Was `qmd update` executed after saving the session doc?", "verifiable_from": "session_doc"},
+    {"question": "If skills were used this session, were non-stable skills graded and appended to learnings.md?", "verifiable_from": "artifact"},
+    {"question": "If memory was written, was it routed to a topic file (not dumped into MEMORY.md body)?", "verifiable_from": "artifact"},
+    {"question": "Did the session complete in under 3 minutes (no excessive report writing)?", "verifiable_from": "session_doc"},
+    {"question": "Does the session summary preserve enough context (files changed, decisions made, open items) that a new session can pick up where this one left off?", "verifiable_from": "session_doc", "dimension": "interface_contract", "downstream": "new_session"}
+  ],
+  "stats": {
+    "count": 5,
+    "burn_in_remaining": 0,
+    "last_used": "2026-03-27",
+    "scores": [
+      {"date": "2026-03-27", "scores": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], "pass_rate": 1.0, "context": "autoresearch-baseline", "scenario": "25-turn feat/oauth coding session with skills", "type": "typical"},
+      {"date": "2026-03-27", "scores": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], "pass_rate": 1.0, "context": "autoresearch-baseline", "scenario": "Research/conversation session, no code, product strategy", "type": "typical"},
+      {"date": "2026-03-27", "scores": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], "pass_rate": 1.0, "context": "autoresearch-baseline", "scenario": "Coding session using /debug and /gh-commit skills", "type": "typical"},
+      {"date": "2026-03-27", "scores": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], "pass_rate": 1.0, "context": "autoresearch-baseline", "scenario": "5-turn short unfocused session (minimal doc)", "type": "edge"},
+      {"date": "2026-03-27", "scores": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], "pass_rate": 1.0, "context": "autoresearch-baseline", "scenario": "No git repo, no skills, pure conversation", "type": "adversarial"}
+    ],
+    "avg_pass_rate": 1.0,
+    "pre_improvement_avg": 1.0,
+    "improvements_attempted": 1,
+    "last_improvement": "2026-03-26"
+  },
+  "meta": {
+    "generated_from": "SKILL.md + ~/.claude/references/skill-learnings.md",
+    "generated_at": "2026-03-16",
+    "checklist_version": 1
+  }
+}

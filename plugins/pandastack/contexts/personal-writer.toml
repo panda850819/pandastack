@@ -1,0 +1,41 @@
+[context]
+name        = "personal:writer"
+description = "Blog posts, threads, newsletters — capture to draft to publish"
+domain      = "personal"
+private     = false
+
+[persona]
+agent         = ""   # no persona; voice is Panda's own
+voice_override = ""
+
+[flow]
+main = "writing"
+side = ["retro"]
+
+[skills]
+public = [
+  "pandastack:content-write",   # structure coach + slop detection (3-layer)
+  "pandastack:write-ship",      # Close → Extract → Backflow for published pieces
+  "pandastack:grill",           # adversarial mode to stress-test thesis before committing
+  "pandastack:tool-web-extract", # pull reference URLs into clean markdown
+  "pandastack:tool-bird",       # read/draft X threads
+  "pandastack:tool-summarize",  # summarize source material
+  "pandastack:think-like-naval", # framing / mental models check
+  "pandastack:think-like-alan-chan", # product / builder narrative lens
+  "pandastack:retro-week",
+  "pandastack:retro-month",
+  "pandastack:done",
+]
+private = []
+
+[memory]
+namespace    = "personal/writer"
+firewall_from = ["work/yei/*", "work/sommet/*"]
+
+[sources]
+vault = "personal-vault"
+
+[notes]
+# grill in adversarial (default) mode is the thesis stress-tester; run before content-write structure stage to catch weak arguments early.
+# write-ship handles the full publish loop including mv to Blog/Published/, reverse-citations, and X-thread draft routing to Inbox/x-drafts/.
+# No persona is intentional; content-write's slop detection is the quality gate, not a persona filter.

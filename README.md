@@ -1,18 +1,24 @@
 # pandastack
 
-Agent-driven development with a learning loop. 4 agent personas, 11 skills, 5 composite commands. Zero runtime dependencies.
+Personal AI operator OS for Claude Code. 5 agent personas, ~37 skills, 7 lifecycle flows, 8 context recipes. Zero runtime dependencies.
 
 ## What It Does
 
-pandastack turns Claude Code into a small team that gets smarter over time:
+pandastack v1 is a stack of skills and lifecycle flows that turn Claude Code into a small team covering the seven lifecycles where personal AI compounds:
 
-```
-brief → build → review → ship → compound
-                  ↑                   ↓
-                  └── learnings ──────┘
-```
+| Lifecycle | What it does |
+|---|---|
+| dev | brief → build → review → ship → extract |
+| knowledge | capture → distill → verify → ship → lint |
+| writing | capture → structure → draft → ship → distribute |
+| work | triage → context → execute → ship → push (vault-only) |
+| research | scope → fetch → dive → distill → ship |
+| retro | daily → weekly → monthly cadence with auto-scan |
+| decision | cron-driven decision triage |
 
-Every review searches past learnings. Every review can write new ones. The system compounds.
+Skills compose into flows. Flows bind to identity via context recipes. The system compounds across sessions through learnings, decisions, and memory.
+
+For the disambiguation index of every skill / agent / flow / context, see [RESOLVER.md](RESOLVER.md).
 
 ## Install
 
@@ -36,18 +42,18 @@ Then in your project, run `/pandastack:init` once.
 
 ## Skills
 
-All skills are namespaced under `pandastack:*`.
+All skills are namespaced under `pandastack:*`. There are ~37 of them in v1, grouped by lifecycle. See [RESOLVER.md](RESOLVER.md) for the full catalog and disambiguation guide. The dev-workflow primitives are listed below; all other skills (knowledge / writing / work / research / retro / tool wrappers / persona thinking) live in RESOLVER.
+
+### Dev workflow primitives
 
 | Skill | What It Does |
 |-------|-------------|
 | `/pandastack:init` | One-time project setup |
-| `/pandastack:brief` | Structured requirement gathering |
-| `/pandastack:review` | Code review + read/write learnings |
+| `/pandastack:grill` | Adversarial requirement discovery (`--mode structured` for the old brief flow) |
+| `/pandastack:review` | Parallel 3-pass review + Codex cross-check + learnings |
 | `/pandastack:qa` | Browser-based QA with structured assertions and parallel testing |
 | `/pandastack:ship` | Test + commit + PR (+ tag/release if configured) |
-| `/pandastack:compound` | Extract learnings from solved problems |
 | `/pandastack:learn` | Search and manage learnings |
-| `/pandastack:retro` | Weekly retrospective + prune stale learnings |
 | `/pandastack:careful` | Confirmation gates for destructive commands on prod/shared code |
 | `/pandastack:freeze` | Lock editing scope to specific paths for the session |
 | `/pandastack:checkpoint` | Save or resume working state snapshots |
@@ -64,14 +70,15 @@ All skills are namespaced under `pandastack:*`.
 
 ## Agents
 
-4 replaceable agent personas in `plugins/pandastack/agents/`:
+5 replaceable agent personas in `plugins/pandastack/agents/`:
 
 | Agent | Role | When |
 |-------|------|------|
-| `eng.md` | Staff engineer — build, review, debug, ship | Every skill |
-| `product.md` | VP Product — requirements, scope, metrics | `/pandastack:brief` |
-| `design.md` | Senior designer — UI/UX, accessibility, anti-slop | UI work |
-| `ceo.md` | Strategic advisor — scope decisions, kill/pivot (read-only) | Large scope |
+| `eng.md` | Staff engineer — build, review, debug, ship | dev / knowledge / work flows |
+| `product.md` | VP Product — requirements, scope, metrics | grill --mode structured, sprint planning |
+| `design.md` | Senior designer — UI/UX, accessibility, anti-slop | UI work, design reviews |
+| `ceo.md` | Strategic advisor — scope decisions, kill/pivot (read-only) | Large scope, finance lifecycle |
+| `ops.md` | COO — systems-without-you, process when painful (new in v1) | work / decision flows, team coordination |
 
 Don't like the default eng persona? Replace `agents/eng.md` with your own. All skills that reference it pick up the change.
 
@@ -107,12 +114,36 @@ Grep for `for.*await.*find` pattern during review.
 - **Prune**: `/pandastack:retro` flags learnings with confidence < 3 for user review.
 - **Storage**: defaults to `docs/learnings/` in your repo. Configurable to any path (global dir, Obsidian vault, etc.).
 
-## Flows
+## Lifecycle Flows
 
-Reference docs in `plugins/pandastack/flows/` showing how to combine skills:
+7 lifecycle flow specs in `plugins/pandastack/flows/`:
 
-- `solo.md` — daily solo development
-- `full.md` — complete sprint with all checkpoints
+- `dev.md` — feature / debug / refactor lifecycle
+- `knowledge.md` — note capture / distill / verify lifecycle
+- `writing.md` — draft / structure / publish lifecycle
+- `work.md` — alert / ticket / Slack ask → triage → ship lifecycle (vault-only writes)
+- `research.md` — unfamiliar concept → fetch → distill lifecycle
+- `retro.md` — daily / weekly / monthly cadence
+- `decision.md` — cron-driven decision triage
+
+Plus reference docs `solo.md` (daily solo development) and `full.md` (complete sprint with all checkpoints) from earlier versions.
+
+Each flow lists Trigger / Phases / Exit / Anti-patterns / Skill choreography. They're not skills — they're spec for which skill chain handles a given lifecycle.
+
+## Context Recipes
+
+8 context recipe TOML files in `plugins/pandastack/contexts/`. These bind flow + persona + skill subset to a specific identity. They're the v0 schema for the pdctx loader (separate project, future).
+
+| Context | Identity |
+|---|---|
+| `personal-developer` | Personal dev work |
+| `personal-writer` | Personal writing |
+| `personal-knowledge-manager` | Personal knowledge work |
+| `personal-trader` | Personal trading (private) |
+| `work-yei-ops` | Yei Ops Manager (private) |
+| `work-yei-hr` | Yei HR (private) |
+| `work-yei-finance` | Yei Finance (private) |
+| `work-sommet-abyss-po` | Sommet Abyss product owner (private) |
 
 ## Customize
 
@@ -143,13 +174,16 @@ pandastack/
 │   └── pandastack/
 │       ├── .claude-plugin/
 │       │   └── plugin.json       # plugin manifest
-│       ├── agents/               # 4 agent personas
-│       ├── commands/             # 5 composite commands
-│       ├── skills/               # 11 skills (one dir per skill, each with SKILL.md)
-│       ├── flows/                # reference flow docs
+│       ├── agents/               # 5 agent personas (ceo, design, eng, ops, product)
+│       ├── commands/             # composite commands
+│       ├── skills/               # ~37 skills (one dir per skill, each with SKILL.md)
+│       ├── flows/                # 7 lifecycle flow specs
+│       ├── contexts/             # 8 context recipes (.toml) — read by pdctx loader
 │       ├── lib/                  # shared snippets (confidence decay, gate contracts, etc.)
 │       ├── CLAUDE.md
 │       └── PHILOSOPHY.md
+├── CHANGELOG.md
+├── RESOLVER.md                   # disambiguation index for the full surface area
 └── README.md
 ```
 
@@ -168,3 +202,5 @@ See [PHILOSOPHY.md](plugins/pandastack/PHILOSOPHY.md).
 ## History
 
 Renamed from `pstack` on 2026-04-29 as part of the pdctx framework split. The old `setup` script (gstack-style symlink installer with `ps-*` prefix) is sunset; Claude Code's native plugin marketplace replaces it.
+
+v1.0.0-rc.1 (2026-04-29): scope expansion from dev-only to 7 lifecycles + 8 context recipes. See [CHANGELOG.md](CHANGELOG.md).

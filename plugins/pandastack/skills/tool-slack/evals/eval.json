@@ -1,0 +1,73 @@
+{
+  "checklist": [
+    {
+      "question": "Uses `slack` CLI commands (search/send/channel/dm/reply) \u2014 not browser automation or API calls?",
+      "verifiable_from": "behavior"
+    },
+    {
+      "question": "Channel references use `#name` or `C0123ID` format correctly?",
+      "verifiable_from": "behavior"
+    },
+    {
+      "question": "User references use `@username` or `U0123ID` format correctly?",
+      "verifiable_from": "behavior"
+    },
+    {
+      "question": "Multi-line messages use heredoc syntax `$(cat <<'EOF'...EOF)`?",
+      "verifiable_from": "behavior"
+    },
+    {
+      "question": "Thread replies use either `slack reply <url>` or `slack send -t <thread_ts>` correctly?",
+      "verifiable_from": "behavior"
+    },
+    {
+      "question": "DM to self uses `slack send \"@panda\"` \u2014 not `@slackbot` or `slack dm send`?",
+      "verifiable_from": "behavior"
+    },
+    {
+      "question": "Search uses appropriate flags (-c for channel, -n for limit, from: for user filter)?",
+      "verifiable_from": "behavior"
+    },
+    {
+      "question": "Installation troubleshooting references pipx and correct source path `~/site/work/cli/slack-cli`?",
+      "verifiable_from": "behavior"
+    },
+    {
+      "question": "Channel history/info uses `slack channel history` or `slack channel info` with correct args?",
+      "verifiable_from": "behavior"
+    },
+    {
+      "question": "Output is summarized/formatted for user \u2014 not raw CLI dump?",
+      "verifiable_from": "behavior"
+    }
+  ],
+  "stats": {
+    "count": 5,
+    "burn_in_remaining": 0,
+    "last_used": "2026-03-27",
+    "scores": [
+      {
+        "date": "2026-03-27",
+        "scores": [
+          1.0,
+          1.0,
+          1.0,
+          0.9,
+          0.9
+        ],
+        "pass_rate": 0.96,
+        "context": "autoresearch-baseline"
+      }
+    ],
+    "avg_pass_rate": 0.96,
+    "pre_improvement_avg": 0.96,
+    "improvements_attempted": 2,
+    "last_improvement": "2026-03-28"
+  },
+  "meta": {
+    "execution_mode": "mental",
+    "generated_from": "SKILL.md",
+    "generated_at": "2026-03-24",
+    "checklist_version": 2
+  }
+}

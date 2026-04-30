@@ -1,7 +1,7 @@
 {
   "name": "pandastack",
-  "description": "Agent-driven development with a learning loop. 4 agent personas, 11 skills, 5 composite commands. brief → build → review → ship → compound.",
-  "version": "0.16.0",
+  "description": "Personal AI operator OS for Claude Code. 5 agent personas, ~37 skills, 7 lifecycle flows, 8 context recipes. Covers dev / knowledge / writing / work / research / retro / decision lifecycles.",
+  "version": "1.0.0-rc.1",
   "author": {
     "name": "Panda Zeng"
   },
@@ -11,6 +11,8 @@
     "skills",
     "agents",
     "workflows",
+    "lifecycle",
+    "personal-os",
     "review",
     "ship",
     "learning-loop"
