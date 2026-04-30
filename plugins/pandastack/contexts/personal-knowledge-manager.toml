@@ -41,6 +41,12 @@ vault = "personal-vault"
 allow  = ["knowledge", "blog", "lennys", "sessions"]
 forbid = ["work-vault"]
 
+[mcp]
+deny = [
+  "mcp__claude_ai_Linear__*",     # Sommet ticketing — work-sommet only
+  "mcp__claude_ai_Atlassian__*",  # Yei ticketing (Jira) — work-yei only
+]
+
 [notes]
 # Brain-first lookup rule applies: qmd query before fetching any URL or writing new notes.
 # Absorb-first: if 60%+ overlap with existing note, update existing rather than creating new.

@@ -38,6 +38,12 @@ vault = "personal-vault"
 allow  = ["knowledge", "blog", "lennys", "sessions"]
 forbid = ["work-vault"]
 
+[mcp]
+deny = [
+  "mcp__claude_ai_Linear__*",     # Sommet ticketing — work-sommet only
+  "mcp__claude_ai_Atlassian__*",  # Yei ticketing (Jira) — work-yei only
+]
+
 [notes]
 # Public base: research + framing skills only. On-chain chip-structure analysis (chain-scout)
 # is sensitive position-adjacent logic and is added via overlay in pandastack-private.

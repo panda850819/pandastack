@@ -42,6 +42,14 @@ vault = "personal-vault"
 allow  = ["knowledge", "blog", "lennys", "sessions"]
 forbid = ["work-vault"]
 
+[mcp]
+# Layer 5 firewall: tool-name glob patterns blocked at PreToolUse hook time.
+# v0 = denylist only (allow/classifier/JIT deferred; see grill 2026-04-30).
+deny = [
+  "mcp__claude_ai_Linear__*",     # Sommet ticketing — work-sommet only
+  "mcp__claude_ai_Atlassian__*",  # Yei ticketing (Jira) — work-yei only
+]
+
 [notes]
 # grill in adversarial (default) mode is the thesis stress-tester; run before content-write structure stage to catch weak arguments early.
 # write-ship handles the full publish loop including mv to Blog/Published/, reverse-citations, and X-thread draft routing to Inbox/x-drafts/.

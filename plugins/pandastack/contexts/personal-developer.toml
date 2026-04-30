@@ -45,6 +45,12 @@ vault = "personal-vault"
 allow  = ["knowledge", "blog", "lennys", "sessions"]
 forbid = ["work-vault"]
 
+[mcp]
+deny = [
+  "mcp__claude_ai_Linear__*",     # Sommet ticketing — work-sommet only
+  "mcp__claude_ai_Atlassian__*",  # Yei ticketing (Jira) — work-yei only
+]
+
 [notes]
 # grill --mode structured replaces brief (A4 consolidation); use /grill --mode structured to lock requirements before plan.
 # pandastack:review is the default review; security-review --mode agent handles security-focused passes separately.
