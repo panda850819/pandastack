@@ -58,6 +58,18 @@ For each task:
    self-contained: include task goal, relevant file paths, any prior task output it
    depends on, and "report back: what you did, what files changed, any errors."
 
+   **Model selection — main agent picks per task, do not inherit silently.** Pass
+   `model:` explicitly on every Agent call. Default heuristic:
+
+   | Task shape | Model | Why |
+   |---|---|---|
+   | Read-only / grep / file listing / orientation | haiku | No judgment, fast + cheap |
+   | File edits, refactors, mechanical writes, structured execution | sonnet | Default — covers most plan steps |
+   | Architectural decisions, deep cross-file reasoning, ambiguous trade-offs | opus | Reserve for the 1-2 tasks that actually need it |
+
+   When in doubt, sonnet. Don't pay opus for mechanical work; don't starve
+   architecture with haiku.
+
 2. **Verification gate** before continuing to the next task:
    - Low risk: auto-verify (check file exists, command exit code, expected output).
      State result in one line. Continue.

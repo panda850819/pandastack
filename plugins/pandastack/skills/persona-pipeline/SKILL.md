@@ -36,7 +36,16 @@ Override the order (or drop stages) if the user names a different lineup. The ce
 
 For each stage:
 
-1. Use `Agent` tool with `subagent_type` = the persona name.
+1. Use `Agent` tool with `subagent_type` = the persona name. **Pass `model:` explicitly — main agent picks per stage, do not inherit silently.** Default per persona:
+
+   | Stage | Model | Why |
+   |---|---|---|
+   | product-lead | sonnet | Pattern-match user value + growth logic against known frames |
+   | design-lead | sonnet | UX critique against checklists, not novel architecture |
+   | eng-lead | sonnet | Feasibility + complexity budget, mostly known territory |
+   | ceo | opus | Devil's advocate seat — strongest argument-against requires deep reasoning |
+
+   Override upward only if the proposal is genuinely cross-functional novelty (e.g. a new product surface, not a feature tweak).
 2. Pass the original proposal + every previous stage's response. Each persona must see the full chain, not just the prompt.
 3. Ask the persona to do **two things**: (a) evaluate from its lens, (b) explicitly flag where it disagrees with prior stages.
 4. After stage completes, surface a one-line summary to the user before launching next stage. User can abort if a stage flags a kill.

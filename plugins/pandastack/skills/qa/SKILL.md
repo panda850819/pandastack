@@ -42,7 +42,7 @@ If unclear what to test, ask the user: "What flows should I test?"
 
 When the merged test list has 3+ groups, fan out to parallel sub-agents:
 
-1. Assign each test group to a separate Agent (sub-agent).
+1. Assign each test group to a separate Agent (sub-agent). **Pass `model:` explicitly — main agent picks per group, do not inherit silently.** Default: `sonnet` for browser execution + assertion checks. Use `haiku` only when the group is a smoke check (≤3 trivial assertions). Reserve `opus` for groups that combine accessibility + visual regression + a flaky reproduce — rare.
 2. Each sub-agent gets its own browser session via `--session <name>` for isolation.
 3. Each sub-agent prompt must include:
    - The exact numbered test list to run (no exploration beyond assigned tests)
