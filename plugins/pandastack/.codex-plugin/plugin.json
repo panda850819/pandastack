@@ -1,0 +1,40 @@
+{
+  "name": "pandastack",
+  "version": "1.0.0-rc.1",
+  "description": "Personal AI operator OS: dev / knowledge / writing / work / research / retro / decision lifecycles with a learning loop.",
+  "author": {
+    "name": "Panda Zeng",
+    "url": "https://github.com/panda850819"
+  },
+  "homepage": "https://github.com/panda850819/pandastack",
+  "repository": "https://github.com/panda850819/pandastack",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "agents",
+    "workflows",
+    "lifecycle",
+    "personal-os",
+    "review",
+    "ship",
+    "learning-loop"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Pandastack",
+    "shortDescription": "Personal AI operator OS for lifecycle workflows: dev, knowledge, writing, work, research, retro, decision.",
+    "longDescription": "Use Pandastack to guide work through 7 lifecycle flows with skills for careful gates, review, ship, knowledge extraction, parallel research, retros, and a self-evolving learning loop.",
+    "developerName": "Panda Zeng",
+    "category": "Personal OS",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "I want to start a new feature.",
+      "Let's review and ship this branch.",
+      "Help me close out this knowledge note."
+    ]
+  }
+}
