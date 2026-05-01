@@ -1,3 +1,8 @@
+---
+name: feed-curator
+description: Triage unprocessed feed items from feed-server, deep-read high-signal content, write knowledge notes to the Obsidian vault. Triggers on "/feed-curator", "curate feeds", "process feeds", "triage feeds", scheduled curation runs (every 4 hours or on-demand).
+---
+
 # Feed Curator
 
 Triage unprocessed feed items from feed-server, deep-read high-signal content, write knowledge notes to the Obsidian vault.
