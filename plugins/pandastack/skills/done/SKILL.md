@@ -2,7 +2,7 @@
 name: done
 description: Save session context, summarize work, persist memory at session end. Triggers on "/done", "session done", "wrap up".
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
-version: "3.0.0"
+version: "3.1.0"
 user-invocable: true
 ---
 
@@ -101,7 +101,15 @@ If you DID save memory entries, also note in the daily note's session block: `Me
 
 ## Step 3: Value Scan (skip if session < 5 substantive turns or purely mechanical)
 
-This is the cross-session pattern surfacing layer. **Run all four sub-checks in parallel**, output ONE consolidated block at the end. If nothing surfaces from any check, skip the output entirely — silence is fine.
+This is the cross-session pattern surfacing layer. **Cheap-first ladder** — sub-checks run in stages; expensive checks gate on cheap signals. Output ONE consolidated block at the end. If nothing surfaces, skip the output entirely — silence is fine.
+
+**Ladder (do not parallel-fan-out by default):**
+
+1. **Always**: 3a (free, transcript scan — no tool calls)
+2. **If 3a surfaces ≥1 item OR session > 10 substantive turns**: run 3b + 3c + 3d in parallel
+3. **Else**: skip 3b/3c/3d, exit silent
+
+Rationale: 3a is the cheap signal. The qmd vsearch + feedback-log read in 3b–3d only fire when 3a surfaces something worth following up on, or when the session is large enough to warrant the spend. Aligns with `~/.agents/AGENTS.md` Behavioral Default "Cheap-first internal lookup".
 
 ### 3a. Surprises & validated assumptions
 
