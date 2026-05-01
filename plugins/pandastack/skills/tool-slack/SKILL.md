@@ -1,6 +1,10 @@
 ---
 name: tool-slack
-description: Slack search/send/read via slack-cli. Trigger on Slack task or slack.com URL.
+description: |
+  Slack search/send/read via slack CLI (Keychain token).
+
+  Trigger on: slack.com URL, 'slack channel', 'DM <name>'.
+  Skip when: external broadcast (use email).
 allowed-tools: Bash(slack:*), Bash(rtk:*), Bash(security:*), Bash(python3:*)
 ---
 

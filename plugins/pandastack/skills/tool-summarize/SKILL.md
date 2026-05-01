@@ -1,8 +1,12 @@
 ---
 name: tool-summarize
-description: Summarize/transcribe URLs, YouTube, podcasts, files. Trigger on "summarize", "transcribe", "TL;DR".
+description: |
+  Extract full text + optional AI summary from URL/YouTube/podcast/PDF via summarize CLI. Always preserves original (vault discipline: never summary-only).
+
+  Trigger on: 'summarize', 'transcribe', 'TL;DR', YouTube/podcast URL, PDF read.
+  Skip when: text-only article (use defuddle for cleaner markdown extraction).
 homepage: https://summarize.sh
-version: "1.0.0"
+version: "2.0.0"
 metadata:
   {
     "openclaw":
@@ -24,36 +28,94 @@ metadata:
 user-invocable: true
 ---
 
-# Summarize
+# Summarize (extract-first, summary-optional)
 
-Fast CLI to summarize URLs, local files, and YouTube links.
+Fetch source content via `summarize` CLI. **Original full text is always extracted and preserved.** AI summary is an optional convenience layer, not a replacement.
 
-## When to use (trigger phrases)
+## Vault Discipline (READ THIS FIRST)
 
-Use this skill immediately when the user asks any of:
+Per vault `AGENTS.md` § Source preservation rule: **never write a vault file that has only a summary**. Original always present, summary clearly marked as not-endorsed.
 
-- “use summarize.sh”
-- “what’s this link/video about?”
-- “summarize this URL/article”
-- “transcribe this YouTube/video” (best-effort transcript extraction; no `yt-dlp` needed)
+This skill enforces that contract:
+- Default behavior: `--extract-only` to get full text. Summary is opt-in.
+- When summary is added, it lives in a separate `## AI Summary` section under the original.
+- If full text extraction fails, **do not write to vault** — return error and stop. Summary-only files pollute the brain layer (you lose ability to re-distill or verify later).
 
-## Quick start
+## Two modes
 
-```bash
-summarize "https://example.com" --model google/gemini-3-flash-preview
-summarize "/path/to/file.pdf" --model google/gemini-3-flash-preview
-summarize "https://youtu.be/dQw4w9WgXcQ" --youtube auto
-```
+### Mode 1: Extract-only (default for vault writes)
 
-## YouTube: summary vs transcript
-
-Best-effort transcript (URLs only):
+For URL / YouTube / podcast / PDF:
 
 ```bash
-summarize "https://youtu.be/dQw4w9WgXcQ" --youtube auto --extract-only
+# Get full content, no summary
+summarize "<url>" --extract-only --json
 ```
 
-If the user asked for a transcript but it’s huge, return a tight summary first, then ask which section/time range to expand.
+Returns JSON with full text. Save to vault using the template below.
+
+For YouTube specifically:
+```bash
+# Best-effort transcript without LLM summarization
+summarize "<youtube-url>" --youtube auto --extract-only
+```
+
+Fallback chain if `--extract-only` returns empty/short:
+1. `summarize <url> --extract-only --firecrawl always`
+2. `~/.bun/bin/defuddle parse <url> --md` (for HTML pages)
+3. `yt-dlp --write-sub --sub-lang en --skip-download` then `whisper` (for video without subs)
+4. If all fail → return error, do NOT write to vault
+
+### Mode 2: Extract + summarize (for in-conversation reply only)
+
+When user wants a quick TL;DR in chat (not for vault):
+
+```bash
+summarize "<url>" --length short
+```
+
+Display summary inline. Do not save to vault unless user explicitly asks.
+
+If the user later says "save this", the workflow becomes:
+1. Re-fetch with `--extract-only --json` to get full text
+2. Append AI summary that was already shown
+3. Write using vault template below
+
+## Vault write template
+
+When writing fetched content to vault (`Inbox/feeds/raw/YYYY-MM-DD/<slug>.md`):
+
+```markdown
+---
+date: YYYY-MM-DD
+type: feed-raw
+source: <url>
+fetched_at: <ISO8601>
+origin: ai-fetched
+extractor: summarize | defuddle | yt-dlp+whisper | bird | pdftotext
+ai_summary_at: <ISO8601 OR omit>
+ai_summary_model: <model id OR omit>
+---
+
+# {title}
+
+## Original (full source)
+
+<完整原文 — 不修剪、不重排、不格式化>
+
+---
+
+## AI Summary (auto-generated YYYY-MM-DD, not endorsed)
+
+<optional. only if user explicitly requested summary alongside extract.
+clearly marked as AI output. can be regenerated; original cannot.>
+```
+
+Rules:
+- `## Original` must contain the FULL extracted text. Truncation = bug.
+- `## AI Summary` is optional. Omit the section entirely if no summary was generated.
+- `ai_summary_at` / `ai_summary_model` only present when summary section exists.
+- Re-summarizing later: replace `## AI Summary` content + update `ai_summary_at`. Never touch `## Original`.
 
 ## Model + keys
 
@@ -64,43 +126,36 @@ Set the API key for your chosen provider:
 - xAI: `XAI_API_KEY`
 - Google: `GEMINI_API_KEY` (aliases: `GOOGLE_GENERATIVE_AI_API_KEY`, `GOOGLE_API_KEY`)
 
-Default model is `google/gemini-3-flash-preview` if none is set.
+Default model: `google/gemini-3-flash-preview`.
 
 ## Useful flags
 
-- `--length short|medium|long|xl|xxl|<chars>`
-- `--max-output-tokens <count>`
-- `--extract-only` (URLs only)
-- `--json` (machine readable)
-- `--firecrawl auto|off|always` (fallback extraction)
-- `--youtube auto` (Apify fallback if `APIFY_API_TOKEN` set)
+- `--extract-only` — return full text, no LLM summary (default for vault writes)
+- `--length short|medium|long|xl|xxl|<chars>` — summary length when summarizing
+- `--max-output-tokens <count>` — cap output tokens
+- `--json` — machine-readable output (use for vault writes to parse cleanly)
+- `--firecrawl auto|off|always` — fallback extraction for paywall/JS-heavy sites
+- `--youtube auto` — Apify fallback (needs `APIFY_API_TOKEN`)
 
-## Fallback strategy
+Add `--firecrawl auto` proactively for known paywall domains (nytimes, wsj, bloomberg, ft, etc.).
 
-If `summarize` returns empty, truncated, or "could not extract" output:
+## Anti-patterns (do NOT do these)
 
-1. **Retry with `--firecrawl always`** — works for paywalled, Cloudflare-blocked, and JS-heavy sites
-2. If firecrawl also fails, fall back to `defuddle parse <url> --md` or WebFetch, then pass content to the LLM yourself
-
-Always add `--firecrawl auto` proactively for known paywall domains (nytimes, wsj, bloomberg, ft, etc.).
-
-## Model provider format
-
-When the user requests a specific provider, use the format `provider/model-name`:
-
-```bash
-summarize <url> --model openai/gpt-5.2
-summarize <url> --model anthropic/claude-sonnet-4
-summarize <url> --model google/gemini-3-flash-preview  # default
-```
+| Anti-pattern | Why bad | Do instead |
+|---|---|---|
+| Save summary-only file to vault | Destroys re-distillation; original is gone | Always extract first, summary is optional addition |
+| `summarize <url>` then save output as the note body | Same as above — output is a summary not the source | `--extract-only` first, then optionally append summary |
+| Truncate `## Original` because "it's too long" | The point of preserving original is to NOT truncate | If truly too large, link to external archive instead and don't store |
+| Modify `## Original` after writing | Original is immutable | Only `## AI Summary` is regenerable |
+| Skip writing because summary alone is "good enough" | Today's summary is not tomorrow's question | If worth saving, save the original |
 
 ## Execution Rules
 
-1. **Match user length requests**: When the user asks for a short/brief/detailed summary, map to `--length short|medium|long|xl|xxl` accordingly. Always include the flag when length preference is stated or implied.
-2. **Never expose API keys**: Reference keys by env var name (`$GEMINI_API_KEY`, `$OPENAI_API_KEY`, etc.) in commands. Never print, echo, or hardcode actual key values.
-3. **Summarize before dumping**: For large transcripts or long content, return a concise summary first. Offer to expand specific sections or time ranges — never dump raw multi-page output unprompted.
-4. **Quote all file paths**: Always wrap local file paths in double quotes in the command: `summarize "/path/to/my file.pdf"`. This prevents breakage on paths with spaces or special characters.
-5. **Clean output by default**: Present the summary as readable text (markdown). Do not include raw CLI JSON, metadata, or wrapper output unless the user explicitly requested `--json`.
+1. **Default to extract-only** when writing to vault. Summarize only on explicit request OR for in-conversation reply.
+2. **Never expose API keys**: reference by env var name in commands; never print actual values.
+3. **Quote all file paths**: `summarize "/path/with spaces.pdf"`.
+4. **Clean output by default**: present as readable markdown; no raw CLI JSON unless `--json` requested.
+5. **Match user length requests**: map "brief/short/detailed" to `--length` flag accordingly.
 
 ## Config
 

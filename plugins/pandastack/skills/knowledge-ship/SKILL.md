@@ -1,25 +1,45 @@
 ---
 name: knowledge-ship
-version: 0.1.0
-status: draft
+version: 0.2.0
+status: active
 origin: manual
 description: |
-  Close the loop on a knowledge/ note. Three-stage pipeline:
-  Close (mechanic) → Extract (semantic learning) → Backflow (system update).
-  Marks note as verified, records where it was used, and routes any extracted
-  generalizable principle / SOP candidate / source-quality signal back to the
-  right layer (rules, work-vault, feed-curator). The point is not to bless the
-  note — the point is to feed the system so it gets smarter on the next loop.
-  Trigger: /knowledge-ship <note-path>, "ship this note", "close out this note".
+  Close lifecycle on a knowledge/ note. Three stages: Close (verify + used_in) → Extract (3 questions) → Backflow (route principle/SOP/signal). Vault-only; external pushes go through Inbox/ship-proposals/.
+
+  Trigger on: /knowledge-ship <path>, "ship this note", "close out this note".
+  Skip when: path is not under knowledge/ (use /write-ship for Blog/_daily, /work-ship for work topics).
 tags: [vault, knowledge, lifecycle, ship]
-related_skills: [wiki-lint, daily-distill, feed-curator]
+related_skills: [wiki-lint, feed-curator, write-ship, work-ship]
 ---
 
 # /knowledge-ship
 
-Close a `knowledge/<domain>/<note>.md` note's lifecycle.
+Close a `knowledge/<note>.md` lifecycle.
 
 Run from vault root (`<personal-vault>`). Pass the note path as `$ARGUMENTS`. If empty, ask.
+
+## Path validation (gate)
+
+Before any work:
+
+```bash
+NOTE="$ARGUMENTS"
+[ -z "$NOTE" ] && echo "需要 note path" && exit 1
+[ ! -f "$NOTE" ] && echo "note 不存在: $NOTE" && exit 1
+case "$NOTE" in
+  knowledge/*) ;;
+  */knowledge/*) ;;
+  *)
+    echo "錯誤：knowledge-ship 只處理 knowledge/ 內 note"
+    echo "  - Blog/_daily/ → 用 /write-ship"
+    echo "  - work-vault/ → 用 /work-ship"
+    echo "  - Inbox/legacy-knowledge/ → 用 /knowledge promote 先升等"
+    exit 1
+    ;;
+esac
+```
+
+Reject paths under `Inbox/`, `Blog/`, `_archive/`, `docs/`. Substance authorship discipline: only notes that have made it into `knowledge/` (i.e. Panda-authored) earn ship lifecycle.
 
 ## Scope: vault-only
 

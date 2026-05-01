@@ -1,6 +1,10 @@
 ---
 name: tool-pdf
-description: PDF read/extract/merge/split/OCR/fill/encrypt. Trigger on .pdf file or PDF task.
+description: |
+  PDF read/extract/merge/split/OCR/fill/encrypt.
+
+  Trigger on: .pdf file path, 'extract PDF', 'OCR this PDF'.
+  Skip when: web page (use defuddle).
 license: Proprietary. LICENSE.txt has complete terms
 version: "1.0.0"
 user-invocable: true

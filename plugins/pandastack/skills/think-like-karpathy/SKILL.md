@@ -1,10 +1,10 @@
 ---
 name: think-like-karpathy
 description: |
-  Invoke Andrej Karpathy 的思考框架。Tesla AI Director, OpenAI 共同創辦人, 教育/研究/工程三棲。
-  Use when user explicitly invokes "/think-like-karpathy", "Karpathy 會怎麼看", "用 Karpathy 角度",
-  or when decisions involve AI agent 架構 / skill as code / auto-research / 學習工作流 /
-  模型 jaggedness / 何時該人做 vs 何時該 agent 做 / 教育與 skill 設計。
+  Apply Karpathy framing — AI agent 架構 / skill as code / auto-research / 學習工作流 / human-vs-agent split / 教育設計.
+
+  Trigger on: /think-like-karpathy, 'Karpathy 會怎麼看'.
+  Skip when: not AI/education-design related.
 triggers:
   - "/think-like-karpathy"
   - "karpathy 會怎麼看"

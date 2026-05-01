@@ -1,10 +1,10 @@
 ---
 name: think-like-naval
 description: |
-  Invoke Naval Ravikant's thinking frame on the user's question.
-  Use when user explicitly invokes "/think-like-naval", "用 Naval 的角度", "Naval 會怎麼看",
-  or when a decision involves leverage / long-term compounding / specific knowledge /
-  wealth-vs-capture / long-horizon career bets / desire management / peace vs ambition.
+  Apply Naval Ravikant's framing — leverage / specific knowledge / wealth-vs-capture / long-horizon bets / desire management.
+
+  Trigger on: /think-like-naval, 'Naval 會怎麼看', 'Naval frame'.
+  Skip when: question is operational not strategic.
 triggers:
   - "/think-like-naval"
   - "用 naval"

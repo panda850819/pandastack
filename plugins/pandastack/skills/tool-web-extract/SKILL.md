@@ -1,6 +1,10 @@
 ---
 name: tool-web-extract
-description: Clean markdown from web pages via Defuddle CLI. Trigger on URL to read/analyze (prefer over WebFetch).
+description: |
+  Clean markdown from web pages via Defuddle CLI.
+
+  Trigger on: HTTP URL needing reading.
+  Skip when: GitHub/Notion/X (use specialized tool first).
 ---
 
 # Defuddle

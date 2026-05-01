@@ -1,17 +1,13 @@
 ---
 name: wiki-lint
-version: 0.1.0
+version: 0.2.0
 description: |
-  Weekly hygiene scan of knowledge/. Detects orphans (no inbound wiki-links),
-  duplicates (similar content under different names), stale notes (old source,
-  no recent human review), verified-overdue notes (both flagged-false stale and
-  verified-drift), and superseded_by integrity issues (dead redirects, chains).
-  Also tracks a ratcheted quality-floor metric (verified:true ratio on notes
-  older than 6 months) as a number over time, not a gate.
-  Writes a report to Inbox/wiki-lint-YYYY-MM-DD.md for Panda to triage.
-  Does NOT auto-edit or delete. Trigger: /wiki-lint, "lint knowledge", "vault hygiene".
+  Vault hygiene audit. Surfaces orphans, duplicates, stale, verified-overdue, dead redirects, frontmatter gaps, and AI-authored signal in knowledge/. Report-only to Inbox/wiki-lint-YYYY-MM-DD.md for Panda to triage.
+
+  Trigger on: /wiki-lint, "lint vault", "vault hygiene", scheduled weekly cron.
+  Skip when: working on a single note (use /knowledge backfill / cross-ref instead).
 tags: [vault, hygiene, weekly, quality]
-related_skills: [retro-week]
+related_skills: [retro-week, knowledge-ship]
 source: manual
 ---
 
@@ -20,6 +16,15 @@ source: manual
 Scan `knowledge/` for hygiene issues. Report, don't fix.
 
 Run from the vault root (`<personal-vault>`).
+
+## What this skill does NOT do
+
+Active maintenance lives in `/knowledge` subcommands, not here:
+- Backfill missing frontmatter → `/knowledge backfill`
+- Propose wiki-links → `/knowledge cross-ref`
+- Surface contradictions for triage → `/knowledge contradict`
+
+This skill is **passive audit only**. Writes one report file, never edits notes.
 
 ## Phase 1: Inventory
 
@@ -184,6 +189,65 @@ For each `(source|target)`:
 - Target itself has `superseded_by` → **redirect chain** (should be resolved or flagged as such)
 - Target is in `_archive/` → **redirects to archive** (acceptable but worth surfacing once)
 
+## Phase 8: Authorship Signal (AI-in-knowledge detection)
+
+`knowledge/` is human-authored only (vault `AGENTS.md` § Authorship Model). This phase surfaces notes that LOOK AI-authored so Panda can triage (mv to `Inbox/legacy-knowledge/` or rewrite in own voice).
+
+Heuristic flags (collect counts; don't auto-decide):
+
+```bash
+# A. Frontmatter signal: source: <URL> + body < 500 chars (likely AI summary)
+# B. Body signal: bullet-heavy (>60% lines start with "-"), no first-person ("我", "I think", "Panda")
+# C. Origin field: any explicit `origin: ai-fetched` or `origin: distilled` in knowledge/ → red flag
+# D. feed-curator legacy: paths matching old auto-write patterns (knowledge/{ai,crypto,tech,macro,product-biz}/<feed-style-slug>.md)
+
+for f in $(find knowledge -name "*.md" -type f -not -name "_index.md"); do
+  flags=""
+  body_chars=$(awk 'BEGIN{p=0} /^---$/{c++; if(c==2) p=1; next} p' "$f" | wc -c | tr -d ' ')
+  has_url_source=$(grep -m1 '^source: http' "$f" | wc -l | tr -d ' ')
+  has_first_person=$(awk 'BEGIN{p=0} /^---$/{c++; if(c==2) p=1; next} p' "$f" | grep -cE '(^|[ 。，])(我|Panda|I think|I believe|in my view)')
+  bullet_lines=$(awk 'BEGIN{p=0} /^---$/{c++; if(c==2) p=1; next} p' "$f" | grep -cE '^- ')
+  total_lines=$(awk 'BEGIN{p=0} /^---$/{c++; if(c==2) p=1; next} p' "$f" | grep -cE '\S')
+  origin=$(grep -m1 '^origin:' "$f" | sed 's/origin: *//; s/"//g' | tr -d ' ')
+
+  [ "$has_url_source" = "1" ] && [ "$body_chars" -lt 500 ] && flags="${flags}A"
+  [ "$total_lines" -gt 0 ] && [ "$bullet_lines" -gt 0 ] && \
+    awk -v b="$bullet_lines" -v t="$total_lines" -v fp="$has_first_person" \
+    'BEGIN { exit !(b/t > 0.6 && fp == 0) }' && flags="${flags}B"
+  case "$origin" in
+    ai-fetched|distilled|ai-distilled) flags="${flags}C" ;;
+  esac
+
+  [ -n "$flags" ] && echo "$f|$flags"
+done > /tmp/wiki-authorship.txt
+
+wc -l < /tmp/wiki-authorship.txt
+```
+
+Report top 30 flagged notes. **Do not classify; just surface for Panda to look at.** Triage action options (Panda decides per-note):
+- mv to `Inbox/legacy-knowledge/<original-path>` (most common for AI-distilled)
+- Rewrite in own voice → set `origin: original`
+- mv to `_archive/` if obsolete
+- Mark `origin: original` if false positive (Panda did write it, just terse)
+
+## Phase 9: Frontmatter Gaps
+
+Surface knowledge/ notes missing required frontmatter (per vault `AGENTS.md` § Frontmatter Schema):
+
+```bash
+for f in $(find knowledge -name "*.md" -type f -not -name "_index.md"); do
+  missing=""
+  for field in date type source tags summary; do
+    grep -qE "^${field}:" "$f" || missing="${missing}${field},"
+  done
+  [ -n "$missing" ] && echo "$f|${missing%,}"
+done > /tmp/wiki-frontmatter-gaps.txt
+
+wc -l < /tmp/wiki-frontmatter-gaps.txt
+```
+
+Report top 30. Action: `/knowledge backfill <path>` for each (auto-commit OK for `summary:` / `type:`).
+
 ## Phase 6: Report
 
 Write to `Inbox/wiki-lint-$(date +%Y-%m-%d).md`:
@@ -205,6 +269,8 @@ tags: [wiki-lint, hygiene]
 - Verified overdue (5a flagged-false stale): N
 - Verified overdue (5b verified drift): N
 - Superseded integrity issues: N
+- **Authorship-flagged (suspected AI in knowledge/)**: N
+- **Frontmatter gaps (missing summary/type/etc)**: N
 
 ## Quality Floor (tracked, not gated)
 - Notes older than 6 months: N
@@ -248,6 +314,20 @@ Dead redirects, redirect chains, and redirects into `_archive/`.
 | Source | Target | Issue | Action |
 |--------|--------|-------|--------|
 | ... | ... | dead target | Fix target or clear `superseded_by` |
+
+## Authorship-flagged (top 30)
+
+`knowledge/` notes that look AI-authored. Flags: A = source URL + short body; B = bullet-heavy, no first-person; C = explicit `origin: ai-fetched|distilled` in knowledge/.
+
+| File | Flags | Suggested action |
+|------|-------|------------------|
+| ... | A,B | mv to Inbox/legacy-knowledge/ for triage |
+
+## Frontmatter gaps (top 30)
+
+| File | Missing fields | Suggested action |
+|------|---------------|------------------|
+| ... | summary,type | `/knowledge backfill <path>` |
 
 ## Notes
 - Action items are candidates. Panda decides. Lint does not auto-modify.

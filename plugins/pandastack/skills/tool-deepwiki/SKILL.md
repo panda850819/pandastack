@@ -1,6 +1,10 @@
 ---
 name: tool-deepwiki
-description: GitHub repo docs with Mermaid diagrams. Trigger on /deepwiki or repo doc request.
+description: |
+  GitHub repo docs + Mermaid diagrams via deepwiki.
+
+  Trigger on: /deepwiki, 'document this repo', github.com URL when summary needed.
+  Skip when: code grep/lookup (use gh CLI or grep).
 allowed-tools: Bash, Read, Write, Grep, Glob, Task
 version: "1.0.0"
 user-invocable: true

@@ -1,6 +1,10 @@
 ---
 name: tool-railway
-description: Railway deployments/logs/envs via railway CLI. Trigger on railway.com URL or deploy task.
+description: |
+  Railway deployments/logs/envs via railway CLI.
+
+  Trigger on: railway.com URL, 'deploy to railway', 'railway logs'.
+  Skip when: non-Railway infrastructure.
 user-invocable: false
 ---
 

@@ -1,6 +1,10 @@
 ---
 name: tool-notion
-description: Notion pages/databases via notion-cli. Trigger on notion.so URL or Notion task.
+description: |
+  Notion pages/DBs via notion-cli. Defaults to partial updates.
+
+  Trigger on: notion.so URL, 'update Notion', 'create Notion page'.
+  Skip when: meeting notes (Notion is the meeting workspace, not Obsidian mirror).
 ---
 
 # notion-cli

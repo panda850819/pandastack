@@ -1,10 +1,10 @@
 ---
 name: think-like-alan-chan
 description: |
-  Invoke Alan Chan (詹雨安, Heptabase CEO) 的思考框架。
-  Use when user explicitly invokes "/think-like-alan-chan", "Alan 會怎麼看", "用阿朗的角度",
-  or when decisions involve product 0→1 / 深度學習方法 / focus 紀律 / 跨領域推論 / 招聘判斷 /
-  不確定性下的思考 / Heptabase-style 學習工作流。
+  Apply Alan Chan (Heptabase CEO) framing — product 0→1 / 深度學習 / focus 紀律 / 跨領域推論 / 招聘判斷.
+
+  Trigger on: /think-like-alan-chan, 'Alan 會怎麼看', '用阿朗的角度'.
+  Skip when: question is purely technical execution.
 triggers:
   - "/think-like-alan-chan"
   - "alan 會怎麼看"

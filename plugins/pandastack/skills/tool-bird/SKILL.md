@@ -1,6 +1,10 @@
 ---
 name: tool-bird
-description: X/Twitter read/write via bird CLI. Trigger on x.com/twitter.com URL, tweet reference, 推文.
+description: |
+  X/Twitter read/write via bird CLI.
+
+  Trigger on: x.com/twitter.com URL, tweet reference, 推文, /bird.
+  Skip when: video transcription needed (use yt-dlp + whisper).
 user-invocable: true
 ---
 
