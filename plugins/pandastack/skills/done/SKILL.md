@@ -59,15 +59,9 @@ Skip if session was purely mechanical.]
 2. **Dev tasks** → suggest `gh issue create` — only create if user confirms
 3. **Everything else** → drop it. If it's not P0/P1, it won't get done. Don't write it down.
 
-After saving: run `qmd update` (only if session doc is inside the obsidian vault; skip for external repos).
+After saving: run `gbrain sync` (only if session doc is inside the obsidian vault; skip for external repos). This pulls vault git changes incrementally into the gbrain PGLite index so today's session is queryable in tomorrow's `gbq` calls.
 
-**If `qmd update` fails with `ERR_DLOPEN_FAILED` / `NODE_MODULE_VERSION` mismatch**, this is a recurring better-sqlite3 ABI drift. If qmd was installed via `bun link` from a dev directory, the linked `node_modules/better-sqlite3` must match the *current* Node ABI, not the Node version at `bun link` time. Auto-recover from the qmd dev directory:
-
-```bash
-cd <qmd-cli-dir> && npm rebuild better-sqlite3 && qmd update
-```
-
-Then continue. If recovery also fails (e.g. node-gyp toolchain broken), surface as a P1 follow-up in the daily note (`qmd broken: <error code> on Node <version>`) and continue with Step 3 sub-checks that don't need qmd.
+**If `gbrain sync` fails**, run `gbrain doctor --fast --json` to surface the specific check that failed. Common causes: brain.pglite locked by another process (close other gbrain commands, retry), or git worktree dirty (commit/stash first, then sync). If recovery fails, surface as a P1 follow-up in the daily note (`gbrain broken: <error code>`) and continue with Step 3 sub-checks that don't depend on gbrain.
 
 ### Sync to daily note
 
@@ -124,11 +118,16 @@ If ≥ 2 surface: include in output as `## Worth saving from this session`.
 
 | Content type | Route to |
 |---|---|
-| Searchable technical fact, reusable debugging pattern, domain concept | `knowledge/<area>/` |
+| Reusable debugging pattern (same shape recurs across codebases) | `<learnings_dir>/patterns/` |
+| Pitfall the team hit and a "what to do instead" | `<learnings_dir>/pitfalls/` |
+| Architecture decision with rationale (why this shape, not that) | `<learnings_dir>/architecture/` |
+| Searchable technical fact, domain concept, externalizable knowledge | `knowledge/<area>/` |
 | Tool recipe / CLI gotcha / external system pointer | `memory/reference_*.md` |
 | Durable preference, how-we-work rule, validated style choice | `memory/feedback_*.md` |
 | 3+ step repeatable workflow (even first strike) | `_staging/skill-*` (draft only) |
 | Tactical meta-observation, one-session curiosity | drop |
+
+`<learnings_dir>` resolves from the active overlay. Panda's binding: `docs/learnings/{patterns,pitfalls,architecture}/`. The patterns/pitfalls/architecture split is the codebase-level learning layer that survives across sessions; `knowledge/` is the externalizable substance layer (concepts that hold beyond this codebase).
 
 Default to `drop` when in doubt — surfacing is already the baseline value. Only tag a route when the content is actually compound-worthy.
 
@@ -138,18 +137,19 @@ Apply `~/.claude/rules/skill-emergence.md`:
 - Did this session execute a 3+ step repeatable workflow?
 - Has a similar workflow been done before?
   ```bash
-  qmd vsearch "<one-line description of the workflow>" --limit 3
+  gbq "<one-line description of the workflow>" --limit 3
   ```
 - If you find a prior session doing the same thing, surface: `## Skill candidate: <name>` with the concrete pattern (where it ran before, where it ran today).
 - Do NOT auto-create the skill. Show the pattern, let user confirm.
 
 ### 3c. Past-pattern check (cross-session memory)
 
-Run `qmd vsearch` against `sessions` collection with the topic of this session:
+Run `gbq` against the brain with the topic of this session:
 ```bash
-qmd vsearch "<2-5 keywords from this session's topic>" --limit 5 2>/dev/null \
-  | grep -v "^\[node-llama-cpp\]" | grep -v "^load:"
+gbq "<2-5 keywords from this session's topic>" --limit 5 2>/dev/null
 ```
+
+(gbq slug-prefix filters its result implicitly via score; no log noise to grep out.)
 
 If results include sessions from > 7 days ago that look directly relevant:
 - Surface as `## Past relevant sessions` with 1-line context per hit
@@ -205,6 +205,7 @@ Only output a Step 3 block if at least one sub-check found something. Otherwise 
 When user replies `promote <N,N,...>` to the routing prompt:
 
 1. For each selected item:
+   - **`<learnings_dir>/patterns/<slug>.md`** / **`<learnings_dir>/pitfalls/<slug>.md`** / **`<learnings_dir>/architecture/<slug>.md`** — write using `lib/learning-format.md` schema (frontmatter with `type`, `key`, `first_seen`, `last_seen`, `confidence`). The patterns/pitfalls/architecture split survives across sessions on this codebase; not everything that surfaces belongs in `knowledge/`.
    - **`knowledge/<area>/<slug>.md`** — draft a full note (frontmatter with `date`, `status: draft`, `last_human_review`, `tags`). Include content expanded from the bullet, not just a stub. Leave `verified` unset.
    - **`memory/reference_*.md` or `memory/feedback_*.md`** — write the file + append index line in `MEMORY.md`. Reference memories go live immediately; feedback memories are durable so draft carefully.
    - **`_staging/skill-*/SKILL.md`** — draft with frontmatter `status: draft, origin: done-promote, observed_count: 1`. Do NOT move to `skills/` — user mv's it when two-strike fires.
@@ -221,8 +222,8 @@ Promotion is **draft-and-ask for knowledge/ + feedback**, auto-resolve for refer
 |-----------|--------|
 | No git repo | Use conversation topic as slug |
 | MEMORY.md > 190 lines | Slim down first |
-| qmd `ERR_DLOPEN_FAILED` / ABI mismatch | Auto-rebuild `better-sqlite3` in `<qmd-cli-dir>` (see Sync to daily note section), retry once |
-| qmd unavailable for other reason | Skip 3b/3c silently, still run 3a/3d, surface as P1 follow-up |
+| `gbrain sync` fails | Run `gbrain doctor --fast --json`, follow remediation; surface as P1 in daily note if recovery fails |
+| gbrain / gbq unavailable for other reason | Skip 3b/3c silently, still run 3a/3d, surface as P1 follow-up |
 | feedback-log.md missing | Skip 3d silently |
 | Session < 5 substantive turns | Skip Step 3 entirely |
 
