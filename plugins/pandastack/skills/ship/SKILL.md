@@ -1,5 +1,5 @@
 ---
-name: ps-ship
+name: ship
 description: |
   Test, commit, and create PR. One command from "code done" to
   "PR open". Use when asked to "ship", "create PR", or "we're done".
@@ -30,7 +30,7 @@ If a brief exists for this branch (check `docs/briefs/`):
 1. Read the brief's **Scope > In/Out** sections.
 2. Get the **current** full diff: `git diff origin/{main} --stat`.
 3. Compare against the brief scope. Flag any files or features outside stated scope.
-4. Also compare against the diff at review time (if `/ps-review` was run earlier, the reviewed diff may be smaller than the current diff). Check for **post-review additions**: files changed after the last review that were never reviewed.
+4. Also compare against the diff at review time (if `/review` was run earlier, the reviewed diff may be smaller than the current diff). Check for **post-review additions**: files changed after the last review that were never reviewed.
 5. Output:
    - "Scope: ON TRACK" if all changes match the brief and nothing was added post-review.
    - "SCOPE DRIFT: [description]" for each out-of-scope change.
@@ -39,15 +39,15 @@ If a brief exists for this branch (check `docs/briefs/`):
 
 If no brief exists, still check for post-review additions:
 1. Run `git log --oneline --since="1 hour ago"` to see recent commits.
-2. If there are commits after the last `/ps-review` in this session, list the changed files and warn:
+2. If there are commits after the last `/review` in this session, list the changed files and warn:
    "These files were changed after the last review: [list]. Proceed without re-review?"
 
 If neither brief nor review history exists, skip silently.
 
 ## Step 4: Review Gate
 
-If `/ps-review` has NOT been run on the current diff in this session:
-1. Warn: "Review not run. Run /ps-review first?"
+If `/review` has NOT been run on the current diff in this session:
+1. Warn: "Review not run. Run /review first?"
 2. If user says skip, proceed. Otherwise run review.
 
 This prevents shipping unreviewed code by default.

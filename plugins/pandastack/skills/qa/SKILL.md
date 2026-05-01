@@ -1,5 +1,5 @@
 ---
-name: ps-qa
+name: qa
 description: |
   Browser-based QA. Opens real pages, runs user flows, finds bugs.
   Use when UI has changed, or when asked to "test this", "QA",
@@ -10,7 +10,7 @@ description: |
 
 ## Step 1: Load Context
 
-1. Read pstack config from CLAUDE.md.
+1. Read pandastack config from CLAUDE.md.
 2. Search `{learnings_dir}` for `type: pitfall` related to UI or the changed components.
 3. Read the brief (if exists in `docs/briefs/`) to understand expected behavior.
 

@@ -29,7 +29,7 @@ Follow this sequence, pausing at decision gates for user approval:
    - Opportunity cost (what doesn't get done)
 
 6. **Go / No-go** — Present a one-page decision summary. User decides.
-   - **Go**: Write output to `docs/briefs/` with `type: brainstorm, status: go`. Suggest running `/ps-sprint` to begin.
+   - **Go**: Write output to `docs/briefs/` with `type: brainstorm, status: go`. Suggest running `/sprint` to begin.
    - **No-go**: Write output to `docs/briefs/` with `type: brainstorm, status: rejected` and rejection reason.
 
 ## Output format

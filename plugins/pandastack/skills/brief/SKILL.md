@@ -1,5 +1,5 @@
 ---
-name: ps-brief
+name: brief
 description: |
   Structured requirement gathering. Clarifies what to build before
   building. Use when starting a new feature, or when the user says
@@ -21,7 +21,7 @@ When skipped, the eng agent still searches learnings at review time.
 
 Steps 1.5 (Goal Mapping), 3 (Premise Challenge), 3.5 (Assumption Dump), and 4 (Alternatives) are user-facing gates. Use the four-option contract: **approve / edit / reject / skip**. See `lib/gate-contract.md`.
 
-Record gate outcomes in the brief's `## Gate Log` section so `/ps-review` and downstream skills can see what was decided and any edits applied.
+Record gate outcomes in the brief's `## Gate Log` section so `/review` and downstream skills can see what was decided and any edits applied.
 
 ## Step 1: Load Context
 

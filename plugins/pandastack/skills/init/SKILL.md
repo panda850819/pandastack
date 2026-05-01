@@ -1,8 +1,8 @@
 ---
-name: ps-init
+name: init
 description: |
-  Use once per project to initialize pstack. Detects project type,
-  asks ship preferences, writes pstack config to CLAUDE.md.
+  Use once per project to initialize pandastack. Detects project type,
+  asks ship preferences, writes pandastack config to CLAUDE.md.
 ---
 
 # Init
@@ -19,7 +19,7 @@ Auto-detect from the repo:
 
 Present detected values via AskUserQuestion. One question, all fields:
 
-> pstack detected:
+> pandastack detected:
 > - Test: `{detected or "not found"}`
 > - Main branch: `{main or master}`
 > - Tag format: none
@@ -34,7 +34,7 @@ Present detected values via AskUserQuestion. One question, all fields:
 Append to the project's CLAUDE.md (create if needed):
 
 ```markdown
-## pstack
+## pandastack
 
 test: {test command}
 main: {main branch}
@@ -53,4 +53,4 @@ mkdir -p docs/checkpoints
 
 ## Step 5: Confirm
 
-Output: "pstack initialized. Run `/ps-review` after your next change to start building learnings."
+Output: "pandastack initialized. Run `/review` after your next change to start building learnings."

@@ -1,5 +1,5 @@
 ---
-name: ps-review
+name: review
 description: |
   Use when asked to "review", "check my code", or before creating a PR.
   Parallel 3-pass review (correctness, security, architecture) with

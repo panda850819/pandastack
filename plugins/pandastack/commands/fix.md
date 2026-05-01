@@ -41,8 +41,8 @@ Use the eng agent (read agents/eng.md). Do NOT shotgun-debug.
 
 ## Step 5: Review + Ship
 
-1. Run /ps-review
-2. Run /ps-ship
+1. Run /review
+2. Run /ship
 
 ## Step 6: Extract learning
 

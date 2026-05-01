@@ -1,5 +1,5 @@
 ---
-name: ps-checkpoint
+name: checkpoint
 description: |
   Save or resume working state snapshots. Captures git state,
   decisions made, remaining work. Use when pausing work, switching
@@ -12,11 +12,11 @@ description: |
 
 Parse the user's input:
 
-- `/ps-checkpoint` (no arguments) → **Save**
-- `/ps-checkpoint resume` → **Resume**
-- `/ps-checkpoint list` → **List**
+- `/checkpoint` (no arguments) → **Save**
+- `/checkpoint resume` → **Resume**
+- `/checkpoint list` → **List**
 
-Read pstack config from CLAUDE.md.
+Read pandastack config from CLAUDE.md.
 
 ## Save (default)
 
@@ -58,7 +58,7 @@ Read pstack config from CLAUDE.md.
    {One sentence: what to do first when resuming.}
    ```
 
-3. Output: "Checkpoint saved. Resume with `/ps-checkpoint resume`."
+3. Output: "Checkpoint saved. Resume with `/checkpoint resume`."
 
 ## Resume
 
@@ -92,4 +92,4 @@ CHECKPOINTS:
   {branch} — {date} — {status}
 ```
 
-If no checkpoints exist: "No checkpoints. Save one with `/ps-checkpoint`."
+If no checkpoints exist: "No checkpoints. Save one with `/checkpoint`."

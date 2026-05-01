@@ -1,5 +1,5 @@
 ---
-name: ps-careful
+name: careful
 description: |
   Use when working on production code, shared infrastructure, or
   unfamiliar codebases. Adds confirmation gates before destructive

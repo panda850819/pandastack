@@ -3,7 +3,7 @@ name: grill
 description: |
   Requirement discovery — two modes. Default mode is adversarial: ask ONE question
   at a time, hunting for hidden requirements / unknown unknowns. Structured mode
-  (--mode structured) replaces the deprecated /ps-brief: load context, clarify,
+  (--mode structured) replaces the deprecated /brief: load context, clarify,
   premise-challenge, alternatives, write a brief. Use before drafting a PRD or
   when the user says "grill me on X", "interrogate this idea", "stress test this
   scope", "draft a brief", "structured intake". Skip for tasks where scope is
@@ -12,7 +12,7 @@ description: |
 
 # Grill
 
-Requirement discovery in two modes. Default is adversarial. Pass `--mode structured` to run the structured-brief flow (replaces the deprecated `/ps-brief`).
+Requirement discovery in two modes. Default is adversarial. Pass `--mode structured` to run the structured-brief flow (replaces the deprecated `/brief`).
 
 ## Mode selection
 
@@ -36,7 +36,7 @@ If goal mapping has not been done yet (e.g. you are running grill standalone, no
 ## When to use
 
 - Feature scope is fuzzy ("I want a points system" → backfill? retroactive? UI placement? streak rules?)
-- Before writing a PRD or feeding `/ps-brief`
+- Before writing a PRD or feeding `/brief`
 - When you suspect hidden constraints (compliance, migration, downstream consumers)
 - User explicitly says "grill me", "stress test this", "what am I missing"
 
@@ -93,7 +93,7 @@ After grilling ends, produce:
 - [if any]
 
 ### Recommended next step
-- Feed into /ps-brief (if implementation track)
+- Feed into /brief (if implementation track)
 - Feed into PRD draft (if planning track)
 - Park as memo (if not ready to act)
 ```
@@ -112,13 +112,13 @@ Save to:
 
 ## Relationship to other skills
 
-- **`--mode structured` replaces `/ps-brief`** — the structured 5-step brief is now a grill mode, not a separate skill
+- **`--mode structured` replaces `/brief`** — the structured 5-step brief is now a grill mode, not a separate skill
 - **Before `/work-ship` Close stage** — if you're closing a topic and realize scope was never grilled
 - **Not a replacement for `/persona-pipeline`** — that's multi-lens review of a complete proposal; grill is upstream
 
 ---
 
-# `--mode structured` (was /ps-brief)
+# `--mode structured` (was /brief)
 
 Use when the user says "draft a brief", "structured intake", or you need a written brief in `docs/briefs/`.
 

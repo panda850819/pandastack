@@ -57,7 +57,7 @@ When one skill's output feeds another, make the contract explicit — don't
 assume the next stage has context it wasn't given.
 
 - **Inputs declared**: each skill declares what prior outputs it reads (e.g.,
-  `/ps-review` reads the brief's Problem + Success Metric + Scope).
+  `/review` reads the brief's Problem + Success Metric + Scope).
 - **Model per pass**: when a skill runs multiple passes, hint which model
   fits each pass (correctness→sonnet, architecture→opus). Don't pay Opus
   tokens for mechanical work; don't starve synthesis with Haiku.

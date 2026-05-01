@@ -1,9 +1,9 @@
 ---
-name: ps-freeze
+name: freeze
 description: |
   Use when you want to lock editing scope to specific paths.
   Blocks edits outside the allowed directories for this session.
-  Run /ps-unfreeze to remove restrictions.
+  Run /unfreeze to remove restrictions.
 ---
 
 # Freeze
@@ -12,9 +12,9 @@ Lock editing scope to prevent accidental changes outside the working area.
 
 ## Usage
 
-`/ps-freeze src/api/` — only allow edits inside `src/api/`
-`/ps-freeze src/api/ tests/api/` — allow edits in both directories
-`/ps-unfreeze` — remove all restrictions
+`/freeze src/api/` — only allow edits inside `src/api/`
+`/freeze src/api/ tests/api/` — allow edits in both directories
+`/unfreeze` — remove all restrictions
 
 ## On Invoke
 
@@ -29,11 +29,11 @@ Lock editing scope to prevent accidental changes outside the working area.
    ```
 4. For the remainder of this session, before any file edit (Edit, Write, NotebookEdit):
    - Check if the target file falls under an allowed path.
-   - If not: **refuse the edit** and say: "FROZEN: {file} is outside freeze scope. Run /ps-unfreeze to remove restrictions."
+   - If not: **refuse the edit** and say: "FROZEN: {file} is outside freeze scope. Run /unfreeze to remove restrictions."
    - Never silently skip — always surface the block.
 
 ## Unfreeze
 
-When the user says `/ps-unfreeze`:
+When the user says `/unfreeze`:
 1. Remove all path restrictions.
 2. Announce: "UNFREEZE: all files are editable again."
