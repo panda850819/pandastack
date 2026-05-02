@@ -41,6 +41,12 @@ vault = "personal-vault"
 allow  = ["knowledge", "blog", "lennys", "sessions"]
 forbid = ["work-vault"]
 
+[gbrain]
+# Phase 1 placeholder — adapter registered, contexts declared, gbrain not yet primary.
+allow      = ["panda-vault"]
+forbid     = []
+write_mode = "read-only"
+
 [mcp]
 deny = [
   "mcp__claude_ai_Linear__*",     # Sommet ticketing — work-sommet only
