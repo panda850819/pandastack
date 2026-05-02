@@ -41,12 +41,7 @@ firewall_from = ["work/yei/*", "work/sommet/*"]
 [sources]
 vault = "personal-vault"
 
-[knowledge]
-allow  = ["knowledge", "blog", "lennys", "sessions"]
-forbid = ["work-vault"]
-
 [gbrain]
-# Phase 1 placeholder — adapter registered, contexts declared, gbrain not yet primary.
 allow      = ["panda-vault"]
 forbid     = []
 write_mode = "read-only"
