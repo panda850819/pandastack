@@ -49,6 +49,6 @@ deny = [
 ]
 
 [notes]
-# Brain-first lookup rule applies: qmd query before fetching any URL or writing new notes.
+# Brain-first lookup rule applies: gbq query before fetching any URL or writing new notes.
 # Absorb-first: if 60%+ overlap with existing note, update existing rather than creating new.
 # wiki-lint is monthly cadence; knowledge-ship runs per note at distill time.
