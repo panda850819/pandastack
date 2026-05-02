@@ -298,6 +298,8 @@ gbrain sync
 
 This must run after every deep-research session, interactive or overnight. Forgetting this step makes new notes invisible to `gbq` search.
 
+**Discipline (mirrors `/done` skill — see `Inbox/proposal-pandastack-done-skill-sync-discipline-2026-05-03.md`):** Run `gbrain sync` in the foreground. Never background it. Never SIGKILL a running gbrain process — under PGLite this corrupts `~/.gbrain/brain.pglite/`; under Postgres it is less catastrophic but still unsafe. If sync hangs, send SIGTERM and wait at least 30s for graceful exit before escalating.
+
 ## Usage Modes
 
 ### Interactive (user present)

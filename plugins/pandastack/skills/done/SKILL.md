@@ -2,7 +2,7 @@
 name: done
 description: Save session context, summarize work, persist memory at session end. Triggers on "/done", "session done", "wrap up".
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
-version: "3.1.1"
+version: "3.1.2"
 user-invocable: true
 ---
 
@@ -59,16 +59,26 @@ Skip if session was purely mechanical.]
 2. **Dev tasks** → suggest `gh issue create` — only create if user confirms
 3. **Everything else** → drop it. If it's not P0/P1, it won't get done. Don't write it down.
 
-After saving inside the Obsidian vault: run targeted no-embed imports for the files this skill normally writes:
+After saving inside the Obsidian vault: run targeted no-embed imports **in the foreground** for the files this skill normally writes:
 
 ```bash
-gbrain import "<personal-vault>/docs/sessions" --no-embed
-gbrain import "<personal-vault>/Blog/_daily" --no-embed
+timeout 30 gbrain import "<personal-vault>/docs/sessions" --no-embed
+timeout 30 gbrain import "<personal-vault>/Blog/_daily" --no-embed
 ```
 
-Do **not** run broad `gbrain sync` from `/done`. `gbrain sync` may require a configured repo path, may run `git pull --ff-only`, and may trigger full import + embedding backfill when the source anchor is missing. `/done` only needs today's session and daily note queryable, so targeted no-embed import is the correct surface.
+**Discipline (learned 2026-05-03 — see `Inbox/proposal-pandastack-done-skill-sync-discipline-2026-05-03.md`):**
 
-**If targeted `gbrain import --no-embed` fails**, run `gbrain doctor --fast --json` to surface the specific check that failed. Common causes: brain.pglite locked by another process or a stale `gbrain-sync` row left by an interrupted sync. If recovery fails, surface as a P1 follow-up in the daily note (`gbrain broken: <error code>`) and continue with Step 3 sub-checks that don't depend on gbrain.
+- **Never background gbrain commands from `/done`.** PGLite is single-writer; backgrounding causes Step 3 gbq calls to time out on lock contention.
+- **Never SIGKILL a running gbrain command.** SIGKILL mid-write corrupts `~/.gbrain/brain.pglite/` such that PGLite refuses to reopen it (manifests as misleading `Aborted()` error pointing at macOS WASM bug #223). Recovery requires restoring from `~/.gbrain/brain.pglite.bak-*`. If a gbrain command genuinely hangs, send SIGTERM and wait at least 30s for graceful exit before any escalation.
+- **Do not run broad `gbrain sync` from `/done`.** `gbrain sync` may require a configured repo path, may run `git pull --ff-only`, and may trigger full import + embedding backfill when the source anchor is missing or chunker version drifted. `/done` only needs today's session and daily note queryable, so targeted no-embed import is the correct surface.
+
+**If targeted `gbrain import --no-embed` fails**, run `gbrain doctor --fast --json` to surface the specific check. Common causes:
+
+- brain.pglite locked by another process — close other gbrain commands, retry once
+- stale `gbrain-sync` row left by an interrupted sync — surface as P0 follow-up
+- PGLite throws `Aborted()` on load — likely dataDir corruption from prior SIGKILL. Run `ls -la ~/.gbrain/*.bak*` to check for backups; if backups exist, surface as P0 follow-up with the recovery command (`mv ~/.gbrain/brain.pglite ~/.gbrain/brain.pglite.broken-$(date +%Y%m%d) && cp -R ~/.gbrain/<latest-bak> ~/.gbrain/brain.pglite`). Do NOT auto-recover — let the user pick which backup.
+
+If recovery cannot proceed, surface as a P0 follow-up in the daily note (`gbrain broken: <error code>`) and continue with Step 3 sub-checks that don't depend on gbrain.
 
 ### Sync to daily note
 
