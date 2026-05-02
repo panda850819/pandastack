@@ -2,7 +2,7 @@
 name: done
 description: Save session context, summarize work, persist memory at session end. Triggers on "/done", "session done", "wrap up".
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
-version: "3.1.0"
+version: "3.1.1"
 user-invocable: true
 ---
 
@@ -59,9 +59,16 @@ Skip if session was purely mechanical.]
 2. **Dev tasks** → suggest `gh issue create` — only create if user confirms
 3. **Everything else** → drop it. If it's not P0/P1, it won't get done. Don't write it down.
 
-After saving: run `gbrain sync` (only if session doc is inside the obsidian vault; skip for external repos). This pulls vault git changes incrementally into the gbrain PGLite index so today's session is queryable in tomorrow's `gbq` calls.
+After saving inside the Obsidian vault: run targeted no-embed imports for the files this skill normally writes:
 
-**If `gbrain sync` fails**, run `gbrain doctor --fast --json` to surface the specific check that failed. Common causes: brain.pglite locked by another process (close other gbrain commands, retry), or git worktree dirty (commit/stash first, then sync). If recovery fails, surface as a P1 follow-up in the daily note (`gbrain broken: <error code>`) and continue with Step 3 sub-checks that don't depend on gbrain.
+```bash
+gbrain import "<personal-vault>/docs/sessions" --no-embed
+gbrain import "<personal-vault>/Blog/_daily" --no-embed
+```
+
+Do **not** run broad `gbrain sync` from `/done`. `gbrain sync` may require a configured repo path, may run `git pull --ff-only`, and may trigger full import + embedding backfill when the source anchor is missing. `/done` only needs today's session and daily note queryable, so targeted no-embed import is the correct surface.
+
+**If targeted `gbrain import --no-embed` fails**, run `gbrain doctor --fast --json` to surface the specific check that failed. Common causes: brain.pglite locked by another process or a stale `gbrain-sync` row left by an interrupted sync. If recovery fails, surface as a P1 follow-up in the daily note (`gbrain broken: <error code>`) and continue with Step 3 sub-checks that don't depend on gbrain.
 
 ### Sync to daily note
 
@@ -222,7 +229,7 @@ Promotion is **draft-and-ask for knowledge/ + feedback**, auto-resolve for refer
 |-----------|--------|
 | No git repo | Use conversation topic as slug |
 | MEMORY.md > 190 lines | Slim down first |
-| `gbrain sync` fails | Run `gbrain doctor --fast --json`, follow remediation; surface as P1 in daily note if recovery fails |
+| Targeted `gbrain import --no-embed` fails | Run `gbrain doctor --fast --json`, follow remediation; surface as P1 in daily note if recovery fails |
 | gbrain / gbq unavailable for other reason | Skip 3b/3c silently, still run 3a/3d, surface as P1 follow-up |
 | feedback-log.md missing | Skip 3d silently |
 | Session < 5 substantive turns | Skip Step 3 entirely |
