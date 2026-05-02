@@ -110,7 +110,7 @@ This is the cross-session pattern surfacing layer. **Cheap-first ladder** — su
 2. **If 3a surfaces ≥1 item OR session > 10 substantive turns**: run 3b + 3c + 3d in parallel
 3. **Else**: skip 3b/3c/3d, exit silent
 
-Rationale: 3a is the cheap signal. The qmd vsearch + feedback-log read in 3b–3d only fire when 3a surfaces something worth following up on, or when the session is large enough to warrant the spend. Aligns with `~/.agents/AGENTS.md` Behavioral Default "Cheap-first internal lookup".
+Rationale: 3a is the cheap signal. The gbq + feedback-log read in 3b–3d only fire when 3a surfaces something worth following up on, or when the session is large enough to warrant the spend. Aligns with `~/.agents/AGENTS.md` Behavioral Default "Cheap-first internal lookup".
 
 ### 3a. Surprises & validated assumptions
 

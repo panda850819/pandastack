@@ -73,11 +73,11 @@ cat "Blog/_daily/$(date +%Y-%m-%d).md" 2>/dev/null | head -100
 
 ### 1b. Identify gaps
 
-For each domain, use `qmd query` to assess coverage depth:
+For each domain, use `gbq` to assess coverage depth:
 
 ```bash
 # Example: find what's thin in a domain
-qmd query "what topics in {domain} have shallow coverage?" -n 5
+gbq "what topics in {domain} have shallow coverage?"
 ```
 
 Gap signals (check all):
@@ -147,7 +147,7 @@ RELATED VAULT NOTES: {list}
    - defuddle parse '<url>' --md for full content extraction
    - SKIP: listicles, news summaries, paywalled, >6 months old, overlapping with vault
 
-2. NOVELTY CHECK — run: qmd vsearch '{topic keywords}' -n 5
+2. NOVELTY CHECK — run: gbq '{topic keywords}'
    Read top 3 results. If >70% overlap:
    - Merge: enhance existing note instead
    - Angle shift: find genuinely different angle
@@ -192,8 +192,8 @@ Gather all researcher reports. For each note with STATUS: WRITTEN or MERGED:
 
 ```bash
 # Check if two notes in the same batch overlap
-qmd vsearch "{note A title}" -n 3
-qmd vsearch "{note B title}" -n 3
+gbq "{note A title}"
+gbq "{note B title}"
 ```
 
 If two notes in the same batch cover >50% similar ground:
@@ -236,7 +236,7 @@ If yes, write a **bridge note** — a short (300-500 word) note that connects th
 ### 3f. Verification
 
 ```bash
-qmd vsearch "{note title keywords}" -n 3
+gbq "{note title keywords}"
 ```
 Confirm each kept note adds genuine value beyond existing coverage.
 
@@ -288,17 +288,15 @@ At the end of the session (or when user returns), produce a summary:
 
 Write this to the daily note under `## Deep Research Report`.
 
-### Reindex vault (MANDATORY — do not skip)
+### Sync vault index
 
-After writing the report, always reindex the vault so new notes are searchable:
+After writing the report, sync the vault so new notes are searchable:
 
 ```bash
-qmd update && qmd embed
+gbrain sync
 ```
 
-This must run after every deep-research session, interactive or overnight. Forgetting this step makes new notes invisible to `qmd search` and `qmd vsearch`.
-
-If `qmd update` fails with `ERR_DLOPEN_FAILED` / `NODE_MODULE_VERSION` mismatch, follow the self-heal in `~/.claude/rules/cli-doctor.md` (rebuild better-sqlite3 in the qmd dev directory if `bun link`-ed), then retry once. If still broken, surface as a P1 follow-up — do NOT skip silently, the new notes will be invisible to search until reindexed.
+This must run after every deep-research session, interactive or overnight. Forgetting this step makes new notes invisible to `gbq` search.
 
 ## Usage Modes
 

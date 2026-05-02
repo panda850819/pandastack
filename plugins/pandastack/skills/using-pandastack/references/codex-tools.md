@@ -72,7 +72,7 @@ Many pandastack skills (especially `tool-*`) invoke Panda's local CLI tools. The
 
 | Tool | Pandastack skills that depend on it | What it needs |
 |---|---|---|
-| `qmd` | knowledge-ship, brain-first lookups, vault search | Vault index at `<personal-vault>` |
+| `gbq` | knowledge-ship, brain-first lookups, vault search | gbrain index at `<personal-vault>` |
 | `bird` | tool-bird | X/Twitter cookie auth |
 | `notion-cli` | tool-notion, work-ship (notion proposals) | Notion API token in env |
 | `defuddle` | tool-web-extract | Bun + defuddle binary |

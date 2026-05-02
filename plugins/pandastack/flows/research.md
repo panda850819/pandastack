@@ -20,7 +20,7 @@ type: lifecycle-flow
 ### Phase 1 — Vault-first lookup
 
 - **What happens**: Before fetching anything external, check whether the vault already has relevant material. This is the brain-first-lookup rule. A vault hit can save the entire research cycle or sharpen the question to a specific gap.
-- **Skills used**: `qmd query "<question>"` (hybrid — best for open questions); `qmd search "<keyword>"` (BM25 — best for known names or terms); check `knowledge/<domain>/_index.md` MOCs if they exist for the relevant area
+- **Skills used**: `gbq "<question>"`; check `knowledge/<domain>/_index.md` MOCs if they exist for the relevant area
 - **Output**: Either "vault has N relevant notes — starting from those" or "vault has no coverage — proceeding to fetch". The question may be refined by what the vault does know.
 
 ### Phase 2 — Scope lock
@@ -44,7 +44,7 @@ type: lifecycle-flow
 ### Phase 5 — Distill
 
 - **What happens**: Extract the durable core from the synthesis. Apply absorb-first rule (60%+ overlap with existing note → update existing, don't create new). Write to `knowledge/` root with minimum frontmatter.
-- **Skills used**: Direct Edit/Write into `knowledge/<slug>.md`; `qmd query` for dedup check
+- **Skills used**: Direct Edit/Write into `knowledge/<slug>.md`; `gbq` for dedup check
 - **Output**: New or updated note in `knowledge/` root with `date`, `type: knowledge`, `source`, `tags`. No `verified` field yet.
 
 ### Phase 6 — Ship
@@ -71,7 +71,7 @@ type: lifecycle-flow
 ## Skill choreography
 
 ```
-qmd query / search  (vault-first lookup — brain-first rule)
+gbq  (vault-first lookup — brain-first rule)
   |
   v
 pandastack:grill  (scope lock — adversarial mode)
@@ -89,7 +89,7 @@ pandastack:deep-research  (planner + researcher, quality gates)
   |
   v
 [distill → knowledge/ root]
-  (absorb-first: qmd dedup check before creating new note)
+  (absorb-first: gbq dedup check before creating new note)
   |
   v
 pandastack:knowledge-ship

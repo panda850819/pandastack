@@ -26,7 +26,7 @@ type: lifecycle-flow
 ### Phase 2 — Vault dedup check
 
 - **What happens**: Before promoting raw material to `knowledge/`, check whether a matching note already exists. If 60%+ overlap, absorb into the existing note rather than creating a new one.
-- **Skills used**: `qmd query "<topic>"` (hybrid); `qmd search "<keyword>"` (BM25 for known terms)
+- **Skills used**: `gbq "<topic>"`
 - **Output**: Either a confirmed "no match, create new" decision, or a target note path to absorb into
 
 ### Phase 3 — Distill
@@ -61,7 +61,7 @@ type: lifecycle-flow
 
 ## Anti-patterns
 
-- **Create new note instead of absorbing (60%+ overlap)**: vault sprawl is the primary cause of retrieval noise. Always run `qmd query` before creating.
+- **Create new note instead of absorbing (60%+ overlap)**: vault sprawl is the primary cause of retrieval noise. Always run `gbq` before creating.
 - **Write directly to `knowledge/` during capture**: raw material needs one distill pass before landing as a durable note. Skipping the temporal layer produces half-formed notes that look verified but aren't.
 - **Add wiki-links without verifying backlinks**: `[[slug]]` that points to a renamed or deleted note produces silent dead links. Check backlinks before writing links manually.
 - **Set `verified: true` via automation**: verification is a human judgment call. A cron script cannot know if a note's core claims still hold. Automate the flag, lose the signal.
@@ -75,7 +75,7 @@ pandastack:daily  (capture to _daily/)
 direct file → Inbox/
   |
   v
-qmd query / search  (vault dedup check)
+gbq  (vault dedup check)
   |
   v
 daily-distill cron  (Phase 3, async)

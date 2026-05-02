@@ -207,7 +207,7 @@ Print summary, append to `Inbox/ship-log/YYYY-MM-DD.md`:
 
 Two weeks of `/write-ship` gives you:
 
-1. **Findability**: `qmd query "<topic>"` finds your published posts ranked by your own usage signals
+1. **Findability**: `gbq "<topic>"` finds your published posts ranked by your own usage signals
 2. **Knowledge graph density**: `cited_in:` reverse links mean every published article enriches the notes it stood on. Wiki-lint stops flagging cited notes as "orphan".
 3. **Voice self-correction**: voice / slop patterns auto-feed back into content-write next session
 4. **Pipeline visibility**: `Inbox/x-drafts/` accumulates Twitter threads waiting for `/tool-bird`; byproduct stubs accumulate in `Inbox/` for daily-distill

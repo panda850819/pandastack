@@ -27,7 +27,7 @@ type: lifecycle-flow
 ### Phase 2 — Context fetch
 
 - **What happens**: Before acting, search work-vault and personal vault for prior context on this topic. Never act from memory alone. Look for prior decisions, SOPs, stakeholder context, and related meeting distillations.
-- **Skills used**: `qmd query "<topic>"` against work-vault first; personal vault for durable frameworks only; `pandastack:tool-notion` (read-only, metadata fetch) if Notion has the canonical page
+- **Skills used**: `gbq "<topic>"` against work-vault first; personal vault for durable frameworks only; `pandastack:tool-notion` (read-only, metadata fetch) if Notion has the canonical page
 - **Output**: A 3-5 sentence context summary or a pointer to the relevant prior decision/SOP file. If no prior context exists, note "first occurrence" explicitly.
 
 ### Phase 3 — Execute
@@ -58,7 +58,7 @@ type: lifecycle-flow
 ## Anti-patterns
 
 - **Mutate external systems directly during execution**: every Notion page edit or Jira status change on a team-visible system should go through a ship proposal first. Silent mutations break trust and skip Panda's review layer.
-- **Skip the context phase**: acting without prior-context lookup is the fastest way to repeat a decision that was already made (badly) three months ago. `qmd query` takes 5 seconds.
+- **Skip the context phase**: acting without prior-context lookup is the fastest way to repeat a decision that was already made (badly) three months ago. `gbq` takes 5 seconds.
 - **Mirror full meeting notes into obsidian-vault**: only distilled value crosses over — decisions, durable follow-ups, project/person/company context, reusable insights. Full transcripts stay in Notion.
 - **Route all work through ops persona**: use the right persona for scope. Strategy or Bob-facing decisions need `pandastack:ceo`. Abyss PO decisions need `pandastack:product`. Ops persona is for operational execution only.
 - **Close work without a counterfactual**: the most valuable part of work-ship Stage 2 Extract is the反事實 (fastest path if done again). Skipping it means the next similar topic costs the same.
@@ -69,7 +69,7 @@ type: lifecycle-flow
 pandastack:yei-alert-triage  [P0 only]
   |
   v
-qmd query  (work-vault context fetch first)
+gbq  (work-vault context fetch first)
   |
   v
 pandastack:ops / product / ceo  (persona for domain)

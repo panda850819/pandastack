@@ -19,7 +19,7 @@ Follow this sequence, pausing at decision gates for user approval:
    - What happens if we do nothing?
 
 4. **Prior art** — Search for existing solutions:
-   - `qmd search` and `qmd vsearch` the vault for related knowledge
+   - `gbq "<topic>"` the vault for related knowledge
    - Web search for competing tools, prior art, blog posts
    - If results are insufficient and the idea warrants deeper investigation, suggest `/deep-research` and pause. User can run it and return to this flow.
 

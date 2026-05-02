@@ -213,7 +213,7 @@ This log is what retro-week / retro-month reads to compute "ship rate".
 
 | 症狀 | 處理 |
 |---|---|
-| Note path doesn't exist | Abort, suggest `qmd search` to find it |
+| Note path doesn't exist | Abort, suggest `gbq` to find it |
 | Note already has `verified: true` AND `last_human_review` within 30 days | Ask "重新 ship 嗎？" — don't silently re-stamp |
 | `Inbox/feeds/source-quality.json` malformed | Backup to `.bak`, recreate |
 | `_index.md` missing for the domain | Create skeleton (just `# <Domain> Index\n\n## Frequently referenced\n`) |
@@ -225,7 +225,7 @@ This log is what retro-week / retro-month reads to compute "ship rate".
 
 After two weeks of using `/knowledge-ship`:
 
-1. **Search**: `qmd query` ranks shipped notes higher (verified=true, recent review). Wiki-lint stops flagging them as stale.
+1. **Search**: `gbq` ranks shipped notes higher (verified=true, recent review). Wiki-lint stops flagging them as stale.
 2. **Reuse**: `rg "used_in:" knowledge/ -A 3` lists every note that has earned its keep. Use this list when starting a new blog post or strategic memo.
 3. **System learning**: feed-curator pulls `source-quality.json`. Sources you've shipped from get ranked higher next cycle.
 4. **Retro signal**: `Inbox/ship-log/` aggregates into retro-week as `knowledge ship rate = ships per week`. Track trend, not absolute count.

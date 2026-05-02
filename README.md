@@ -42,7 +42,7 @@ Then in your project, run `/pandastack:init` once.
 
 ### Other runtimes
 
-Pandastack v1.0.0-rc.2+ also runs on Codex CLI via native skill discovery. See [`plugins/pandastack/.codex/INSTALL.md`](plugins/pandastack/.codex/INSTALL.md) for the clone + symlink install path. Tested on Codex CLI 0.124.0. Lifecycle skills are fully portable; `tool-*` skills depending on local CLIs (qmd / bird / notion-cli / slack / etc.) require those CLIs in the host environment.
+Pandastack v1.0.0-rc.2+ also runs on Codex CLI via native skill discovery. See [`plugins/pandastack/.codex/INSTALL.md`](plugins/pandastack/.codex/INSTALL.md) for the clone + symlink install path. Tested on Codex CLI 0.124.0. Lifecycle skills are fully portable; `tool-*` skills depending on local CLIs (gbq / bird / notion-cli / slack / etc.) require those CLIs in the host environment.
 
 ## Skills
 
@@ -176,7 +176,6 @@ Tokens in use across public skills:
 | `<personal-vault>` | Your personal Obsidian / knowledge vault root |
 | `<work-vault>` | Your work vault root (separate from personal, for de-sensitive backflow) |
 | `<memory-dir>` | Your Claude Code per-project memory directory (e.g. `~/.claude/projects/<project>/memory/`) |
-| `<qmd-cli-dir>` | Where qmd is installed if `bun link`-ed from a dev directory (only relevant for qmd ABI rebuild recovery) |
 | `<notion-cli-dir>` | Where notion-cli is installed (used by `tool-notion`) |
 | `<slack-cli-dir>` | Where slack-cli is installed (used by `tool-slack`) |
 | `<your-handle>` | Your Slack handle (used in DM-to-self examples) |

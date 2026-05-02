@@ -118,7 +118,7 @@ wc -l < /tmp/wiki-orphans.txt
 Full-pairwise vsearch is too expensive for 3000+ notes. Sample strategy:
 
 1. Target: notes modified or created in the last 14 days (likely new, highest chance of dup)
-2. For each, run `qmd vsearch "<title or first-line tldr>" -n 5`
+2. For each, run `gbq "<title or first-line tldr>"`
 3. If top hit is a different file with similarity >0.85, flag as candidate pair
 
 ```bash
@@ -129,7 +129,7 @@ git log --since="14 days ago" --name-only --pretty=format: knowledge/ | \
 
 For each file in `/tmp/wiki-recent.txt`:
 - Read first 30 lines to extract title or first paragraph
-- Run `qmd vsearch "<query>" -n 5`
+- Run `gbq "<query>"`
 - Parse output: if any non-self result is >0.85 similar, record as `(file, match, similarity)` tuple
 - Cap at 30 samples to keep runtime bounded
 
@@ -342,6 +342,6 @@ Dead redirects, redirect chains, and redirects into `_archive/`.
 - **Report in Traditional Chinese** for the narrative sections (summary, notes); keep tables' file paths as-is.
 - **Skip `_index.md`** in orphan scan (MOC files aren't expected to be linked-to).
 - **Also skip `_index.md` in duplicate scan / fallback heuristics** — MOC files often look identical by title and create false positives.
-- **If `qmd vsearch` is unavailable or broken** (for example Node / `better-sqlite3` ABI mismatch with `ERR_DLOPEN_FAILED` / `NODE_MODULE_VERSION X !== Y`), first try the self-heal in `~/.claude/rules/cli-doctor.md` (rebuild better-sqlite3 in the qmd dev directory if `bun link`-ed) and retry once. If still broken, do not fail the whole lint: fall back to a lightweight duplicate heuristic using filename/title similarity over recent notes, mark the duplicate section as lower-confidence, and surface the qmd failure in the report header.
+- **If `gbq` is unavailable or broken**, run `gbrain doctor --fast` and retry once. If still broken, do not fail the whole lint: fall back to a lightweight duplicate heuristic using filename/title similarity over recent notes, mark the duplicate section as lower-confidence, and surface the gbq failure in the report header.
 - **Clean up temp files** (`/tmp/wiki-*.txt`) when done.
-- **Do NOT run `qmd update` or `qmd embed`** — separate concern, not lint's job.
+- **Do NOT run `gbrain sync`** from lint — separate concern, not lint's job.
