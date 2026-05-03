@@ -35,6 +35,7 @@ Scan today's signals, stage 1-3 distill candidates, and write an evening block.
 - Empty successful source means `(none)`.
 - Do not promote notes; only propose human-reviewed candidates.
 - After writing, echo one line: `evening-distill wrote <target> queue_appended=N sections=3`.
+- **Never create a fake `$HOME` or copy `~/.pdctx` into cwd.** The real `$HOME` is correctly set by hermes / the calling shell. Any sandbox staging belongs in `/tmp`, not in the vault.
 
 ## Sources
 

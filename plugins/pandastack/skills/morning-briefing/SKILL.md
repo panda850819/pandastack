@@ -33,6 +33,7 @@ Produce a one-page morning briefing for Panda and prepend it to today's daily no
 - Never replace the rest of the daily note.
 - Catch each source failure and write `(source unavailable: <reason>)` in that section.
 - Empty successful source means `(none)`.
+- **Never create a fake `$HOME` or copy `~/.pdctx` into cwd.** The real `$HOME` is correctly set by hermes / the calling shell. Any sandbox staging belongs in `/tmp`, not in the vault.
 - After writing, echo one line: `morning-briefing wrote <target> sections=5`.
 
 ## Sources

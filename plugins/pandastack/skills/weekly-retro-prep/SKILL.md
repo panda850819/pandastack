@@ -31,6 +31,7 @@ Pre-fetch and aggregate weekly data; write a structured prep file for /retro-wee
 - Each source can fail → `(source unavailable: <reason>)`. Empty source → `(none)`.
 - This is **data**, not analysis. Do not editorialize.
 - After writing, echo: `weekly-retro-prep wrote <target> sections=8`.
+- **Never create a fake `$HOME` or copy `~/.pdctx` into cwd.** The real `$HOME` is correctly set by hermes / the calling shell. Any sandbox staging belongs in `/tmp`, not in the vault.
 
 ## Sources
 
