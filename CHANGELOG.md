@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased (v1.0.0-rc.3 candidate)
+## Unreleased
 
 ### Added
 
@@ -70,6 +70,39 @@ several stale dispatch references in composite commands. Trimming
 The remaining substrate (pdctx hooks, memory firewall, using-pandastack
 contract, careful gate, etc.) was audited and judged justified — each
 solves something the model cannot do reliably from prompting alone.
+
+## v1.0.0 — 2026-05-03
+
+Stable cut. Dogfood window 2026-04-29 → 2026-05-03 complete. API and schema frozen from this version forward.
+
+### Added
+
+- 39 skills across dev, knowledge, writing, work, research, retro, and decision lifecycles
+- 8 context recipes (4 public + 4 work contexts via private overlay)
+- 5 personas: eng, design, ceo, ops, product
+- 7 lifecycle flows: dev, knowledge, writing, work, research, retro, decision
+- JSONL session timeline (Track B): one event per action to `~/.pdctx/audit/timeline-YYYY-MM-DD.jsonl`; opt-out via `PDCTX_TIMELINE_DISABLED=1`
+- Skill context metadata schema (Track C): optional `reads / writes / forbids / domain / classification` frontmatter fields
+- Layer 5 firewall (Track D): per-skill tool-argument allowlist enforced at PreToolUse; opt-out via `PDCTX_L5_DISABLED=1`
+- 3 Hermes cron jobs: morning-briefing (daily 8 AM), evening-distill (daily 10 PM), weekly-retro-prep (Fri 9 AM)
+- 3 new skills: `morning-briefing`, `evening-distill`, `weekly-retro-prep`
+- pdctx CLI 1.0.0: `--cwd`, `--sandbox`, `--allow-network`, `--writable-roots` flags
+- Public README with Three-Tier architecture diagram, install instructions, and telemetry/firewall documentation
+
+### Schema
+
+- Skill frontmatter adds optional `reads`, `writes`, `forbids`, `domain`, `classification` fields. Backward compatible: skills without these are treated as `domain: shared, classification: read`. `pdctx skill-validate` warns on missing metadata instead of failing.
+
+### Removed
+
+- `qmd` retired 2026-05-02; `gbq` (gbrain hybrid search) replaces it
+
+### Known Issues
+
+- L5 false-positive on stale `active-skill.json` (P2 — Stop hook needed to clear on session end)
+- `vault:` prefix assumes single vault root; multi-vault setups need explicit `file:` entries (P2)
+
+---
 
 ## v1.0.0-rc.2 — 2026-04-30
 

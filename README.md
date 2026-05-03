@@ -1,28 +1,63 @@
 # pandastack
 
-Personal AI operator OS for Claude Code, with Codex CLI compatibility. 5 agent personas, ~37 skills, 7 lifecycle flows, 8 context recipes. Zero runtime dependencies.
+Personal context-aware AI operator OS — declare contexts once, AI runtimes follow.
 
-## What It Does
+## What is pandastack
 
-pandastack v1 is a stack of skills and lifecycle flows that turn Claude Code into a small team covering the seven lifecycles where personal AI compounds:
+The **Tier 1 substrate** is runtime-agnostic: identity, voice, skill content, knowledge vault, and personal CLI tools live on disk. All runtimes read the same `AGENTS.md` before acting. No vendor lock-in at the data layer.
 
-| Lifecycle | What it does |
-|---|---|
-| dev | brief → build → review → ship → extract |
-| knowledge | capture → distill → verify → ship → lint |
-| writing | capture → structure → draft → ship → distribute |
-| work | triage → context → execute → ship → push (vault-only) |
-| research | scope → fetch → dive → distill → ship |
-| retro | daily → weekly → monthly cadence with auto-scan |
-| decision | cron-driven decision triage |
+The **Tier 2 runtimes** (Claude Code, Codex CLI, Gemini CLI) are thin consumers of Tier 1. Each gets a slim shim in its dotdir (`~/.claude/`, `~/.codex/`, `~/.gemini/`). Skills, flows, and context recipes are identical across runtimes; a per-CLI tool-name mapping handles syntax differences.
 
-Skills compose into flows. Flows bind to identity via context recipes. The system compounds across sessions through learnings, decisions, and memory.
+The **Tier 3 schedulers** (launchd, Hermes, Claude CronCreate) orchestrate Tier 2. Hermes spawns Codex on OpenAI quota for overnight cron jobs, preserving Claude token budget for foreground work. All three layers share the same Tier 1 substrate — no duplication, no drift.
 
-For the disambiguation index of every skill / agent / flow / context, see [RESOLVER.md](RESOLVER.md).
+```mermaid
+flowchart TB
+    User((User))
+
+    subgraph T3 [Tier 3 — Schedulers]
+        direction LR
+        launchd[launchd / system cron]
+        hermes[Hermes · OpenAI quota]
+        cron[Claude CronCreate]
+    end
+
+    subgraph T2 [Tier 2 — Runtimes]
+        direction LR
+        cc[Claude Code]
+        cx[Codex CLI]
+        gem[Gemini CLI · not wired]
+    end
+
+    subgraph T1 [Tier 1 — Substrate]
+        direction TB
+        agents[AGENTS.md · identity / voice / routing]
+        skills[pandastack · skills / flows / contexts]
+        knowledge[knowledge vault · SSOT]
+        cli[personal CLI tools · gbq · pdctx · ...]
+    end
+
+    User --> T3
+    User --> T2
+    T3 --> T2
+    T2 --> T1
+
+    style gem stroke-dasharray: 5 5
+```
+
+## Status
+
+v1.0.0 stable. Dogfooded by 1 user since 2026-04-29. API and schema are stable from this version forward.
+
+## What's in it
+
+- **39 skills** across dev, knowledge, writing, work, research, retro, and decision lifecycles
+- **8 context recipes** (4 public + 4 work contexts via private overlay)
+- **5 personas**: eng, design, ceo, ops, product
+- **7 lifecycle flows**: dev, knowledge, writing, work, research, retro, decision
 
 ## Install
 
-pandastack is a Claude Code plugin. Install via the built-in marketplace system.
+pandastack is a Claude Code plugin. Install via the built-in plugin marketplace:
 
 ```
 /plugin marketplace add panda850819/pandastack
@@ -30,7 +65,7 @@ pandastack is a Claude Code plugin. Install via the built-in marketplace system.
 /reload-plugins
 ```
 
-For local development (cloned the repo yourself):
+For local development (cloned repo):
 
 ```
 /plugin marketplace add ~/path/to/pandastack
@@ -38,207 +73,120 @@ For local development (cloned the repo yourself):
 /reload-plugins
 ```
 
-Then in your project, run `/pandastack:init` once.
+Run `/pandastack:init` once in your project after install.
 
-### Other runtimes
+**pdctx CLI** (context switching, firewall, cron dispatch — separate repo):
 
-Pandastack v1.0.0-rc.2+ also runs on Codex CLI via native skill discovery. See [`plugins/pandastack/.codex/INSTALL.md`](plugins/pandastack/.codex/INSTALL.md) for the clone + symlink install path. Tested on Codex CLI 0.124.0. Lifecycle skills are fully portable; `tool-*` skills depending on local CLIs (gbq / bird / notion-cli / slack / etc.) require those CLIs in the host environment.
-
-## Skills
-
-All skills are namespaced under `pandastack:*`. There are ~37 of them in v1, grouped by lifecycle. See [RESOLVER.md](RESOLVER.md) for the full catalog and disambiguation guide. The dev-workflow primitives are listed below; all other skills (knowledge / writing / work / research / retro / tool wrappers / persona thinking) live in RESOLVER.
-
-### Dev workflow primitives
-
-| Skill | What It Does |
-|-------|-------------|
-| `/pandastack:init` | One-time project setup |
-| `/pandastack:grill` | Adversarial requirement discovery (`--mode structured` for the old brief flow) |
-| `/pandastack:review` | Parallel 3-pass review + Codex cross-check + learnings |
-| `/pandastack:qa` | Browser-based QA with structured assertions and parallel testing |
-| `/pandastack:ship` | Test + commit + PR (+ tag/release if configured) |
-| `/pandastack:careful` | Confirmation gates for destructive commands on prod/shared code |
-| `/pandastack:freeze` | Lock editing scope to specific paths for the session |
-| `/pandastack:checkpoint` | Save or resume working state snapshots |
-
-## Commands (Composites)
-
-| Command | What It Runs |
-|---------|-------------|
-| `/brainstorm` | New idea: diverge → filter → define → research → cost → go/no-go |
-| `/sprint` | Full flow: brief → build → review → qa → ship → compound |
-| `/design` | Design-driven: brief → design → build → review → qa → ship |
-| `/fix` | Bug fix: debug → fix → review → ship → compound |
-| `/quick` | Small change: review → ship |
-
-## Agents
-
-5 replaceable agent personas in `plugins/pandastack/agents/`:
-
-| Agent | Role | When |
-|-------|------|------|
-| `eng.md` | Staff engineer — build, review, debug, ship | dev / knowledge / work flows |
-| `product.md` | VP Product — requirements, scope, metrics | grill --mode structured, sprint planning |
-| `design.md` | Senior designer — UI/UX, accessibility, anti-slop | UI work, design reviews |
-| `ceo.md` | Strategic advisor — scope decisions, kill/pivot (read-only) | Large scope, finance lifecycle |
-| `ops.md` | COO — systems-without-you, process when painful (new in v1) | work / decision flows, team coordination |
-
-Don't like the default eng persona? Replace `agents/eng.md` with your own. All skills that reference it pick up the change.
-
-## Learning System
-
-Learnings are markdown files with YAML frontmatter, stored in your repo at `docs/learnings/`.
-
-```markdown
----
-type: pitfall
-key: n-plus-one-api
-confidence: 8
-source: observed
-skill: review
-files:
-  - src/api/users.ts
-created: 2026-03-30
-last_seen: 2026-03-30
----
-
-## Problem
-API endpoints query DB in a loop, causing N+1.
-
-## Solution
-Use batch query or eager loading.
-
-## Prevention
-Grep for `for.*await.*find` pattern during review.
+```bash
+git clone https://github.com/panda850819/pdctx ~/path/to/pdctx
+cd ~/path/to/pdctx && bun install && bun link
+pdctx init
+pdctx use personal:developer
 ```
 
-- **Confidence decay**: observed/inferred learnings lose 1 point per 30 days. User-stated preferences never decay.
-- **Dedup**: before writing, check for existing learnings with the same key. Update instead of duplicate.
-- **Prune**: `/pandastack:retro-week` flags learnings with confidence < 3 for user review.
-- **Storage**: defaults to `docs/learnings/` in your repo. Configurable to any path (global dir, Obsidian vault, etc.).
+**Codex CLI**: see [`plugins/pandastack/.codex/INSTALL.md`](plugins/pandastack/.codex/INSTALL.md).
+
+## Quickstart
+
+| Command | Outcome |
+|---|---|
+| `pdctx status` | Shows active context, recent calls, in-flight dispatches |
+| `pdctx use personal:writer` | Switches to writer context; injects persona + skill subset |
+| `pdctx call personal:developer "summarize today's note"` | Dispatches subagent with full context injected |
+| `gbq "<question>"` | Vault hybrid search (requires gbrain) |
+| `/morning-briefing` | Invokes the morning briefing skill manually |
+
+## Contexts
+
+Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds a flow, persona, skill subset, memory namespace, and gbrain source list to a specific identity.
+
+| Context | Purpose |
+|---|---|
+| `personal:developer` | Personal dev work — eng persona, dev + knowledge flows |
+| `personal:writer` | Personal writing — writing + knowledge flows |
+| `personal:knowledge-manager` | Vault maintenance, wiki lint, knowledge lifecycle |
+| `personal:trader` | Market research, on-chain analysis, trading flows |
+| *(4 work contexts)* | Org-specific roles — defined in a private overlay |
+
+## Personas
+
+5 replaceable personas in `plugins/pandastack/agents/`:
+
+| Persona | Role |
+|---|---|
+| `eng` | Staff engineer — build, review, debug, ship |
+| `design` | Senior designer — UI/UX, accessibility, anti-slop |
+| `ceo` | Strategic advisor — scope decisions, kill/pivot |
+| `ops` | COO — systems that run without you, process design |
+| `product` | VP Product — requirements, scope, metrics |
+
+Replace any persona file; all skills that reference it pick up the change after `/reload-plugins`.
 
 ## Lifecycle Flows
 
-7 lifecycle flow specs in `plugins/pandastack/flows/`:
+7 flow specs in `plugins/pandastack/flows/`:
 
-- `dev.md` — feature / debug / refactor lifecycle
-- `knowledge.md` — note capture / distill / verify lifecycle
-- `writing.md` — draft / structure / publish lifecycle
-- `work.md` — alert / ticket / Slack ask → triage → ship lifecycle (vault-only writes)
-- `research.md` — unfamiliar concept → fetch → distill lifecycle
-- `retro.md` — daily / weekly / monthly cadence
-- `decision.md` — cron-driven decision triage
-
-Each flow lists Trigger / Phases / Exit / Anti-patterns / Skill choreography. They're not skills — they're spec for which skill chain handles a given lifecycle.
-
-## Context Recipes
-
-8 context recipe TOML files in `plugins/pandastack/contexts/`. These bind flow + persona + skill subset to a specific identity. They're the v0 schema for the pdctx loader (separate project, future).
-
-| Context | Identity |
+| Flow | Lifecycle |
 |---|---|
-| `personal-developer` | Personal dev work |
-| `personal-writer` | Personal writing |
-| `personal-knowledge-manager` | Personal knowledge work |
-| `personal-trader` | Personal trading (private) |
-| `work-yei-ops` | Yei Ops Manager (private) |
-| `work-yei-hr` | Yei HR (private) |
-| `work-yei-finance` | Yei Finance (private) |
-| `work-sommet-abyss-po` | Sommet Abyss product owner (private) |
+| `dev` | brief → build → review → qa → ship → extract |
+| `knowledge` | capture → distill → verify → ship → lint |
+| `writing` | capture → structure → draft → ship → distribute |
+| `work` | triage → context → execute → ship → push (vault-only) |
+| `research` | scope → fetch → dive → distill → ship |
+| `retro` | daily / weekly / monthly cadence with auto-scan |
+| `decision` | cron-driven decision triage |
 
-## Customize
+## Telemetry opt-out
 
-### Replace an Agent
+pandastack appends one JSON event per action to a daily JSONL timeline:
 
-Copy `plugins/pandastack/agents/eng.md`, edit the Soul and Iron Laws, save. All skills that use the eng agent pick up your changes after `/reload-plugins`.
-
-### Change Learnings Location
-
-In your project's CLAUDE.md:
-
-```yaml
-## pandastack
-learnings: ~/my-vault/knowledge/learnings   # any path
+```
+~/.pdctx/audit/timeline-YYYY-MM-DD.jsonl
 ```
 
-### Add Your Own Skills
+Events: `session_start`, `skill_invoke`, `tool_use`, `firewall_decision`, `session_end`. No prompt content, tool arguments, or file contents are logged.
 
-pandastack skills are just SKILL.md files. Add new ones to `plugins/pandastack/skills/your-skill/SKILL.md` and `/reload-plugins`.
+```bash
+export PDCTX_TIMELINE_DISABLED=1   # disable the timeline entirely
+export PDCTX_L5_DISABLED=1         # disable L5 firewall only (timeline stays on)
+```
 
-## Path tokens (for external users)
+See [`docs/telemetry.md`](docs/telemetry.md) for the schema and sample analysis queries.
 
-Pandastack skills don't hardcode the author's filesystem layout. Instead, they reference paths via `<placeholder>` tokens that you bind to your own paths via a private overlay.
+## Layer model (firewall)
 
-Tokens in use across public skills:
+Five active layers between context declaration and tool execution:
 
-| Token | What it means |
+| Layer | Mechanism |
 |---|---|
-| `<personal-vault>` | Your personal Obsidian / knowledge vault root |
-| `<work-vault>` | Your work vault root (separate from personal, for de-sensitive backflow) |
-| `<memory-dir>` | Your Claude Code per-project memory directory (e.g. `~/.claude/projects/<project>/memory/`) |
-| `<notion-cli-dir>` | Where notion-cli is installed (used by `tool-notion`) |
-| `<slack-cli-dir>` | Where slack-cli is installed (used by `tool-slack`) |
-| `<your-handle>` | Your Slack handle (used in DM-to-self examples) |
+| L1 | Prompt-level persona / voice / banned phrases |
+| L2 | Filesystem chmod on memory namespace per context |
+| L3 | MCP deny list enforced at PreToolUse |
+| L4 | Context recipe loaded via `pdctx use` |
+| L5 | Per-skill allowlist on tool args and file paths |
 
-When the active runtime sees a token in a skill instruction, it substitutes from the active context's bindings. Today this happens via a private overlay markdown file appended at `SessionStart` (see the `using-pandastack` overlay extension). Tomorrow this is the contract a `pdctx` context loader will fill.
+L5 reads `reads`, `writes`, `forbids`, and `classification` from each SKILL.md's frontmatter. Skills without frontmatter metadata are treated as permissive with a warning. See [`docs/firewall-l5.md`](docs/firewall-l5.md) for the decision tree, sample deny output, and known gaps.
 
-### Bind tokens for yourself
+## Multi-runtime arbitrage
 
-Either:
+Claude Code (Opus) handles foreground reasoning where depth matters. Codex CLI takes multi-file edits and batch tasks via `pdctx call`, spending OpenAI subscription quota instead of Claude tokens. Hermes schedules overnight Codex jobs against the same Tier 1 substrate. Gemini CLI is in Tier 2 but not yet wired; the planned use case is long-document distill passes requiring 1M-token context.
 
-1. **Use pdctx (planned)** — when pdctx ships its context loader, the contexts in `plugins/pandastack/contexts/*.toml` will resolve tokens against a user-level `~/.pdctx/config.toml` paths block. Until then, use option 2.
-2. **Write a private overlay** — create your own `pandastack-private` (or any name) repo with an `overlays/using-pandastack.md` file binding tokens to your paths. Wire it into the `using-pandastack` overlay extension via `${PANDASTACK_OVERLAY}` env var. Example overlay content:
+## Hermes jobs (current)
 
-   ```markdown
-   ## Personal context bindings
+| Job | Schedule | Skill |
+|---|---|---|
+| Morning Briefing | `0 8 * * *` (daily 8 AM) | `/morning-briefing` |
+| Evening Distill | `0 22 * * *` (daily 10 PM) | `/evening-distill` |
+| Weekly Retro Prep | `0 9 * * 5` (Fri 9 AM) | `/weekly-retro-prep` |
 
-   - `<personal-vault>`: /Users/yourname/path/to/your/personal-vault
-   - `<work-vault>`: /Users/yourname/path/to/your/work-vault
-   - `<memory-dir>`: /Users/yourname/.claude/projects/<your-project>/memory/
-   - `<notion-cli-dir>`: /Users/yourname/path/to/notion-cli
-   ```
+## Contributing
 
-The public skills are deliberately portable — no path in them encodes the author's layout. If you find one that does, that's a bug in the hygiene contract; please open an issue.
+Skills go in `plugins/pandastack/skills/<name>/SKILL.md`. Keep each skill under 80 lines. Run `pdctx skill-validate` before opening a PR. Frontmatter fields `reads`, `writes`, `forbids`, `domain`, and `classification` are optional but recommended for L5 coverage. See [SKILL-FRONTMATTER.md](SKILL-FRONTMATTER.md) for the schema.
 
-## Repo Layout
+## License
 
-```
-pandastack/
-├── .claude-plugin/
-│   └── marketplace.json          # marketplace manifest (single-plugin)
-├── plugins/
-│   └── pandastack/
-│       ├── .claude-plugin/
-│       │   └── plugin.json       # plugin manifest
-│       ├── agents/               # 5 agent personas (ceo, design, eng, ops, product)
-│       ├── commands/             # composite commands
-│       ├── skills/               # ~37 skills (one dir per skill, each with SKILL.md)
-│       ├── flows/                # 7 lifecycle flow specs
-│       ├── contexts/             # 8 context recipes (.toml) — read by pdctx loader
-│       ├── lib/                  # shared snippets (confidence decay, gate contracts, etc.)
-│       ├── CLAUDE.md
-│       └── PHILOSOPHY.md
-├── CHANGELOG.md
-├── RESOLVER.md                   # disambiguation index for the full surface area
-└── README.md
-```
+MIT
 
-## Uninstall
+## Acknowledgements
 
-```
-/plugin uninstall pandastack
-```
-
-## Philosophy
-
-See [PHILOSOPHY.md](plugins/pandastack/PHILOSOPHY.md).
-
-**In one sentence**: pandastack lets you coach your own team.
-
-## History
-
-Renamed from `pstack` on 2026-04-29 as part of the pdctx framework split. The old `setup` script (gstack-style symlink installer with `ps-*` prefix) is sunset; Claude Code's native plugin marketplace replaces it.
-
-v1.0.0-rc.1 (2026-04-29): scope expansion from dev-only to 7 lifecycles + 8 context recipes.
-v1.0.0-rc.2 (2026-04-30): Codex CLI multi-CLI support (Superpowers-pattern shim + tool-name mapping).
-See [CHANGELOG.md](CHANGELOG.md).
+Inspired by gstack's JSONL session timeline; iterated upon for context isolation.
