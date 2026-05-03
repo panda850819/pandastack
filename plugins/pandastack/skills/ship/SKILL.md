@@ -3,6 +3,26 @@ name: ship
 description: |
   Test, commit, and create PR. One command from "code done" to
   "PR open". Use when asked to "ship", "create PR", or "we're done".
+reads:
+  - repo: "**"
+  - repo: CLAUDE.md
+  - repo: docs/briefs/**
+  - repo: docs/learnings/**
+  - cli: git
+writes:
+  - repo: "**"
+  - cli: git commit
+  - cli: git branch
+  - cli: git tag
+  - cli: git push
+  - cli: gh pr create
+  - cli: gh release create
+  - cli: stdout
+forbids:
+  - cli: git push --force
+  - cli: git push origin main
+domain: shared
+classification: exec
 ---
 
 # Ship

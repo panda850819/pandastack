@@ -4,6 +4,21 @@ description: |
   Use when asked to "review", "check my code", or before creating a PR.
   Parallel 3-pass review (correctness, security, architecture) with
   cold review, Codex adversarial cross-check, and learning integration.
+reads:
+  - repo: "**"
+  - repo: CLAUDE.md
+  - repo: docs/briefs/**
+  - repo: docs/learnings/**
+  - cli: git
+  - cli: grep
+writes:
+  - repo: "**"
+  - cli: stdout
+forbids:
+  - cli: git push
+  - cli: gh pr create
+domain: shared
+classification: hybrid
 ---
 
 # Code Review

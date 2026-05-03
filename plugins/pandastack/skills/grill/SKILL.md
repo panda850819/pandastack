@@ -8,6 +8,18 @@ description: |
   when the user says "grill me on X", "interrogate this idea", "stress test this
   scope", "draft a brief", "structured intake". Skip for tasks where scope is
   already concrete.
+reads:
+  - repo: docs/learnings/**
+  - repo: lib/goal-mapping.md
+  - vault: knowledge/**
+writes:
+  - vault: Inbox/grill-*.md
+  - repo: docs/briefs/*.md
+  - cli: stdout
+forbids:
+  - vault: work-vault/**
+domain: shared
+classification: hybrid
 ---
 
 # Grill

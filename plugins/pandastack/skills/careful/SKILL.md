@@ -4,6 +4,18 @@ description: |
   Use when working on production code, shared infrastructure, or
   unfamiliar codebases. Adds confirmation gates before destructive
   commands (force push, rm -rf, publish, DROP).
+reads: []
+writes:
+  - cli: stdout
+forbids:
+  - cli: git push --force
+  - cli: git reset --hard
+  - cli: git clean -f
+  - cli: rm -rf
+  - cli: npm publish
+  - cli: cargo publish
+domain: shared
+classification: exec
 ---
 
 # Careful Mode
