@@ -2,7 +2,7 @@
 name: done
 description: Save session context, summarize work, persist memory at session end. Triggers on "/done", "session done", "wrap up".
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
-version: "3.1.2"
+version: "3.1.3"
 user-invocable: true
 ---
 
@@ -98,7 +98,34 @@ If P0/P1 follow-ups were identified, also append them under `## Action Items` (c
 - [ ] [P0] <action> — from [[YYYY-MM-DD-session-slug]]
 ```
 
-If the daily note doesn't exist yet, create it with standard frontmatter (`date`, `status: draft`).
+If the daily note doesn't exist yet, create it with the n8n-aligned superset schema so a race-create with the Telegram Daily Collector workflow doesn't diverge:
+
+```markdown
+---
+date: YYYY-MM-DD
+status: draft
+message_count: 0
+tags: [daily]
+---
+
+# YYYY-MM-DD Daily Log
+
+## 想法
+
+## 連結收集
+
+## 轉發
+
+## Session: <topic>
+
+- ...
+
+## Action Items
+
+- ...
+```
+
+Both n8n's `Telegram Daily Collector` workflow (Merge Content node, post-2026-05-03) and `/done` create with this exact shape, so independent creates produce structurally identical files that git auto-merges. Do NOT modify the n8n-owned sections (`想法` / `連結收集` / `轉發`) or `message_count` — those belong to the n8n write path.
 
 ---
 
