@@ -20,10 +20,13 @@ public = [
   "pandastack:tool-web-extract", # pull reference URLs into clean markdown
   "pandastack:tool-bird",       # read/draft X threads
   "pandastack:tool-summarize",  # summarize source material
+  "pandastack:morning-briefing", # daily note prep brief for Hermes 8am cron
+  "pandastack:evening-distill", # end-of-day distill queue prep for Hermes 10pm cron
   "pandastack:think-like-naval", # framing / mental models check
   "pandastack:think-like-alan-chan", # product / builder narrative lens
   "pandastack:retro-week",
   "pandastack:retro-month",
+  "pandastack:weekly-retro-prep", # Friday 9am cron data-prep for /retro-week
   "pandastack:done",
 ]
 private = []
