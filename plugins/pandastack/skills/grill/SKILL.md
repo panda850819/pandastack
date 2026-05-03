@@ -17,7 +17,7 @@ writes:
   - repo: docs/briefs/*.md
   - cli: stdout
 forbids:
-  - vault: work-vault/**
+  - file: /Users/panda/site/knowledge/work-vault/**
 domain: shared
 classification: hybrid
 ---

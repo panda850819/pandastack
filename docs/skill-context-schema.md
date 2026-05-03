@@ -16,7 +16,7 @@ writes:
   - repo: docs/briefs/*.md
   - cli: stdout
 forbids:
-  - vault: work-vault/**
+  - file: /Users/panda/site/knowledge/work-vault/**
   - cli: git push --force
 domain: personal
 classification: hybrid
@@ -59,6 +59,26 @@ Known sources:
 
 Path targets must not contain `..`, NUL bytes, or a leading `~`. Absolute
 paths are only allowed for `file:` entries. Quote `**` in YAML when needed:
+
+## vault: Resolution
+
+`vault:` always resolves against the **primary vault root** of the active
+pdctx context (default: `~/site/knowledge/obsidian-vault`). Patterns are
+joined with that root at runtime: `vault: Blog/_daily/*.md` expands to
+`<vault-root>/Blog/_daily/*.md`.
+
+For resources outside the primary vault (for example, a sibling work-vault),
+use `file:` with absolute paths:
+
+```yaml
+forbids:
+  - file: /Users/panda/site/knowledge/work-vault/**
+```
+
+Using `vault: work-vault/**` in `forbids` is a common mistake — it expands
+to `<primary-vault>/work-vault/**` which typically matches nothing. `pdctx
+skill-validate` warns when a `vault:` entry carries an absolute path (likely
+the author intended `file:` instead). Quote `**` in YAML when needed:
 
 ```yaml
 reads:

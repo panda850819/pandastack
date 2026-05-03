@@ -12,7 +12,7 @@ writes:
   - file: /tmp/morning-briefing-smoke.md
   - cli: stdout
 forbids:
-  - vault: work-vault/**
+  - file: /Users/panda/site/knowledge/work-vault/**
 domain: personal
 classification: hybrid
 allowed-tools: Bash, Read, Write, Edit, Grep
