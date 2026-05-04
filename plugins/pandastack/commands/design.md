@@ -2,7 +2,7 @@ Run a design-driven development flow for: $ARGUMENTS
 
 Follow this sequence:
 
-1. Run /brief to clarify requirements (product agent focus)
+1. Run /grill --mode structured to clarify requirements (product agent focus)
 2. Use the design agent (read agents/design.md) to:
    - Research existing patterns and DESIGN.md
    - Propose 2-3 design directions

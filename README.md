@@ -55,9 +55,24 @@ v1.0.0 stable. Dogfooded by 1 user since 2026-04-29. API and schema are stable f
 - **5 personas**: eng, design, ceo, ops, product
 - **7 lifecycle flows**: dev, knowledge, writing, work, research, retro, decision
 
+## Runtime support
+
+pandastack is not a monolithic runtime. It is a stack package: shared skills, flows, personas, context recipes, and conventions that different hosts can consume.
+
+Host design notes live in [`docs/ADDING_A_HOST.md`](docs/ADDING_A_HOST.md).
+
+| Host | Status | Install model |
+|---|---|---|
+| Claude Code | First-class | Claude plugin marketplace, local repo or GitHub repo |
+| Codex CLI | Supported | Native skill discovery via clone + symlink |
+| Hermes | Supported as scheduler / host, not as first-class packaged runtime yet | Use `pdctx` for context dispatch, or import/symlink selected skills into `~/.hermes/skills/` |
+| OpenClaw | Planned / experimental | Intended shape is a skill package, not shipped as a first-class installer in this repo yet |
+
 ## Install
 
-pandastack is a Claude Code plugin. Install via the built-in plugin marketplace:
+### 1. Claude Code, recommended path
+
+Install from GitHub marketplace source:
 
 ```
 /plugin marketplace add panda850819/pandastack
@@ -65,26 +80,72 @@ pandastack is a Claude Code plugin. Install via the built-in plugin marketplace:
 /reload-plugins
 ```
 
-For local development (cloned repo):
+Install from a local cloned repo, useful for dogfood and author testing:
 
 ```
-/plugin marketplace add ~/path/to/pandastack
+/plugin marketplace add /absolute/path/to/pandastack
 /plugin install pandastack@pandastack
 /reload-plugins
 ```
 
-Run `/pandastack:init` once in your project after install.
+After install, run `/pandastack:init` once inside your project.
 
-**pdctx CLI** (context switching, firewall, cron dispatch — separate repo):
+### 2. Codex CLI
+
+Codex consumes pandastack through native skill discovery, not the Claude plugin manifest.
+
+See [`plugins/pandastack/.codex/INSTALL.md`](plugins/pandastack/.codex/INSTALL.md) for the full clone + symlink flow.
+
+Minimal path:
 
 ```bash
-git clone https://github.com/panda850819/pdctx ~/path/to/pdctx
-cd ~/path/to/pdctx && bun install && bun link
+git clone https://github.com/panda850819/pandastack.git ~/.codex/pandastack
+ln -s ~/.codex/pandastack/plugins/pandastack/skills ~/.codex/skills/pandastack
+```
+
+Then restart Codex.
+
+### 3. Hermes
+
+Hermes does not consume the Claude plugin manifest directly. Today there are two valid ways to use pandastack with Hermes.
+Detailed guide: [`docs/HERMES.md`](docs/HERMES.md)
+
+#### Option A, recommended: Hermes as scheduler / host, `pdctx` as dispatch layer
+
+This is the setup used in dogfood. Hermes cron or chat triggers a `pdctx call ...`, and `pdctx` injects the right context, persona, and skill subset into the downstream runtime.
+
+```bash
+git clone https://github.com/panda850819/pdctx ~/site/cli/pdctx
+cd ~/site/cli/pdctx
+bun install
+bun link
 pdctx init
 pdctx use personal:developer
 ```
 
-**Codex CLI**: see [`plugins/pandastack/.codex/INSTALL.md`](plugins/pandastack/.codex/INSTALL.md).
+Example dispatch:
+
+```bash
+pdctx call personal:writer "/morning-briefing"
+```
+
+#### Option B, direct Hermes skill import
+
+If you want Hermes to load the skills directly, symlink or copy selected skill folders from `plugins/pandastack/skills/` into `~/.hermes/skills/` under your preferred category layout.
+
+This repo does not currently ship a first-class Hermes package manifest. The content is portable, but packaging is still manual.
+
+### 4. OpenClaw
+
+OpenClaw support is not shipped here as a first-class installer yet.
+Detailed guide: [`docs/OPENCLAW.md`](docs/OPENCLAW.md)
+
+Current intended direction:
+- pandastack content stays host-agnostic
+- OpenClaw should consume it as a skill package, not via the Claude plugin manifest
+- host-specific glue, naming, and runtime contracts should live on the OpenClaw side
+
+If you want to experiment today, use `plugins/pandastack/skills/` as the source of truth and adapt the host-side manifest / loader in your OpenClaw environment. Treat this as experimental, not stable install surface.
 
 ## Quickstart
 
@@ -95,6 +156,27 @@ pdctx use personal:developer
 | `pdctx call personal:developer "summarize today's note"` | Dispatches subagent with full context injected |
 | `gbq "<question>"` | Vault hybrid search (requires gbrain) |
 | `/morning-briefing` | Invokes the morning briefing skill manually |
+
+## Local development loop, author workflow
+
+If you are developing pandastack itself, the clean loop is:
+
+1. Clone the repo locally.
+2. Point Claude Code marketplace at that local repo.
+3. Install `pandastack@pandastack` from the local source.
+4. Edit files in the repo.
+5. Run `/reload-plugins` in Claude Code to pick up changes.
+6. Re-run the target skill / flow.
+
+Example:
+
+```
+/plugin marketplace add /absolute/path/to/pandastack
+/plugin install pandastack@pandastack
+/reload-plugins
+```
+
+For Codex, the equivalent loop is `git pull` or local edits on the cloned repo plus a Codex restart. For Hermes direct-import setups, re-copy or re-symlink the changed skill files.
 
 ## Contexts
 
@@ -179,9 +261,98 @@ Claude Code (Opus) handles foreground reasoning where depth matters. Codex CLI t
 | Evening Distill | `0 22 * * *` (daily 10 PM) | `/evening-distill` |
 | Weekly Retro Prep | `0 9 * * 5` (Fri 9 AM) | `/weekly-retro-prep` |
 
+## Updating
+
+### For users
+
+#### Claude Code, installed from GitHub marketplace source
+
+```bash
+/plugin marketplace update pandastack
+/plugin update pandastack@pandastack
+/reload-plugins
+```
+
+#### Claude Code, installed from local repo
+
+Pull the repo or edit it locally, then reload:
+
+```bash
+cd /absolute/path/to/pandastack
+git pull
+```
+
+Then run `/reload-plugins` in Claude Code.
+
+#### Codex CLI
+
+```bash
+cd ~/.codex/pandastack
+git pull
+```
+
+Restart Codex. The symlinked skills update with the repo.
+
+#### Hermes
+
+If you use Hermes through `pdctx`, update `pdctx` and `pandastack`, then re-run the target dispatch. If you use direct copied or symlinked skills, re-copy or re-symlink the changed skill folders.
+
+### For the author / maintainer
+
+Recommended release loop:
+
+1. Update skill / flow / context content in the repo.
+2. Update user-facing docs, especially `README.md` and install notes.
+3. Bump visible version markers when behavior changed:
+   - `CHANGELOG.md`
+   - `plugins/pandastack/.claude-plugin/plugin.json`
+   - `plugins/pandastack/.codex-plugin/plugin.json`
+   - `.claude-plugin/marketplace.json`, if marketplace metadata changed
+4. Verify in the real hosts you claim to support:
+   - Claude Code local marketplace install
+   - Codex clone + symlink install
+   - Hermes `pdctx` dispatch path, if relevant to the change
+5. Push the branch, open a PR, merge, then tell users which update path to run.
+
 ## Contributing
 
-Skills go in `plugins/pandastack/skills/<name>/SKILL.md`. Keep each skill under 80 lines. Run `pdctx skill-validate` before opening a PR. Frontmatter fields `reads`, `writes`, `forbids`, `domain`, and `classification` are optional but recommended for L5 coverage. See [SKILL-FRONTMATTER.md](SKILL-FRONTMATTER.md) for the schema.
+### Before opening a PR
+
+- Keep skill content in `plugins/pandastack/skills/<name>/SKILL.md`
+- Keep each skill concise; the current discipline is roughly under 80 lines unless the extra length clearly earns itself
+- Run validation before opening a PR:
+
+```bash
+pdctx skill-validate
+```
+
+Frontmatter fields `reads`, `writes`, `forbids`, `domain`, and `classification` are optional but recommended for L5 coverage. See [SKILL-FRONTMATTER.md](SKILL-FRONTMATTER.md) for the schema.
+
+### How to open a PR
+
+1. Fork the repo or create a branch from `main`.
+2. Make the smallest coherent change.
+3. Update docs if install surface, runtime behavior, or invocation changes.
+4. Add or update CHANGELOG entries when the change is user-visible.
+5. Open a PR describing:
+   - what changed
+   - which host it affects, Claude Code / Codex / Hermes / OpenClaw
+   - how you tested it
+   - any migration or reload step users need
+
+Repository PRs: [github.com/panda850819/pandastack/pulls](https://github.com/panda850819/pandastack/pulls)
+
+### How to file an issue
+
+Please include:
+- host/runtime, Claude Code / Codex / Hermes / OpenClaw
+- install model, GitHub marketplace / local marketplace / clone + symlink / manual import
+- expected behavior
+- actual behavior
+- reproduction steps
+- relevant logs or screenshots
+
+Repository issues: [github.com/panda850819/pandastack/issues](https://github.com/panda850819/pandastack/issues)
 
 ## License
 

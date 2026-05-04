@@ -48,7 +48,7 @@ If goal mapping has not been done yet (e.g. you are running grill standalone, no
 ## When to use
 
 - Feature scope is fuzzy ("I want a points system" → backfill? retroactive? UI placement? streak rules?)
-- Before writing a PRD or feeding `/brief`
+- Before writing a PRD or feeding `/grill --mode structured`
 - When you suspect hidden constraints (compliance, migration, downstream consumers)
 - User explicitly says "grill me", "stress test this", "what am I missing"
 
@@ -62,6 +62,8 @@ If goal mapping has not been done yet (e.g. you are running grill standalone, no
 ## Protocol
 
 **ONE question at a time.** Wait for the answer. Then pick the next question based on what the answer revealed, not from a pre-baked list.
+
+**Expect rehearsed first answers.** First reply on any axis is usually the polished version. Real answer surfaces after the second or third push. Push once minimum on every axis before switching: "具體一點？" / "你看過嗎？" / "拿掉這個假設會怎樣？".
 
 Drill across these axes (not as a checklist — as a search space):
 
@@ -83,10 +85,21 @@ For each answer:
 
 Stop when one of:
 - 3 consecutive answers reveal no new unknowns
-- User says "enough", "ship it", or expresses impatience
 - 7+ questions answered (avoid bike-shedding)
+- User triggers escape hatch (see below)
 
-Do NOT keep asking after the user has signaled "enough" — Pocock's grill is meant to surface hidden requirements, not exhaust the user.
+### Escape hatch (hard cap)
+
+User signals impatience ("夠了" / "ship it" / "skip the questions" / "just do it"):
+
+**First push-back:** acknowledge once, ask the 2 most critical remaining axes, then stop.
+> "聽到。剩兩題收。"
+
+**Second push-back (same session):** stop immediately. Write a line to the grill log:
+> `Stopped at user request after Q{N}. Unprocessed axes: {list}.`
+Proceed to Output. Flag unprocessed axes as OPEN_QUESTIONS in the log.
+
+**Do NOT ask a third time.** No "are you sure?", no "one more thing". Respect the second stop.
 
 ## Output
 
@@ -105,7 +118,7 @@ After grilling ends, produce:
 - [if any]
 
 ### Recommended next step
-- Feed into /brief (if implementation track)
+- Feed into /grill --mode structured (if implementation track)
 - Feed into PRD draft (if planning track)
 - Park as memo (if not ready to act)
 ```
@@ -208,13 +221,17 @@ OPEN QUESTIONS:
 
 This is the human-agent alignment checkpoint. Surface everything so the user can correct before implementation direction is chosen.
 
-## Step 4: Alternatives
+## Step 4: Alternatives (MANDATORY)
 
 Generate 2-3 implementation approaches **filtered to options that serve Step 1.5's dominant goal layer**. Flag any approach that violates a non-dominant layer's constraints (e.g. dominant=L3 but option breaks L1 portability) so user can weigh the trade-off.
 
-- One **minimal viable** (fewest files, ships fastest)
-- One **ideal** (best long-term architecture)
-- One **creative** (unexpected framing — optional)
+**Rules (not optional):**
+- At least 2 approaches required. 3 preferred.
+- One must be **minimal viable** (fewest files, ships fastest).
+- One must be **ideal architecture** (best long-term trajectory).
+- These two have **equal weight**. Don't default to minimal viable just because it's smaller. Recommend whichever best serves the dominant goal layer. **If the right answer is a rewrite, say so.**
+- Optional third: **creative / lateral** (unexpected framing).
+- If only one approach exists, explain concretely why alternatives were eliminated.
 
 ```
 APPROACH A: {name}
@@ -225,11 +242,13 @@ APPROACH A: {name}
 
 APPROACH B: {name}
   ...
-
-RECOMMENDATION: {which and why}
 ```
 
-Ask user to choose before proceeding.
+**RECOMMENDATION:** {A/B/C} because {one-line reason mapped to dominant goal layer}.
+
+**Per-approach gate (do not batch):** present each approach as its own AskUserQuestion with options `Add to plan / Defer / Reject`. Approved approach becomes the chosen path; rejected go to "NOT in scope" in Step 5's brief.
+
+**STOP.** A "clearly winning approach" is still an approach decision. Do NOT proceed to Step 4.5 / Step 5 by writing the recommendation in chat prose and continuing forward — that is the failure mode this gate exists to prevent. Wait for user response.
 
 ## Step 4.5: Scope completeness check
 

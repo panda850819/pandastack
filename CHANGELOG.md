@@ -4,6 +4,62 @@
 
 ### Added
 
+- `skills/harness-survey/`: new skill, two-strike promoted via `/done`
+  Step 3b on 2026-05-04. Pattern: search public ecosystem
+  (`gh search repos`) → fetch top-N READMEs → triage with vault
+  dedup + layer-aware mapping → deep-read top picks → distill to
+  substrate diff → execute approved batches. 6 phases, 5-7 patches
+  cap per run, parks remainder as `[NEXT_BATCH]` in session note
+  for retro-week pickup. Built-in discipline: feedback-log
+  2026-05-01 layer mapping rule (mandatory before triage),
+  AGENTS.md "No phantom quotes" rule (grep -F verify on every
+  Before:/Source: quote), 5-7 patches cap, no auto-push to
+  external systems. Prior strikes:
+  `2026-04-18-harness-architecture-instinct-loop` +
+  `2026-05-03-gstack-distillation-substrate-patches`.
+
+### Removed
+
+- `skills/brief/`: deleted. `grill --mode structured` had already
+  replaced it (see grill SKILL.md line 5 — "replaces the deprecated
+  /brief"); the directory was a zombie. References in
+  `commands/sprint.md`, `commands/design.md`, and grill SKILL.md
+  body updated to point at `/grill --mode structured`.
+
+### Changed
+
+- `skills/grill/SKILL.md` default (adversarial) mode Protocol:
+  added "Expect rehearsed first answers" rule. First reply on any
+  axis is the polished version; push once minimum before switching
+  axes. Concrete push prompts: 具體一點？/ 你看過嗎？/ 拿掉這個假設會怎樣？
+- `skills/grill/SKILL.md` Stopping rule replaced with Escape hatch
+  protocol (hard cap): first push-back acknowledge + ask 2 most
+  critical remaining axes; second push-back stop immediately, log
+  unprocessed axes as OPEN_QUESTIONS, do not ask third time.
+- `skills/grill/SKILL.md` Step 4 Alternatives hardened to
+  MANDATORY: minimum 2 approaches (minimal viable + ideal
+  architecture, equal weight, no minimal-viable-by-default bias),
+  optional creative/lateral third, per-approach AskUserQuestion
+  gate (not batched), explicit STOP rule preventing chat-prose
+  recommendation + silent continuation.
+- `skills/review/SKILL.md` gains **Step 0 System Audit** as fixed
+  opener: 5 commands (git log -30, git diff --stat, git stash list,
+  TODO/FIXME grep, recently touched files) + read CLAUDE.md /
+  AGENTS.md / TODOS.md, report findings in 5 bullets max.
+- `skills/review/SKILL.md` Step 6.5 Codex Adversarial Review:
+  Outside Voice Integration Rule added — codex findings are
+  **informational only**, no auto-boost on cross-model consensus,
+  per-finding `Apply to final report? [Y/N/edit]` gate, N
+  responses route to OPEN_QUESTIONS rather than discarded.
+- `skills/review/SKILL.md` gains **Step 8 Completion Summary**:
+  single ASCII box covering Step 0 audit, brief alignment, pass
+  findings by priority, cold review hits, codex catches + apply
+  count, learnings written, OPEN_QUESTIONS, CRITICAL_GAPS, files
+  reviewed. Printed even on user-aborted runs (unrun steps marked
+  `skipped (user)`).
+
+### Added
+
 - `lib/goal-mapping.md` — shared module documenting goal-hierarchy
   pre-step. Reads user's L1 (long horizon) / L2 (this season) /
   L3 (this week) goals from `<memory-dir>/`, maps the current task to
@@ -13,6 +69,9 @@
   vacuum.
 
 ### Changed
+
+- `README.md`: install surface rewritten around host model instead of Claude-only plugin framing. Added runtime support matrix, Claude local-marketplace author loop, Hermes and OpenClaw status/installation guidance, user update paths, maintainer release loop, and explicit PR / issue contribution instructions.
+- `plugins/pandastack/.claude-plugin/plugin.json` and `plugins/pandastack/.codex-plugin/plugin.json`: version markers bumped from `1.0.0-rc.2` to `1.0.0` to match the stable cut.
 
 - `skills/brief/SKILL.md` and `skills/grill/SKILL.md` (`--mode
   structured`): inserted **Step 1.5 Goal Mapping** between Load

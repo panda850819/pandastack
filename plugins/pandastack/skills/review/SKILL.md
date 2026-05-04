@@ -23,6 +23,29 @@ classification: hybrid
 
 # Code Review
 
+## Step 0: System Audit (fixed opener)
+
+Before scoping the diff, audit branch state. Run these 5 commands. **Do not skip.**
+
+```bash
+git log --oneline -30
+git diff origin/main --stat 2>/dev/null || git diff main --stat 2>/dev/null
+git stash list
+grep -rln "TODO\|FIXME\|HACK\|XXX" --include="*.md" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.py" --include="*.go" --include="*.rb" . 2>/dev/null | head -20
+git log --since=30.days --name-only --format= 2>/dev/null | sort | uniq -c | sort -rn | head -10
+```
+
+Then read (if present): `CLAUDE.md`, `AGENTS.md`, `TODOS.md`.
+
+Report findings in 5 bullets max:
+- Branch state: ahead/behind/diverged
+- Stashed work: count and topics (if any)
+- TODO/FIXME hotspots in changed files
+- Files touched most in past 30 days (architectural drift signal)
+- Convention sources read (which CLAUDE.md / AGENTS.md / TODOS.md)
+
+If output for any command is > 30 lines, summarize. Don't dump raw output into the review.
+
 ## Step 1: Scope
 
 1. Read pstack config from CLAUDE.md.
@@ -184,19 +207,21 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/codex-companion.mjs" adversarial-review --wa
 If the Codex plugin is not available (command fails), skip this step silently
 and note "Codex: unavailable" in the final report.
 
+**Outside Voice Integration Rule:** Codex findings are **informational only**. Each must be explicitly approved by the user before it lands in the final report or any follow-up commit. Cross-model consensus is a strong signal — surface it as such — but **do not auto-elevate** priority or confidence based on consensus alone.
+
 **Merge Codex findings with Steps 5-6 findings:**
-- Codex finding matches a Claude finding → tag as "CROSS-MODEL CONFIRMED"
-  (boost confidence to maximum)
-- Codex finding is novel (not caught by Claude) → tag as "CODEX-CATCH",
-  boost to P1 minimum
-- Codex finding contradicts a Claude "clean" assessment → present both
-  opinions to user, don't auto-resolve
+- Codex finding matches a Claude finding → tag as "CROSS-MODEL CONFIRMED". Display original Claude confidence + Codex confirmation. **Do not auto-boost** to maximum.
+- Codex finding is novel (not caught by Claude) → tag as "CODEX-CATCH, suggested P{N}". The suggested priority is informational. **User approval required** before it enters the final report at that priority.
+- Codex finding contradicts a Claude "clean" assessment → present both opinions to user, don't auto-resolve.
 
 **Output format for Codex findings:**
 ```
-[P0-P3] (CODEX-CATCH, confidence: N%) file:line — description
+[suggested P0-P3] (CODEX-CATCH, confidence: N%) file:line — description
   Fix: recommendation
+  Apply to final report? [Y / N / edit]
 ```
+
+`N` responses go to the Completion Summary's `OPEN_QUESTIONS` count, not discarded silently.
 
 ## Step 7: Write Learnings
 
@@ -211,3 +236,29 @@ If yes, check `{learnings_dir}` for existing learnings with similar key.
 Use the format from `lib/learning-format.md`.
 
 If nothing worth recording: skip silently. Not every review produces learnings.
+
+## Step 8: Completion Summary
+
+Before exiting, print a single ASCII box so the user can see scope at a glance.
+
+```
++============================================================+
+|              REVIEW — COMPLETION SUMMARY                   |
++============================================================+
+| Branch       | {branch}                                    |
+| Commit       | {short hash}                                |
+| Step 0 audit | ran / skipped — {N} stashed, {N} TODOs hit  |
+| Step 3 brief | ON TRACK / DRIFT:{N} / GAP:{N} / no brief   |
+| Step 5 passes| P0:_ P1:_ P2:_ P3:_  ({N} AUTO-FIX applied) |
+| Step 6 cold  | ran / skipped — {N} COLD-CATCH              |
+| Step 6.5 cdx | ran / unavailable — {N} CODEX-CATCH         |
+| Codex apply  | {N} approved, {N} deferred to OPEN_QUESTIONS|
+| Step 7 learn | {N} learnings written / skipped             |
++------------------------------------------------------------+
+| OPEN_QUESTIONS  | {N}                                       |
+| CRITICAL_GAPS   | {N}  (any P0 not approved counts)        |
+| Files reviewed  | {N}                                      |
++============================================================+
+```
+
+If the user aborts mid-review, still print the box. Mark unrun steps as `skipped (user)`. Solves the "did I actually finish review?" ambiguity.

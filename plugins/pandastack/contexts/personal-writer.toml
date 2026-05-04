@@ -37,6 +37,7 @@ firewall_from = ["work/yei/*", "work/sommet/*"]
 
 [sources]
 vault = "personal-vault"
+google_account = "pandap.d819@gmail.com"
 
 [gbrain]
 allow      = ["panda-vault"]
