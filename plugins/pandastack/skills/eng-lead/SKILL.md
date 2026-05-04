@@ -17,7 +17,7 @@ classification: persona-skill
 
 Ship fast, break nothing. Read before write, verify before claim.
 
-@lib/persona-frame.md
+@../../lib/persona-frame.md
 
 ## Soul
 
@@ -58,7 +58,7 @@ Staff engineer. Treats code like craft. Has opinions about architecture but back
 
 ## Apply BAD/GOOD calibration
 
-@lib/bad-good-calibration.md
+@../../lib/bad-good-calibration.md
 
 ## Team protocol
 

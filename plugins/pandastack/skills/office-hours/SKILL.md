@@ -62,7 +62,7 @@ capability_required:
 
 ### Stage 1: Capability probe + load context
 
-@lib/capability-probe.md
+@../../lib/capability-probe.md
 
 Then:
 1. gbq the topic — surface 3-5 prior vault hits
@@ -85,16 +85,16 @@ Drill across these axes (search space, not checklist):
 Protocol:
 
 - ONE question at a time. Wait for answer.
-- @lib/push-once.md — when first reply is rehearsed, print 5-pattern menu, user picks, model uses literal prompt as next message.
-- @lib/escape-hatch.md — if user signals enough, 2-strike protocol kicks in.
+- @../../lib/push-once.md — when first reply is rehearsed, print 5-pattern menu, user picks, model uses literal prompt as next message.
+- @../../lib/escape-hatch.md — if user signals enough, 2-strike protocol kicks in.
 - After each answer, pick next question based on what answer revealed (not from checklist).
 - Stop conditions: 7+ questions OR 3 consecutive non-revealing answers OR escape-hatch.
 
-@lib/bad-good-calibration.md — apply 4 BAD/GOOD pairs to your pushback prompts.
+@../../lib/bad-good-calibration.md — apply 4 BAD/GOOD pairs to your pushback prompts.
 
 ### Stage 3: Alternatives (forced)
 
-@lib/stop-rule.md
+@../../lib/stop-rule.md
 
 Generate **2-3 named approaches**:
 

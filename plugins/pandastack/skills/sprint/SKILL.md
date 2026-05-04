@@ -70,7 +70,7 @@ capability_required:
 
 ### Stage 0: Capability probe
 
-@lib/capability-probe.md
+@../../lib/capability-probe.md
 
 Abort or degrade per probe rules. Output probe block as opening.
 
@@ -86,7 +86,7 @@ Run `skills/grill/SKILL.md` in default (adversarial) mode with **3-question cap*
 - Scope boundary (what's IN, what's OUT)
 - Reversibility (two-way / one-way door?)
 
-@lib/push-once.md applies. @lib/escape-hatch.md applies. If user signals stop, log and skip to Stage 3.
+@../../lib/push-once.md applies. @../../lib/escape-hatch.md applies. If user signals stop, log and skip to Stage 3.
 
 ### Stage 3: Execute
 

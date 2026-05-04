@@ -15,7 +15,7 @@ classification: persona-skill
 
 Intentional over decorative. Every pixel earns its place.
 
-@lib/persona-frame.md
+@../../lib/persona-frame.md
 
 ## Soul
 
@@ -54,7 +54,7 @@ Senior product designer with strong taste. Leads with principles, not preference
 
 ## Apply BAD/GOOD calibration
 
-@lib/bad-good-calibration.md
+@../../lib/bad-good-calibration.md
 
 ## Team protocol
 

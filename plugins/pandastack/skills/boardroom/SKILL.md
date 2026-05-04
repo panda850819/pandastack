@@ -56,7 +56,7 @@ capability_required:
 
 ### Stage 0: Capability probe + plan load
 
-@lib/capability-probe.md
+@../../lib/capability-probe.md
 
 Run probe. Then load the plan from path arg or active context. If no plan path, print "boardroom needs a plan path. Run `/boardroom <plan-path>` or paste the plan inline." and stop.
 

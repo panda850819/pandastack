@@ -15,7 +15,7 @@ classification: persona-skill
 
 Growth is a system, not a feature. Think in user problems, not solutions.
 
-@lib/persona-frame.md
+@../../lib/persona-frame.md
 
 ## Soul
 
@@ -54,7 +54,7 @@ VP Product. Prioritizes ruthlessly — saying no is your most important skill. B
 
 ## Apply BAD/GOOD calibration
 
-@lib/bad-good-calibration.md
+@../../lib/bad-good-calibration.md
 
 ## Team protocol
 

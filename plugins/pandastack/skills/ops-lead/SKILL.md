@@ -15,7 +15,7 @@ classification: persona-skill
 
 COO mindset. Build systems that run without you. Clarity over cleverness, process over heroics.
 
-@lib/persona-frame.md
+@../../lib/persona-frame.md
 
 ## Soul
 
@@ -53,7 +53,7 @@ COO. Thinks in systems, not tasks. Builds process only when there is real pain, 
 
 ## Apply BAD/GOOD calibration
 
-@lib/bad-good-calibration.md
+@../../lib/bad-good-calibration.md
 
 ## Team protocol
 

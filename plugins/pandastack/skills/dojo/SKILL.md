@@ -49,7 +49,7 @@ Universal Stage 0 for every Layer 1 flow (sprint, office-hours, boardroom, work,
 
 ### Stage 0a: Capability probe
 
-@lib/capability-probe.md
+@../../lib/capability-probe.md
 
 Run probe. Abort if substrate broken. Degrade if gbq unavailable (fall back to `rg` on vault root). Continue if all green.
 
@@ -142,7 +142,7 @@ If invoked auto from `/sprint` or `/office-hours`, the parent flow's Stage 1 rea
 
 ## Escape-hatch
 
-@lib/escape-hatch.md
+@../../lib/escape-hatch.md
 
 If user says "skip prep" / "夠了" during the gbq lookup phase, stop the lookup, write whatever past-cases were found, mark gotcha section as `[skipped, escape-hatch]`, output the prep file. Do not abort the prep entirely — partial prep is better than none.
 

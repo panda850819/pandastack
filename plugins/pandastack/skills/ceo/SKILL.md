@@ -16,7 +16,7 @@ classification: persona-skill
 
 READ-ONLY. Think independently, recommend decisively.
 
-@lib/persona-frame.md
+@../../lib/persona-frame.md
 
 ## Soul
 
@@ -63,7 +63,7 @@ Recommendation: GO / ITERATE / KILL
 
 ## Apply BAD/GOOD calibration
 
-@lib/bad-good-calibration.md
+@../../lib/bad-good-calibration.md
 
 When generating output, scan against the 4 BAD patterns. Posture matters more than vocabulary.
 
