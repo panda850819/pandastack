@@ -14,19 +14,19 @@ side = ["retro"]
 
 [skills]
 public = [
-  "pandastack:content-write",   # structure coach + slop detection (3-layer)
+  "pandastack:write",           # voice + slop detection (was: content-write, v1.1 rename)
   "pandastack:write-ship",      # Close → Extract → Backflow for published pieces
   "pandastack:grill",           # adversarial mode to stress-test thesis before committing
   "pandastack:tool-web-extract", # pull reference URLs into clean markdown
   "pandastack:tool-bird",       # read/draft X threads
   "pandastack:tool-summarize",  # summarize source material
-  "pandastack:morning-briefing", # daily note prep brief for Hermes 8am cron
+  "pandastack:brief-morning",   # daily note prep brief for Hermes 8am cron (was: morning-briefing, v1.1 rename)
   "pandastack:evening-distill", # end-of-day distill queue prep for Hermes 10pm cron
   "pandastack:think-like-naval", # framing / mental models check
   "pandastack:think-like-alan-chan", # product / builder narrative lens
   "pandastack:retro-week",
   "pandastack:retro-month",
-  "pandastack:weekly-retro-prep", # Friday 9am cron data-prep for /retro-week
+  "pandastack:retro-prep-week", # Friday 9am cron data-prep for /retro-week (was: weekly-retro-prep, v1.1 rename)
   "pandastack:done",
 ]
 private = []
@@ -53,6 +53,6 @@ deny = [
 ]
 
 [notes]
-# grill in adversarial (default) mode is the thesis stress-tester; run before content-write structure stage to catch weak arguments early.
+# grill in adversarial (default) mode is the thesis stress-tester; run before write structure stage to catch weak arguments early.
 # write-ship handles the full publish loop including mv to Blog/Published/, reverse-citations, and X-thread draft routing to Inbox/x-drafts/.
-# No persona is intentional; content-write's slop detection is the quality gate, not a persona filter.
+# No persona is intentional; write's slop detection is the quality gate, not a persona filter.

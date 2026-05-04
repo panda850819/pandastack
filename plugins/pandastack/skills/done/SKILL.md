@@ -2,13 +2,18 @@
 name: done
 description: Save session context, summarize work, persist memory at session end. Triggers on "/done", "session done", "wrap up".
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
-version: "3.1.3"
+version: "3.2.0"
 user-invocable: true
 ---
 
 # /done — Session Closer
 
-Three steps. Goal: **finish in 1-2 minutes for routine sessions, 3-4 minutes when value scan finds something**. Most sessions end at Step 1.
+Four steps. Goal: **finish in 1-2 minutes for routine sessions, 3-4 minutes when value scan finds something**. Most sessions end at Step 1 + Step 4.
+
+- Step 1: Save session MD + daily note sync (always)
+- Step 2: Memory routing (most sessions skip)
+- Step 3: Value scan (skip if session < 5 substantive turns or purely mechanical)
+- Step 4: Commit handoff (skip if no git repo or working tree clean)
 
 ## Step 1: Save Session MD
 
@@ -260,16 +265,98 @@ Promotion is **draft-and-ask for knowledge/ + feedback**, auto-resolve for refer
 
 ---
 
+## Step 4: Commit handoff (skip if no git repo or no diff)
+
+`/done` is the session-end act. The artifacts it writes (session.md, daily-note updates, memory entries, optional learnings) plus any working-tree code changes from the session are the same commit unit. Propose a single commit; do not require the operator to remember.
+
+### Detection
+
+```bash
+# Working tree has any change?
+DIRTY=$(git status --short 2>/dev/null | wc -l | tr -d ' ')
+[ "$DIRTY" = "0" ] && exit_step_silently
+
+# Categorize what's pending
+SESSION_FILES=$(git status --short | grep -E "docs/sessions/|Blog/_daily/" | wc -l)
+LEARNING_FILES=$(git status --short | grep -E "docs/learnings/" | wc -l)
+MEMORY_FILES=$(git status --short | grep -E "/memory/" | wc -l)
+CODE_FILES=$(($DIRTY - $SESSION_FILES - $LEARNING_FILES - $MEMORY_FILES))
+```
+
+### Single-commit proposal (default)
+
+If everything pending is plausibly one logical unit (session-related), propose:
+
+```
+COMMIT PROPOSAL
+─────────────────
+{session_files} session/daily files
+{learning_files} learnings
+{memory_files} memory entries
+{code_files}    code/config changes
+
+Suggested message:
+  {type}({scope}): {one-line summary from Step 1 narrative}
+
+  {2-4 line body from Step 1 "What happened" narrative}
+
+[approve]  git add + commit as-is
+[edit]     change the message
+[split]    multiple commits (see below)
+[skip]     no commit, leave for later
+```
+
+### Multi-commit split (when `[split]` chosen or auto-detected)
+
+Auto-detect when the diff straddles multiple logical units:
+
+- Vault writes (session.md / daily note / memory) → 1 commit, type `chore(daily)` or `chore(sessions)`
+- Learning files → 1 commit, type `docs(learnings)`
+- Code changes → 1 or more commits, type `feat / fix / refactor` per file cluster
+
+Propose each as a separate gate. Operator approves each.
+
+### Auto-resolve scope
+
+Per `~/.agents/AGENTS.md` Routing Principles, vault writes are auto-resolve scope. Code-repo writes are draft-and-ask. So:
+
+| Pending change | Default action |
+|---|---|
+| Session.md / daily note / memory only | Propose commit, default `[approve]` (vault auto-resolve) |
+| Learnings only | Propose commit, default `[approve]` (vault auto-resolve) |
+| Code changes only | Propose commit, **wait for explicit approve** (no default-Y) |
+| Mixed (vault + code) | Propose **split**, default `[split]` so vault auto-commits while code waits for approve |
+
+### Skip when
+
+- No git repo (working in a personal context outside any tracked dir)
+- No diff (working tree clean)
+- Operator says `/done quick` or `/done no-commit`
+- Pre-commit hook expected to fail (e.g. lint not run yet — propose `/review` first instead)
+- User on a protected branch (`main` / `master`) **AND** code changes present **AND** no PR workflow → escalate, don't auto-propose direct-to-main commit
+
+### Anti-patterns
+
+- ❌ Committing without showing the proposed message
+- ❌ Auto-committing code changes (only vault auto-resolves)
+- ❌ Bundling unrelated work into one commit just because they share session
+- ❌ Skipping the commit step when artifacts are written and obviously belong together
+- ❌ Asking "commit?" without drafting the message first (forces operator to think too much)
+- ❌ Re-asking after `[skip]` — operator chose, drop the question
+
+---
+
 ## Safety
 
 | Situation | Action |
 |-----------|--------|
-| No git repo | Use conversation topic as slug |
+| No git repo | Use conversation topic as slug, skip Step 4 |
 | MEMORY.md > 190 lines | Slim down first |
 | Targeted `gbrain import --no-embed` fails | Run `gbrain doctor --fast --json`, follow remediation; surface as P1 in daily note if recovery fails |
 | gbrain / gbq unavailable for other reason | Skip 3b/3c silently, still run 3a/3d, surface as P1 follow-up |
 | feedback-log.md missing | Skip 3d silently |
-| Session < 5 substantive turns | Skip Step 3 entirely |
+| Session < 5 substantive turns | Skip Step 3 entirely (still run Step 4 if diff exists) |
+| Working tree clean | Skip Step 4 silently |
 
 ## When to skip Step 3 entirely
 

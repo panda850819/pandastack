@@ -11,6 +11,7 @@ description: |
 reads:
   - repo: docs/learnings/**
   - repo: lib/goal-mapping.md
+  - repo: lib/push-once.md
   - vault: knowledge/**
 writes:
   - vault: Inbox/grill-*.md
@@ -63,7 +64,22 @@ If goal mapping has not been done yet (e.g. you are running grill standalone, no
 
 **ONE question at a time.** Wait for the answer. Then pick the next question based on what the answer revealed, not from a pre-baked list.
 
-**Expect rehearsed first answers.** First reply on any axis is usually the polished version. Real answer surfaces after the second or third push. Push once minimum on every axis before switching: "具體一點？" / "你看過嗎？" / "拿掉這個假設會怎樣？".
+**Expect rehearsed first answers.** First reply on any axis is usually the polished version. Real answer surfaces after the second or third push. Push once minimum on every axis before switching.
+
+**Pushback uses the 5-pattern menu in `lib/push-once.md`.** When a first reply is rehearsed / vague / unsupported, print the menu:
+
+```
+[1] 具體一點    — give me names / numbers / cases
+[2] 證據檢查    — have you seen it? which case?
+[3] 反命題      — what if we remove that assumption?
+[4] 邊界條件    — where does this NOT apply?
+[5] 自由發問    — model writes a sharper one
+[self] I'll push myself
+
+Pattern: __ (or "skip" to accept reply as-is)
+```
+
+User picks; model uses that exact prompt as the next message. Never improvise the push without showing the menu first — that defeats the audit trail. See `lib/push-once.md` for selection rules and anti-patterns.
 
 Drill across these axes (not as a checklist — as a search space):
 
@@ -139,7 +155,7 @@ Save to:
 
 - **`--mode structured` replaces `/brief`** — the structured 5-step brief is now a grill mode, not a separate skill
 - **Before `/work-ship` Close stage** — if you're closing a topic and realize scope was never grilled
-- **Not a replacement for `/persona-pipeline`** — that's multi-lens review of a complete proposal; grill is upstream
+- **Not a replacement for `/boardroom`** — that's multi-voice review of a complete plan; grill is upstream (problem → grill, plan → boardroom)
 
 ---
 

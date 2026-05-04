@@ -126,7 +126,7 @@ pdctx use personal:developer
 Example dispatch:
 
 ```bash
-pdctx call personal:writer "/morning-briefing"
+pdctx call personal:writer "/brief-morning"
 ```
 
 #### Option B, direct Hermes skill import
@@ -155,7 +155,7 @@ If you want to experiment today, use `plugins/pandastack/skills/` as the source 
 | `pdctx use personal:writer` | Switches to writer context; injects persona + skill subset |
 | `pdctx call personal:developer "summarize today's note"` | Dispatches subagent with full context injected |
 | `gbq "<question>"` | Vault hybrid search (requires gbrain) |
-| `/morning-briefing` | Invokes the morning briefing skill manually |
+| `/brief-morning` | Invokes the morning briefing skill manually (alias `/morning-briefing` valid until 2026-08-04) |
 
 ## Local development loop, author workflow
 
@@ -257,9 +257,9 @@ Claude Code (Opus) handles foreground reasoning where depth matters. Codex CLI t
 
 | Job | Schedule | Skill |
 |---|---|---|
-| Morning Briefing | `0 8 * * *` (daily 8 AM) | `/morning-briefing` |
+| Morning Briefing | `0 8 * * *` (daily 8 AM) | `/brief-morning` (was: `/morning-briefing`) |
 | Evening Distill | `0 22 * * *` (daily 10 PM) | `/evening-distill` |
-| Weekly Retro Prep | `0 9 * * 5` (Fri 9 AM) | `/weekly-retro-prep` |
+| Weekly Retro Prep | `0 9 * * 5` (Fri 9 AM) | `/retro-prep-week` (was: `/weekly-retro-prep`) |
 
 ## Updating
 

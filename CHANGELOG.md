@@ -1,8 +1,180 @@
 # Changelog
 
-## Unreleased
+## v1.1.0 — 2026-05-04
+
+> Skill-only redesign. agents/ + commands/ + persona-pipeline deleted. 9 new skills + 7 new lib/ modules + 1 regression test file. 7 skill renames with 90-day alias period through 2026-08-04. Codex review patches integrated (Q3 reverted by user, Q4 / Q6 / Q7 / Q9 + 2 blind spots applied).
+
+
+
+### Renamed (v1.1 B0, 2026-05-04, 90-day alias period through 2026-08-04)
+
+7 skill directory renames; old names remain valid via SKILL.md `aliases:`
+frontmatter and RESOLVER.md Aliases section through 2026-08-04. After that
+the alias entries will be removed and old names will fail.
+
+| Old | New | Reason |
+|---|---|---|
+| `agent-browser` | `tool-browser` | cluster `tool-*` |
+| `content-write` | `write` | drop redundant prefix |
+| `feed-curator` | `curate-feeds` | verb-first |
+| `harness-survey` | `scout` | metaphor (Layer 2) |
+| `morning-briefing` | `brief-morning` | verb-first |
+| `slowmist-agent-security` | `gatekeeper` | metaphor (Layer 2), drop brand |
+| `weekly-retro-prep` | `retro-prep-week` | cluster `retro-*` |
+
+Cross-reference updates in same batch:
+- `RESOLVER.md`: 7 skill rows updated + new "Aliases" section listing all v1.1 renames.
+- `README.md`: 3 cron-job table entries + Hermes example dispatch updated.
+- `plugins/pandastack/contexts/personal-writer.toml`: 5 skill refs updated
+  (`content-write` → `write`, `morning-briefing` → `brief-morning`,
+  `weekly-retro-prep` → `retro-prep-week`, plus 2 footer notes).
+- `plugins/pandastack/contexts/personal-knowledge-manager.toml`:
+  `feed-curator` → `curate-feeds`.
+- `~/.agents/AGENTS.md` (Tier 1 substrate): `agent-browser` → `tool-browser`
+  in Tool Routing table + Fallback chain.
+- `vault/AGENTS.md`: `feed-curator` → `curate-feeds` (3 references).
+- `~/.codex/agents/morning-briefing.toml` → `brief-morning.toml` (file rename).
+
+### Removed (v1.1, 2026-05-04)
+
+pandastack is **skill-only** as of v1.1. agents/ and commands/ entirely deleted, no alias period.
+
+- `agents/`: full directory deleted. Previously held 5 lead persona agents
+  (`ceo / eng / design / ops / product`, renamed to `*-lead` in B2.5 then
+  deleted). Persona content lives in `skills/{persona}/SKILL.md` only.
+- `commands/`: full directory deleted. 5 files removed:
+  `sprint.md` → replaced by `skills/sprint/SKILL.md`,
+  `brainstorm.md` → replaced by `skills/office-hours/SKILL.md`,
+  `fix.md` / `quick.md` / `design.md` → folded into `skills/sprint/SKILL.md`
+  (auto-detect bug context, `--quick` mode, design-lead auto-invoke on UI scope).
+- `skills/persona-pipeline/`: deleted. Replaced by `skills/boardroom/SKILL.md`
+  (single-skill 4-voice critique, no agent chain).
+
+Rationale: user direction (2026-05-04) — pandastack is skill-first, no agent
+overhead for in-session quick-lens use. Single execution model, single
+resolver path, fewer contracts. If genuinely need cold-context parallel
+critique, the built-in `Agent` tool can dispatch with a persona skill as
+system prompt — no separately-maintained agent file needed.
+
+Resolver impact: prompts that previously fired `persona-pipeline` or any of
+the 5 persona agents now route to the corresponding persona skill instead.
+Persona content identical (same Soul / Iron Laws / Cognitive Models / On
+Invoke / Anti-patterns), now lives only in `skills/{persona}/SKILL.md`.
+
+Codex Q3 (hybrid: keep agents alongside skills) was applied earlier in this
+session, then rejected by user — user direction was skill-only from the
+start. Hybrid was a regression. This batch reverses the hybrid attempt.
 
 ### Added
+
+- `lib/outside-voice-rule.md`: new "Prior-direction conflict rule" section.
+  When a codex / external-voice finding contradicts a prior explicit user
+  statement (in session, in `~/.agents/AGENTS.md`, in project AGENTS.md, in
+  validated memory), the integrating skill must surface the conflict via
+  `[reverse / hold / edit]` gate instead of standard `[Y/N/edit]`. The standard
+  Y is ambiguous between "agree with codex" and "ack the input"; reverse/hold
+  forces explicit reversal-or-hold. Origin: 2026-05-04 session, codex Q3 hybrid
+  applied via standard Y gate, ate ~30 min of work that was reverted at session
+  end. Learning at `docs/learnings/architecture/2026-05-04-skill-only-vs-hybrid-pandastack.md`.
+
+- `skills/done/SKILL.md` Step 4 Commit handoff (v3.2.0):
+  `/done` now closes the session by proposing a commit of the artifacts it
+  writes (session.md / daily-note updates / memory entries / optional learnings)
+  plus any working-tree code changes from the session. Auto-detects logical
+  units (vault writes vs learnings vs code) and offers `[approve / edit /
+  split / skip]` gate. Vault writes default to approve (auto-resolve scope per
+  AGENTS.md Routing Principles); code changes wait for explicit approve. Skips
+  silently when working tree is clean. Solves the "operator forgets to commit
+  artifacts at end of session" gap, which led to long-running working trees
+  with mixed session work.
+
+- **B6** — `skills/sprint/SKILL.md`: focused 1-2 hour execution flow, 7 stages
+  (capability probe → dojo → grill lite → execute → review → ship gate →
+  terminal state). 4 explicit terminal states (codex Q4 patch):
+  `SHIPPED / PAUSED / FAILED / ABORTED_BY_USER`. Only SHIPPED triggers
+  ship/extract/backflow. Modes: default / `--quick` / `--design`. Replaces
+  deleted `commands/sprint.md` + `commands/fix.md` + `commands/quick.md` +
+  `commands/design.md`. Auto-invokes `design-lead` skill on UI scope detection.
+
+- **B5** — `skills/office-hours/SKILL.md`: 30-min structured pressure cooker,
+  5 internal stages (capability probe + load context → premise challenge with
+  push-once menu → forced alternatives 2-3 named approaches with stop-rule
+  per-approach gate → premise refresh → write brief). Replaces deleted
+  `commands/brainstorm.md`. Distilled from gstack `/office-hours` 943 lines
+  into ~250 lines + 5 lib refs.
+
+- **B4** — `skills/boardroom/SKILL.md`: multi-voice plan critique. Single
+  skill swaps between 4 voices (CEO → product → design → eng) sequentially
+  via `lib/persona-frame.md` voice-switching contract. Per-finding `Apply?
+  [Y/N/edit]` gate with rejected → OPEN_QUESTIONS. Replaces deprecated
+  `persona-pipeline` agent chain. Optional 5th voice (`ops-lead`) when plan
+  is ops-dominant. Voice ordering rationale documented inline.
+
+- **B3** — `skills/dojo/SKILL.md`: lifecycle Stage 0 — pre-action prep.
+  5 internal stages (capability probe → past-case gbq → lib + pattern load →
+  gotcha surface → output prep brief). Used by `/sprint`, `/office-hours`,
+  any flow needing past-case lookup. Aliased as `/prep`. Codex Q6 patch
+  systematizes the pre-action context that CE / gstack do implicitly.
+
+- **B2.5** — Persona naming reconciliation, then deletion. `agents/` dir
+  renamed (`{eng,design,product,ops}.md` → `*-lead.md`) to align with skill
+  names, then entire `agents/` directory deleted in same batch. pandastack
+  is skill-only from v1.1 forward. The codex Q3 hybrid (keep agents alongside
+  skills) was rejected by user — original direction was no agents, hybrid
+  was a regression.
+
+- **B2** — 6 new shared `lib/` modules + 5 new lead persona skills.
+
+  Lib modules (each ~80-150 lines, all under `plugins/pandastack/lib/`):
+  - `escape-hatch.md` — 2-strike user-impatience hard cap. Ref'd by grill / office-hours / boardroom / gatekeeper / dojo.
+  - `bad-good-calibration.md` — 4 BAD → GOOD voice posture pairs (mirrors `~/.agents/AGENTS.md` Voice section). Ref'd by grill / office-hours / boardroom / review / write / brief-morning / evening-distill.
+  - `outside-voice-rule.md` — third-party finding integration with per-finding `[Y/N/edit]` gate, OPEN_QUESTIONS routing for N. Ref'd by review (Step 6.5) / boardroom / gatekeeper / scout.
+  - `stop-rule.md` — per-decision AskUserQuestion gate enforcement. "A clearly winning option is still a decision." Ref'd by grill (Step 4) / review / boardroom / sprint / office-hours.
+  - `persona-frame.md` — 6-section shared structure (Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns) for the 5 lead personas. Defines skill-mode vs agent-mode equivalence. Ref'd by 5 lead skills + boardroom (B4 will use it for voice switching).
+  - `capability-probe.md` — 8-check substrate availability probe with degraded-mode rules and abort messages (codex Q6 patch). Ref'd by all Layer 1 flow skills (sprint / office-hours / boardroom / dojo / prep) at startup.
+
+  5 lead persona skills (each ~80-100 lines):
+  - `skills/ceo/SKILL.md` — strategic advisor (no `-lead` suffix; CEO already exec).
+  - `skills/eng-lead/SKILL.md` — staff engineer.
+  - `skills/design-lead/SKILL.md` — senior designer.
+  - `skills/product-lead/SKILL.md` — VP Product.
+  - `skills/ops-lead/SKILL.md` — COO.
+
+  Each lead skill refs `lib/persona-frame.md` for shared 6-section contract (Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns) and `lib/bad-good-calibration.md` for voice posture. Cognitive model + iron law content was lifted from the (now deleted) agents/ directory and is the single source of truth in skill files.
+
+- **B-test** — `tests/resolver-golden.md`: 30-prompt regression test
+  covering direct slash invocation (12), old-name aliases (7), natural
+  language triggers (8), and capability-probe degradation (3). Acceptance
+  criteria: ≥27/30 pass on slash+alias+probe, ≥6/8 on natural language.
+  Failure response protocol documented. Codex Blind Spot 2 patch — pandastack
+  had no regression test, all dogfood was manual; 39 → 12 layer-1 + 9 renames
+  + 4 new flows is high regression surface.
+
+- `lib/push-once.md` (B7): new shared module. 5 named pushback patterns
+  (具體一點 / 證據檢查 / 反命題 / 邊界條件 / 自由發問) extracted from
+  gstack office-hours residue, refed by `grill` (now), `office-hours` (B5),
+  `boardroom` (B4). Replaces ad-hoc improvised pushes with a fixed menu so
+  the model's pushback choice is logged + audit-able instead of drifting
+  every session. Selection rules table (which pattern matches which symptom),
+  output protocol (menu print → user picks → model uses literal prompt),
+  anti-patterns, and relationship to the escape hatch documented inline.
+- `skills/grill/SKILL.md` Protocol section: replaced the ad-hoc 3-prompt
+  example with the lib/push-once.md 5-pattern menu. Frontmatter `reads:`
+  added `lib/push-once.md`.
+
+- `skills/gatekeeper/SKILL.md` Step 0 STRIDE Classification (B1):
+  6-category threat taxonomy (Spoofing / Tampering / Repudiation /
+  Information Disclosure / DoS / Elevation of Privilege) classifier
+  protocol with `none / suspect / confirmed` per category, frontmatter
+  output `stride_categories: [...]`, risk floor rules (≥1 confirmed
+  = 🔴 HIGH minimum, ≥2 suspect = 🟡 MEDIUM minimum), worked example
+  for npm install case.
+- `skills/gatekeeper/templates/report-skill.md`: new STRIDE
+  CLASSIFICATION block between FILES SCANNED and RED FLAGS, exposes
+  6-row classifier output + computed risk floor in the standardized
+  ASCII report. Other 4 report templates (repository / url-document /
+  onchain / product-service / message-share) to be backfilled in
+  follow-up batch.
 
 - `skills/harness-survey/`: new skill, two-strike promoted via `/done`
   Step 3b on 2026-05-04. Pattern: search public ecosystem

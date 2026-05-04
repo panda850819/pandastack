@@ -15,7 +15,7 @@ side = ["research", "retro"]
 [skills]
 public = [
   "pandastack:deep-research",    # planner + researcher with quality gates
-  "pandastack:feed-curator",     # feed intake and triage
+  "pandastack:curate-feeds",     # feed intake and triage (was: feed-curator, v1.1 rename)
   "pandastack:knowledge-ship",   # Close → Extract → Backflow for knowledge/ notes
   "pandastack:wiki-lint",        # stale / orphan / superseded detection
   "pandastack:tool-web-extract", # pull clean markdown from URLs
