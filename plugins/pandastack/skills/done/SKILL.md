@@ -226,14 +226,14 @@ Only output a Step 3 block if at least one sub-check found something. Otherwise 
 - [bullet] ... (reference to where it was discussed in transcript)
   → route: `knowledge/<area>/<slug>.md` | `memory/reference_*` | `memory/feedback_*` | `_staging/skill-*` | drop
 
-→ Promote any to routed destination? Reply `promote 1,3` or skip.
-  (Drafts go to destination path with `status: draft` — still requires your review before commit. `drop` items are skipped.)
+Surface only — do not append a promotion menu prompt. The operator decides whether to promote and says so directly (`promote 1, 3`, `promote all`, etc.). Skill must NOT close the block with "Reply promote N,N or skip" or any variant — that's a 2-3 option menu, banned by `feedback_voice_rules.md` and `~/.agents/AGENTS.md` Response Discipline.
 
 ### Skill candidate: <name>
 - Pattern: <one line>
 - Prior instance: <session-slug or daily note ref>
 - This session: <what triggered the second strike>
-- → Want me to draft the skill? (don't auto-create)
+
+Surface only — operator says "draft it" if they want a draft. Do not close with "→ Want me to draft the skill?" — that is a yes/no menu, banned by Response Discipline.
 
 ### Past relevant sessions
 - [[YYYY-MM-DD-slug]] — <one line of why it matters now>
@@ -246,7 +246,7 @@ Only output a Step 3 block if at least one sub-check found something. Otherwise 
 
 ### Step 3 promotion follow-through
 
-When user replies `promote <N,N,...>` to the routing prompt:
+When the operator volunteers a promotion (`promote 1, 3` / `promote all` / `promote architecture items`), execute. No menu was sent; this is operator-initiated.
 
 1. For each selected item:
    - **`<learnings_dir>/patterns/<slug>.md`** / **`<learnings_dir>/pitfalls/<slug>.md`** / **`<learnings_dir>/architecture/<slug>.md`** — write using `lib/learning-format.md` schema (frontmatter with `type`, `key`, `first_seen`, `last_seen`, `confidence`). The patterns/pitfalls/architecture split survives across sessions on this codebase; not everything that surfaces belongs in `knowledge/`.
@@ -254,9 +254,9 @@ When user replies `promote <N,N,...>` to the routing prompt:
    - **`memory/reference_*.md` or `memory/feedback_*.md`** — write the file + append index line in `MEMORY.md`. Reference memories go live immediately; feedback memories are durable so draft carefully.
    - **`_staging/skill-*/SKILL.md`** — draft with frontmatter `status: draft, origin: done-promote, observed_count: 1`. Do NOT move to `skills/` — user mv's it when two-strike fires.
 2. After writing, report paths and remind: "Review before commit. Skills stay in `_staging/` until you `mv`."
-3. If user replies `skip` or just next message: drop silently, no drafts written.
+3. If operator does not mention promotion in the next turn, drop silently. Never re-ask.
 
-Promotion is **draft-and-ask for knowledge/ + feedback**, auto-resolve for reference + staging skill (both reversible, per auto-resolver policy).
+Promotion is **draft-and-ask for knowledge/ + feedback**, auto-resolve for reference + staging skill (both reversible, per auto-resolver policy). Operator must initiate — Step 3 surfaces, never solicits.
 
 ---
 
