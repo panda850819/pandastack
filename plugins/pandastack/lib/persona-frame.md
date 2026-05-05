@@ -45,7 +45,58 @@ User direction (2026-05-04): pandastack is skill-first. Reasons:
 - 5 lead persona usage is mostly sequential thinking + conversational, not parallel + cold context
 - Agent overhead (token + latency + context startup) not justified for in-session quick lens use
 - Single execution model = simpler resolver, fewer contracts to maintain
-- If genuinely need cold-context parallel critique, use built-in `Agent` tool with the persona skill as system prompt — not a separately-maintained agent file
+- If genuinely need cold-context parallel critique, use built-in `Agent` tool with the persona skill content **inlined into the dispatch prompt** — not a separately-maintained agent file
+
+## Inline-from-skill dispatch pattern (skill-as-persona)
+
+When a flow skill (e.g. `execute-plan`, `boardroom`, future `team-orchestrate`) needs to dispatch a persona-flavored subagent, use this pattern:
+
+```
+1. Read ~/site/skills/pandastack/plugins/pandastack/skills/<persona>/SKILL.md
+2. Extract the 6 contract sections (Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns + Apply BAD/GOOD calibration)
+3. Inline them at the TOP of the Agent tool prompt, fenced as a persona block:
+
+   --- pandastack:<persona> persona contract ---
+   ## Soul
+   {soul text from SKILL.md}
+
+   ## Iron Laws
+   {iron laws}
+
+   ## Cognitive Models
+   {cognitive models}
+
+   ## On Invoke
+   {on invoke}
+
+   ## Anti-patterns
+   {anti-patterns}
+   --- end persona ---
+
+4. Append the task brief below the fence
+5. Dispatch as subagent_type: "general-purpose" (or task-specific built-in like Plan / Explore)
+6. Pass model: per task heuristic (architect=opus, eng-lead=sonnet, etc.)
+```
+
+**Why this pattern beats agent files**:
+
+- Skill is single source of truth (no agent-file/skill-file drift)
+- New persona = write SKILL.md, immediately dispatchable, no session restart needed
+- Persona content updates propagate automatically (next dispatch reads current SKILL.md)
+- pandastack stays portable (no `~/.claude/agents/` mutation required for users to use the personas)
+
+**Persona contract enforcement in subagent**:
+
+Inline the contract as the FIRST content of the user prompt. The subagent's adherence is empirically as strong as if the contract were in the system prompt (validated 2026-05-05: architect ADR test produced 7/7 Iron-Law-compliant output via inline pattern with general-purpose subagent).
+
+Hard rules (Panda's voice / commit style / no em dash / no Co-Authored-By trailer / etc.) MUST be inlined explicitly — subagent does NOT read `~/.agents/AGENTS.md`. Caller is responsible for inlining substrate rules relevant to the task.
+
+**Anti-patterns specific to this dispatch**:
+
+- ❌ Dispatching `subagent_type: "<persona-name>"` expecting an agent file to exist — agent files are deprecated (v1.1)
+- ❌ Skipping the persona block, relying on subagent_type alone — `general-purpose` has no persona by default
+- ❌ Inlining skill body verbatim including frontmatter / `@../../lib/...` includes — extract only the 6 sections, drop YAML + lib refs
+- ❌ Forgetting to inline hard rules (commit style, voice, etc.) — subagent has no substrate access
 
 ## Boardroom integration
 

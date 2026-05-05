@@ -183,6 +183,24 @@ tags: [brief, office-hours]
 In: {what's included}
 Out: {what's explicitly excluded}
 
+## Next skill (recommended)
+
+Apply `lib/skill-decision-tree.md` 3-question test against the chosen approach:
+
+```
+Shape: {single-target-iterative / N-step-sequential / N-branch-parallel}
+Reasoning: {one line — which question of Q1/Q2/Q3 hit Yes and why}
+
+Recommended skill:
+  → /sprint {topic-slug}                        # if Q1=Yes (single-target, iteration expected)
+  → /execute-plan (with this brief as input)    # if Q2=Yes (N-step sequential with verify gates)
+  → raw Agent + worktree (manual until two-strike for team-orchestrate)  # if Q3=Yes (N-branch parallel)
+
+Persona for next skill (per lib/skill-decision-tree.md routing table):
+  → {architect | eng-lead | design-lead | ops-lead | product-lead | ceo}
+  Reason: {dominant task signal — tech-stack / code / UI / process / scope / strategic}
+```
+
 ## Gotchas surfaced
 
 {from Stage 1 past cases}
@@ -200,7 +218,7 @@ Out: {what's explicitly excluded}
 {any axes not addressed due to escape-hatch or user defer}
 ```
 
-Print path. Suggest next: `/sprint <topic>` to execute, `/boardroom <brief-path>` for cross-functional critique, or park as memo.
+Print path. Surface the "Next skill (recommended)" block from the brief verbatim — that's the routing decision per `lib/skill-decision-tree.md`. Do NOT close with "want me to start it for you?" — operator says next skill name directly.
 
 ## Anti-patterns
 

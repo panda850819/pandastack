@@ -90,11 +90,30 @@ Run `skills/grill/SKILL.md` in default (adversarial) mode with **3-question cap*
 
 ### Stage 3: Execute
 
-Detect scope dominance. If scope mentions UI / interaction / layout / visual hierarchy, **auto-invoke `skills/design-lead/SKILL.md`** before code work. Otherwise go straight to code.
+@../../lib/skill-decision-tree.md applies — read the persona routing table.
 
-For code work: load `skills/eng-lead/SKILL.md` cognitive model + iron laws + on-invoke. Apply minimal-diff + verify + 3-strike escalation.
+Detect task shape from grill output (Stage 2) and load the matching persona skill as **in-session cognitive lens** (NOT subagent dispatch — sprint is single-track main-session-executor).
+
+Routing (read `lib/skill-decision-tree.md` § "Persona routing table"):
+
+| Task signal | Load skill |
+|---|---|
+| Tech stack 選型 / DB schema / 服務拓撲 / API contract / non-functional reqs | `skills/architect/SKILL.md` |
+| UI / interaction / layout / visual hierarchy / accessibility | `skills/design-lead/SKILL.md` |
+| Multi-team coord / process design / SLA / runbook / on-call | `skills/ops-lead/SKILL.md` |
+| Feature scoping / metric / PMF / pricing / user research | `skills/product-lead/SKILL.md` |
+| Kill / pivot / scope cut / strategic frame | `skills/ceo/SKILL.md` |
+| Code edit / refactor / debug / fix / feature impl / ship (default) | `skills/eng-lead/SKILL.md` |
+
+Apply the loaded persona's Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns to all Stage 3 work in this same context. Persona is a lens, not a subagent — main session stays the executor.
+
+**Single-persona discipline**: load ONE persona for the whole sprint. If the topic genuinely spans 2+ personas, split into multiple sprints OR step back to `/execute-plan` (multi-task, multi-persona via subagent dispatch). Mixing personas mid-sprint dilutes the cognitive frame and produces inconsistent output.
+
+Apply minimal-diff + verify + 3-strike escalation (eng-lead iron laws apply even when another persona is the primary lens — they are baseline coding discipline).
 
 Track `iteration` counter starting at 1.
+
+**When scope detection is ambiguous**: ask user once with the candidate personas listed; pick the highest-confidence single one based on user reply. Do not silently default to eng-lead when signals point elsewhere — that misroutes architecture / ops / product work.
 
 ### Stage 4: Review + verify gate (skip if `--quick`)
 
