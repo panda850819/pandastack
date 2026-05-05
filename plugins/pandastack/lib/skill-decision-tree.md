@@ -2,7 +2,7 @@
 
 > Shared module. Loaded by `office-hours` (Stage 5 next-skill recommendation), `sprint` (Stage 3 persona-routing reference), `boardroom` (post-critique handoff), and any other Layer 1 flow skill that needs to recommend the next execution step.
 >
-> Origin: 2026-05-05 — office-hours produced briefs but did not point to the next skill. `/sprint`, `/execute-plan`, and (future) `/team-orchestrate` had overlapping framing without a clean differentiator. This lib defines the sharp distinction by **execution locus** (who actually does the work) and provides a 3-question decision test.
+> Origin: 2026-05-05 — office-hours produced briefs but did not point to the next skill. `/sprint`, `/execute-plan`, and `/team-orchestrate` had overlapping framing without a clean differentiator. This lib defines the sharp distinction by **execution locus** (who actually does the work) and provides a 3-question decision test.
 
 ## The sharp distinction: execution locus
 
@@ -12,7 +12,7 @@ Don't pick by time-box, task count, or topic. Pick by **who executes**:
 |---|---|---|---|---|
 | `/sprint` | **Executor itself** | Main session (you + the AI in same context) | None — same context throughout, persona is a cognitive lens | N/A (single track) |
 | `/execute-plan` | **Coordinator** | Subagent per task | Fresh context per task (avoid pollution + verify gates) | Sequential, gate between tasks |
-| `team-orchestrate` (future, two-strike pending) | **Conductor** | N subagents at once | Fresh context per branch + worktree isolation | Parallel, gate per branch as it returns |
+| `/team-orchestrate` | **Conductor** | N subagents at once | Fresh context per branch + worktree isolation | Parallel, gate per branch as it returns |
 
 ## 3-question decision test
 
@@ -32,7 +32,7 @@ If no, steps are independent (no inter-step verification needed) → continue to
 
 ### Q3: 「N 個元件互相獨立，wall-clock 平行有意義嗎？」
 
-If yes → **team-orchestrate** (future skill). Until skill exists, use raw `Agent` tool with `isolation: "worktree"` per parallel dispatch, and conductor (main session) reviews/merges as agents return.
+If yes → **`/team-orchestrate`**. Single message dispatches N subagents in parallel, each in its own worktree; conductor (main session) gates each branch as it returns.
 
 If no → reconsider entry. The work likely fits Q1 or Q2 better, or the framing is wrong.
 
@@ -44,7 +44,7 @@ Use this when reading an office-hours brief or boardroom synthesis:
 |---|---|
 | "Ship X in 1-2 hr; iteration expected" | `/sprint` |
 | "These N steps in order, each needs verify" | `/execute-plan` |
-| "These N branches can advance independently" | team-orchestrate (raw Agent for now) |
+| "These N branches can advance independently" | `/team-orchestrate` |
 | "I need a brief / I have a fuzzy idea" | (you're earlier in the flow — `/office-hours` first) |
 | "Plan critique needed" | `/boardroom` (read brief, return findings, then route per Q1-Q3) |
 
@@ -56,7 +56,7 @@ Persona (architect / eng-lead / design-lead / ops-lead / product-lead / ceo) is 
 |---|---|
 | `/sprint` | Stage 3 detects task shape, loads ONE persona's SKILL.md as in-session lens (main session reads + applies the iron laws as cognitive frame). No subagent. |
 | `/execute-plan` | Phase 0.5 picks persona per task. Phase 1 dispatch uses inline-from-skill pattern (read SKILL.md → inline contract into subagent prompt → dispatch as `general-purpose`). See `lib/persona-frame.md` § "Inline-from-skill dispatch pattern". |
-| team-orchestrate | Same as execute-plan but parallel (multiple subagent dispatches in one message, per `Agent` tool docs). |
+| `/team-orchestrate` | Same as execute-plan but parallel (multiple subagent dispatches in one message, per `Agent` tool docs). |
 
 Persona routing table (shared with `pandastack:execute-plan` Phase 0.5):
 

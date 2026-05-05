@@ -31,7 +31,7 @@ T04  /boardroom plans/abyss-q2.md               pdctx: -                   → b
 T05  /dojo "fix hermes weekly retro cron"       pdctx: personal:developer  → dojo
 T06  /prep "ship the rename batch"              pdctx: personal:developer  → dojo (alias /prep)
 T07  /grill 想做一個 points system              pdctx: -                   → grill (default mode)
-T08  /grill --mode structured points system     pdctx: -                   → grill (structured)
+T08  /office-hours --quick points system        pdctx: -                   → office-hours (quick mode)
 T09  /review                                    pdctx: personal:developer  → review
 T10  /ship                                      pdctx: personal:writer     → write-ship (route by context)
 T11  /ship                                      pdctx: personal:developer  → ship (route by context)

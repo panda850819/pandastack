@@ -8,7 +8,7 @@
 
 Skills that present:
 
-- ≥2 alternatives that need user choice (e.g. `grill --mode structured` Step 4)
+- ≥2 alternatives that need user choice (e.g. `office-hours` Stage 3)
 - Per-finding apply gates (`review` Step 6.5, `gatekeeper` STRIDE findings, `boardroom` per-voice critique)
 - Per-stage gates inside a flow command (`sprint`, `office-hours`, `prep` / `dojo`)
 

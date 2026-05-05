@@ -1,13 +1,12 @@
 ---
 name: grill
 description: |
-  Requirement discovery — two modes. Default mode is adversarial: ask ONE question
-  at a time, hunting for hidden requirements / unknown unknowns. Structured mode
-  (--mode structured) replaces the deprecated /brief: load context, clarify,
-  premise-challenge, alternatives, write a brief. Use before drafting a PRD or
-  when the user says "grill me on X", "interrogate this idea", "stress test this
-  scope", "draft a brief", "structured intake". Skip for tasks where scope is
-  already concrete.
+  Adversarial requirement discovery. Ask ONE question at a time, hunting for hidden
+  requirements / unknown unknowns. Atomic 5-10 min tool, no brief output (just a
+  confirmed/open log). Use when the user says "grill me on X", "interrogate this
+  idea", "stress test this scope", "what am I missing". Skip for tasks where scope
+  is already concrete. For structured-brief output, use `/office-hours` (default
+  full mode) or `/office-hours --quick` (when context already loaded).
 reads:
   - repo: docs/learnings/**
   - repo: lib/goal-mapping.md
@@ -15,32 +14,18 @@ reads:
   - vault: knowledge/**
 writes:
   - vault: Inbox/grill-*.md
-  - repo: docs/briefs/*.md
   - cli: stdout
 forbids:
   - file: /Users/panda/site/knowledge/work-vault/**
 domain: shared
-classification: hybrid
+classification: tool
 ---
 
 # Grill
 
-Requirement discovery in two modes. Default is adversarial. Pass `--mode structured` to run the structured-brief flow (replaces the deprecated `/brief`).
+Adversarial requirement discovery. Inspired by Matt Pocock's "grill me" prompt — see [[matt-pocock-agent-coding-workflow]].
 
-## Mode selection
-
-- **Default (adversarial)** — surface unknown unknowns by drilling one angle at a time. Outputs a `Inbox/grill-<slug>-<date>.md` log of confirmed / open / contradictions.
-- **`--mode structured`** — run the 5-step structured brief (Load Context → Clarify → Premise Challenge → Alternatives → Write Brief). Outputs `docs/briefs/YYYY-MM-DD-<slug>.md`. Use when scope is fuzzy AND you intend to produce a written brief, not just surface unknowns.
-
-The two modes can chain: start adversarial to discover unknowns, then switch to structured once the unknowns are reduced enough to write a real brief. State the switch out loud so the user knows mode changed.
-
----
-
-# Default mode (adversarial)
-
-Adversarial intake. Inspired by Matt Pocock's "grill me" prompt — see [[matt-pocock-agent-coding-workflow]].
-
-The point is NOT to fill a structured questionnaire (that's `--mode structured`). The point is to surface **unknown unknowns** by interrogating one angle at a time until the answer surprises you.
+The point is NOT to fill a structured questionnaire (that's `/office-hours`). The point is to surface **unknown unknowns** by interrogating one angle at a time until the answer surprises you.
 
 ## Pre-step: Goal Mapping (recommended)
 
@@ -49,7 +34,7 @@ If goal mapping has not been done yet (e.g. you are running grill standalone, no
 ## When to use
 
 - Feature scope is fuzzy ("I want a points system" → backfill? retroactive? UI placement? streak rules?)
-- Before writing a PRD or feeding `/grill --mode structured`
+- Before writing a PRD or feeding `/office-hours --quick` (which produces a brief from the surfaced unknowns)
 - When you suspect hidden constraints (compliance, migration, downstream consumers)
 - User explicitly says "grill me", "stress test this", "what am I missing"
 
@@ -134,7 +119,7 @@ After grilling ends, produce:
 - [if any]
 
 ### Recommended next step
-- Feed into /grill --mode structured (if implementation track)
+- Feed into `/office-hours --quick` (if implementation track — produces a brief)
 - Feed into PRD draft (if planning track)
 - Park as memo (if not ready to act)
 ```
@@ -153,156 +138,12 @@ Save to:
 
 ## Relationship to other skills
 
-- **`--mode structured` replaces `/brief`** — the structured 5-step brief is now a grill mode, not a separate skill
+- **For structured-brief output** — use `/office-hours` (default full mode) or `/office-hours --quick` (when context already loaded). Replaces the deprecated `grill --mode structured`.
 - **Before `/work-ship` Close stage** — if you're closing a topic and realize scope was never grilled
 - **Not a replacement for `/boardroom`** — that's multi-voice review of a complete plan; grill is upstream (problem → grill, plan → boardroom)
 
----
+## Origin
 
-# `--mode structured` (was /brief)
-
-Use when the user says "draft a brief", "structured intake", or you need a written brief in `docs/briefs/`.
-
-## When to skip structured mode
-
-- Task is under 1 hour of work
-- Scope is already clear (bug fix, typo, config change)
-- User says "just do it"
-
-When skipped, downstream skills (e.g. `pandastack:review`) still search learnings at review time.
-
-## Gate Points
-
-Steps 1.5 (Goal Mapping), 3 (Premise Challenge), 3.5 (Assumption Dump), and 4 (Alternatives) are user-facing gates. Use the four-option contract: **approve / edit / reject / skip**. Record gate outcomes in the brief's `## Gate Log` section.
-
-## Step 1: Load context
-
-Search `docs/learnings/` (or whatever learnings dir is configured in the project's CLAUDE.md) for patterns related to the user's request. Note relevant learnings to inform later steps.
-
-## Step 1.5: Goal Mapping
-
-Before clarifying, identify which of the user's goals this task serves. Prevents solutioning in a goal vacuum and adapts every downstream step.
-
-Run `lib/goal-mapping.md` to:
-
-1. Read the user's goal hierarchy from `<memory-dir>/` and active session context
-2. Map current task to L1 / L2 / L3 layers
-3. Pick the dominant layer; flag wrong framing if no layer matches
-4. Output mapping block, gate user confirmation
-5. Pass dominant layer to Step 2 (Clarify) and Step 4 (Alternatives)
-
-If goal mapping flags wrong framing, reframe before continuing. If user says "skip", record in Gate Log; do not silently bypass.
-
-## Step 2: Clarify
-
-Ask ONE AT A TIME. Push until specific. Smart-skip questions whose answers are obvious from context **or already derivable from Step 1.5's goal mapping** (see `lib/goal-mapping.md` Step 3 for which questions each dominant layer makes redundant).
-
-1. **Demand reality**: who needs this? (skip if obvious or derivable)
-2. **Status quo**: how is this solved now? (skip if greenfield or known from goal context)
-3. **Narrowest wedge**: what's the smallest useful version? (skip if L1 dominant — wedge framing usually wrong for long-horizon work)
-
-If user expresses impatience: ask one more question, then proceed. If pushed back a second time: proceed immediately.
-
-## Step 3: Premise challenge
-
-Before solutioning, challenge the premises:
-
-1. Is this the right problem? Could a different framing be simpler?
-2. What happens if we do nothing?
-3. What existing code already partially solves this?
-4. Is Step 1.5's dominant goal layer framing correct? (catches late-surfacing reframes the goal mapping itself missed)
-
-Present premises for user agreement:
-
-```
-PREMISES:
-1. [statement] — agree/disagree?
-2. [statement] — agree/disagree?
-```
-
-## Step 3.5: Assumption dump
-
-After premises are confirmed, brain-dump everything you found and believe. User must confirm before moving to alternatives.
-
-```
-PATTERNS FOUND:
-- [relevant code patterns, conventions, or prior art discovered]
-
-ASSUMPTIONS:
-- [things assumed true but not verified]
-
-OPEN QUESTIONS:
-- [things you don't know and need user input on]
-```
-
-This is the human-agent alignment checkpoint. Surface everything so the user can correct before implementation direction is chosen.
-
-## Step 4: Alternatives (MANDATORY)
-
-Generate 2-3 implementation approaches **filtered to options that serve Step 1.5's dominant goal layer**. Flag any approach that violates a non-dominant layer's constraints (e.g. dominant=L3 but option breaks L1 portability) so user can weigh the trade-off.
-
-**Rules (not optional):**
-- At least 2 approaches required. 3 preferred.
-- One must be **minimal viable** (fewest files, ships fastest).
-- One must be **ideal architecture** (best long-term trajectory).
-- These two have **equal weight**. Don't default to minimal viable just because it's smaller. Recommend whichever best serves the dominant goal layer. **If the right answer is a rewrite, say so.**
-- Optional third: **creative / lateral** (unexpected framing).
-- If only one approach exists, explain concretely why alternatives were eliminated.
-
-```
-APPROACH A: {name}
-  Summary: {1-2 sentences}
-  Effort: {S/M/L}
-  Pros: {bullets}
-  Cons: {bullets}
-
-APPROACH B: {name}
-  ...
-```
-
-**RECOMMENDATION:** {A/B/C} because {one-line reason mapped to dominant goal layer}.
-
-**Per-approach gate (do not batch):** present each approach as its own AskUserQuestion with options `Add to plan / Defer / Reject`. Approved approach becomes the chosen path; rejected go to "NOT in scope" in Step 5's brief.
-
-**STOP.** A "clearly winning approach" is still an approach decision. Do NOT proceed to Step 4.5 / Step 5 by writing the recommendation in chat prose and continuing forward — that is the failure mode this gate exists to prevent. Wait for user response.
-
-## Step 4.5: Scope completeness check
-
-Before writing, self-check each dimension. Flag any as `NEEDS CLARIFICATION` and return to Step 2 for one more round:
-
-- **Users** — who's affected? any segment missed?
-- **Data** — schema changes, migrations, backfill
-- **Edge cases** — empty states, failures, concurrency, partial rollouts
-- **Deploy & rollback** — how to ship, how to revert if wrong
-- **Observability** — logs/metrics/alerts to verify success
-- **Docs & handoff** — who else needs to know
-
-Do not proceed until all dimensions are `addressed` or `N/A`. Catches the "narrow decomposition" failure where the brief scopes too tightly.
-
-## Step 5: Output
-
-Write a brief to `docs/briefs/YYYY-MM-DD-{slug}.md`:
-
-```markdown
-## Problem
-{user problem, not feature description}
-
-## Success Metric
-{one measurable outcome}
-
-## Scope
-In: {what's included}
-Out: {what's explicitly excluded}
-
-## Approach
-{chosen approach with rationale}
-
-## Learnings Applied
-{relevant past learnings that informed this brief}
-
-## Gate Log
-- Goal Mapping (Step 1.5): L1={...} L2={...} L3={...} → dominant={...} — approve | edit: {what changed} | reject | skip
-- Premises (Step 3): approve | edit: {what changed} | reject | skip
-- Assumption Dump (Step 3.5): approve | edit: {what changed} | reject | skip
-- Alternatives (Step 4): chose {A|B|C} — approve | edit: {what changed} | reject | skip
-```
+- Matt Pocock "grill me" prompt — atomic adversarial pressure pattern
+- pandastack v1.1 (2026-05-04) — added `--mode structured` to absorb deprecated `/brief`
+- pandastack 2026-05-05 — `--mode structured` removed; structured-brief role consolidated into `/office-hours --quick`. Grill returns to atomic adversarial-only positioning. Surface area cleanup motivated by overlap between grill --mode structured and office-hours 5-stage flow.

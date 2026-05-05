@@ -18,7 +18,7 @@ and code equally, not just coding.
 
 ## When to use
 
-- A written plan exists (from `/plan`, `pandastack:grill --mode structured`, a brief,
+- A written plan exists (from `/plan`, `pandastack:office-hours`, a brief,
   or any numbered step list the user approved)
 - 3+ tasks that touch different files, systems, or contexts
 - High-stakes work (Yei/Abyss ops paths, production infra, vault schema changes)

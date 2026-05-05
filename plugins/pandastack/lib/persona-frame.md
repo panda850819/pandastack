@@ -49,7 +49,7 @@ User direction (2026-05-04): pandastack is skill-first. Reasons:
 
 ## Inline-from-skill dispatch pattern (skill-as-persona)
 
-When a flow skill (e.g. `execute-plan`, `boardroom`, future `team-orchestrate`) needs to dispatch a persona-flavored subagent, use this pattern:
+When a flow skill (e.g. `execute-plan`, `boardroom`, `team-orchestrate`) needs to dispatch a persona-flavored subagent, use this pattern:
 
 ```
 1. Read ~/site/skills/pandastack/plugins/pandastack/skills/<persona>/SKILL.md

@@ -8,8 +8,8 @@
 
 Any skill where the model asks ≥2 questions in sequence and the user might reach a "stop asking" threshold:
 
-- `grill` (default + `--mode structured`) — adversarial drilling
-- `office-hours` (B5) — diagnostic pressure cooker
+- `grill` — adversarial drilling
+- `office-hours` (default + `--quick`) — structured 5-stage flow, diagnostic pressure cooker
 - `boardroom` (B4) — 4-voice critique with per-finding gates
 - `gatekeeper` — `Apply? [Y/N/edit]` per-STRIDE-finding gate
 - `prep` / `dojo` (B3) — pre-action clarification
@@ -59,7 +59,7 @@ No follow-up question. No "are you sure?" No "one more thing". Skill proceeds to
 - ❌ Asking a 3rd time after strike 2 ("確定不問了？")
 - ❌ Hidden ask ("好，那最後一個小問題..." — that IS asking again)
 - ❌ Pretending to stop but writing more questions in the output ("Output also raises: ...")
-- ❌ Escalating to a different mode without permission ("switching to --mode structured 因為你說 ship it" — no, ship it means stop, not switch)
+- ❌ Escalating to a different skill / mode without permission ("switching to office-hours 因為你說 ship it" — no, ship it means stop, not switch)
 - ❌ Logging unprocessed items as completed because user said skip ("we covered axis-N: skipped" — write `axis-N: not asked, user signaled stop after Q3` instead)
 
 ## Output contract

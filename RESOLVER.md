@@ -49,7 +49,8 @@ Additional work-specific skills (alert triage, Slack scans) ship in the private 
 
 | Skill | Purpose | Trigger |
 |---|---|---|
-| `pandastack:grill` | Adversarial requirement discovery (default) + structured intake (`--mode structured`, replaces old `pandastack:brief`). Step 1.5 Goal Mapping reads user goal hierarchy from memory before clarifying. | grill me, stress test, draft a brief |
+| `pandastack:grill` | Adversarial requirement discovery, atomic 5-10 min, surfaces unknown unknowns, no brief output. For structured-brief output use `pandastack:office-hours`. | grill me, stress test, what am I missing |
+| `pandastack:office-hours` | Structured 5-stage flow that produces a brief in `docs/briefs/`. Default ~30 min; `--quick` mode skips capability probe + goal mapping when context is pre-loaded. Absorbs the structured-brief role formerly under `grill --mode structured`. | office hours, draft a brief, structured intake |
 | `pandastack:careful` | Confirmation gates for production / shared infra | working on prod |
 | `pandastack:checkpoint` | Save / resume working state snapshot | pausing work |
 | `pandastack:freeze` | Lock editing scope to specific paths | scope discipline |
@@ -118,12 +119,10 @@ Some lifecycles (work alert triage, on-chain trading research, Sommet network op
 
 If you're reviewing your own PR → `pandastack:review`. If you're deciding whether to install someone else's MCP server / clone their skill repo → `pandastack:gatekeeper`.
 
-### Two requirement-discovery skills (collapsed)
+### Requirement-discovery skills (split by output)
 
-`pandastack:grill` is the only one as of v1.
-
-- Default mode: adversarial, one-question-at-a-time, surfaces unknown unknowns.
-- `pandastack:grill --mode structured`: 5-step structured brief flow. **Replaces the deprecated `pandastack:brief` from v0.16.**
+- `pandastack:grill` — adversarial, one-question-at-a-time, surfaces unknown unknowns. Atomic 5-10 min, no brief output (just `Inbox/grill-*.md` log).
+- `pandastack:office-hours` — structured 5-stage flow that produces a brief in `docs/briefs/`. Default ~30 min; `--quick` mode (~10-15 min) skips capability probe + goal mapping when context is pre-loaded. **Absorbs the structured-brief role formerly under `grill --mode structured` (deprecated 2026-05-05).**
 
 ### Two retro skills (was three)
 
@@ -204,7 +203,7 @@ Private contexts (in the private overlay) may reference additional skills beyond
 
 | Origin | Skills |
 |---|---|
-| Built in v0.16 | careful, checkpoint, freeze, init, qa, review, ship (compound / retro / brief / learn from v0.16 removed in v1.0.0-rc.3 — compound + brief absorbed into knowledge-ship/work-ship + grill --mode structured; retro absorbed into retro-week Phase 1; learn dropped, learning search is LLM-native) |
+| Built in v0.16 | careful, checkpoint, freeze, init, qa, review, ship (compound / retro / brief / learn from v0.16 removed in v1.0.0-rc.3 — compound + brief absorbed into knowledge-ship/work-ship + office-hours; retro absorbed into retro-week Phase 1; learn dropped, learning search is LLM-native) |
 | Added in v1 from `~/.claude/skills/` (local) | deep-research, curate-feeds (renamed from feed-curator in v1.1), grill, knowledge-ship, work-ship, write-ship, persona-pipeline (deprecated v1.1), process-decisions, retro-week, retro-month, gatekeeper (renamed from slowmist-agent-security in v1.1), wiki-lint, tool-bird, tool-notion, tool-railway |
 | Added in v1 from `claude-skills` repo | tool-browser (renamed from agent-browser in v1.1), write (renamed from content-write in v1.1), done, think-like-naval, think-like-alan-chan, think-like-karpathy, tool-deepwiki, tool-pdf, tool-slack, tool-summarize, tool-web-extract |
 | Added in v1 (Hermes cron lifecycle) | brief-morning (renamed from morning-briefing in v1.1), evening-distill, retro-prep-week (renamed from weekly-retro-prep in v1.1) |

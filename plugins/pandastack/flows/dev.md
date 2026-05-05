@@ -21,7 +21,7 @@ Skip to Phase 3 (careful gate) for hotfixes where scope is unambiguous and time 
 ### Phase 1 — Brief (requirement lock)
 
 - **What happens**: Clarify what is being built and why before any code is written. For tasks under 1 hour (single function, config toggle, obvious rename), skip to Phase 2.
-- **Skills used**: `pandastack:grill` (default adversarial mode to surface hidden constraints; `--mode structured` for formal specs)
+- **Skills used**: `pandastack:grill` (adversarial mode to surface hidden constraints) or `pandastack:office-hours` (default, or `--quick` when context already loaded — produces a written brief in `docs/briefs/`)
 - **Output**: A short requirement statement or acceptance criteria block, written inline in the ticket or as a comment in the relevant work-vault file
 
 ### Phase 2 — Plan (implementation design)
@@ -83,7 +83,7 @@ Skip to Phase 3 (careful gate) for hotfixes where scope is unambiguous and time 
 ## Skill choreography
 
 ```
-grill (--mode structured)
+office-hours (--quick if context loaded)
   |
   v
 /plan (built-in)

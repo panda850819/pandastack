@@ -203,7 +203,7 @@ Save to `docs/sessions/YYYY-MM-DD-<topic>-survey.md`. If patches affect external
 
 - **`pandastack:deep-research`** — single-concept deep-dive. This skill is multi-repo breadth, not depth.
 - **`pandastack:knowledge`** — internal vault content. This skill is external ecosystem.
-- **`pandastack:grill --mode structured`** — runs AFTER this skill if a patch raises scope questions worth grilling.
+- **`pandastack:office-hours`** — runs AFTER this skill if a patch raises scope questions worth a structured brief.
 - **`pandastack:review`** — runs AFTER Phase 6 if patches touch reviewable surface.
 - **`pandastack:work-ship`** — for work-domain patches that need ship proposal to Notion/Linear.
 - **`pandastack:retro-week`** — picks up `[NEXT_BATCH]` parked patches when retro fires.

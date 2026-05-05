@@ -2,8 +2,8 @@
 name: office-hours
 mode: skill
 description: |
-  Bring a fuzzy idea to office hours. Model challenges, drills, surfaces unknowns, ends with a written brief. 5-stage internal flow: load context → adversarial grill → premise challenge → alternatives → write brief. 30 min scope.
-  Triggers on /office-hours, "I have an idea", "let me think out loud", "stress test this", "office hours". Replaces deprecated `commands/brainstorm.md`.
+  Bring a fuzzy idea to office hours. Model challenges, drills, surfaces unknowns, ends with a written brief. 5-stage internal flow: load context → adversarial grill → premise challenge → alternatives → write brief. Default 30 min, --quick mode (10-15 min) skips Stage 1 when context is pre-loaded.
+  Triggers on /office-hours, "I have an idea", "let me think out loud", "stress test this", "office hours", "draft a brief", "structured intake". Replaces deprecated `commands/brainstorm.md` and absorbs the structured-brief role formerly under `grill --mode structured`.
   Skill metaphor: walk into a professor's office hours with a half-formed thought. Walk out with a brief.
 reads:
   - repo: lib/capability-probe.md
@@ -51,16 +51,25 @@ capability_required:
 - Pure technical execution question (use `/eng-lead` skill or `/grill`)
 - Already wrote a brief, just want plan critique → use `/boardroom`
 
+## Modes
+
+- **Default** (full): all 5 stages, ~30 min. Use for fuzzy ideas where context, goal mapping, and premise challenge all matter.
+- **`--quick`**: skip Stage 1 (capability probe + gbq load + goal mapping). Jump straight to Stage 2 premise challenge with user-provided context. ~10-15 min. Use when context is already loaded in-session and you only need premise challenge → alternatives → brief.
+
+`--quick` is the structured-brief replacement for the deprecated `grill --mode structured`. When user says "draft a brief" / "structured intake" and goal context is already established this session, run `/office-hours --quick`.
+
 ## Differs from `/grill`
 
-- `/grill` is the atomic 5-10 min adversarial pressure tool used mid-session
-- `/office-hours` is the 30 min structured flow: load context → grill → premise challenge → alternatives → brief output
+- `/grill` is the atomic 5-10 min adversarial pressure tool used mid-session, surfaces unknown unknowns, outputs a confirmed/open log to `Inbox/grill-*.md`
+- `/office-hours` is the structured flow that ends with a written brief in `docs/briefs/`. Default takes 30 min with full context load; `--quick` takes 10-15 min when context is pre-loaded.
 
-`/grill` is a mid-flight weapon. `/office-hours` is a complete session.
+`/grill` is a mid-flight weapon (no brief output). `/office-hours` is a complete session that produces a brief.
 
 ## Stages
 
 ### Stage 1: Capability probe + load context
+
+**Skip this stage entirely if `--quick`** — assumes context + goals already established in-session. Print one line: `Stage 1 skipped (--quick). Using session context: {1-line summary of what's already loaded}.` Then proceed to Stage 2.
 
 @../../lib/capability-probe.md
 
@@ -194,7 +203,7 @@ Reasoning: {one line — which question of Q1/Q2/Q3 hit Yes and why}
 Recommended skill:
   → /sprint {topic-slug}                        # if Q1=Yes (single-target, iteration expected)
   → /execute-plan (with this brief as input)    # if Q2=Yes (N-step sequential with verify gates)
-  → raw Agent + worktree (manual until two-strike for team-orchestrate)  # if Q3=Yes (N-branch parallel)
+  → /team-orchestrate (with this brief as input) # if Q3=Yes (N-branch parallel, independence audit required)
 
 Persona for next skill (per lib/skill-decision-tree.md routing table):
   → {architect | eng-lead | design-lead | ops-lead | product-lead | ceo}

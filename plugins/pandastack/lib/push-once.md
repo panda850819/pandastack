@@ -8,8 +8,7 @@
 
 Skills that take user input on a fuzzy / unverified claim and need to drill before accepting it. Specifically:
 
-- `grill` (default adversarial mode) Protocol step — first reply on any axis
-- `grill --mode structured` Step 2 (Clarify) — user demand reality / status quo
+- `grill` Protocol step — first reply on any axis
 - `office-hours` Stage 2 (Premise challenge) — first claim
 - `boardroom` per-voice critique — when a voice's first take is too soft
 

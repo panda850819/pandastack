@@ -9,7 +9,8 @@ This file is the plugin-internal contract read by skill content. The user-facing
 Full catalog in `RESOLVER.md` at the repo root. Dev-workflow primitives:
 
 - `/pandastack:init` — one-time project setup
-- `/pandastack:grill` — adversarial requirement discovery (`--mode structured` for the formal-brief flow)
+- `/pandastack:grill` — adversarial requirement discovery, atomic, no brief output
+- `/pandastack:office-hours` — structured 5-stage flow that produces a brief (`--quick` for pre-loaded context)
 - `/pandastack:review` — parallel 3-pass review + Codex cross-check + learnings
 - `/pandastack:qa` — browser-based QA with structured assertions
 - `/pandastack:ship` — test + commit + PR
@@ -39,4 +40,4 @@ Compound logic (extract a debugging pattern / pitfall / architecture decision) i
 
 ## Goal mapping (new in v1.0.0-rc.3)
 
-`brief` and `grill --mode structured` run a Step 1.5 Goal Mapping pre-step that reads the user's goal hierarchy from memory and maps the current task to L1 (long horizon) / L2 (this season) / L3 (this week) layers. Downstream Clarify and Alternatives steps adapt to the dominant layer. See `lib/goal-mapping.md`.
+`office-hours` runs a Stage 1 Goal Mapping pre-step that reads the user's goal hierarchy from memory and maps the current task to L1 (long horizon) / L2 (this season) / L3 (this week) layers. Downstream premise challenge and alternatives stages adapt to the dominant layer. See `lib/goal-mapping.md`. (Skipped under `--quick` when context is already loaded in-session.)

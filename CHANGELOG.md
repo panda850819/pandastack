@@ -1,5 +1,43 @@
 # Changelog
 
+## v1.2.0 — 2026-05-05
+
+> Surface area cleanup + decision-tree completeness. Two changes: (a) `grill --mode structured` removed, structured-brief role consolidated into `office-hours --quick`; (b) `team-orchestrate` skill built early to fill the Q3 hole in `lib/skill-decision-tree.md`. Net skill count unchanged (-1, +1).
+
+### Added
+
+- `skills/team-orchestrate/SKILL.md` — Conductor-driven parallel execution. Dispatches N independent branches to subagents in a single message, each in its own git worktree, gates each branch as it returns. Mirrors `execute-plan` Phase 0-3 structure but parallel. Fills the Q3 destination of `lib/skill-decision-tree.md` (was marked "future / two-strike pending"; built early because the architecture had a structural hole, not an emergent pattern).
+- `skills/office-hours/SKILL.md` `--quick` flag — skips Stage 1 (capability probe + gbq load + goal mapping) when context is pre-loaded in-session. Reduces total time from ~30 min to ~10-15 min. Replaces the structured-brief role formerly under `grill --mode structured`.
+
+### Removed
+
+- `grill --mode structured` body removed (was lines 162-309 of `skills/grill/SKILL.md`). Grill returns to atomic adversarial-only positioning. The "5-step structured brief flow" content is no longer needed because `office-hours` already covers the same 5 stages with better staging (capability probe → premise challenge → alternatives → premise refresh → output) and `--quick` mode handles the case where context is already loaded.
+
+### Why this consolidation
+
+`grill --mode structured` (added v1.1 to absorb deprecated `pandastack:brief`) and `office-hours` (5-stage flow) overlapped ~70% by the dogfood window: both did Load Context → Premise Challenge → Alternatives → Brief output. The middle ground was a naming smell — "grill" but with brief output. Single canonical structured-brief skill is `office-hours` going forward.
+
+### Cross-reference updates
+
+- `RESOLVER.md` (rows 52, 124, 207) — split grill / office-hours rows, removed `--mode structured`.
+- `plugins/pandastack/CLAUDE.md` (lines 12, 42) — split skill list, updated goal-mapping note.
+- `plugins/pandastack/lib/push-once.md` — removed `--mode structured` from skill list.
+- `plugins/pandastack/lib/stop-rule.md` — `--mode structured` Step 4 → `office-hours` Stage 3.
+- `plugins/pandastack/lib/escape-hatch.md` — split grill / office-hours skill rows.
+- `plugins/pandastack/lib/skill-decision-tree.md` — removed "future / two-strike pending" qualifiers from team-orchestrate (5 places).
+- `plugins/pandastack/lib/persona-frame.md` — removed "future" qualifier from team-orchestrate mention.
+- `plugins/pandastack/skills/execute-plan/SKILL.md` line 21 — `pandastack:grill --mode structured` → `pandastack:office-hours`.
+- `plugins/pandastack/skills/scout/SKILL.md` line 206 — same swap.
+- `plugins/pandastack/skills/grill/SKILL.md` — frontmatter description, in-body refs, Origin section all updated.
+- `plugins/pandastack/skills/office-hours/SKILL.md` — frontmatter description, Modes section, Stage 1 skip-on-quick, Stage 5 routing.
+- `plugins/pandastack/flows/dev.md` — Phase 1 + skill choreography updated.
+- `tests/resolver-golden.md` T08 — `/grill --mode structured` → `/office-hours --quick`.
+
+### Migration
+
+- If you previously ran `/grill --mode structured`, run `/office-hours --quick` instead (when context is already loaded) or `/office-hours` (full mode, when starting cold).
+- No alias period — `--mode structured` was added v1.1.0 (2026-05-04), removed v1.2.0 (2026-05-05). 1-day lifecycle inside dogfood window means alias overhead not justified.
+
 ## v1.1.0 — 2026-05-04
 
 > Skill-only redesign. agents/ + commands/ + persona-pipeline deleted. 9 new skills + 7 new lib/ modules + 1 regression test file. 7 skill renames with 90-day alias period through 2026-08-04. Codex review patches integrated (Q3 reverted by user, Q4 / Q6 / Q7 / Q9 + 2 blind spots applied).
