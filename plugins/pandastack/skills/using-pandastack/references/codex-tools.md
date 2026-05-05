@@ -75,7 +75,7 @@ Many pandastack skills (especially `tool-*`) invoke Panda's local CLI tools. The
 | `gbq` | knowledge-ship, brain-first lookups, vault search | gbrain index at `<personal-vault>` |
 | `bird` | tool-bird | X/Twitter cookie auth |
 | `notion-cli` | tool-notion, work-ship (notion proposals) | Notion API token in env |
-| `defuddle` | tool-web-extract | Bun + defuddle binary |
+| `defuddle` | url-routing rule (Defuddle command reference) | Bun + defuddle binary |
 | `gog` | (Google Workspace skills) | Google OAuth config |
 | `slack` (slack-cli) | tool-slack, misalignment | Slack token in Keychain |
 | `agent-browser` | agent-browser, qa | Headless Chrome session |

@@ -32,7 +32,7 @@ type: lifecycle-flow
 ### Phase 3 — Fetch
 
 - **What happens**: Pull raw material from external sources. Use the right tool per source type. Apply the fallback chain (defuddle → agent-browser → WebFetch) only if primary tool fails.
-- **Skills used**: `pandastack:feed-curator` (for finding relevant feed sources and queued items); `pandastack:tool-web-extract` (clean markdown from web pages via defuddle); `pandastack:tool-summarize` (for YouTube, podcasts, long-form audio); `pandastack:tool-bird` (for X/Twitter threads relevant to the question); `pandastack:tool-deepwiki` (for GitHub repo documentation)
+- **Skills used**: `pandastack:curate-feeds` (for finding relevant feed sources and queued items); `defuddle parse <url> --md` for clean markdown from web pages (per `~/.claude/rules/url-routing.md`); `pandastack:tool-summarize` (for YouTube, podcasts, long-form audio); `pandastack:tool-bird` (for X/Twitter threads relevant to the question); `pandastack:tool-deepwiki` (for GitHub repo documentation)
 - **Output**: Raw materials accumulated in `Inbox/research/<slug>/` or a staging scratch note, with source URLs recorded
 
 ### Phase 4 — Deep research
@@ -77,8 +77,8 @@ gbq  (vault-first lookup — brain-first rule)
 pandastack:grill  (scope lock — adversarial mode)
   |
   v
-pandastack:feed-curator
-  + pandastack:tool-web-extract
+pandastack:curate-feeds
+  + defuddle parse <url> --md  (per url-routing rule)
   + pandastack:tool-summarize
   + pandastack:tool-bird
   + pandastack:tool-deepwiki

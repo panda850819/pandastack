@@ -24,7 +24,6 @@ This is the pattern used by gstack, gbrain, and alirezarezvani: monorepo + RESOL
 | `pandastack:wiki-lint` | Vault hygiene scan (orphans, stale, duplicates) | weekly hygiene |
 | `pandastack:scout` | Recon public ecosystem for skill / harness patterns (was: `harness-survey`) | survey other harnesses |
 | `pandastack:tool-summarize` | Summarize URL / podcast / file | summarize, TL;DR |
-| `pandastack:tool-web-extract` | Defuddle web → markdown | URL to read |
 
 ### Writing
 
@@ -205,7 +204,7 @@ Private contexts (in the private overlay) may reference additional skills beyond
 |---|---|
 | Built in v0.16 | careful, checkpoint, freeze, init, qa, review, ship (compound / retro / brief / learn from v0.16 removed in v1.0.0-rc.3 — compound + brief absorbed into knowledge-ship/work-ship + office-hours; retro absorbed into retro-week Phase 1; learn dropped, learning search is LLM-native) |
 | Added in v1 from `~/.claude/skills/` (local) | deep-research, curate-feeds (renamed from feed-curator in v1.1), grill, knowledge-ship, work-ship, write-ship, persona-pipeline (deprecated v1.1), process-decisions, retro-week, retro-month, gatekeeper (renamed from slowmist-agent-security in v1.1), wiki-lint, tool-bird, tool-notion, tool-railway |
-| Added in v1 from `claude-skills` repo | tool-browser (renamed from agent-browser in v1.1), write (renamed from content-write in v1.1), done, think-like-naval, think-like-alan-chan, think-like-karpathy, tool-deepwiki, tool-pdf, tool-slack, tool-summarize, tool-web-extract |
+| Added in v1 from `claude-skills` repo | tool-browser (renamed from agent-browser in v1.1), write (renamed from content-write in v1.1), done, think-like-naval, think-like-alan-chan, think-like-karpathy, tool-deepwiki, tool-pdf, tool-slack, tool-summarize (tool-web-extract removed in v1.2 — folded into `~/.claude/rules/url-routing.md`) |
 | Added in v1 (Hermes cron lifecycle) | brief-morning (renamed from morning-briefing in v1.1), evening-distill, retro-prep-week (renamed from weekly-retro-prep in v1.1) |
 | Two-strike promoted in v1 | scout (renamed from harness-survey in v1.1) |
 | New v1 agent | ops |

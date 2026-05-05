@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.2.1 — 2026-05-05
+
+> Surface area slim: `tool-web-extract` archived, routing folded into `~/.claude/rules/url-routing.md`. Skill count 51 → 50 active.
+
+### Removed
+
+- `tool-web-extract` skill (56 lines, archived to `skills/_archive/tool-web-extract-2026-05-05/`). Skill was a thin wrapper over Defuddle CLI flags; routing already lived in `~/.claude/rules/url-routing.md` Fallback Chain section. Defuddle command reference (the only procedural value the skill held) folded into the same rule file under new "Defuddle command reference" subsection.
+
+### Cross-reference updates
+
+- `RESOLVER.md` — removed `pandastack:tool-web-extract` row + updated "Added in v1" list to note removal.
+- `plugins/pandastack/skills/using-pandastack/references/codex-tools.md` — defuddle row points at url-routing rule instead of skill.
+- `plugins/pandastack/flows/research.md` — Phase 3 + skill choreography updated to invoke `defuddle parse <url> --md` directly per url-routing rule. Same pass also fixed a stale `feed-curator` reference to `curate-feeds` (v1.1 rename followup).
+
+### Migration
+
+If any downstream skill or doc still references `pandastack:tool-web-extract`, the replacement is the rule reference: `~/.claude/rules/url-routing.md` § "Defuddle command reference" + § "Fallback Chain".
+
 ## v1.2.0 — 2026-05-05
 
 > Surface area cleanup + decision-tree completeness. Two changes: (a) `grill --mode structured` removed, structured-brief role consolidated into `office-hours --quick`; (b) `team-orchestrate` skill built early to fill the Q3 hole in `lib/skill-decision-tree.md`. Net skill count unchanged (-1, +1).
