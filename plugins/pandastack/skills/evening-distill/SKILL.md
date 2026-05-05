@@ -15,7 +15,7 @@ forbids:
 domain: personal
 classification: hybrid
 allowed-tools: Bash, Read, Write, Edit, Grep
-version: "0.1.1"
+version: "0.1.2"
 user-invocable: true
 ---
 
@@ -33,7 +33,7 @@ Write an end-of-day personal handoff for Panda and append it to today's daily no
 - Never replace the rest of the daily note.
 - Catch each source failure and write `(source unavailable: <reason>)` in that section.
 - Empty successful source means `(none)`.
-- After writing, echo one line: `evening-distill wrote <target> sections=6`.
+- After writing, echo one line: `evening-distill wrote <target> sections=3`.
 - **Never create a fake `$HOME` or copy `~/.pdctx` into cwd.** The real `$HOME` is correctly set by hermes / the calling shell. Any sandbox staging belongs in `/tmp`, not in the vault.
 
 ## Sources
@@ -49,30 +49,42 @@ Write an end-of-day personal handoff for Panda and append it to today's daily no
 ```markdown
 ## Evening Distill (auto · YYYY-MM-DD HH:MM)
 
-### Today's closed loop
+### 1. 分門別類
+
+#### 今日收尾
 - <N action items closed, top completed item with payoff>
 
-### Rolled items for tomorrow
+#### 明日延續
 - <top remaining unchecked items from today's daily note>
 
-### Tomorrow's calendar
+#### 明日行事曆
 - <first 3 meetings or events, each with prep needed>
 
-### Email carry-over
+#### Email carry-over
 - <personal Gmail unread threads likely to matter tomorrow, top 3>
 
-### Suggested first focus tomorrow
-- <1 line: tomorrow's first thing, derived from open items + vault focus seed>
-
-### Writing seeds
+#### 寫作種子
 - <top 3 writing or note candidates worth carrying into tomorrow>
+
+### 2. 時間點應該做什麼
+- <tonight / before sleep: final cleanup or capture>
+- <tomorrow morning first block: first focus>
+- <before first meeting or afternoon block: prep needed>
+
+### 3. 建議行動
+- <one concrete action per line, imperative>
+- <second concrete action per line>
+- <third concrete action per line>
 ```
 
 ## Write Algorithm
 
-1. Compose the full block with exactly the six sections above.
-2. If writing to smoke target, write only the block to `/tmp/evening-distill-smoke.md`.
-3. If writing to daily note, preserve YAML frontmatter and the `# YYYY-MM-DD Daily Log` heading.
-4. Append the evening block near the end of the daily note.
-5. If an existing `## Evening Distill (auto · ...)` block appears before the next `## ` heading or EOF, replace that block.
-6. Re-run once for idempotency when smoke-testing; the target must not duplicate the evening block.
+1. Compose the full block with exactly the three top-level sections above.
+2. Under `### 1. 分門別類`, always keep the five subsections in this order: `今日收尾`, `明日延續`, `明日行事曆`, `Email carry-over`, `寫作種子`.
+3. Under `### 2. 時間點應該做什麼`, write 2-4 bullets in chronological order. Use concrete clock times when available from calendar; otherwise use relative windows like `今晚睡前`, `明早第一段`, `下午前`.
+4. Under `### 3. 建議行動`, write 3-5 standalone bullets, one action per line. Do not merge multiple actions into one bullet.
+5. If writing to smoke target, write only the block to `/tmp/evening-distill-smoke.md`.
+6. If writing to daily note, preserve YAML frontmatter and the `# YYYY-MM-DD Daily Log` heading.
+7. Append the evening block near the end of the daily note.
+8. If an existing `## Evening Distill (auto · ...)` block appears before the next `## ` heading or EOF, replace that block.
+9. Re-run once for idempotency when smoke-testing; the target must not duplicate the evening block.

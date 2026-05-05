@@ -16,7 +16,7 @@ forbids:
 domain: personal
 classification: hybrid
 allowed-tools: Bash, Read, Write, Edit, Grep
-version: "0.1.1"
+version: "0.1.2"
 user-invocable: true
 ---
 
@@ -36,7 +36,7 @@ Produce a one-page morning briefing for Panda and prepend it to today's daily no
 - Catch each source failure and write `(source unavailable: <reason>)` in that section.
 - Empty successful source means `(none)`.
 - **Never create a fake `$HOME` or copy `~/.pdctx` into cwd.** The real `$HOME` is correctly set by hermes / the calling shell. Any sandbox staging belongs in `/tmp`, not in the vault.
-- After writing, echo one line: `morning-briefing wrote <target> sections=5`.
+- After writing, echo one line: `morning-briefing wrote <target> sections=3`.
 
 ## Sources
 
@@ -51,27 +51,39 @@ Produce a one-page morning briefing for Panda and prepend it to today's daily no
 ```markdown
 ## Morning Briefing (auto · YYYY-MM-DD HH:MM)
 
-### Yesterday's open items
+### 1. 分門別類
+
+#### 昨日未完成
 - <todo from yesterday's daily note ## Action Items, only unchecked>
 
-### Today's calendar
+#### 今日行事曆
 - <first 3 meetings, each with prep needed>
 
-### Email P0
+#### Email P0
 - <personal Gmail unread threads within 12h, top 3>
 
-### Suggested focus
-- <1 line: today's #1 thing, derived from yesterday's distill + open items>
-
-### Writing seeds
+#### 寫作種子
 - <top 3 writing / note candidates worth developing today>
+
+### 2. 時間點應該做什麼
+- <now ~ first meeting: highest-leverage focus block>
+- <before each timed event: prep or reply needed>
+- <afternoon / after lunch: second focus block>
+
+### 3. 建議行動
+- <one concrete action per line, imperative>
+- <second concrete action per line>
+- <third concrete action per line>
 ```
 
 ## Write Algorithm
 
-1. Compose the full briefing block with exactly the five sections above.
-2. If writing to smoke target, write only the briefing block to `/tmp/morning-briefing-smoke.md`.
-3. If writing to daily note, preserve YAML frontmatter and the `# YYYY-MM-DD Daily Log` heading.
-4. Insert the briefing after the H1.
-5. If an existing `## Morning Briefing (auto · ...)` block appears before the next `## ` heading, replace that block.
-6. Re-run once for idempotency when smoke-testing; the file must still contain one briefing block.
+1. Compose the full briefing block with exactly the three top-level sections above.
+2. Under `### 1. 分門別類`, always keep the four subsections in this order: `昨日未完成`, `今日行事曆`, `Email P0`, `寫作種子`.
+3. Under `### 2. 時間點應該做什麼`, write 2-4 bullets in chronological order. Use concrete clock times when available from calendar; otherwise use relative windows like `現在`, `中午前`, `下午`.
+4. Under `### 3. 建議行動`, write 3-5 standalone bullets, one action per line. Do not merge multiple actions into one bullet.
+5. If writing to smoke target, write only the briefing block to `/tmp/morning-briefing-smoke.md`.
+6. If writing to daily note, preserve YAML frontmatter and the `# YYYY-MM-DD Daily Log` heading.
+7. Insert the briefing after the H1.
+8. If an existing `## Morning Briefing (auto · ...)` block appears before the next `## ` heading, replace that block.
+9. Re-run once for idempotency when smoke-testing; the file must still contain one briefing block.
