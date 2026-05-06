@@ -99,15 +99,13 @@ For each candidate from Phase 2:
    If vault has a note covering same pattern → tag `[ALREADY_KNOW]`, link the note, drop from further consideration.
 
 2. **Layer-aware mapping** (mandatory — feedback-log 2026-05-01 rule):
-   List own architecture layers FIRST before mapping. Reference layout (substitute your own paths via `${PANDASTACK_HOME}` resolution from /pandastack:init):
-   ```
-   Tier 1 substrate    : ~/.agents/AGENTS.md (voice / routing / behavioral defaults)
-   Tier 2 CLI shims    : ~/.claude/ ~/.codex/ (rules / hooks / commands)
-   Tier 3 schedulers   : launchd / Hermes / CronCreate
-   pandastack skills   : ${PANDASTACK_HOME}/skills/<name>/
-   pandastack personas : ${PANDASTACK_HOME}/skills/{ceo,eng-lead,design-lead,product-lead,ops-lead}/ (skill-only, no agents in v1.1)
-   pandastack libs     : ${PANDASTACK_HOME}/lib/*.md (persona-frame / push-once / escape-hatch / outside-voice-rule / stop-rule / capability-probe / bad-good-calibration / goal-mapping / confidence / gate-contract / learning-format)
-   ```
+   List your own architecture layers BEFORE mapping. The point is to force candidates into your layer split rather than dump them at the closest bucket. Typical multi-CLI harness layers look like:
+   - Tier 1 substrate (identity / voice / routing — agent-agnostic)
+   - Tier 2 runtime shims (Claude / Codex / Gemini dotdir specific)
+   - Tier 3 schedulers (cron / launchd / Hermes / native)
+   - skill content (markdown + scripts)
+   - lib modules (shared structure across skills)
+
    For each candidate, tag which layer it lands in. **Reject any candidate that wants to flatten across layers (cargo-cult).**
 
 3. **ROI tag**:

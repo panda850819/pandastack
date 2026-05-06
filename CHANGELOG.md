@@ -1,8 +1,42 @@
 # Changelog
 
+## v1.4.0 — 2026-05-07
+
+> Follow-up audit on v1.3.0. Drops the `tool-` prefix on 7 wrapper skills; documents the L5 firewall as planned-not-shipped (was previously claimed as enforced); makes the `using-pandastack` overlay fallback explicit; pulls personal-tier skills out of the `personal:trader` public skill list; rewrites bootstrap's core skill listing to read from the manifest dynamically. Plugin descriptions and the Stability-scope framing in README are also synced to current reality. Skill count: 49 (unchanged).
+
+### Renamed (90-day alias grace via SKILL.md `aliases:`)
+
+| Old name | New name | Note |
+|---|---|---|
+| `tool-pdf` | `pdf` | tier=ext, requires Python pipeline + poppler/tesseract |
+| `tool-bird` | `bird` | tier=personal, private CLI |
+| `tool-slack` | `slack` | tier=personal, private CLI |
+| `tool-notion` | `notion` | tier=personal, private CLI |
+| `tool-deepwiki` | `deepwiki` | tier=ext |
+| `tool-summarize` | `summarize` | tier=ext, brew-installable |
+| `tool-browser` | `agent-browser` | tier=ext, name reflects upstream `agent-browser` CLI it wraps |
+
+The `tool-` cluster prefix was dropped because the names already disambiguate via `pandastack:` namespace and slash-command form (`/pdf`, `/bird`). `agent-browser` keeps its long name because that's the actual upstream CLI name (npm package). Old names continue to resolve via `aliases:` frontmatter through 2026-08-05.
+
+### Changed
+
+- `lib/persona-frame.md`, `execute-plan/SKILL.md`, `scout/SKILL.md`: persona path resolution chain unchanged (`${PANDASTACK_HOME}/skills/<persona>/SKILL.md`); scout's hardcoded layer-mapping cheat sheet removed in favor of an abstract layer description.
+- `using-pandastack/SKILL.md`: overlay fallback was previously a silent fallback to `pandastack-private`. Now the SessionStart hook MUST log which step matched (env var / repo overlay / no overlay loaded). No silent fallback.
+- `personal-trader.toml`: stripped `pandastack:deep-research` and `pandastack:bird` from the public skill list; both are tier=personal and load via overlay only.
+- `scripts/bootstrap.sh`: core skill list is now read from `manifest.toml` at probe time (was hardcoded). Renames don't drift it. Also fixed the macOS BSD `awk` incompatibility (`gensub`) that broke the previous version.
+- `manifest.toml`: tool-* skill entries renamed; `pdf` requires now correctly lists `python3 + poppler + tesseract + pip:pypdf,pdfplumber,reportlab,pytesseract,pdf2image` (was incorrectly only `brew:poppler` + `brew:tesseract`).
+- `README.md` Layer model section: L5 firewall explicitly marked **frontmatter only, no runtime enforcement**. The L5 hook implementation was claimed in v1.0 but `docs/firewall-l5.md` does not exist; treat skill `forbids` / `reads` / `writes` as audit metadata until the hook ships.
+- `README.md` skill-count and version messaging synced to v1.4.0 / 49 skills.
+- `plugin.json` and `marketplace.json` descriptions updated to current 49 skill count.
+- `ROADMAP.md` v2 scope: Onboarding scaffold and Public capability-probe defaults marked `[partial: shipped in v1.3.0/v1.4.0]`. Multi-vault provider abstraction and Fresh A-user dogfood criteria remain v2.
+
+### Why this batch
+
+User audit on v1.3.0 surfaced: (a) `tool-` prefix is filler, names work without it; (b) L5 firewall was claimed but doc + hook missing — pretending it enforces is dishonest; (c) silent overlay fallback in `using-pandastack` makes fresh-user state invisible; (d) personal-trader context loads tier=personal skills that fail on public install; (e) bootstrap hardcoded skill list drifts on rename; (f) plugin metadata claims `~37 skills` and `~50 skills` simultaneously across files. v1.4.0 fixes all six in one cut.
+
 ## v1.3.0 — 2026-05-07
 
-> Fresh-install hardening. Tier model + bootstrap script + decoupled hardcoded data. Goal: a fresh A-class clone runs Core skills without author hand-holding. Personal-CLI skills become opt-in via private overlay rather than baked into public skills. Skill count 49 → 48 (removed `tool-railway`).
+> Fresh-install hardening. Tier model + bootstrap script + decoupled hardcoded data. Goal: a fresh A-class clone runs Core skills without author hand-holding. Personal-CLI skills become opt-in via private overlay rather than baked into public skills. Skill count 50 → 49 (removed `tool-railway`).
 
 ### Added
 

@@ -23,7 +23,7 @@ This is the pattern used by gstack, gbrain, and alirezarezvani: monorepo + RESOL
 | `pandastack:knowledge-ship` | Close + Extract + Backflow on a knowledge note | ship this note |
 | `pandastack:wiki-lint` | Vault hygiene scan (orphans, stale, duplicates) | weekly hygiene |
 | `pandastack:scout` | Recon public ecosystem for skill / harness patterns (was: `harness-survey`) | survey other harnesses |
-| `pandastack:tool-summarize` | Summarize URL / podcast / file | summarize, TL;DR |
+| `pandastack:summarize` | Summarize URL / podcast / file | summarize, TL;DR |
 
 ### Writing
 
@@ -69,12 +69,12 @@ Additional work-specific skills (alert triage, Slack scans) ship in the private 
 
 | Skill | Wraps |
 |---|---|
-| `pandastack:tool-bird` | bird CLI (X / Twitter) |
-| `pandastack:tool-notion` | notion-cli |
-| `pandastack:tool-slack` | slack-cli |
-| `pandastack:tool-pdf` | PDF read / extract / OCR |
-| `pandastack:tool-deepwiki` | DeepWiki repo docs |
-| `pandastack:tool-browser` | Browser automation (was: `agent-browser`) |
+| `pandastack:bird` | bird CLI (X / Twitter) |
+| `pandastack:notion` | notion-cli |
+| `pandastack:slack` | slack-cli |
+| `pandastack:pdf` | PDF read / extract / OCR |
+| `pandastack:deepwiki` | DeepWiki repo docs |
+| `pandastack:agent-browser` | Browser automation (was: `agent-browser`) |
 
 ### Persona thinking frames
 

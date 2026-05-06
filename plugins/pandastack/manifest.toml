@@ -27,12 +27,15 @@
 # This file is hand-curated. When you add or rename a skill, update here.
 
 [manifest]
-version = "1.3.0"
+version = "1.4.0"
 schema  = "skill-tier-v1"
 updated = "2026-05-07"
 
+# v1.4.0: tool-* skills renamed to drop the prefix. tool-pdf -> pdf, tool-bird -> bird,
+# etc. 90-day alias grace via SKILL.md frontmatter `aliases:`.
+
 # ============================================================================
-# CORE (33) — markdown-only, fresh-clone runnable
+# CORE (35) — markdown-only, fresh-clone runnable
 # ============================================================================
 
 [skill.architect]
@@ -199,22 +202,22 @@ tier = "ext"
 requires = ["cli:gh"]
 description = "Recon public ecosystem for skill / harness patterns."
 
-[skill.tool-browser]
+[skill.agent-browser]
 tier = "ext"
 requires = ["npm:agent-browser"]
 description = "Browser automation: open, fill, click, screenshot, scrape."
 
-[skill.tool-deepwiki]
+[skill.deepwiki]
 tier = "ext"
 requires = ["cli:curl", "cli:jq"]
 description = "GitHub repo docs + Mermaid diagrams via deepwiki."
 
-[skill.tool-pdf]
+[skill.pdf]
 tier = "ext"
-requires = ["brew:poppler", "brew:tesseract"]
-description = "PDF read / extract / merge / split / OCR."
+requires = ["cli:python3", "brew:poppler", "brew:tesseract", "pip:pypdf", "pip:pdfplumber", "pip:reportlab", "pip:pytesseract", "pip:pdf2image"]
+description = "PDF read / extract / merge / split / OCR / fill / encrypt (Python pipeline)."
 
-[skill.tool-summarize]
+[skill.summarize]
 tier = "ext"
 requires = ["brew-tap:steipete/tap/summarize"]
 description = "Summarize URL / YouTube / podcast / PDF."
@@ -252,17 +255,17 @@ requires = ["private:gog", "private:slack-cli", "private:gbq"]
 config = ["env:PANDASTACK_USER_EMAIL"]
 description = "Friday 9am pre-fetch retro inputs."
 
-[skill.tool-bird]
+[skill.bird]
 tier = "personal"
 requires = ["private:bird"]
 description = "X/Twitter read/write via private bird CLI."
 
-[skill.tool-notion]
+[skill.notion]
 tier = "personal"
 requires = ["private:notion-cli"]
 description = "Notion pages/DBs via private notion-cli."
 
-[skill.tool-slack]
+[skill.slack]
 tier = "personal"
 requires = ["private:slack-cli"]
 description = "Slack search/send/read via private slack-cli."

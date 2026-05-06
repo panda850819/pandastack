@@ -43,7 +43,7 @@ type: lifecycle-flow
 ### Phase 5 — Distribute (manual)
 
 - **What happens**: Thread drafts accumulate in `Inbox/x-drafts/`. Long-form pieces accumulate in a newsletter staging area. Human pushes to X, Substack, or other platforms when ready. No automation here.
-- **Skills used**: `pandastack:tool-bird` (when manually posting threads to X); direct platform UI for newsletter
+- **Skills used**: `pandastack:bird` (when manually posting threads to X); direct platform UI for newsletter
 - **Output**: Published URL, recorded back in the Blog/Published frontmatter as `published_url:`
 
 ## Exit criteria
@@ -80,5 +80,5 @@ pandastack:write-ship
   └── Stage 3: Backflow (_index, Inbox/, memory)
   |
   v
-pandastack:tool-bird  (manual X post, when ready)
+pandastack:bird  (manual X post, when ready)
 ```

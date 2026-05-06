@@ -1,5 +1,6 @@
 ---
-name: tool-slack
+name: slack
+aliases: [tool-slack]
 description: |
   Slack search/send/read via slack CLI (Keychain token).
 

@@ -1,5 +1,6 @@
 ---
-name: tool-notion
+name: notion
+aliases: [tool-notion]
 description: |
   Notion pages/DBs via notion-cli. Defaults to partial updates.
 

@@ -27,13 +27,13 @@ type: lifecycle-flow
 ### Phase 2 — Context fetch
 
 - **What happens**: Before acting, search work-vault and personal vault for prior context on this topic. Never act from memory alone. Look for prior decisions, SOPs, stakeholder context, and related meeting distillations.
-- **Skills used**: `gbq "<topic>"` against work-vault first; personal vault for durable frameworks only; `pandastack:tool-notion` (read-only, metadata fetch) if Notion has the canonical page
+- **Skills used**: `gbq "<topic>"` against work-vault first; personal vault for durable frameworks only; `pandastack:notion` (read-only, metadata fetch) if Notion has the canonical page
 - **Output**: A 3-5 sentence context summary or a pointer to the relevant prior decision/SOP file. If no prior context exists, note "first occurrence" explicitly.
 
 ### Phase 3 — Execute
 
 - **What happens**: Do the actual work — analysis, decision, response drafting, tool calls. Use the appropriate persona for the domain and scope. Vault-only writes during execution; external systems read-only unless explicitly authorized for a one-off.
-- **Skills used**: `pandastack:ops-lead` persona (for ops, HR, finance scope); `pandastack:product-lead` persona (for product scope); `pandastack:ceo` persona (for strategy or principal-facing decisions); `pandastack:tool-notion` / `pandastack:tool-slack` (read-only reference); `pandastack:misalignment` (private overlay, optional — Slack misalignment scan)
+- **Skills used**: `pandastack:ops-lead` persona (for ops, HR, finance scope); `pandastack:product-lead` persona (for product scope); `pandastack:ceo` persona (for strategy or principal-facing decisions); `pandastack:notion` / `pandastack:slack` (read-only reference); `pandastack:misalignment` (private overlay, optional — Slack misalignment scan)
 - **Output**: Decision or action documented in a scratch note in work-vault; any external message drafted but not sent
 
 ### Phase 4 — Ship (vault close)
@@ -73,8 +73,8 @@ gbq / vault search  (work-vault context fetch first)
   |
   v
 pandastack:ops-lead / product-lead / ceo  (persona for domain)
-  + pandastack:tool-notion (read)
-  + pandastack:tool-slack (read)
+  + pandastack:notion (read)
+  + pandastack:slack (read)
   + pandastack:misalignment (private overlay, optional)
   |
   v

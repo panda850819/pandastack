@@ -73,11 +73,17 @@ These thoughts mean you are about to skip a skill that applies. Stop and check.
 
 ## Overlay extension
 
-A personal / org overlay may be appended to this contract by the SessionStart hook (default search path: `${PANDASTACK_OVERLAY}` env var, falling back to `$HOME/site/skills/pandastack-private/overlays/using-pandastack.md`).
+A personal / org overlay may be appended to this contract by the SessionStart hook. Resolution order:
+
+1. `${PANDASTACK_OVERLAY}` if set
+2. `${PANDASTACK_HOME}/overlays/using-pandastack.md` if exists
+3. (no overlay loaded — public contract is self-contained)
+
+The SessionStart hook MUST log explicitly which step matched. Silent fallback to a private path is a bug — fresh users without an overlay get no signal that the lifecycle map is running on public defaults only.
 
 The overlay typically adds:
 - Concrete vault / repo / memory paths bound to abstract slots above
 - Private skill triggers (org-specific alerts, internal SOPs)
 - Active dogfood / experiment windows
 
-If the overlay is missing, this public contract still works on its own — the lifecycle map degrades to abstract guidance.
+If no overlay loads, this public contract still works on its own — the lifecycle map degrades to abstract guidance.

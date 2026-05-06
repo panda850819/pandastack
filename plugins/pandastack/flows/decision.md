@@ -40,7 +40,7 @@ type: lifecycle-flow
 ### Phase 4 — External push (when decision requires it)
 
 - **What happens**: If executing a decision requires updating Notion, Linear, Jira, or sending a Slack message, that proposal routes through the work flow's external push phase rather than being executed directly here.
-- **Skills used**: `pandastack:process-decisions` (cross-references to `Inbox/ship-proposals/`); `pandastack:tool-notion` / `pandastack:tool-slack` (if user authorizes direct push in this session)
+- **Skills used**: `pandastack:process-decisions` (cross-references to `Inbox/ship-proposals/`); `pandastack:notion` / `pandastack:slack` (if user authorizes direct push in this session)
 - **Output**: External systems updated; ship proposals marked `status: pushed` in their frontmatter
 
 ### Phase 5 — Log to daily note
@@ -84,7 +84,7 @@ pandastack:process-decisions
   → creates Inbox/ship-proposals/ for external-push items
 
 [external push, optional]
-pandastack:tool-notion / pandastack:tool-slack  (if authorized)
+pandastack:notion / pandastack:slack  (if authorized)
 
 [daily note]
 pandastack:daily  (append session summary)

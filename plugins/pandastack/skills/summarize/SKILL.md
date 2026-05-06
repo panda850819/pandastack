@@ -1,5 +1,6 @@
 ---
-name: tool-summarize
+name: summarize
+aliases: [tool-summarize]
 description: |
   Extract full text + optional AI summary from URL/YouTube/podcast/PDF via summarize CLI. Always preserves original (vault discipline: never summary-only).
 

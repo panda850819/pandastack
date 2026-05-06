@@ -1,6 +1,6 @@
 ---
-name: tool-browser
-aliases: [agent-browser]
+name: agent-browser
+aliases: [tool-browser, browser]
 description: Browser automation CLI for AI agents. Triggers on "open website", "fill form", "click button", "take screenshot", "scrape page", "test web app", "automate browser", or any task requiring programmatic browser interaction.
 allowed-tools: Bash(npx agent-browser:*), Bash(agent-browser:*)
 version: 2.1.0

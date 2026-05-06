@@ -15,16 +15,14 @@ side = ["retro"]
 [skills]
 public = [
   "pandastack:think-like-naval",  # first-principles framing on market structure
-  "pandastack:deep-research",     # macro / protocol research
-  "pandastack:tool-summarize",    # summarize research PDFs / threads
-  "pandastack:tool-bird",         # X/Twitter read for alpha signal
-  "pandastack:tool-pdf",          # whitepapers, reports
+  "pandastack:summarize",         # summarize research PDFs / threads
+  "pandastack:pdf",               # whitepapers, reports
   "pandastack:grill",             # adversarial scope lock before research dive
   "pandastack:retro-week",
   "pandastack:retro-month",
   "pandastack:done",
 ]
-private = []  # extended by private overlay (see pandastack-private/contexts/personal-trader.overlay.toml)
+private = []  # extended by private overlay (deep-research, bird — both tier=personal — load via pandastack-private/contexts/personal-trader.overlay.toml)
 
 [memory]
 namespace    = "personal/trader"

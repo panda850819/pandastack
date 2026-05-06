@@ -1,5 +1,6 @@
 ---
-name: tool-bird
+name: bird
+aliases: [tool-bird]
 description: |
   X/Twitter read/write via bird CLI.
 

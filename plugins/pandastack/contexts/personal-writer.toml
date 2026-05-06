@@ -17,8 +17,8 @@ public = [
   "pandastack:write",           # voice + slop detection (was: content-write, v1.1 rename)
   "pandastack:write-ship",      # Close → Extract → Backflow for published pieces
   "pandastack:grill",           # adversarial mode to stress-test thesis before committing
-  "pandastack:tool-bird",       # read/draft X threads
-  "pandastack:tool-summarize",  # summarize source material
+  "pandastack:bird",       # read/draft X threads
+  "pandastack:summarize",  # summarize source material
   "pandastack:brief-morning",   # daily note prep brief for Hermes 8am cron (was: morning-briefing, v1.1 rename)
   "pandastack:evening-distill", # end-of-day distill queue prep for Hermes 10pm cron
   "pandastack:think-like-naval", # framing / mental models check

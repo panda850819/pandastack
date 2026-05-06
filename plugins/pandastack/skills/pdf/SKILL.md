@@ -1,5 +1,6 @@
 ---
-name: tool-pdf
+name: pdf
+aliases: [tool-pdf]
 description: |
   PDF read/extract/merge/split/OCR/fill/encrypt.
 

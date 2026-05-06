@@ -1,5 +1,6 @@
 ---
-name: tool-deepwiki
+name: deepwiki
+aliases: [tool-deepwiki]
 description: |
   GitHub repo docs + Mermaid diagrams via deepwiki.
 

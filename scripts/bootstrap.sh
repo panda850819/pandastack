@@ -72,12 +72,16 @@ echo
 # 2) Core skills (always ready)
 # ----------------------------------------------------------------------------
 echo "[2/4] Core skills (markdown-only, ready now)"
-core_count=$(grep -c '^tier = "core"' "$MANIFEST" || true)
+# Read core skill names directly from manifest (single source of truth).
+# grep -B1 catches the [skill.X] header above each `tier = "core"` line.
+core_skills=$(grep -B1 '^tier = "core"' "$MANIFEST" \
+  | grep '^\[skill\.' \
+  | sed -E 's|^\[skill\.||; s|\]$||' \
+  | sort)
+core_count=$(echo "$core_skills" | wc -l | tr -d ' ')
 ok "$core_count skills runnable on this clone with zero external CLI"
-echo "      Examples: /sprint /office-hours /grill /dojo /ship /review"
-echo "                /knowledge-ship /work-ship /write-ship"
-echo "                /retro-week /retro-month /careful /freeze /done /init /atomize"
-echo "                /boardroom /architect /ceo /eng-lead /ops-lead /design-lead /product-lead"
+# Print in 3-column grid
+echo "$core_skills" | awk '{ printf "      /%-22s", $0; if (NR % 3 == 0) print "" } END { if (NR % 3 != 0) print "" }'
 echo
 
 # ----------------------------------------------------------------------------
@@ -99,11 +103,16 @@ ext_check() {
 }
 
 ext_check "scout"          "gh"            "brew install gh"
-ext_check "tool-browser"   "agent-browser" "npm install -g agent-browser"
-ext_check "tool-deepwiki"  "curl"          "(curl + jq, usually preinstalled)"
-ext_check "tool-pdf"       "pdftotext"     "brew install poppler tesseract"
-ext_check "tool-summarize" "summarize"     "brew install steipete/tap/summarize"
+ext_check "agent-browser"  "agent-browser" "npm install -g agent-browser"
+ext_check "deepwiki"       "curl"          "(curl + jq, usually preinstalled)"
+ext_check "summarize"      "summarize"     "brew install steipete/tap/summarize"
 ext_check "qa"             "agent-browser" "npm install -g agent-browser"
+# pdf needs python + poppler + tesseract + pip packages; probe python3 + pypdf
+if command -v python3 >/dev/null 2>&1 && python3 -c "import pypdf" 2>/dev/null; then
+  printf "      %-18s \033[32m%-9s\033[0m %s\n" "pdf" "ready" "(python3 + pypdf detected)"
+else
+  printf "      %-18s \033[33m%-9s\033[0m %s\n" "pdf" "missing" "brew install poppler tesseract && pip install pypdf pdfplumber reportlab pytesseract pdf2image"
+fi
 
 echo
 
@@ -114,11 +123,11 @@ echo "[4/4] Personal skills (private overlay)"
 if [ -d "$HOME/site/skills/pandastack-private" ] || [ -n "${PANDASTACK_PRIVATE:-}" ]; then
   ok "private overlay detected at $HOME/site/skills/pandastack-private"
   echo "      Unlocks: brief-morning, evening-distill, retro-prep-week,"
-  echo "               deep-research, curate-feeds, tool-bird, tool-slack, tool-notion"
+  echo "               deep-research, curate-feeds, bird, slack, notion"
 else
-  warn "no private overlay (10 skills hidden)"
+  warn "no private overlay (8 skills hidden)"
   echo "      brief-morning, evening-distill, retro-prep-week, deep-research,"
-  echo "      curate-feeds, tool-bird, tool-slack, tool-notion"
+  echo "      curate-feeds, bird, slack, notion"
   echo "      These need private CLIs (gbq / gbrain / gog / bird / pdctx / ..)."
   echo "      pandastack-private is not currently published."
 fi

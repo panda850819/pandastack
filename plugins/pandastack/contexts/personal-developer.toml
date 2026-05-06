@@ -22,11 +22,11 @@ public = [
   "pandastack:checkpoint",      # save/resume working state
   "pandastack:freeze",          # lock editing scope before ship
   "pandastack:deep-research",   # prior art / library research
-  "pandastack:tool-deepwiki",   # GitHub repo docs
-  "pandastack:tool-bird",       # X/Twitter read for ecosystem signal
-  "pandastack:tool-notion",     # Notion read (project context)
-  "pandastack:tool-summarize",  # summarize docs / changelogs
-  "pandastack:tool-pdf",        # spec / RFC reading
+  "pandastack:deepwiki",   # GitHub repo docs
+  "pandastack:bird",       # X/Twitter read for ecosystem signal
+  "pandastack:notion",     # Notion read (project context)
+  "pandastack:summarize",  # summarize docs / changelogs
+  "pandastack:pdf",        # spec / RFC reading
   "pandastack:retro-week",
   "pandastack:retro-month",
   "pandastack:done",

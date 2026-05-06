@@ -4,23 +4,23 @@ Personal context-aware AI operator OS — one substrate, four runtimes, no vendo
 
 I built pandastack to run my own work across multiple AI CLIs without dotdir sprawl. Skills are version-controlled markdown. Personas are replaceable. Context recipes ship as TOML. Same content runs across Claude Code, Codex CLI, Gemini CLI, and Hermes; per-CLI shims handle syntax differences. No data-layer vendor lock-in.
 
-The stack is 39 skills covering dev, knowledge, writing, work, research, retro, and decision lifecycles, anchored on a personal Obsidian vault as SSOT.
+The stack is 49 skills covering dev, knowledge, writing, work, research, retro, and decision lifecycles, tiered into 35 core (markdown-only, fresh-clone runnable), 6 ext (publicly installable CLI), and 8 personal (private overlay required). Anchored on a personal Obsidian vault as SSOT.
 
 **Stability scope (read this first):**
 
-v1.0.0 is **personal-substrate stable** since 2026-04-29: API, schema, and skill content are stable for the author's daily use, and the substrate has been dogfooded across 4 of 7 lifecycle flows (ship / work / knowledge / review). Public-readiness, defined as a fresh-user install passing without author-side hand-holding, is **v2 roadmap**, not v1. As of this commit, the count of fresh-user installs that have run end-to-end without author intervention is 0. See [ROADMAP.md](ROADMAP.md).
+v1 is **personal-substrate stable**: API, schema, and skill content are stable for the author's daily use; substrate dogfooded across 4 of 7 lifecycle flows. v1.3.0 + v1.4.0 (2026-05-07) ship the structural fix that previous v1 versions documented as v2 work — tier model, bootstrap script, decoupled hardcoded data, dropped `tool-` prefix. Fresh-clone Core install now works without author hand-holding; verified-user-install count is still 0 because the v1.3.0+ surface has not been validated by external A-class users yet.
 
 What this means for you:
 
 - If you are the author or a fork-and-learn power user, v1 is stable for daily use.
-- If you are a fresh A-class user (Obsidian + Coding Agent power user willing to bring your own vault and CLIs), v1 install is **dev-mode**: capability-probe will surface substrate gaps and you should expect to wire them yourself. v2 will bundle the onboarding scaffold.
+- If you are a fresh A-class user (Obsidian + Coding Agent power user willing to bring your own vault and CLIs), `bash scripts/bootstrap.sh` reports what runs now and what install steps remain. Core (35 skills) should run on a clean clone.
 - If you do not have an Obsidian vault, or you use Logseq / Roam / Notion, v1 is not for you. Multi-vault provider abstraction is v2 roadmap.
 
 **Who this is for:**
 - **Multi-CLI users** who want the same skills across Claude Code, Codex CLI, and Hermes
-- **Vault-centric operators** building on Obsidian + personal CLIs (gbq, pdctx, gog, bird)
+- **Vault-centric operators** building on Obsidian (Tier=personal skills additionally need private CLIs: gbq, pdctx, gog, bird)
 - **Personal-OS builders** who want substrate-first architecture instead of dotdir sprawl
-- **v1 dogfood reality**: 1 user (the author). Public-readiness is v2.
+- **v1 dogfood reality**: 1 user (the author). Verification window for v1.3.0+ structural fix opens now.
 
 ## Quick start
 
@@ -357,19 +357,19 @@ export PDCTX_L5_DISABLED=1         # disable L5 firewall only (timeline stays on
 
 See [`docs/telemetry.md`](docs/telemetry.md) for the schema and sample analysis queries.
 
-## Layer model (firewall)
+## Layer model (firewall, partial)
 
-Five active layers between context declaration and tool execution:
+Layers L1–L4 are implemented. L5 is documented in skill frontmatter (`reads` / `writes` / `forbids` / `classification`) but the enforcement hook is not currently shipped — frontmatter today is a contract for human review, not a runtime gate.
 
-| Layer | Mechanism |
-|---|---|
-| L1 | Prompt-level persona / voice / banned phrases |
-| L2 | Filesystem chmod on memory namespace per context |
-| L3 | MCP deny list enforced at PreToolUse |
-| L4 | Context recipe loaded via `pdctx use` |
-| L5 | Per-skill allowlist on tool args and file paths |
+| Layer | Mechanism | Status |
+|---|---|---|
+| L1 | Prompt-level persona / voice / banned phrases | shipped |
+| L2 | Filesystem chmod on memory namespace per context | shipped |
+| L3 | MCP deny list enforced at PreToolUse | shipped (via host hook) |
+| L4 | Context recipe loaded via `pdctx use` | shipped (private overlay) |
+| L5 | Per-skill allowlist on tool args and file paths | **frontmatter only, no runtime enforcement** |
 
-L5 reads `reads`, `writes`, `forbids`, and `classification` from each SKILL.md's frontmatter. Skills without frontmatter metadata are treated as permissive with a warning. See [`docs/firewall-l5.md`](docs/firewall-l5.md) for the decision tree, sample deny output, and known gaps.
+If you set `${PANDASTACK_WORK_VAULT}` and rely on L5 `forbids` to keep public skills out of work-vault, today that is documentation, not enforcement. Treat skill frontmatter as audit metadata until the L5 hook ships.
 
 ## Hermes jobs (current)
 

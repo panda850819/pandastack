@@ -18,10 +18,10 @@ public = [
   "pandastack:curate-feeds",     # feed intake and triage (was: feed-curator, v1.1 rename)
   "pandastack:knowledge-ship",   # Close → Extract → Backflow for knowledge/ notes
   "pandastack:wiki-lint",        # stale / orphan / superseded detection
-  "pandastack:tool-summarize",   # summarize long-form content
-  "pandastack:tool-pdf",         # read PDFs, specs, papers
-  "pandastack:tool-deepwiki",    # GitHub repo docs for technical deep-dives
-  "pandastack:tool-bird",        # X/Twitter read for signal capture
+  "pandastack:summarize",   # summarize long-form content
+  "pandastack:pdf",         # read PDFs, specs, papers
+  "pandastack:deepwiki",    # GitHub repo docs for technical deep-dives
+  "pandastack:bird",        # X/Twitter read for signal capture
   "pandastack:grill",            # adversarial mode to scope research questions
   "pandastack:retro-week",
   "pandastack:retro-month",

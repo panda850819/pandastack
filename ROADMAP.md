@@ -28,10 +28,11 @@ Goal: a fresh A-class user can `/plugin install pandastack@pandastack` and reach
 
 Scope:
 
-- **Onboarding scaffold**. v1 assumes the user has already wired their substrate. v2 ships a guided init flow: vault scaffolding, gbrain index bootstrap with sane defaults, pdctx context picker, first-session walkthrough. Goal: 30-minute install-to-first-shipped-skill, not 3-hour fork-and-learn.
+- **Onboarding scaffold** `[partial — shipped in v1.3.0 / v1.4.0]`. Bootstrap script (`scripts/bootstrap.sh`), manifest-driven tier model (`plugins/pandastack/manifest.toml`), and decoupled env-var config (`PANDASTACK_VAULT` / `PANDASTACK_HOME` / `PANDASTACK_USER_EMAIL` / `PANDASTACK_WORK_VAULT`) replaced the previous 4-section README install dance. Remaining for v2: vault scaffolding (auto-create `Inbox/`, `Blog/_daily/`, `docs/learnings/atoms/` if absent), gbrain index bootstrap, pdctx context picker, first-session walkthrough.
 - **Multi-vault provider abstraction**. v1 hard-codes Obsidian + gbq. v2 introduces a vault-provider interface so Logseq / Roam / Notion users can plug their own backend. Reference implementation: Obsidian (existing) + at least one alternative.
-- **Fresh A-user dogfood criteria**. v2 cut requires real-user validation, not author-only. Concrete bar: 3 fresh A-class users complete install + 1 week of daily use without author hand-holding. Below that, v2 stays in pre-release.
-- **Public capability-probe defaults**. capability-probe currently assumes degraded states are author-known. v2 routes degraded states through a guided fix path, not a "you're on your own" dump.
+- **Fresh A-user dogfood criteria**. v2 cut requires real-user validation, not author-only. Concrete bar: 3 fresh A-class users complete install + 1 week of daily use without author hand-holding. Below that, v2 stays in pre-release. v1.3.0+ structural fix opens the verification window — before this, the install bar was too high to ask anyone to try.
+- **Public capability-probe defaults** `[partial — shipped in v1.3.0]`. Manifest tier metadata + bootstrap.sh probe table now route fresh users through "what runs now / what to install / what is private overlay" rather than a "you're on your own" dump. Remaining for v2: capability-probe itself (the in-skill `lib/capability-probe.md` invocation) needs to consume manifest data and emit the same actionable framing rather than the current generic gap dump.
+- **L5 firewall hook**. README v1.4.0 was honest about L5 currently being frontmatter-only metadata with no runtime enforcement. v2 should ship the actual PreToolUse hook that reads `reads` / `writes` / `forbids` / `classification` from each SKILL.md and enforces them — or formally retire L5 as a design choice and update the architecture doc accordingly.
 
 Out of v2 scope (deferred or rejected):
 
