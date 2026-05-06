@@ -4,14 +4,27 @@ Personal context-aware AI operator OS — one substrate, four runtimes, no vendo
 
 I built pandastack to run my own work across multiple AI CLIs without dotdir sprawl. Skills are version-controlled markdown. Personas are replaceable. Context recipes ship as TOML. Same content runs across Claude Code, Codex CLI, Gemini CLI, and Hermes; per-CLI shims handle syntax differences. No data-layer vendor lock-in.
 
-The stack is 39 skills covering dev, knowledge, writing, work, research, retro, and decision lifecycles, anchored on a personal Obsidian vault as SSOT. v1.0.0 stable since 2026-04-29; API and schema stable from this version forward.
+The stack is 39 skills covering dev, knowledge, writing, work, research, retro, and decision lifecycles, anchored on a personal Obsidian vault as SSOT.
+
+**Stability scope (read this first):**
+
+v1.0.0 is **personal-substrate stable** since 2026-04-29: API, schema, and skill content are stable for the author's daily use, and the substrate has been dogfooded across 4 of 7 lifecycle flows (ship / work / knowledge / review). Public-readiness, defined as a fresh-user install passing without author-side hand-holding, is **v2 roadmap**, not v1. As of this commit, the count of fresh-user installs that have run end-to-end without author intervention is 0. See [ROADMAP.md](ROADMAP.md).
+
+What this means for you:
+
+- If you are the author or a fork-and-learn power user, v1 is stable for daily use.
+- If you are a fresh A-class user (Obsidian + Coding Agent power user willing to bring your own vault and CLIs), v1 install is **dev-mode**: capability-probe will surface substrate gaps and you should expect to wire them yourself. v2 will bundle the onboarding scaffold.
+- If you do not have an Obsidian vault, or you use Logseq / Roam / Notion, v1 is not for you. Multi-vault provider abstraction is v2 roadmap.
 
 **Who this is for:**
 - **Multi-CLI users** who want the same skills across Claude Code, Codex CLI, and Hermes
 - **Vault-centric operators** building on Obsidian + personal CLIs (gbq, pdctx, gog, bird)
 - **Personal-OS builders** who want substrate-first architecture instead of dotdir sprawl
+- **v1 dogfood reality**: 1 user (the author). Public-readiness is v2.
 
 ## Quick start
+
+> **Dev-mode notice (v1)**: pandastack v1 assumes substrate (Obsidian vault, gbq via gbrain, pdctx, vault-resident memory) you set up separately. Steps 3-5 below will surface substrate gaps via `capability-probe` rather than fail silently. v2 will bundle the onboarding scaffold; until then, treat v1 install as a fork-and-learn experience.
 
 1. `/plugin marketplace add panda850819/pandastack` then `/plugin install pandastack@pandastack` (Claude Code; other hosts in Install)
 2. `/pandastack:init` once inside your project

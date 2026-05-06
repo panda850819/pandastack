@@ -1,5 +1,36 @@
 # Changelog
 
+## v1.2.2 — 2026-05-06
+
+> Stability scope clarified: v1 = personal-substrate stable, v2 = public-ready. README and capability-probe reframed to reflect 0 fresh-user installs over 6 months and the v1 dogfood reality (1 user, the author). No skill content changes; documentation reframe only.
+
+### Why this reframing
+
+Original v1.0 README presented pandastack as fresh-user-ready. 6-month dogfood window (2026-04-30 → 2026-05-07) confirmed: 0 fresh A-class users (Obsidian + Coding Agent power users) successfully ran `/plugin install` end-to-end without author intervention. The TA stated in v1 README was aspiration, not validated reality. Continuing to ship v1 stable while claiming public-readiness misrepresents the substrate's actual maturity.
+
+Two paths considered and rejected:
+1. **Hold v1 cut** until 1-3 fresh users complete install + 1 week of use. Rejected: Sommet PO + companyos Phase 1 sprint backlog leaves no bandwidth for active outreach; finding fresh users on a deadline is not in the author's control.
+2. **Ship v1 stable as-is, accept TA gap**. Rejected: gaps that are not visible cannot be fixed. Without an explicit v2 scope, the public-readiness work would never get prioritized.
+
+Chosen: reframe v1 as personal-substrate stable, scope public-readiness to v2 with explicit roadmap. Ship 5/7 stable cut on schedule with the corrected framing. See `docs/briefs/2026-05-06-pandastack-v1-stable-cut.md` (vault-side brief) for full reasoning, alternatives considered, and gate log.
+
+### Changed
+
+- `README.md`:
+  - Line 7 area: "v1.0.0 stable" claim split into two scopes. v1 = personal-substrate stable (author's daily use, dogfooded across 4 of 7 lifecycles). Public-readiness deferred to v2 with explicit `0 fresh-user installs` data point.
+  - New "Stability scope (read this first)" callout added before "Who this is for" — makes the scope distinction load-bearing rather than buried.
+  - "Quick start" section: dev-mode notice prepended. Tells fresh users that substrate (vault, gbq, pdctx) must be set up separately and that capability-probe will surface gaps rather than fail silently.
+  - "Who this is for": added 4th bullet stating v1 dogfood reality (1 user, author).
+- `plugins/pandastack/lib/capability-probe.md`: fresh-clone dev-mode hint appended to "Action by probe result" → "Degraded mode rules". Tells fresh users that substrate degradation is expected on v1 and points at v2 roadmap.
+
+### Added
+
+- `ROADMAP.md` (new, repo root) — explicit v2 scope: onboarding scaffold, multi-vault provider abstraction (Logseq / Roam / Notion), fresh A-user dogfood criteria. Open questions on v2 timeline (when to start; conditional on fresh user inbound vs scheduled). Companion to this CHANGELOG entry; lives in repo so version-controlled rather than in vault-only briefs.
+
+### Migration
+
+No code or skill changes. Existing v1.x users: no action needed; behavior is identical. Fresh-clone users: read the "Stability scope" section in README before installing. The `pandastack:init` flow already runs capability-probe; degraded states now point at the v2 roadmap rather than implying the install is broken.
+
 ## v1.2.1 — 2026-05-05
 
 > Surface area slim: `tool-web-extract` archived, routing folded into `~/.claude/rules/url-routing.md`. Skill count 51 → 50 active.

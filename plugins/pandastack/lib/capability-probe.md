@@ -72,6 +72,12 @@ For each degraded check:
 - **vault path missing** → ABORT (this is structural, can't degrade)
 - **AGENTS.md missing** → ABORT (substrate is gone, behavior would drift wildly)
 
+### Fresh-clone dev-mode note (v1 → v2)
+
+If you are a fresh-clone v1 user and this probe shows degraded items 2 / 3 / 4 (vault root / gbq / pdctx), this is **expected**, not broken. v1 is personal-substrate stable for the author's daily use; substrate dependencies (Obsidian vault, gbq via gbrain, pdctx, vault-resident memory) need to be set up separately. v2 will bundle the onboarding scaffold and a multi-vault provider abstraction. See `ROADMAP.md` at repo root and the `Stability scope` section in `README.md`.
+
+The skill will degrade gracefully where possible per the rules above. If degradation hits ≥4 items or the vault path itself is missing, the skill aborts cleanly. That is the contract, not a regression.
+
 ### Abort messages
 
 When aborting, print:

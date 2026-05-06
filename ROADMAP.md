@@ -1,0 +1,58 @@
+# Roadmap
+
+> Living document for pandastack scope ahead of `main`. Each milestone has a clear gate. CHANGELOG records what shipped; ROADMAP records what is planned and why.
+
+## v1.x, personal-substrate stable (current)
+
+Status: stable since 2026-04-29 (`aab8f49`). API, schema, and skill content are stable for the author's daily use. Dogfooded across 4 of 7 lifecycle flows (ship / work / knowledge / review). Three lifecycles unfired during the dogfood window (dev / write / retro / grill) are not v1 cut blockers; personal-substrate stable does not require all 7 lifecycles covered.
+
+What v1 is:
+
+- 39 skills covering dev / knowledge / writing / work / research / retro / decision lifecycles
+- 5 personas (eng / design / ceo / ops / product) replaceable per project
+- 4 personal contexts + private overlay for work contexts
+- 5-layer firewall (L1 voice / L2 fs chmod / L3 MCP deny / L4 context recipe / L5 per-skill allowlist)
+- Multi-CLI runtime support: Claude Code first-class, Codex CLI native, Hermes via `pdctx`
+
+What v1 is **not**:
+
+- Public-ready for fresh users. As of 2026-05-06, the count of fresh A-class users (Obsidian + Coding Agent power users) who have run `/plugin install` end-to-end without author intervention is 0. The v1 README "Quick start" section ships in dev-mode framing for this reason.
+- Onboarding-scaffold-bundled. v1 assumes the user brings their own Obsidian vault, gbq via gbrain index, and pdctx config. capability-probe will surface gaps; v1 does not paper over them.
+- Vault-provider-agnostic. v1 hard-codes Obsidian as the vault layer. Logseq / Roam / Notion users are out of scope until v2.
+
+Maintenance window through v2: skill content can iterate (new skills, refactors, lib extractions) under v1.x minor versions as long as Tier 1 substrate primitives (persona / context / skill-as-markdown) stay stable. Breaking changes to the three primitives go behind a v2.0 cut, not v1.x.
+
+## v2, public-ready (planned)
+
+Goal: a fresh A-class user can `/plugin install pandastack@pandastack` and reach a productive first session without reading the full README or asking the author. v2 is the public-readiness gate.
+
+Scope:
+
+- **Onboarding scaffold**. v1 assumes the user has already wired their substrate. v2 ships a guided init flow: vault scaffolding, gbrain index bootstrap with sane defaults, pdctx context picker, first-session walkthrough. Goal: 30-minute install-to-first-shipped-skill, not 3-hour fork-and-learn.
+- **Multi-vault provider abstraction**. v1 hard-codes Obsidian + gbq. v2 introduces a vault-provider interface so Logseq / Roam / Notion users can plug their own backend. Reference implementation: Obsidian (existing) + at least one alternative.
+- **Fresh A-user dogfood criteria**. v2 cut requires real-user validation, not author-only. Concrete bar: 3 fresh A-class users complete install + 1 week of daily use without author hand-holding. Below that, v2 stays in pre-release.
+- **Public capability-probe defaults**. capability-probe currently assumes degraded states are author-known. v2 routes degraded states through a guided fix path, not a "you're on your own" dump.
+
+Out of v2 scope (deferred or rejected):
+
+- B-class TA (no vault, want to start from zero). Bundling a vault-less mode adds a second product surface; not worth the complexity in v2.
+- D-class TA (no vault, just want multi-CLI persona switching). pdctx already does this standalone; pandastack does not need to compete with itself.
+- Hosted SaaS variant. Cofounder.co occupies that surface; pandastack stays self-hosted personal-OS by design.
+
+## Open questions (v2 timeline)
+
+These are not yet decided. Each affects v2 priority but does not block v1 cut.
+
+- **When does v2 work start?** Three plausible triggers: (a) Sommet PO + companyos Phase 1 sprints close to free up author bandwidth; (b) ≥1 fresh A-class user reaches out organically and asks for install help (signals real demand); (c) calendar-driven start at 2026 Q3. No commitment yet.
+- **What do the 50 補丁 skills look like under v1.x stable?** The three substrate primitives (persona / context / skill-as-markdown) are locked. The补丁 layer (curate-feeds, gatekeeper, retro-week, etc.) iterates inside v1.x minor versions. Open: should a subset (careful / grill / sprint / review / ship) be promoted to substrate-tier and frozen, or stay iterable?
+- **Cofounder.co follow-up**. Cofounder shipped 1:1 architecture (Departments / Agents / Skills) as a closed-platform SaaS on 2026-05-04. Their multi-CLI / self-host stance at 2026-11 (6-month look-ahead) influences v2 priority: if they open self-host, pandastack's v2 differentiation narrows; if they stay closed-platform, pandastack's open-substrate position holds.
+
+## Decision rationale
+
+Full reasoning, alternatives considered, and gate log live in the office-hours brief at `docs/briefs/2026-05-06-pandastack-v1-stable-cut.md` (vault-side, author-only). CHANGELOG v1.2.2 entry summarizes the public-facing version. This file lives at repo root for version control and visibility from `/plugin install`.
+
+## How to read this
+
+- v1.x = stable, iterate the补丁 layer, lock the three primitives
+- v2 = explicit re-cut for public-readiness, not a free version bump
+- Open questions = not decisions; they get resolved as data arrives, not on a schedule
