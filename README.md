@@ -4,7 +4,7 @@ Personal context-aware AI operator OS — one substrate, four runtimes, no vendo
 
 I built pandastack to run my own work across multiple AI CLIs without dotdir sprawl. Skills are version-controlled markdown. Personas are replaceable. Context recipes ship as TOML. Same content runs across Claude Code, Codex CLI, Gemini CLI, and Hermes; per-CLI shims handle syntax differences. No data-layer vendor lock-in.
 
-The stack is 49 skills covering dev, knowledge, writing, work, research, retro, and decision lifecycles, tiered into 35 core (markdown-only, fresh-clone runnable), 6 ext (publicly installable CLI), and 8 personal (private overlay required). Anchored on a personal Obsidian vault as SSOT.
+The stack is 48 skills covering dev, knowledge, writing, work, research, retro, and decision lifecycles, tiered into 35 core (markdown-only, fresh-clone runnable), 5 ext (publicly installable CLI), and 8 personal (private overlay required). Anchored on a personal Obsidian vault as SSOT.
 
 **Stability scope (read this first):**
 
@@ -312,7 +312,7 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 | `/done` | Session Closer | Save context, summarize work, persist memory at session end. |
 | `/checkpoint` | The Bookmarker | Save / resume working state snapshots. |
 
-Tool wrappers (`tool-bird`, `tool-slack`, `tool-notion`, `tool-pdf`, `tool-summarize`, `tool-browser`, `tool-deepwiki`) and thinking lenses (`think-like-naval`, `think-like-karpathy`, `think-like-alan-chan`) round out the lineup — see [`docs/skills.md`](docs/skills.md) for the full list.
+Tool wrappers (`bird`, `slack`, `notion`, `summarize`, `agent-browser`, `deepwiki`) and thinking lenses (`think-like-naval`, `think-like-karpathy`, `think-like-alan-chan`) round out the lineup — see [`docs/skills.md`](docs/skills.md) for the full list.
 
 ## Personas
 

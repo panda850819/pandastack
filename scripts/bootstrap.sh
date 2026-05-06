@@ -107,12 +107,6 @@ ext_check "agent-browser"  "agent-browser" "npm install -g agent-browser"
 ext_check "deepwiki"       "curl"          "(curl + jq, usually preinstalled)"
 ext_check "summarize"      "summarize"     "brew install steipete/tap/summarize"
 ext_check "qa"             "agent-browser" "npm install -g agent-browser"
-# pdf needs python + poppler + tesseract + pip packages; probe python3 + pypdf
-if command -v python3 >/dev/null 2>&1 && python3 -c "import pypdf" 2>/dev/null; then
-  printf "      %-18s \033[32m%-9s\033[0m %s\n" "pdf" "ready" "(python3 + pypdf detected)"
-else
-  printf "      %-18s \033[33m%-9s\033[0m %s\n" "pdf" "missing" "brew install poppler tesseract && pip install pypdf pdfplumber reportlab pytesseract pdf2image"
-fi
 
 echo
 

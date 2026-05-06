@@ -16,7 +16,6 @@ side = ["retro"]
 public = [
   "pandastack:think-like-naval",  # first-principles framing on market structure
   "pandastack:summarize",         # summarize research PDFs / threads
-  "pandastack:pdf",               # whitepapers, reports
   "pandastack:grill",             # adversarial scope lock before research dive
   "pandastack:retro-week",
   "pandastack:retro-month",

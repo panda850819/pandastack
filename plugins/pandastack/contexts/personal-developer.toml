@@ -26,7 +26,6 @@ public = [
   "pandastack:bird",       # X/Twitter read for ecosystem signal
   "pandastack:notion",     # Notion read (project context)
   "pandastack:summarize",  # summarize docs / changelogs
-  "pandastack:pdf",        # spec / RFC reading
   "pandastack:retro-week",
   "pandastack:retro-month",
   "pandastack:done",

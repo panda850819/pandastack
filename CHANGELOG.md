@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.4.1 — 2026-05-07
+
+> Removed `pdf` skill. Python pipeline (pypdf / pdfplumber / reportlab / pytesseract / pdf2image + poppler + tesseract) was a heavy dependency stack for a wrapper that mostly duplicated `pdftotext` + standard library workflows. Skill count 49 → 48.
+
+### Removed
+
+- `plugins/pandastack/skills/pdf/` — including `scripts/extract_form_structure.py`, `scripts/fill_fillable_fields.py`, `scripts/fill_pdf_form_with_annotations.py`. PDF work now goes through `pandastack:summarize` (which handles PDF -> markdown extraction) or direct CLI use of `pdftotext` / `tesseract` per `~/.claude/rules/url-routing.md`.
+
+### Migration
+
+- If you had `pandastack:pdf` in any context recipe (`personal-developer`, `personal-knowledge-manager`, `personal-trader` had it), it has already been removed in this commit. No replacement needed for read-only PDF flows; use `summarize` for content extraction or invoke `pdftotext` directly.
+
 ## v1.4.0 — 2026-05-07
 
 > Follow-up audit on v1.3.0. Drops the `tool-` prefix on 7 wrapper skills; documents the L5 firewall as planned-not-shipped (was previously claimed as enforced); makes the `using-pandastack` overlay fallback explicit; pulls personal-tier skills out of the `personal:trader` public skill list; rewrites bootstrap's core skill listing to read from the manifest dynamically. Plugin descriptions and the Stability-scope framing in README are also synced to current reality. Skill count: 49 (unchanged).

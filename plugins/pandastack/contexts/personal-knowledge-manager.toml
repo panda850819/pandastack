@@ -19,7 +19,6 @@ public = [
   "pandastack:knowledge-ship",   # Close → Extract → Backflow for knowledge/ notes
   "pandastack:wiki-lint",        # stale / orphan / superseded detection
   "pandastack:summarize",   # summarize long-form content
-  "pandastack:pdf",         # read PDFs, specs, papers
   "pandastack:deepwiki",    # GitHub repo docs for technical deep-dives
   "pandastack:bird",        # X/Twitter read for signal capture
   "pandastack:grill",            # adversarial mode to scope research questions

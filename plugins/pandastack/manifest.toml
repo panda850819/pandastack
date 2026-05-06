@@ -189,7 +189,7 @@ config = ["env:PANDASTACK_VAULT"]
 description = "Close + Extract + Backflow on a Blog/_daily draft."
 
 # ============================================================================
-# EXT (6) — public CLI dependencies
+# EXT (5) — public CLI dependencies
 # ============================================================================
 
 [skill.qa]
@@ -211,11 +211,6 @@ description = "Browser automation: open, fill, click, screenshot, scrape."
 tier = "ext"
 requires = ["cli:curl", "cli:jq"]
 description = "GitHub repo docs + Mermaid diagrams via deepwiki."
-
-[skill.pdf]
-tier = "ext"
-requires = ["cli:python3", "brew:poppler", "brew:tesseract", "pip:pypdf", "pip:pdfplumber", "pip:reportlab", "pip:pytesseract", "pip:pdf2image"]
-description = "PDF read / extract / merge / split / OCR / fill / encrypt (Python pipeline)."
 
 [skill.summarize]
 tier = "ext"
