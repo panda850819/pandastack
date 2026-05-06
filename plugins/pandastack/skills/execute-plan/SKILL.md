@@ -13,15 +13,15 @@ description: |
 
 Subagent-driven execution of an approved plan. Borrowed from superpowers' isolation
 pattern: each task runs in its own context firewall so one bad step cannot contaminate
-later steps. Adapted for Panda's operator context — covers vault work, Yei/Abyss ops,
-and code equally, not just coding.
+later steps. Adapted for operator context — covers vault work, ops topics, and code
+equally, not just coding.
 
 ## When to use
 
 - A written plan exists (from `/plan`, `pandastack:office-hours`, a brief,
   or any numbered step list the user approved)
 - 3+ tasks that touch different files, systems, or contexts
-- High-stakes work (Yei/Abyss ops paths, production infra, vault schema changes)
+- High-stakes work (production infra, financial / governance systems, vault schema changes)
 - User says "execute the plan", "go step by step", "run it with verification"
 
 ## When to skip
@@ -103,7 +103,7 @@ For each task:
    **Dispatch shape (skill-as-persona inline pattern, per `lib/persona-frame.md`)**:
 
    ```
-   1. Read ~/site/skills/pandastack/plugins/pandastack/skills/{persona}/SKILL.md
+   1. Resolve persona SKILL.md (try ${PANDASTACK_HOME}/skills/{persona}/SKILL.md, host plugin-resolver, or fallback per lib/persona-frame.md)
    2. Extract 6 sections: Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns / BAD-GOOD calibration
    3. Drop frontmatter + @../../lib/... include lines
    4. Build prompt:
@@ -224,7 +224,7 @@ When NOT to use subagents:
 | Work vault write | medium |
 | Anything under user's infra or trading directories | high |
 | External system (Notion, Linear, Slack, GitHub push) | high |
-| Yei/Abyss protocol ops (contracts, treasury) | high |
+| Production protocol ops (smart contracts, treasury, governance, on-chain writes) | high |
 | `rm`, `git reset --hard`, destructive ops | high — must confirm |
 
 ---
@@ -261,4 +261,4 @@ When NOT to use subagents:
 - **`pandastack:ceo`** — kill / pivot / scope cut / strategic frame / cross-axis prioritization
 - **plain `general-purpose`** (no persona inlined) — when no persona fits or user explicitly opts out
 
-Each persona is a skill at `~/site/skills/pandastack/plugins/pandastack/skills/{persona}/SKILL.md`. Skill is the SSOT — there is no separately-maintained agent file. Phase 1 dispatch reads SKILL.md, extracts the 6 contract sections, inlines them into the subagent prompt, and dispatches as `subagent_type: "general-purpose"`. See `lib/persona-frame.md` § "Inline-from-skill dispatch pattern" for the exact format.
+Each persona is a skill at `${PANDASTACK_HOME}/skills/{persona}/SKILL.md` (resolution order in `lib/persona-frame.md`). Skill is the SSOT — there is no separately-maintained agent file. Phase 1 dispatch reads SKILL.md, extracts the 6 contract sections, inlines them into the subagent prompt, and dispatches as `subagent_type: "general-purpose"`. See `lib/persona-frame.md` § "Inline-from-skill dispatch pattern" for the exact format.

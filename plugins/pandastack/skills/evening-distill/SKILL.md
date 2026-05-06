@@ -11,7 +11,7 @@ writes:
   - file: /tmp/evening-distill-smoke.md
   - cli: stdout
 forbids:
-  - file: /Users/panda/site/knowledge/work-vault/**
+  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: personal
 classification: hybrid
 allowed-tools: Bash, Read, Write, Edit, Grep
@@ -27,7 +27,7 @@ Write an end-of-day personal handoff for Panda and append it to today's daily no
 - Run from `<personal-vault>`.
 - Default target: `Blog/_daily/YYYY-MM-DD.md`.
 - Smoke target: if the user/task names `/tmp/evening-distill-smoke.md`, write the block there instead of the daily note.
-- Use Panda's personal Google account `pandap.d819@gmail.com` for all Google sources in this workflow.
+- Use the personal Google account configured at `${PANDASTACK_USER_EMAIL}` for all Google sources in this workflow. If the env var is unset, abort with an actionable error rather than guessing.
 - Never read Slack or work-only sources.
 - If today's evening block already exists, replace only that block.
 - Never replace the rest of the daily note.
@@ -39,8 +39,8 @@ Write an end-of-day personal handoff for Panda and append it to today's daily no
 ## Sources
 
 1. Today's daily note: read `Blog/_daily/$(date +%Y-%m-%d).md`; count closed `^- \[x\]` and open `^- \[ \]` items; extract the top completed item with the biggest payoff signal.
-2. Tomorrow's calendar: `gog calendar events pandap.d819@gmail.com --tomorrow --max 5 --plain --account pandap.d819@gmail.com`; format the first 3 events as start time, title, attendee count, and prep needed.
-3. Gmail carry-over: `gog gmail search 'is:unread newer_than:24h' --max 10 --plain --account pandap.d819@gmail.com`; keep the top 3 threads likely to matter tomorrow.
+2. Tomorrow's calendar: `gog calendar events "${PANDASTACK_USER_EMAIL}" --tomorrow --max 5 --plain --account "${PANDASTACK_USER_EMAIL}"`; format the first 3 events as start time, title, attendee count, and prep needed.
+3. Gmail carry-over: `gog gmail search 'is:unread newer_than:24h' --max 10 --plain --account "${PANDASTACK_USER_EMAIL}"`; keep the top 3 threads likely to matter tomorrow.
 4. Vault focus seed: `gbq "today OR open todos OR P0 OR tomorrow"`, use the top relevant hit for tomorrow's first focus.
 5. Writing seeds: reuse the strongest 3 note or writing candidates surfaced in today's daily note and recent vault hits.
 

@@ -1,5 +1,54 @@
 # Changelog
 
+## v1.3.0 — 2026-05-07
+
+> Fresh-install hardening. Tier model + bootstrap script + decoupled hardcoded data. Goal: a fresh A-class clone runs Core skills without author hand-holding. Personal-CLI skills become opt-in via private overlay rather than baked into public skills. Skill count 49 → 48 (removed `tool-railway`).
+
+### Added
+
+- `plugins/pandastack/manifest.toml` — single source of truth for skill tier (`core` / `ext` / `personal`) + dependency declarations (`requires` + `config`). Read by `scripts/bootstrap.sh` and capability-probe.
+- `scripts/bootstrap.sh` — fresh-clone onboarding: probes substrate, lists 35 core skills runnable now, prints exact `brew install` / `npm install -g` per ext skill, marks personal skills as needing the private overlay. Single entrypoint replaces the previous 4-section README install dance.
+- `plugins/pandastack/skills/curate-feeds/scripts/curate-feeds.ts` — script moved in-tree from `~/site/cli/feed-server/scripts/curate-feeds.ts`. Skill is now self-contained on the script side; the feed-server daemon stays a separate concern (HTTP-only contract). Script also patched to require `PANDASTACK_VAULT` env var (was: hardcoded vault path) and accept `PANDASTACK_FEED_SERVER` override.
+- `plugins/pandastack/skills/gatekeeper/` — gatekeeper bumped 0.2.0 → 0.3.0 with DeFi protocol governance / admin risk review (`reviews/defi-protocol.md` + `templates/report-defi-protocol.md`). Triggers on "看這個協議的中央化風險" and pre-deposit due diligence on lending / yield / RWA / stableswap protocols.
+
+### Changed
+
+- **Hardcoded data extracted to env vars** (was: baked into SKILL.md body):
+  - `pandap.d819@gmail.com` → `${PANDASTACK_USER_EMAIL}` in `brief-morning`, `evening-distill`, `personal-writer.toml`
+  - `/Users/panda/site/knowledge/work-vault/**` → `${PANDASTACK_WORK_VAULT}/**` in 17 skill frontmatter `forbids`
+  - `/Users/panda/site/knowledge/obsidian-vault/...` → `<vault>/...` in `atomize/SKILL.md`
+  - `~/site/skills/pandastack/plugins/pandastack/skills/<persona>/SKILL.md` → `${PANDASTACK_HOME}/skills/<persona>/SKILL.md` resolution chain in `lib/persona-frame.md`, `execute-plan/SKILL.md`, `scout/SKILL.md`
+- **Work-context leakage cleaned out of public surface**:
+  - `tool-railway` deleted (leaked `natural-joy (Yei Sentinel)` project name and Railway service topology)
+  - `think-like-naval`, `think-like-karpathy`, `think-like-alan-chan` example dialogues rewritten with generic operator dilemmas (was: pstack / Yei / Abyss / DeFi protocol ops)
+  - `execute-plan` risk classification table: `Yei/Abyss protocol ops` → `Production protocol ops (smart contracts, treasury, governance, on-chain writes)`
+  - Context TOML deny comments: `Sommet ticketing` / `Yei ticketing (Jira)` → `work issue tracker` (generic)
+- **Private skill refs decoupled from public flows**:
+  - `flows/work.md` and `flows/decision.md` now mark `yei-alert-triage`, `misalignment`, `harness-slim` as `[private overlay, optional]`. Public flow runs without them.
+- **README install section collapsed**: 4 host-specific sections (~80 lines) → one bootstrap-driven flow + per-host one-liner table. Quick-start now points at `bash scripts/bootstrap.sh --claude`.
+- `personal-writer.toml`, `personal-trader.toml`, `personal-knowledge-manager.toml`: removed dangling `pandastack:tool-web-extract` reference (skill was archived in v1.2.1).
+
+### Removed
+
+- `plugins/pandastack/skills/tool-railway/` — leaked work-context project name (`natural-joy (Yei Sentinel)`) into a generic Railway skill. Railway docs / common diagnosis flow not unique enough to justify a tool wrapper; users can read Railway's official CLI docs directly.
+
+### Migration
+
+- **Set env vars** in your shell rc (`~/.zshrc` / `~/.bashrc`):
+  ```bash
+  export PANDASTACK_VAULT=$HOME/path/to/your/vault
+  export PANDASTACK_HOME=/absolute/path/to/pandastack/plugins/pandastack
+  export PANDASTACK_USER_EMAIL=you@example.com           # only for brief-morning / evening-distill
+  export PANDASTACK_WORK_VAULT=$HOME/path/to/work-vault  # only if separate work vault
+  ```
+- **Run** `bash scripts/bootstrap.sh` to verify state.
+- **If you had `pandastack:tool-railway` in any context recipe or cron**: remove it. No replacement; use Railway's own docs.
+- **L5 firewall behavior**: skills that previously had hardcoded `forbids: /Users/panda/...` now use `${PANDASTACK_WORK_VAULT}`. If your firewall implementation does not do env-var expansion in TOML/YAML, set the env var to your work-vault path; if you don't have a work vault, leave the env var unset and the forbid pattern simply doesn't match anything (pass-through).
+
+### Why this batch
+
+Audit 2026-05-07 surfaced that v1.2 was honest about being personal-substrate-stable (`0 fresh installs`) but didn't lower the install bar. Tier model + bootstrap script ship the structural fix needed for fresh-install viability. Author launchd jobs disabled in same session (operational, not in scope of this changelog).
+
 ## v1.2.2 — 2026-05-06
 
 > Stability scope clarified: v1 = personal-substrate stable, v2 = public-ready. README and capability-probe reframed to reflect 0 fresh-user installs over 6 months and the v1 dogfood reality (1 user, the author). No skill content changes; documentation reframe only.

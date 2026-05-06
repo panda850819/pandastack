@@ -161,9 +161,11 @@ Future: `/atomize --promote A-xxx` automates this with a confirm gate.
 
 ## Vault paths
 
-- Source learnings: `/Users/panda/site/knowledge/obsidian-vault/docs/learnings/{patterns,pitfalls,architecture}/`
-- Atom corpus: `/Users/panda/site/knowledge/obsidian-vault/docs/learnings/atoms/atoms.jsonl`
-- Schema doc: `/Users/panda/site/knowledge/obsidian-vault/docs/learnings/atoms/README.md`
+Resolved relative to the active vault root (`<vault>` = your personal vault, e.g. set via `PANDASTACK_VAULT` or detected by `pandastack:init`):
+
+- Source learnings: `<vault>/docs/learnings/{patterns,pitfalls,architecture}/`
+- Atom corpus: `<vault>/docs/learnings/atoms/atoms.jsonl`
+- Schema doc: `<vault>/docs/learnings/atoms/README.md`
 
 ## Pre-loaded sample atoms (2026-05-04 v0 ship)
 

@@ -1,0 +1,290 @@
+# pandastack manifest — single source of truth for skill tier + dependencies.
+#
+# Read by:
+#   - scripts/bootstrap.sh   (decides what to install on a fresh clone)
+#   - lib/capability-probe.md (decides degraded-mode messaging)
+#   - your own /pandastack:init flow (sets up config env vars)
+#
+# Tier semantics:
+#   core      — markdown-only. No external CLI required. Runs on a fresh clone after
+#               `git clone && /plugin install`. Personas, lifecycle skills, vault hygiene,
+#               session management.
+#   ext       — needs a publicly installable CLI (brew / npm / pipx / curl / gh release).
+#               bootstrap.sh prints the install command; user opts in.
+#   personal  — needs a private CLI Panda has not published (gbq, gbrain, gog, bird,
+#               pdctx, notion-cli, slack-cli, feed-server). Install pandastack-private
+#               overlay to unlock these. On a public install the skill is hidden.
+#
+# Requires syntax:
+#   cli:<name>          — generic command must be on PATH
+#   brew:<formula>      — brew install <formula>
+#   brew-tap:<tap/name> — brew install from a tap
+#   npm:<pkg>           — npm install -g <pkg>
+#   pipx:<pkg>          — pipx install <pkg>
+#   private:<name>      — private CLI from pandastack-private overlay
+#   env:<VAR>           — env var must be set (typically by /pandastack:init)
+#
+# This file is hand-curated. When you add or rename a skill, update here.
+
+[manifest]
+version = "1.3.0"
+schema  = "skill-tier-v1"
+updated = "2026-05-07"
+
+# ============================================================================
+# CORE (33) — markdown-only, fresh-clone runnable
+# ============================================================================
+
+[skill.architect]
+tier = "core"
+description = "Greenfield design: tech stack, DB schema, service boundaries, ADRs."
+
+[skill.atomize]
+tier = "core"
+config = ["env:PANDASTACK_VAULT"]
+description = "Distill learnings into atomic principles in atoms.jsonl."
+
+[skill.boardroom]
+tier = "core"
+description = "4-voice plan critique (CEO / product / design / eng)."
+
+[skill.careful]
+tier = "core"
+description = "Confirmation gate before destructive commands."
+
+[skill.ceo]
+tier = "core"
+description = "Strategic advisor persona — kill / pivot / continue judgment."
+
+[skill.checkpoint]
+tier = "core"
+description = "Save / resume working state snapshots."
+
+[skill.design-lead]
+tier = "core"
+description = "Senior designer persona — anti-slop, accessibility-first."
+
+[skill.dojo]
+tier = "core"
+description = "Pre-action prep, surfaces gotchas before a work session."
+
+[skill.done]
+tier = "core"
+description = "Save session context, persist memory at session end."
+
+[skill.eng-lead]
+tier = "core"
+description = "Staff engineer persona — minimal diff, root cause."
+
+[skill.execute-plan]
+tier = "core"
+description = "Subagent-driven plan execution with verification gates."
+
+[skill.freeze]
+tier = "core"
+description = "Lock editing scope to specific paths for the session."
+
+[skill.gatekeeper]
+tier = "core"
+description = "Pre-adoption trust check for external skills / MCPs / repos."
+
+[skill.grill]
+tier = "core"
+description = "Atomic adversarial requirement discovery."
+
+[skill.inbox-triage]
+tier = "core"
+config = ["env:PANDASTACK_VAULT"]
+description = "Weekly Inbox/ hygiene, bucket stale .md by category."
+
+[skill.init]
+tier = "core"
+description = "One-time pandastack init per project."
+
+[skill.knowledge-ship]
+tier = "core"
+config = ["env:PANDASTACK_VAULT"]
+description = "Close + Extract + Backflow on a knowledge note."
+
+[skill.office-hours]
+tier = "core"
+description = "5-stage flow: load context, grill, premise challenge, alternatives, brief."
+
+[skill.ops-lead]
+tier = "core"
+description = "COO persona — systems that run without you."
+
+[skill.process-decisions]
+tier = "core"
+config = ["env:PANDASTACK_VAULT"]
+description = "Walk ticked [x] items in cron-reports/, execute each."
+
+[skill.product-lead]
+tier = "core"
+description = "VP Product persona — user problems over solutions."
+
+[skill.retro-month]
+tier = "core"
+description = "Three-phase monthly retro."
+
+[skill.retro-week]
+tier = "core"
+description = "Three-phase weekly retro: Auto-scan, Interview, Write."
+
+[skill.review]
+tier = "core"
+requires = ["cli:git"]
+description = "Parallel 3-pass review (correctness, security, architecture)."
+
+[skill.ship]
+tier = "core"
+requires = ["cli:git", "cli:gh"]
+description = "Test, commit, push, open PR."
+
+[skill.sprint]
+tier = "core"
+description = "1-2h focused execution: dojo, grill-lite, execute, review, ship."
+
+[skill.team-orchestrate]
+tier = "core"
+requires = ["cli:git"]
+description = "N independent branches in parallel git worktrees."
+
+[skill.think-like-alan-chan]
+tier = "core"
+description = "Apply Alan Chan framing: 0->1 product / focus / learning."
+
+[skill.think-like-karpathy]
+tier = "core"
+description = "Apply Karpathy framing: agent orchestration / verifiability / jaggedness."
+
+[skill.think-like-naval]
+tier = "core"
+description = "Apply Naval framing: leverage / specific knowledge / long-horizon."
+
+[skill.using-pandastack]
+tier = "core"
+description = "Cognitive contract loaded at session start."
+
+[skill.wiki-lint]
+tier = "core"
+config = ["env:PANDASTACK_VAULT"]
+description = "Vault hygiene scan: orphans, stale, duplicates, dead redirects."
+
+[skill.work-ship]
+tier = "core"
+config = ["env:PANDASTACK_WORK_VAULT"]
+description = "Close + Extract + Backflow on a work topic. Vault-only."
+
+[skill.write]
+tier = "core"
+description = "Voice-aware drafting + slop detection."
+
+[skill.write-ship]
+tier = "core"
+config = ["env:PANDASTACK_VAULT"]
+description = "Close + Extract + Backflow on a Blog/_daily draft."
+
+# ============================================================================
+# EXT (6) — public CLI dependencies
+# ============================================================================
+
+[skill.qa]
+tier = "ext"
+requires = ["npm:agent-browser"]
+description = "Browser-based UI QA, real pages, real flows."
+
+[skill.scout]
+tier = "ext"
+requires = ["cli:gh"]
+description = "Recon public ecosystem for skill / harness patterns."
+
+[skill.tool-browser]
+tier = "ext"
+requires = ["npm:agent-browser"]
+description = "Browser automation: open, fill, click, screenshot, scrape."
+
+[skill.tool-deepwiki]
+tier = "ext"
+requires = ["cli:curl", "cli:jq"]
+description = "GitHub repo docs + Mermaid diagrams via deepwiki."
+
+[skill.tool-pdf]
+tier = "ext"
+requires = ["brew:poppler", "brew:tesseract"]
+description = "PDF read / extract / merge / split / OCR."
+
+[skill.tool-summarize]
+tier = "ext"
+requires = ["brew-tap:steipete/tap/summarize"]
+description = "Summarize URL / YouTube / podcast / PDF."
+
+# ============================================================================
+# PERSONAL (10) — private CLI / private overlay required
+# ============================================================================
+
+[skill.brief-morning]
+tier = "personal"
+requires = ["private:gog", "private:gbq"]
+config = ["env:PANDASTACK_USER_EMAIL", "env:PANDASTACK_VAULT"]
+description = "Daily 8am morning briefing into daily note."
+
+[skill.curate-feeds]
+tier = "personal"
+requires = ["private:feed-server", "cli:defuddle"]
+config = ["env:PANDASTACK_VAULT"]
+description = "Pull feed items to Inbox/feeds/raw/ via private feed-server."
+
+[skill.deep-research]
+tier = "personal"
+requires = ["private:gbq", "private:gbrain"]
+description = "Two-layer planner+researcher with vault gap analysis."
+
+[skill.evening-distill]
+tier = "personal"
+requires = ["private:gog", "private:gbq"]
+config = ["env:PANDASTACK_USER_EMAIL", "env:PANDASTACK_VAULT"]
+description = "Daily 10pm end-of-day distill into daily note."
+
+[skill.retro-prep-week]
+tier = "personal"
+requires = ["private:gog", "private:slack-cli", "private:gbq"]
+config = ["env:PANDASTACK_USER_EMAIL"]
+description = "Friday 9am pre-fetch retro inputs."
+
+[skill.tool-bird]
+tier = "personal"
+requires = ["private:bird"]
+description = "X/Twitter read/write via private bird CLI."
+
+[skill.tool-notion]
+tier = "personal"
+requires = ["private:notion-cli"]
+description = "Notion pages/DBs via private notion-cli."
+
+[skill.tool-slack]
+tier = "personal"
+requires = ["private:slack-cli"]
+description = "Slack search/send/read via private slack-cli."
+
+# ============================================================================
+# Notes
+# ============================================================================
+#
+# Skills referenced in flows/ but living in pandastack-private overlay (not in
+# this manifest because they are not in this repo):
+#   - misalignment             (private overlay; flows/work.md Phase 3)
+#   - yei-alert-triage         (private overlay; flows/work.md Phase 1, flows/decision.md)
+#   - chain-scout              (private overlay; on-chain analysis)
+#   - sommet:abyss-dry-run-*   (private overlay; product-specific)
+#   - harness-slim             (private overlay; flows/decision.md)
+#
+# Substrate dependencies (assumed by the harness, not by individual skills):
+#   - ~/.agents/AGENTS.md      identity / voice / routing — capability-probe ABORTs without it
+#   - claude-code              the CLI runtime (or codex / gemini / hermes equivalent)
+#
+# When adding a new skill:
+#   1. Create plugins/pandastack/skills/<name>/SKILL.md
+#   2. Add a [skill.<name>] entry here with tier + requires + config
+#   3. If tier=ext, add the install command in scripts/bootstrap.sh ext-install table
+#   4. Update RESOLVER.md skill catalog

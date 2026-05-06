@@ -24,14 +24,26 @@ What this means for you:
 
 ## Quick start
 
-> **Dev-mode notice (v1)**: pandastack v1 assumes substrate (Obsidian vault, gbq via gbrain, pdctx, vault-resident memory) you set up separately. Steps 3-5 below will surface substrate gaps via `capability-probe` rather than fail silently. v2 will bundle the onboarding scaffold; until then, treat v1 install as a fork-and-learn experience.
+```bash
+git clone https://github.com/panda850819/pandastack.git
+bash pandastack/scripts/bootstrap.sh --claude    # or --codex
+```
 
-1. `/plugin marketplace add panda850819/pandastack` then `/plugin install pandastack@pandastack` (Claude Code; other hosts in Install)
-2. `/pandastack:init` once inside your project
-3. Try `/office-hours` — bring a fuzzy idea, walk out with a written brief
-4. Try `/sprint` — 1-2h focused execution, ends in SHIPPED / PAUSED / FAILED
-5. Try `/knowledge-ship <path>` on a finished note in your vault
-6. Stop there. You'll know if pandastack fits how you work.
+`bootstrap.sh` reports:
+- substrate state (`~/.agents/AGENTS.md`, `PANDASTACK_VAULT`, `PANDASTACK_USER_EMAIL`)
+- 35 core skills runnable on this clone with no external CLI
+- 6 extension skills with the exact `brew install` / `npm install -g` to enable each
+- 10 personal skills hidden behind the `pandastack-private` overlay
+
+After install:
+
+1. `/pandastack:init` once inside your project
+2. `/office-hours` — bring a fuzzy idea, walk out with a written brief
+3. `/sprint` — 1-2h focused execution, ends in SHIPPED / PAUSED / FAILED
+4. `/knowledge-ship <path>` on a finished note in your vault
+5. Stop there. You'll know if pandastack fits how you work.
+
+> **Tier model (v1.3)**: Skills are tiered in `plugins/pandastack/manifest.toml`. Core = markdown-only, runs on a fresh clone. Ext = needs a public CLI install. Personal = needs the private overlay (gbq, gbrain, gog, bird, pdctx, ...). `capability-probe` only ABORTs when substrate is missing, not when ext / personal CLIs are absent.
 
 ## How skills connect
 
@@ -140,84 +152,41 @@ Host design notes live in [`docs/ADDING_A_HOST.md`](docs/ADDING_A_HOST.md).
 
 ## Install
 
-### 1. Claude Code, recommended path
+`scripts/bootstrap.sh` is the entrypoint. It probes substrate, lists what's ready, prints exact commands for what's missing, then prints the host-specific install line.
 
-Install from GitHub marketplace source:
+```bash
+git clone https://github.com/panda850819/pandastack.git
+cd pandastack
+bash scripts/bootstrap.sh             # report only
+bash scripts/bootstrap.sh --claude    # also print Claude Code install steps
+bash scripts/bootstrap.sh --codex     # also print Codex CLI install steps
+```
 
-```
-/plugin marketplace add panda850819/pandastack
-/plugin install pandastack@pandastack
-/reload-plugins
-```
+### Per-host one-liners (after clone)
 
-Install from a local cloned repo, useful for dogfood and author testing:
-
-```
-/plugin marketplace add /absolute/path/to/pandastack
-/plugin install pandastack@pandastack
-/reload-plugins
-```
+| Host | Install |
+|---|---|
+| Claude Code | `/plugin marketplace add /absolute/path/to/pandastack` then `/plugin install pandastack@pandastack` then `/reload-plugins` |
+| Codex CLI | `ln -sfn /absolute/path/to/pandastack/plugins/pandastack/skills ~/.codex/skills/pandastack` then restart Codex |
+| Hermes | `pdctx` dispatch (see `docs/HERMES.md`) — requires private `pdctx` CLI |
+| OpenClaw | Skill package experimental, see `docs/OPENCLAW.md` |
 
 After install, run `/pandastack:init` once inside your project.
 
-### 2. Codex CLI
-
-Codex consumes pandastack through native skill discovery, not the Claude plugin manifest.
-
-See [`plugins/pandastack/.codex/INSTALL.md`](plugins/pandastack/.codex/INSTALL.md) for the full clone + symlink flow.
-
-Minimal path:
+### Substrate config (set in your shell rc)
 
 ```bash
-git clone https://github.com/panda850819/pandastack.git ~/.codex/pandastack
-ln -s ~/.codex/pandastack/plugins/pandastack/skills ~/.codex/skills/pandastack
+export PANDASTACK_VAULT=$HOME/path/to/your/vault            # required for vault skills
+export PANDASTACK_HOME=/absolute/path/to/pandastack/plugins/pandastack
+export PANDASTACK_USER_EMAIL=you@example.com                # only for brief-morning / evening-distill
+export PANDASTACK_WORK_VAULT=$HOME/path/to/work-vault       # only if you keep a separate work vault
 ```
 
-Then restart Codex.
+Re-run `bash scripts/bootstrap.sh` any time to verify.
 
-### 3. Hermes
+## Optional: private overlay (`pandastack-private`)
 
-Hermes does not consume the Claude plugin manifest directly. Today there are two valid ways to use pandastack with Hermes.
-Detailed guide: [`docs/HERMES.md`](docs/HERMES.md)
-
-#### Option A, recommended: Hermes as scheduler / host, `pdctx` as dispatch layer
-
-This is the setup used in dogfood. Hermes cron or chat triggers a `pdctx call ...`, and `pdctx` injects the right context, persona, and skill subset into the downstream runtime.
-
-```bash
-git clone https://github.com/panda850819/pdctx ~/site/cli/pdctx
-cd ~/site/cli/pdctx
-bun install
-bun link
-pdctx init
-pdctx use personal:developer
-```
-
-Example dispatch:
-
-```bash
-pdctx call personal:writer "/brief-morning"
-```
-
-#### Option B, direct Hermes skill import
-
-If you want Hermes to load the skills directly, symlink or copy selected skill folders from `plugins/pandastack/skills/` into `~/.hermes/skills/` under your preferred category layout.
-
-This repo does not currently ship a first-class Hermes package manifest. The content is portable, but packaging is still manual.
-
-### 4. OpenClaw
-
-OpenClaw support is not shipped here as a first-class installer yet.
-Detailed guide: [`docs/OPENCLAW.md`](docs/OPENCLAW.md)
-
-Current intended direction:
-- pandastack content stays host-agnostic
-- OpenClaw should consume it as a skill package, not via the Claude plugin manifest
-- host-specific glue, naming, and runtime contracts should live on the OpenClaw side
-
-If you want to experiment today, use `plugins/pandastack/skills/` as the source of truth and adapt the host-side manifest / loader in your OpenClaw environment. Treat this as experimental, not stable install surface.
-
-## pdctx command cheatsheet
+Tier=personal skills (`brief-morning`, `evening-distill`, `retro-prep-week`, `deep-research`, `curate-feeds`, `tool-bird`, `tool-slack`, `tool-notion`) plus `pdctx` context routing live in a private overlay that is not currently published. The public install runs without them — `bootstrap.sh` reports them as hidden. If you have access to `pandastack-private`:
 
 | Command | Outcome |
 |---|---|
@@ -343,7 +312,7 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 | `/done` | Session Closer | Save context, summarize work, persist memory at session end. |
 | `/checkpoint` | The Bookmarker | Save / resume working state snapshots. |
 
-Tool wrappers (`tool-bird`, `tool-slack`, `tool-notion`, `tool-railway`, `tool-pdf`, `tool-summarize`, `tool-browser`, `tool-deepwiki`) and thinking lenses (`think-like-naval`, `think-like-karpathy`, `think-like-alan-chan`) round out the 39 — see [`docs/skills.md`](docs/skills.md) for the full list.
+Tool wrappers (`tool-bird`, `tool-slack`, `tool-notion`, `tool-pdf`, `tool-summarize`, `tool-browser`, `tool-deepwiki`) and thinking lenses (`think-like-naval`, `think-like-karpathy`, `think-like-alan-chan`) round out the lineup — see [`docs/skills.md`](docs/skills.md) for the full list.
 
 ## Personas
 

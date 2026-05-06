@@ -25,7 +25,6 @@ public = [
   "pandastack:tool-deepwiki",   # GitHub repo docs
   "pandastack:tool-bird",       # X/Twitter read for ecosystem signal
   "pandastack:tool-notion",     # Notion read (project context)
-  "pandastack:tool-railway",    # Railway deploys / logs
   "pandastack:tool-summarize",  # summarize docs / changelogs
   "pandastack:tool-pdf",        # spec / RFC reading
   "pandastack:retro-week",
@@ -48,11 +47,11 @@ write_mode = "read-only"
 
 [mcp]
 deny = [
-  "mcp__claude_ai_Linear__*",     # Sommet ticketing — work-sommet only
-  "mcp__claude_ai_Atlassian__*",  # Yei ticketing (Jira) — work-yei only
+  "mcp__claude_ai_Linear__*",     # work issue tracker — only allowed in work contexts
+  "mcp__claude_ai_Atlassian__*",  # work issue tracker — only allowed in work contexts
 ]
 
 [notes]
 # grill --mode structured replaces brief (A4 consolidation); use /grill --mode structured to lock requirements before plan.
 # pandastack:review is the default review; security-review --mode agent handles security-focused passes separately.
-# tool-railway and tool-notion are informational reads only in this context; writes go through ship-proposal + /process-decisions.
+# tool-notion is an informational read only in this context; writes go through ship-proposal + /process-decisions.

@@ -12,7 +12,7 @@ type: lifecycle-flow
 
 - Morning review: `Inbox/cron-reports/` has new files since last check
 - `pandastack:wiki-lint` weekly cron deposited a report
-- `harness-audit` or `harness-slim` deposited a report
+- A harness-audit cron (private overlay, optional) deposited a report
 - `retro-prep` cron deposited a pre-retro summary
 - Manual `/process-decisions` run on a backlog of reports
 - Panda notices two or more reports sitting unread for more than 2 weeks (warning threshold)
@@ -22,7 +22,7 @@ type: lifecycle-flow
 ### Phase 1 — Accumulate (cron writes reports)
 
 - **What happens**: Background cron agents run on their schedules and write structured reports to `Inbox/cron-reports/<agent>-<YYYY-MM-DD>.md`. Each report contains `[ ]` checkbox items representing proposed actions. This phase is fully automated — no human action required.
-- **Skills used**: `pandastack:wiki-lint` (weekly: stale/orphan/superseded notes); `pandastack:harness-slim` (harness audit proposals); `pandastack:retro-week` auto-scan mode (pre-retro raw data); `pandastack:yei-alert-triage` (protocol risk proposals)
+- **Skills used**: `pandastack:wiki-lint` (weekly: stale/orphan/superseded notes); `pandastack:retro-week` auto-scan mode (pre-retro raw data); `pandastack:<harness-slim>` (private overlay, optional — harness audit proposals); `pandastack:<your-alert-triage>` (private overlay, optional — protocol risk proposals)
 - **Output**: `Inbox/cron-reports/<agent>-<date>.md` files with unchecked `[ ]` proposal items. Each file is self-contained: agent name, run date, what it scanned, what it found, what it proposes.
 
 ### Phase 2 — Panda review (triage the reports)
@@ -69,9 +69,9 @@ type: lifecycle-flow
 ```
 [cron agents, async]
 pandastack:wiki-lint
-pandastack:harness-slim
 pandastack:retro-week  (auto-scan)
-pandastack:yei-alert-triage
+pandastack:<harness-slim>          [private overlay, optional]
+pandastack:<your-alert-triage>     [private overlay, optional]
   → Inbox/cron-reports/<agent>-<date>.md  ([ ] items)
 
 [Panda review, manual]

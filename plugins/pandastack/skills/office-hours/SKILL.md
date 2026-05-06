@@ -20,7 +20,7 @@ writes:
   - vault: docs/briefs/*.md
   - cli: stdout
 forbids:
-  - file: /Users/panda/site/knowledge/work-vault/**
+  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: lifecycle-flow
 capability_required:

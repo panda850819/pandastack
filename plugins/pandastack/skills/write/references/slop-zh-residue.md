@@ -81,7 +81,7 @@
 
 **常見**:
 - 「Anthropic 官方推出的 Claude Design」 vs 「Claude Design」 (前者明確, 後者讀者不知道)
-- 「Yei v1 protocol」 vs 「protocol」 (後者太空)
+- 「Aave v3 lending protocol」 vs 「protocol」 (後者太空)
 - 「我們前面說的 X 路線」 vs 「X 路線」 (後者不知道在說哪一個)
 
 **修法**: 第一次出現加 1-3 字修飾, 後續可省.

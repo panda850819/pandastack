@@ -18,7 +18,6 @@ public = [
   "pandastack:curate-feeds",     # feed intake and triage (was: feed-curator, v1.1 rename)
   "pandastack:knowledge-ship",   # Close → Extract → Backflow for knowledge/ notes
   "pandastack:wiki-lint",        # stale / orphan / superseded detection
-  "pandastack:tool-web-extract", # pull clean markdown from URLs
   "pandastack:tool-summarize",   # summarize long-form content
   "pandastack:tool-pdf",         # read PDFs, specs, papers
   "pandastack:tool-deepwiki",    # GitHub repo docs for technical deep-dives
@@ -44,8 +43,8 @@ write_mode = "read-only"
 
 [mcp]
 deny = [
-  "mcp__claude_ai_Linear__*",     # Sommet ticketing — work-sommet only
-  "mcp__claude_ai_Atlassian__*",  # Yei ticketing (Jira) — work-yei only
+  "mcp__claude_ai_Linear__*",     # work issue tracker — only allowed in work contexts
+  "mcp__claude_ai_Atlassian__*",  # work issue tracker — only allowed in work contexts
 ]
 
 [notes]

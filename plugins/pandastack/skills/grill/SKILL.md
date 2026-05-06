@@ -16,7 +16,7 @@ writes:
   - vault: Inbox/grill-*.md
   - cli: stdout
 forbids:
-  - file: /Users/panda/site/knowledge/work-vault/**
+  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: tool
 ---

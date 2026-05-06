@@ -17,7 +17,6 @@ public = [
   "pandastack:write",           # voice + slop detection (was: content-write, v1.1 rename)
   "pandastack:write-ship",      # Close → Extract → Backflow for published pieces
   "pandastack:grill",           # adversarial mode to stress-test thesis before committing
-  "pandastack:tool-web-extract", # pull reference URLs into clean markdown
   "pandastack:tool-bird",       # read/draft X threads
   "pandastack:tool-summarize",  # summarize source material
   "pandastack:brief-morning",   # daily note prep brief for Hermes 8am cron (was: morning-briefing, v1.1 rename)
@@ -37,7 +36,7 @@ firewall_from = ["work/yei/*", "work/sommet/*"]
 
 [sources]
 vault = "personal-vault"
-google_account = "pandap.d819@gmail.com"
+google_account = "${PANDASTACK_USER_EMAIL}"
 
 [gbrain]
 allow      = ["panda-vault"]
@@ -48,8 +47,8 @@ write_mode = "read-only"
 # Layer 5 firewall: tool-name glob patterns blocked at PreToolUse hook time.
 # v0 = denylist only (allow/classifier/JIT deferred; see grill 2026-04-30).
 deny = [
-  "mcp__claude_ai_Linear__*",     # Sommet ticketing — work-sommet only
-  "mcp__claude_ai_Atlassian__*",  # Yei ticketing (Jira) — work-yei only
+  "mcp__claude_ai_Linear__*",     # work issue tracker — only allowed in work contexts
+  "mcp__claude_ai_Atlassian__*",  # work issue tracker — only allowed in work contexts
 ]
 
 [notes]

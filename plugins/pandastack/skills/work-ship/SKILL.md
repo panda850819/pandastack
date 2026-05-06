@@ -4,22 +4,22 @@ version: 0.1.0
 status: draft
 origin: manual
 description: |
-  Close the loop on a Yei / Sommet work topic — vault-side only. Three-stage
-  pipeline: Close (decision log + ship-proposal draft) → Extract (decision /
-  cycle waste / counterfactual / scope) → Backflow (work-vault SOP, personal
-  knowledge if generalizable, skill candidate, feedback log). External system
-  updates (Notion / Jira / Linear) are written as markdown proposals to
+  Close the loop on a work topic — vault-side only. Three-stage pipeline:
+  Close (decision log + ship-proposal draft) → Extract (decision / cycle waste
+  / counterfactual / scope) → Backflow (work-vault SOP, personal knowledge if
+  generalizable, skill candidate, feedback log). External system updates
+  (Notion / Jira / Linear) are written as markdown proposals to
   Inbox/ship-proposals/ for the user to push manually — this skill never calls
   external APIs.
   Trigger: /work-ship <topic>, "ship this topic", "close out <topic>",
   "decision made on <topic>".
-tags: [work, lifecycle, ship, yei, sommet, abyss]
-related_skills: [knowledge-ship, write-ship, retro-week, retro-month, misalignment, process-decisions]
+tags: [work, lifecycle, ship]
+related_skills: [knowledge-ship, write-ship, retro-week, retro-month, process-decisions]
 ---
 
 # /work-ship
 
-Close a work topic's lifecycle: a Yei or Sommet/Abyss issue, decision, project, or proposal that has reached resolution. Pass the topic identifier as `$ARGUMENTS` — Notion page URL/ID, Jira/Linear ticket key, work-vault file path, or free-text topic name.
+Close a work topic's lifecycle: an issue, decision, project, or proposal that has reached resolution. Pass the topic identifier as `$ARGUMENTS` — Notion page URL/ID, Jira/Linear ticket key, work-vault file path, or free-text topic name.
 
 ## Scope: vault-only
 

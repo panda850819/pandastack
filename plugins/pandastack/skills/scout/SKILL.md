@@ -32,7 +32,7 @@ writes:
 forbids:
   - cli: gh repo create
   - cli: git push
-  - file: /Users/panda/site/knowledge/work-vault/**
+  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: hybrid
 ---
@@ -52,7 +52,7 @@ Mine the public ecosystem for harness / skill / framework patterns worth importi
 - Single-concept lookup ("what is MoE", "how does pgvector work") — use `pandastack:deep-research`
 - Already know which repo to read — `gh api` directly + skip the survey overhead
 - Internal vault search — use `gbq` / `pandastack:knowledge`
-- Domain-specific narrow query without public ecosystem (e.g. "how does Yei treasury work" — internal only)
+- Domain-specific narrow query without public ecosystem (e.g. "how does our internal treasury process work" — internal only)
 
 ## Pre-check (cheap-first)
 
@@ -99,14 +99,14 @@ For each candidate from Phase 2:
    If vault has a note covering same pattern → tag `[ALREADY_KNOW]`, link the note, drop from further consideration.
 
 2. **Layer-aware mapping** (mandatory — feedback-log 2026-05-01 rule):
-   List own architecture layers FIRST before mapping. For Panda's harness:
+   List own architecture layers FIRST before mapping. Reference layout (substitute your own paths via `${PANDASTACK_HOME}` resolution from /pandastack:init):
    ```
    Tier 1 substrate    : ~/.agents/AGENTS.md (voice / routing / behavioral defaults)
    Tier 2 CLI shims    : ~/.claude/ ~/.codex/ (rules / hooks / commands)
    Tier 3 schedulers   : launchd / Hermes / CronCreate
-   pandastack skills   : ~/site/skills/pandastack/plugins/pandastack/skills/<name>/
-   pandastack personas : ~/site/skills/pandastack/plugins/pandastack/skills/{ceo,eng-lead,design-lead,product-lead,ops-lead}/ (skill-only, no agents in v1.1)
-   pandastack libs     : lib/*.md (persona-frame / push-once / escape-hatch / outside-voice-rule / stop-rule / capability-probe / bad-good-calibration / goal-mapping / confidence / gate-contract / learning-format)
+   pandastack skills   : ${PANDASTACK_HOME}/skills/<name>/
+   pandastack personas : ${PANDASTACK_HOME}/skills/{ceo,eng-lead,design-lead,product-lead,ops-lead}/ (skill-only, no agents in v1.1)
+   pandastack libs     : ${PANDASTACK_HOME}/lib/*.md (persona-frame / push-once / escape-hatch / outside-voice-rule / stop-rule / capability-probe / bad-good-calibration / goal-mapping / confidence / gate-contract / learning-format)
    ```
    For each candidate, tag which layer it lands in. **Reject any candidate that wants to flatten across layers (cargo-cult).**
 
@@ -188,7 +188,7 @@ Park rejected / next-batch patches in a session note: `docs/sessions/YYYY-MM-DD-
 - <repo>'s <feature>: <reason — usually layer mismatch>
 ```
 
-Save to `docs/sessions/YYYY-MM-DD-<topic>-survey.md`. If patches affect external systems (work Notion / Yei repos), draft `Inbox/ship-proposals/*.md` for manual push instead of auto-pushing.
+Save to `docs/sessions/YYYY-MM-DD-<topic>-survey.md`. If patches affect external systems (work Notion / shared protocol repos / production infra), draft `Inbox/ship-proposals/*.md` for manual push instead of auto-pushing.
 
 ## Anti-patterns
 
@@ -196,7 +196,7 @@ Save to `docs/sessions/YYYY-MM-DD-<topic>-survey.md`. If patches affect external
 - ❌ Reading 1000-line SKILL.md linearly without grep-navigating headers
 - ❌ Importing 12 patches in one session — 5-7 cap, rest park
 - ❌ Quoting "Before:" without `grep -F` verifying (No phantom quotes rule)
-- ❌ Auto-pushing patches that touch external systems (work Notion / Yei repos / shared infra)
+- ❌ Auto-pushing patches that touch external systems (work Notion / shared protocol repos / production infra)
 - ❌ Treating star count as primary signal — description quality + updatedAt + owner reputation override
 
 ## Relationship to other skills

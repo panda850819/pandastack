@@ -26,7 +26,7 @@ writes:
   - cli: stdout
   - git: commits via /ship
 forbids:
-  - file: /Users/panda/site/knowledge/work-vault/**
+  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: lifecycle-flow
 capability_required:

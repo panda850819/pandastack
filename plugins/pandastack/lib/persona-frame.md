@@ -52,7 +52,10 @@ User direction (2026-05-04): pandastack is skill-first. Reasons:
 When a flow skill (e.g. `execute-plan`, `boardroom`, `team-orchestrate`) needs to dispatch a persona-flavored subagent, use this pattern:
 
 ```
-1. Read ~/site/skills/pandastack/plugins/pandastack/skills/<persona>/SKILL.md
+1. Resolve the persona SKILL.md path. Try in order:
+   a. ${PANDASTACK_HOME}/skills/<persona>/SKILL.md (set by /pandastack:init)
+   b. host plugin-resolver lookup of `pandastack:<persona>`
+   c. fallback: ~/site/skills/pandastack/plugins/pandastack/skills/<persona>/SKILL.md
 2. Extract the 6 contract sections (Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns + Apply BAD/GOOD calibration)
 3. Inline them at the TOP of the Agent tool prompt, fenced as a persona block:
 

@@ -8,7 +8,7 @@ reads:
   - repo: lib/bad-good-calibration.md
   - repo: lib/learning-format.md
 forbids:
-  - file: /Users/panda/site/knowledge/work-vault/**
+  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: persona-skill
 ---

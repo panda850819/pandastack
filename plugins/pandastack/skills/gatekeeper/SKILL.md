@@ -1,8 +1,8 @@
 ---
 name: gatekeeper
 aliases: [slowmist-agent-security]
-version: 0.2.0
-description: Pre-adoption trust check for external artifacts before they touch your system. Covers skill/MCP installation, GitHub repos, URLs/documents, on-chain addresses, products/services, and social shares. Triggers on /gatekeeper, /slowmist-agent-security (alias), "is this safe to install", "check this repo", "vet this MCP", "trust check". Adapted from SlowMist agent-security framework, with STRIDE classification at Step 0 and pandastack lib refs.
+version: 0.3.0
+description: Pre-adoption trust check for external artifacts before they touch your system. Covers skill/MCP installation, GitHub repos, URLs/documents, on-chain addresses, DeFi protocol governance/admin risk, products/services, and social shares. Triggers on /gatekeeper, /slowmist-agent-security (alias), "is this safe to install", "check this repo", "vet this MCP", "trust check", "看這個協議的中央化風險". Adapted from SlowMist agent-security framework, with STRIDE classification at Step 0 and pandastack lib refs.
 license: MIT
 upstream: https://github.com/slowmist/slowmist-agent-security
 ---
@@ -22,7 +22,8 @@ This framework activates whenever the agent encounters external input that could
 | Asked to install a Skill, MCP server, npm/pip/cargo package | [reviews/skill-mcp.md](reviews/skill-mcp.md) |
 | Sent a GitHub repository link to evaluate | [reviews/repository.md](reviews/repository.md) |
 | Sent a URL, document, Gist, or Markdown file to review | [reviews/url-document.md](reviews/url-document.md) |
-| Interacting with on-chain addresses, contracts, or DApps | [reviews/onchain.md](reviews/onchain.md) |
+| Interacting with on-chain addresses, contracts, or DApps (single-address scope) | [reviews/onchain.md](reviews/onchain.md) |
+| DeFi protocol governance / admin risk audit (peer or pre-deposit, multi-contract scope) | [reviews/defi-protocol.md](reviews/defi-protocol.md) |
 | Evaluating a product, service, API, or SDK | [reviews/product-service.md](reviews/product-service.md) |
 | Someone in a group chat or social channel recommends a tool | [reviews/message-share.md](reviews/message-share.md) |
 
@@ -132,6 +133,7 @@ These shared libraries are referenced by all review types:
 | GitHub Repo | [templates/report-repo.md](templates/report-repo.md) | Source, Commit History, Dependencies, Rating |
 | URL/Document | [templates/report-url.md](templates/report-url.md) | URL, Domain, Content, Rating |
 | **On-Chain** | **[templates/report-onchain.md](templates/report-onchain.md)** | **Address, AML Score, Risk Level, Verdict** |
+| **DeFi Protocol** | **[templates/report-defi-protocol.md](templates/report-defi-protocol.md)** | **Privileged Surface, Timelock Profile, Approval Risk, Verdict** |
 | Product/Service | [templates/report-product.md](templates/report-product.md) | Provider, Permissions, Data Flow, Rating |
 
 ## Environment-Specific Notes
@@ -145,7 +147,7 @@ Sensitive paths in this environment — treat access to these as 🔴 HIGH:
 
 Available tools for on-chain checks:
 - Block explorers via WebFetch
-- yei-alert-triage skill for Yei Finance protocol risk
+- A protocol-specific alert-triage skill, if your private overlay supplies one (optional)
 
 ## Credits
 

@@ -6,7 +6,7 @@ reads:
   - repo: lib/persona-frame.md
   - repo: lib/bad-good-calibration.md
 forbids:
-  - file: /Users/panda/site/knowledge/work-vault/**
+  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: persona-skill
 ---

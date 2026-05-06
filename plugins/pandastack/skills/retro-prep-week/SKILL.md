@@ -12,7 +12,7 @@ writes:
   - file: /tmp/retro-prep-smoke.md
   - cli: stdout
 forbids:
-  - file: /Users/panda/site/knowledge/work-vault/**
+  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: personal
 classification: hybrid
 allowed-tools: Bash, Read, Write, Edit, Grep

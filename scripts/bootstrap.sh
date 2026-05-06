@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+# pandastack/scripts/bootstrap.sh
+#
+# Fresh-install onboarding. Surfaces what runs out of the box, what needs a
+# public install step, and what needs a private overlay. Reads manifest.toml
+# as source of truth.
+#
+# Usage:
+#   bash scripts/bootstrap.sh              # report only
+#   bash scripts/bootstrap.sh --claude     # also print Claude Code install steps
+#   bash scripts/bootstrap.sh --codex      # also print Codex CLI install steps
+#
+# This script does NOT mutate ~/.claude or ~/.codex. It tells you the commands
+# to run; you run them. The install path itself is one line per host (see end).
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+MANIFEST="${REPO_ROOT}/plugins/pandastack/manifest.toml"
+
+if [ ! -f "$MANIFEST" ]; then
+  echo "FATAL: manifest.toml not found at $MANIFEST" >&2
+  exit 1
+fi
+
+ok()   { printf "  \033[32m✓\033[0m %s\n" "$1"; }
+warn() { printf "  \033[33m⚠\033[0m %s\n" "$1"; }
+miss() { printf "  \033[31m✗\033[0m %s\n" "$1"; }
+
+echo
+echo "pandastack bootstrap"
+echo "===================="
+echo "Repo:     $REPO_ROOT"
+echo "Manifest: $MANIFEST"
+echo
+
+# ----------------------------------------------------------------------------
+# 1) Substrate probe
+# ----------------------------------------------------------------------------
+echo "[1/4] Substrate"
+
+if [ -f "$HOME/.agents/AGENTS.md" ]; then
+  ok "~/.agents/AGENTS.md present"
+else
+  miss "~/.agents/AGENTS.md missing — capability-probe will ABORT on skills that load it"
+  echo "      Fix: create ~/.agents/AGENTS.md (see README § Substrate)"
+fi
+
+if [ -n "${PANDASTACK_VAULT:-}" ] && [ -d "${PANDASTACK_VAULT}" ]; then
+  ok "PANDASTACK_VAULT=${PANDASTACK_VAULT}"
+else
+  warn "PANDASTACK_VAULT not set"
+  echo "      Fix: export PANDASTACK_VAULT=\$HOME/path/to/your/vault"
+fi
+
+if [ -n "${PANDASTACK_USER_EMAIL:-}" ]; then
+  ok "PANDASTACK_USER_EMAIL=${PANDASTACK_USER_EMAIL}"
+else
+  warn "PANDASTACK_USER_EMAIL not set (only needed for brief-morning / evening-distill)"
+fi
+
+if [ -n "${PANDASTACK_HOME:-}" ]; then
+  ok "PANDASTACK_HOME=${PANDASTACK_HOME}"
+else
+  warn "PANDASTACK_HOME not set; persona dispatch will use fallback resolution"
+  echo "      Suggested: export PANDASTACK_HOME=$REPO_ROOT/plugins/pandastack"
+fi
+
+echo
+
+# ----------------------------------------------------------------------------
+# 2) Core skills (always ready)
+# ----------------------------------------------------------------------------
+echo "[2/4] Core skills (markdown-only, ready now)"
+core_count=$(grep -c '^tier = "core"' "$MANIFEST" || true)
+ok "$core_count skills runnable on this clone with zero external CLI"
+echo "      Examples: /sprint /office-hours /grill /dojo /ship /review"
+echo "                /knowledge-ship /work-ship /write-ship"
+echo "                /retro-week /retro-month /careful /freeze /done /init /atomize"
+echo "                /boardroom /architect /ceo /eng-lead /ops-lead /design-lead /product-lead"
+echo
+
+# ----------------------------------------------------------------------------
+# 3) Extension skills (public install)
+# ----------------------------------------------------------------------------
+echo "[3/4] Extension skills (public CLI install)"
+printf "      %-18s %-9s %s\n" "Skill" "Status" "Install"
+printf "      %-18s %-9s %s\n" "-----" "------" "-------"
+
+check_cmd() { command -v "$1" >/dev/null 2>&1; }
+
+ext_check() {
+  local skill="$1"; local cmd="$2"; local install="$3"
+  if check_cmd "$cmd"; then
+    printf "      %-18s \033[32m%-9s\033[0m %s\n" "$skill" "ready" "(installed)"
+  else
+    printf "      %-18s \033[33m%-9s\033[0m %s\n" "$skill" "missing" "$install"
+  fi
+}
+
+ext_check "scout"          "gh"            "brew install gh"
+ext_check "tool-browser"   "agent-browser" "npm install -g agent-browser"
+ext_check "tool-deepwiki"  "curl"          "(curl + jq, usually preinstalled)"
+ext_check "tool-pdf"       "pdftotext"     "brew install poppler tesseract"
+ext_check "tool-summarize" "summarize"     "brew install steipete/tap/summarize"
+ext_check "qa"             "agent-browser" "npm install -g agent-browser"
+
+echo
+
+# ----------------------------------------------------------------------------
+# 4) Personal skills (private overlay)
+# ----------------------------------------------------------------------------
+echo "[4/4] Personal skills (private overlay)"
+if [ -d "$HOME/site/skills/pandastack-private" ] || [ -n "${PANDASTACK_PRIVATE:-}" ]; then
+  ok "private overlay detected at $HOME/site/skills/pandastack-private"
+  echo "      Unlocks: brief-morning, evening-distill, retro-prep-week,"
+  echo "               deep-research, curate-feeds, tool-bird, tool-slack, tool-notion"
+else
+  warn "no private overlay (10 skills hidden)"
+  echo "      brief-morning, evening-distill, retro-prep-week, deep-research,"
+  echo "      curate-feeds, tool-bird, tool-slack, tool-notion"
+  echo "      These need private CLIs (gbq / gbrain / gog / bird / pdctx / ..)."
+  echo "      pandastack-private is not currently published."
+fi
+
+echo
+
+# ----------------------------------------------------------------------------
+# 5) Host install hint
+# ----------------------------------------------------------------------------
+echo "[Host install]"
+case "${1:-}" in
+  --claude)
+    cat <<EOF
+  Run inside Claude Code:
+    /plugin marketplace add $REPO_ROOT
+    /plugin install pandastack@pandastack
+    /reload-plugins
+  Then run /pandastack:init once in your project.
+EOF
+    ;;
+  --codex)
+    cat <<EOF
+  Run in shell, then restart Codex CLI:
+    mkdir -p \$HOME/.codex/skills
+    ln -sfn $REPO_ROOT/plugins/pandastack/skills \$HOME/.codex/skills/pandastack
+EOF
+    ;;
+  *)
+    cat <<EOF
+  Pick a host:
+    Claude Code:  bash scripts/bootstrap.sh --claude
+    Codex CLI:    bash scripts/bootstrap.sh --codex
+    Hermes:       see docs/HERMES.md (uses pdctx for dispatch — private overlay)
+EOF
+    ;;
+esac
+
+echo
+echo "Done."

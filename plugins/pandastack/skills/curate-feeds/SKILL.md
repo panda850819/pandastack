@@ -2,109 +2,113 @@
 name: curate-feeds
 aliases: [feed-curator]
 description: |
-  Fetch raw feed items from feed-server to Inbox/feeds/raw/ with dedupe and noise filter.
-  Does NOT summarize, classify P0-P3, write knowledge notes, or update daily note — those steps are removed (2026-05-01 redesign: AI no longer authors substance into knowledge/).
+  Pull unprocessed items from feed-server, enrich web articles via defuddle, write obsidian-clipper-style markdown to Inbox/feeds/raw/.
+  Implementation ships with this skill at `scripts/curate-feeds.ts` (resolved via `${PANDASTACK_HOME}/skills/curate-feeds/scripts/curate-feeds.ts`). AI does NOT summarize, score P0-P3, or author substance — defuddle extracts, the script writes, Panda triages.
 
   Trigger on: /curate-feeds, /feed-curator (alias), "fetch feeds", "pull feeds", scheduled cron.
   Skip when: user wants summaries or analysis (use /knowledge after triage instead).
 ---
 
-# Feed Curator (raw-fetch only)
+# Feed Curator (defuddle-enriched fetch)
 
-Pull unprocessed items from feed-server, write raw markdown to `Inbox/feeds/raw/`, mark processed. **No AI summarization.** Panda triages himself.
+Pull unprocessed items from feed-server, run defuddle on each web article URL to extract title / author / published / description / contentMarkdown, write obsidian-clipper-compatible markdown to `Inbox/feeds/raw/<date>/`. Mark processed in feed-server.
 
-## Why this skill is thin
+## Why thin
 
-Earlier versions scored items P0-P3, deep-read articles, wrote knowledge notes, and appended digests to the daily note. That generated AI-authored substance into `knowledge/` and polluted Panda's brain layer.
+The skill body is now a wrapper around `scripts/curate-feeds.ts` shipped inside this skill folder. The script handles JSON parsing, defuddle subprocess, frontmatter rendering, dedup, error fallback. AI is not asked to do any of those steps per item — that produced fragile instruction-following.
 
-New scope: **fetch-only**. The skill is the pipe; Panda is the editor.
-
-If you want summaries, after fetch run `/knowledge backfill` (structural) or read items individually and use `/knowledge promote` to graduate worthwhile items.
+If the script breaks or behavior needs to change, edit the script. The skill stays thin.
 
 ## Prerequisites
 
-- Feed server running at `localhost:3456`
-- Personal vault at `<personal-vault>` (resolved from session env)
+- Feed server daemon (the `feed-server` bun project) running at `${PANDASTACK_FEED_SERVER:-http://localhost:3456}`. Clone separately from the public feed-server repo if you want this skill operational; without the daemon, the script exits early with `0 items`.
+- `defuddle` CLI on PATH (`which defuddle`) — `npm install -g defuddle`
+- `bun` on PATH (`which bun`) — `curl -fsSL https://bun.sh/install | bash`
+- `PANDASTACK_VAULT` env var pointing at your personal vault (script aborts if unset)
+- Optional: `PANDASTACK_FEED_SERVER` to override the default daemon URL
 
-## Step 1: Fetch unprocessed items
+## Run
 
 ```bash
-curl -s http://localhost:3456/items?unprocessed=1
+bun run "${PANDASTACK_HOME}/skills/curate-feeds/scripts/curate-feeds.ts"
 ```
 
-Returns JSON array: `id`, `title`, `url`, `description`, `source_type`, `source_name`, `pub_date`, `first_seen_at`.
+Default: process up to 100 unprocessed items per run.
 
-If empty → report "nothing to process" and stop.
-If >100 items → process oldest 100, note remainder for next run.
+Flags:
 
-## Step 2: Filter noise
+| Flag | What |
+|---|---|
+| `--limit N` | Cap items per run (default 100) |
+| `--dry` | Don't write files / don't mark processed |
+| `--no-defuddle` | Skip defuddle, fall back to RSS description for everything |
 
-Skip items matching:
-- coupon / promo code / discount code / `% off` / "deal" patterns
-- single-word titles
-- already-exists path (filename collision in `Inbox/feeds/raw/<date>/`)
+## What gets written
 
-No P0-P3 scoring. No "trusted source" promotion. Filter is binary: noise or not.
+For each non-noise, non-duplicate item, one file at `Inbox/feeds/raw/<date>/<slug>.md`:
 
-## Step 3: Write raw items
-
-For each non-noise item:
-
-**Path**: `<personal-vault>/Inbox/feeds/raw/YYYY-MM-DD/{slug}.md`
-
-**Slug**: lowercase, non-alphanumeric → hyphens, max 60 chars.
-
-**Template**:
 ```markdown
 ---
-date: YYYY-MM-DD
+title: "..."
+source: "<url>"
+source_name: "<name from sources.yml>"
+source_type: rss | website | twitter | reddit | hackernews | github_releases | youtube | telegram | threads
+created: "YYYY-MM-DD"
+fetched_at: "ISO8601"
 type: feed-raw
-source: {url}
-source_name: {source_name}
-pub_date: {pub_date}
-fetched_at: {ISO8601}
 origin: ai-fetched
+author: "..."          # if defuddle found one
+published: "YYYY-MM-DD" # from defuddle or RSS pub_date
+site: "..."             # if defuddle's site name differs from source_name
+description: "..."      # ≤500 chars
+image: "..."            # cover URL if present
+word_count: N
+language: en | zh | ...
+tags: [clippings, <source_type>, <tags from sources.yml>]
 ---
 
-# {title}
+# <title>
 
-{description}
+<contentMarkdown from defuddle, or RSS description as fallback>
 
-[Source]({url})
+[Source](<url>)
 ```
 
-Create date directory if missing. Skip if file already exists (dedup).
+Format intentionally matches obsidian-clipper's default template so files browse the same as Panda's manual web-clipper output.
 
-**Do NOT**:
-- Run `bird read` / `defuddle parse` / `summarize` for full content (Panda triggers per-item if interested)
-- Write to `knowledge/`
-- Append to daily note
-- Write `source-quality.json` signals (knowledge-ship handles signal generation now)
+## Source-type behavior
 
-## Step 4: Mark processed
+| source_type | Defuddle? | Body source |
+|---|---|---|
+| `rss`, `website`, `threads` | yes | defuddle's `contentMarkdown`, fallback to RSS `description` |
+| `twitter`, `reddit`, `hackernews`, `github_releases`, `youtube`, `telegram` | no | feed-server's `description` (these aren't articles) |
 
-```bash
-curl -s -X POST http://localhost:3456/items/processed \
-  -H "Content-Type: application/json" \
-  -d '{"ids": ["id1", "id2", ...]}'
-```
+Defuddle failures (~30% on non-Substack RSS sources, mostly TLDR / aggregator feeds with anti-scraping or SPA pages) silently fall back to RSS description. The summary at end of run reports `defuddle fail: N`.
 
-Include all fetched IDs (raw-written and noise-skipped).
+## Noise filter
 
-## Step 5: Report
+Skipped without writing or marking processed:
+- Single-word title (length < 20)
+- Title or description matching `coupon | promo code | discount code | NN% off | deal`
 
-```
-[feed-curator] fetched N items, wrote M raw, skipped N-M as noise
-[feed-curator] Inbox/feeds/raw/YYYY-MM-DD/ now has M new items
-[feed-curator] next: Panda triages → /knowledge promote <path> for keepers
-```
+## Dedup
+
+Slug collision check against existing files in today's `Inbox/feeds/raw/<date>/` directory. feed-server's `processed` flag is the primary cross-day dedup.
 
 ## Anti-scope-creep notes
 
-If you find yourself wanting to:
-- Score items by priority → STOP. Panda scores at triage time.
-- Deep-read articles → STOP. Panda triggers per-item.
-- Write digest to daily note → STOP. Daily note is Panda's capture, not AI's report.
-- Update `knowledge/` notes → STOP. AI never writes substance to `knowledge/`.
+The script intentionally does NOT:
+- Score items P0-P3 → Panda scores at triage time
+- Summarize content → defuddle preserves original; summary is Panda's job
+- Append to daily note → daily note is Panda's capture, not AI's report
+- Write to `knowledge/` → AI never authors substance to `knowledge/`
+- Download images locally → CDN URLs are stable; saves disk + bandwidth
 
-If any of these feels needed, the request belongs in a different skill (`/knowledge`, `daily-distill` — which is paused), not here.
+If any of these feels needed, the request belongs in a different skill (`/knowledge`, `daily-distill` — paused), not here.
+
+## Failure modes
+
+- **All items 0**: feed-server returned empty array. Check `curl http://localhost:3456/items?unprocessed=1 | head`. May mean curate is up to date.
+- **Defuddle 30%+ fail rate**: ok for now, fallback covers it. Low priority to investigate per-source.
+- **Defuddle 100% fail**: defuddle binary or network broken. Run `defuddle parse https://example.com --md` to check.
+- **JSON parse error**: feed-server returned malformed item (rare). Re-run after a few minutes.
