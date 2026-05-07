@@ -16,7 +16,7 @@ Parse the user's input:
 - `/checkpoint resume` → **Resume**
 - `/checkpoint list` → **List**
 
-Read pandastack config from CLAUDE.md.
+Read pandastack config from `CLAUDE.md` or `AGENTS.md` (whichever the project uses).
 
 ## Save (default)
 

@@ -1,6 +1,6 @@
 ---
 name: evening-distill
-description: End-of-day personal handoff that writes an evening briefing block to today's daily note. Triggers on /evening-distill, Hermes cron 0 22 * * *, and manual pdctx call personal:writer "/evening-distill".
+description: End-of-day personal handoff that writes an evening briefing block to today's daily note. Triggers on /evening-distill, any cron scheduler at ~22:00 local, and manual pdctx call personal:writer "/evening-distill".
 reads:
   - vault: Blog/_daily/*.md
   - cli: date
@@ -24,20 +24,20 @@ Write an end-of-day personal handoff for Panda and append it to today's daily no
 - Run from `<personal-vault>`.
 - Default target: `Blog/_daily/YYYY-MM-DD.md`.
 - Smoke target: if the user/task names `/tmp/evening-distill-smoke.md`, write the block there instead of the daily note.
-- Use the default `gog` account for all Google sources (configure once via `gog config set default_account`). If `gog` has no default, abort with the actionable error from `gog` itself rather than guessing.
+- Use the default `gog` account for Google sources (configure once via `gog config set default_account`). If `gog` is not on PATH, skip the calendar + Gmail sources and emit `(source unavailable: gog not installed)` for each — do not abort. If `gog` is installed but has no default account, surface the actionable `gog` error in those sections and continue with the remaining sources.
 - Never read Slack or work-only sources.
 - If today's evening block already exists, replace only that block.
 - Never replace the rest of the daily note.
 - Catch each source failure and write `(source unavailable: <reason>)` in that section.
 - Empty successful source means `(none)`.
 - After writing, echo one line: `evening-distill wrote <target> sections=3`.
-- **Never create a fake `$HOME` or copy `~/.pdctx` into cwd.** The real `$HOME` is correctly set by hermes / the calling shell. Any sandbox staging belongs in `/tmp`, not in the vault.
+- **Never create a fake `$HOME` or copy `~/.pdctx` into cwd.** The real `$HOME` is correctly set by the calling shell or scheduler. Any sandbox staging belongs in `/tmp`, not in the vault.
 
 ## Sources
 
 1. Today's daily note: read `Blog/_daily/$(date +%Y-%m-%d).md`; count closed `^- \[x\]` and open `^- \[ \]` items; extract the top completed item with the biggest payoff signal.
-2. Tomorrow's calendar: `gog calendar events --tomorrow --max 5 --plain`; format the first 3 events as start time, title, attendee count, and prep needed.
-3. Gmail carry-over: `gog gmail search 'is:unread newer_than:24h' --max 10 --plain`; keep the top 3 threads likely to matter tomorrow.
+2. Tomorrow's calendar: `gog calendar events --tomorrow --max 5 --plain` if `gog` is on PATH; format the first 3 events as start time, title, attendee count, and prep needed. Skip if `gog` is missing.
+3. Gmail carry-over: `gog gmail search 'is:unread newer_than:24h' --max 10 --plain` if `gog` is on PATH; keep the top 3 threads likely to matter tomorrow. Skip if `gog` is missing.
 4. Writing seeds: reuse the strongest 3 note or writing candidates surfaced in today's daily note.
 
 ## Template

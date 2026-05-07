@@ -31,8 +31,8 @@ Vault hygiene (orphans / stale / superseded / dead redirects) is now a direct fi
 |---|---|---|
 | `pandastack:write` | Voice-aware drafting + slop detection | help me write |
 | `pandastack:ship write <draft>` | Close + Extract + Backflow on a Blog draft (was: `write-ship`) | ship this draft, publish this post |
-| `pandastack:brief-morning` | Morning briefing into daily note | Hermes 8am cron |
-| `pandastack:evening-distill` | End-of-day distill into daily note | Hermes 10pm cron |
+| `pandastack:brief-morning` | Morning briefing into daily note | any 8am cron (Hermes / launchd / system cron) |
+| `pandastack:evening-distill` | End-of-day distill into daily note | any 10pm cron (Hermes / launchd / system cron) |
 
 ### Work execution (vault-only, external pushed manually)
 

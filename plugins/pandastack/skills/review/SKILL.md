@@ -7,6 +7,7 @@ description: |
 reads:
   - repo: "**"
   - repo: CLAUDE.md
+  - repo: AGENTS.md
   - repo: docs/briefs/**
   - repo: docs/learnings/**
   - cli: git
@@ -48,7 +49,7 @@ If output for any command is > 30 lines, summarize. Don't dump raw output into t
 
 ## Step 1: Scope
 
-1. Read pstack config from CLAUDE.md.
+1. Read pstack config from `CLAUDE.md` or `AGENTS.md` (whichever the project uses).
 2. Run `git branch --show-current`. If on the main branch, stop: "Nothing to review — you're on main."
 3. Run `git diff origin/{main} --stat`. If no diff, stop.
 4. Get the full diff: `git diff origin/{main}`
@@ -176,7 +177,7 @@ the in-session reviewer misses due to confirmation bias.
 
 The cold reviewer receives ONLY:
 - The raw diff (`git diff origin/{main}`)
-- The project's CLAUDE.md (for conventions, not intent)
+- The project's `CLAUDE.md` and `AGENTS.md` if present (for conventions, not intent)
 - This instruction: "Review this diff for bugs, security issues, and
   design problems. You have no context about why these changes were made.
   Report only findings with confidence >= 7/10. Format: [P0-P3] file:line — description."

@@ -346,12 +346,14 @@ See [`plugins/pandastack/docs/telemetry.md`](plugins/pandastack/docs/telemetry.m
 
 Without pdctx, no telemetry runs at all — pandastack public surface emits no events.
 
-## Hermes jobs (current)
+## Cron jobs (current)
+
+Schedule with whichever Tier 3 scheduler you prefer (launchd plist, system crontab, Hermes, Claude CronCreate). The skills don't depend on a specific scheduler.
 
 | Job | Schedule | Skill |
 |---|---|---|
-| Morning Briefing | `0 8 * * *` (daily 8 AM) | `/brief-morning` |
-| Evening Distill | `0 22 * * *` (daily 10 PM) | `/evening-distill` |
+| Morning Briefing | `0 8 * * *` (daily 8 AM local) | `/brief-morning` |
+| Evening Distill | `0 22 * * *` (daily 10 PM local) | `/evening-distill` |
 
 `retro-prep-week` was retired in v2.0.0 — `/retro-week` Phase 1 now scans vault files directly (rg / find on `Blog/_daily/` + `Inbox/ship-log/`), no separate cron needed.
 

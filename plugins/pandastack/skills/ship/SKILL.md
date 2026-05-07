@@ -11,6 +11,7 @@ description: |
 reads:
   - repo: "**"
   - repo: CLAUDE.md
+  - repo: AGENTS.md
   - repo: docs/briefs/**
   - repo: docs/learnings/**
   - cli: git
@@ -60,7 +61,7 @@ Test, commit, create PR. One command from "code done" to "PR open".
 
 ### Step 0: Read Config
 
-Read pstack config from CLAUDE.md for: test command, tag format, release preference.
+Read pstack config from `CLAUDE.md` or `AGENTS.md` (whichever the project uses) for: test command, tag format, release preference.
 
 ### Step 1: Pre-flight
 

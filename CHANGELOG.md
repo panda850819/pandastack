@@ -1,5 +1,23 @@
 # Changelog
 
+## v2.1.1 — 2026-05-07
+
+> Small decoupling pass. Three loose ends from the v2.1.0 audit: `gog` hard-fail, Hermes-specific scheduler wording, and CLAUDE.md / AGENTS.md asymmetry.
+
+### Changed
+
+- **`gog` graceful degrade** in `brief-morning` + `evening-distill`. If `gog` is not on PATH, the calendar + Gmail sources now emit `(source unavailable: gog not installed)` instead of hard-aborting the whole skill. The remaining sources (yesterday/today's daily note, writing seeds) still run. If `gog` is installed but has no default account, the actionable `gog` error appears in those sections and the skill continues.
+- **Scheduler-agnostic wording**. Skill descriptions for `brief-morning` (`Hermes cron 0 8 * * *` → `any cron scheduler at ~08:00 local`) and `evening-distill` (`Hermes cron 0 22 * * *` → `any cron scheduler at ~22:00 local`). README's `Hermes jobs` section renamed to `Cron jobs` with explicit "use whichever Tier 3 scheduler you prefer (launchd / system crontab / Hermes / Claude CronCreate)" note. RESOLVER's brief-morning + evening-distill trigger column updated from "Hermes 8am cron" / "Hermes 10pm cron" to scheduler-agnostic.
+- **CLAUDE.md / AGENTS.md parity**. `init`, `checkpoint`, `qa`, `review`, `ship` previously hardcoded `CLAUDE.md` for project config reads, breaking parity with Codex / other agent runtimes that use `AGENTS.md`. All five now accept either file. `init` Step 3 explicitly picks the runtime's canonical file (CLAUDE.md for Claude Code, AGENTS.md for Codex / others). `review` + `ship` frontmatter `reads:` list adds `AGENTS.md`.
+
+### Why
+
+These three were called out in the v2.1.0 audit as "still coupled but small enough to fix in a patch". `gog` hard-fail was the highest user-impact: a fresh install without gog would crash both daily cron jobs. Hermes wording was honestly substrate-coupling-as-documentation — the skills don't depend on Hermes, they depend on any cron. CLAUDE.md/AGENTS.md asymmetry was a Claude-Code-first artifact that broke Codex users silently. None justified a minor version bump on its own; bundled together as a patch.
+
+### Not changed
+
+Obsidian-specific vault paths (`Blog/_daily/`, `Inbox/ship-log/`, `Inbox/feeds/`, `docs/learnings/`, `knowledge/`) remain hardcoded across 20 skills. That's the v2 multi-vault provider abstraction work in ROADMAP and is not in scope for a patch release.
+
 ## v2.1.0 — 2026-05-07
 
 > Substrate-agnostic cut. Drops the `gbq` / `gbrain` dependency that fresh installs couldn't satisfy. Cuts `deep-research` (gbrain-core) and `work-sommet-abyss-po` context. 39 → 38 skills, 8 → 7 contexts.

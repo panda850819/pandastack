@@ -1,7 +1,7 @@
 ---
 name: brief-morning
 aliases: [morning-briefing]
-description: Produce a one-page morning briefing and prepend it to today's daily note. Triggers on /brief-morning, /morning-briefing (alias), Hermes cron 0 8 * * *, and manual pdctx call personal:writer "/brief-morning".
+description: Produce a one-page morning briefing and prepend it to today's daily note. Triggers on /brief-morning, /morning-briefing (alias), any cron scheduler at ~08:00 local, and manual pdctx call personal:writer "/brief-morning".
 reads:
   - vault: Blog/_daily/*.md
   - cli: date
@@ -26,20 +26,20 @@ Produce a one-page morning briefing for Panda and prepend it to today's daily no
 - Run from `<personal-vault>`.
 - Default target: `Blog/_daily/YYYY-MM-DD.md`.
 - Smoke target: if the user/task names `/tmp/morning-briefing-smoke.md`, write there instead of the daily note.
-- Use the default `gog` account for all Google sources (configure once via `gog config set default_account`). If `gog` has no default, abort with the actionable error from `gog` itself rather than guessing.
+- Use the default `gog` account for Google sources (configure once via `gog config set default_account`). If `gog` is not on PATH, skip the calendar + Gmail sources and emit `(source unavailable: gog not installed)` for each — do not abort. If `gog` is installed but has no default account, surface the actionable `gog` error in those sections and continue with the remaining sources.
 - Never read Slack or work-only sources.
 - If today's briefing already exists, replace only that briefing block.
 - Never replace the rest of the daily note.
 - Catch each source failure and write `(source unavailable: <reason>)` in that section.
 - Empty successful source means `(none)`.
-- **Never create a fake `$HOME` or copy `~/.pdctx` into cwd.** The real `$HOME` is correctly set by hermes / the calling shell. Any sandbox staging belongs in `/tmp`, not in the vault.
+- **Never create a fake `$HOME` or copy `~/.pdctx` into cwd.** The real `$HOME` is correctly set by the calling shell or scheduler. Any sandbox staging belongs in `/tmp`, not in the vault.
 - After writing, echo one line: `morning-briefing wrote <target> sections=3`.
 
 ## Sources
 
 1. Yesterday's daily note: read `Blog/_daily/$(date -v-1d +%Y-%m-%d).md`; within `## Action Items`, extract unchecked `- [ ]` lines.
-2. Calendar: `gog calendar events --today --max 5 --plain`; format the first 3 events as start time, title, attendee count, and prep needed.
-3. Gmail: `gog gmail search 'is:unread newer_than:12h' --max 10 --plain`; keep the top 3 personal-priority or urgent threads.
+2. Calendar: `gog calendar events --today --max 5 --plain` if `gog` is on PATH; format the first 3 events as start time, title, attendee count, and prep needed. Skip if `gog` is missing.
+3. Gmail: `gog gmail search 'is:unread newer_than:12h' --max 10 --plain` if `gog` is on PATH; keep the top 3 personal-priority or urgent threads. Skip if `gog` is missing.
 4. Writing seeds: scan the last 3 days of `Blog/_daily/*.md` for queue-worthy items or unfinished thoughts; pick 1-3 candidates worth picking up today.
 
 ## Template

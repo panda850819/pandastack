@@ -29,10 +29,15 @@
 # This file is hand-curated. When you add or rename a skill, update here.
 
 [manifest]
-version = "2.1.0"
+version = "2.1.1"
 schema  = "skill-tier-v1"
 updated = "2026-05-07"
 
+# v2.1.1: small decoupling pass. brief-morning + evening-distill degrade
+# gracefully when `gog` is missing instead of hard-aborting. Hermes-specific
+# triggers in skill descriptions + RESOLVER changed to scheduler-agnostic
+# wording. CLAUDE.md hardcoded reads in init / checkpoint / qa / review / ship
+# now also accept AGENTS.md (Codex parity).
 # v2.1.0: cut gbq / gbrain dependency. deep-research removed (gbrain-core skill).
 # brief-morning + evening-distill drop gbq vault-focus seed (use file scan instead).
 # Sommet skills + work-sommet-abyss-po context removed from pandastack-private.

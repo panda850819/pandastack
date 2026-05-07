@@ -10,7 +10,7 @@ description: |
 
 ## Step 1: Load Context
 
-1. Read pandastack config from CLAUDE.md.
+1. Read pandastack config from `CLAUDE.md` or `AGENTS.md` (whichever the project uses).
 2. Search `{learnings_dir}` for `type: pitfall` related to UI or the changed components.
 3. Read the brief (if exists in `docs/briefs/`) to understand expected behavior.
 
