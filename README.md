@@ -32,8 +32,8 @@ bash pandastack/scripts/bootstrap.sh --claude    # or --codex
 `bootstrap.sh` reports:
 - substrate state (`~/.agents/AGENTS.md`, `PANDASTACK_VAULT`, `PANDASTACK_USER_EMAIL`)
 - 35 core skills runnable on this clone with no external CLI
-- 6 extension skills with the exact `brew install` / `npm install -g` to enable each
-- 10 personal skills hidden behind the `pandastack-private` overlay
+- 5 extension skills with the exact `brew install` / `npm install -g` to enable each
+- 8 personal skills hidden behind the `pandastack-private` overlay
 
 After install:
 

@@ -6,7 +6,7 @@
 
 ## Why this file exists
 
-pandastack v1 ships ~30 skills, 5 personas, 7 lifecycle flows, and 8 context recipes. That's a lot of surface area. RESOLVER.md is the disambiguation layer — when two things look similar but serve different purposes, you read this file to learn the boundary.
+pandastack v1 ships 48 skills, 5 personas, 7 lifecycle flows, and 8 context recipes. That's a lot of surface area. RESOLVER.md is the disambiguation layer — when two things look similar but serve different purposes, you read this file to learn the boundary.
 
 This is the pattern used by gstack, gbrain, and alirezarezvani: monorepo + RESOLVER.md beats multi-repo split, because the categorization lives next to the content.
 

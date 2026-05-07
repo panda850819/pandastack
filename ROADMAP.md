@@ -8,7 +8,7 @@ Status: stable since 2026-04-29 (`aab8f49`). API, schema, and skill content are 
 
 What v1 is:
 
-- 39 skills covering dev / knowledge / writing / work / research / retro / decision lifecycles
+- 48 skills (35 core / 5 ext / 8 personal) covering dev / knowledge / writing / work / research / retro / decision lifecycles
 - 5 personas (eng / design / ceo / ops / product) replaceable per project
 - 4 personal contexts + private overlay for work contexts
 - 5-layer firewall (L1 voice / L2 fs chmod / L3 MCP deny / L4 context recipe / L5 per-skill allowlist)
