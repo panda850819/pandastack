@@ -10,7 +10,7 @@ PreToolUse firewall can derive a per-skill allowlist before runtime.
 reads:
   - vault: knowledge/**
   - repo: docs/briefs/**
-  - cli: gbq
+  - cli: rg
 writes:
   - vault: Blog/_daily/*.md
   - repo: docs/briefs/*.md

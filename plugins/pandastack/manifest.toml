@@ -11,8 +11,8 @@
 #               session management.
 #   ext       — needs a publicly installable CLI (brew / npm / pipx / curl / gh release).
 #               bootstrap.sh prints the install command; user opts in.
-#   personal  — needs a private CLI Panda has not published (gbq, gbrain, gog, bird,
-#               pdctx, notion-cli, slack-cli, feed-server). Install pandastack-private
+#   personal  — needs a private CLI Panda has not published (gog, bird, pdctx,
+#               notion-cli, slack-cli, feed-server). Install pandastack-private
 #               overlay to unlock these. On a public install the skill is hidden.
 #
 # Requires syntax:
@@ -232,7 +232,6 @@ description = "Slack search/send/read via private slack-cli."
 #   - misalignment             (private overlay; flows/work.md Phase 3)
 #   - yei-alert-triage         (private overlay; flows/work.md Phase 1, flows/decision.md)
 #   - chain-scout              (private overlay; on-chain analysis)
-#   - sommet:abyss-dry-run-*   (private overlay; product-specific)
 #   - harness-slim             (private overlay; flows/decision.md)
 #
 # Substrate dependencies (assumed by the harness, not by individual skills):

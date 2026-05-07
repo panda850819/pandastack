@@ -216,7 +216,7 @@ Append to `Inbox/ship-log/YYYY-MM-DD.md`:
 ```markdown
 ## /work-ship <topic> @ HH:MM
 
-- Domain: yei | sommet | abyss
+- Domain: yei | other
 - Close (vault-side):
   - Decision log: <work-vault path>
   - Ship proposal: <Inbox path> (manual push pending)

@@ -89,11 +89,11 @@ Cap at 150 lines per README (most signal is in the first 100). For 5-10 repos in
 
 For each candidate from Phase 2:
 
-1. **Vault dedup check** (one gbq call per candidate):
+1. **Vault dedup check** (one ripgrep per candidate):
    ```bash
-   gbq "<candidate's distinctive feature one-liner>" --limit 3
+   rg -l -i "<candidate's distinctive feature keywords>" knowledge/ Inbox/ | head -5
    ```
-   If vault has a note covering same pattern → tag `[ALREADY_KNOW]`, link the note, drop from further consideration.
+   If vault has a note covering the same pattern → tag `[ALREADY_KNOW]`, link the note, drop from further consideration.
 
 2. **Layer-aware mapping** (mandatory — feedback-log 2026-05-01 rule):
    List your own architecture layers BEFORE mapping. The point is to force candidates into your layer split rather than dump them at the closest bucket. Typical multi-CLI harness layers look like:
@@ -196,7 +196,6 @@ Save to `docs/sessions/YYYY-MM-DD-<topic>-survey.md`. If patches affect external
 
 ## Relationship to other skills
 
-- **`pandastack:deep-research`** — single-concept deep-dive. This skill is multi-repo breadth, not depth.
 - **`pandastack:knowledge`** — internal vault content. This skill is external ecosystem.
 - **`pandastack:office-hours`** — runs AFTER this skill if a patch raises scope questions worth a structured brief.
 - **`pandastack:review`** — runs AFTER Phase 6 if patches touch reviewable surface.

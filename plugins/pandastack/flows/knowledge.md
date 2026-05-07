@@ -32,7 +32,7 @@ type: lifecycle-flow
 ### Phase 3 — Distill
 
 - **What happens**: Daily cron (`daily-distill` agent) pulls candidates from `Inbox/` and recent daily notes, strips noise, extracts the durable core, and writes or appends to `knowledge/` root. Manual trigger is allowed but cron handles the default. New notes go to `knowledge/` root — no pre-classification into subdirectories.
-- **Skills used**: `pandastack:deep-research` (for complex research-origin notes that need synthesis before landing); otherwise cron handles directly
+- **Skills used**: cron handles directly; for research-origin notes that need synthesis, follow the research flow first and then ship its output through this phase
 - **Output**: New or updated note in `knowledge/` root with minimum frontmatter (`date`, `type`, `source`, `tags`). No `verified` field yet.
 
 ### Phase 4 — Human verify

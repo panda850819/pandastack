@@ -27,8 +27,8 @@ Automated runner is a follow-up — manual eval acceptable for v1.1 cut.
 ```
 T01  /sprint fix hermes cron                    pdctx: personal:developer  → sprint
 T02  /sprint --quick rename one var             pdctx: personal:developer  → sprint (quick mode)
-T03  /office-hours abyss dry run kill or pivot  pdctx: -                   → office-hours
-T04  /boardroom plans/abyss-q2.md               pdctx: -                   → boardroom
+T03  /office-hours product kill or pivot        pdctx: -                   → office-hours
+T04  /boardroom plans/q2-roadmap.md             pdctx: -                   → boardroom
 T05  /dojo "fix hermes weekly retro cron"       pdctx: personal:developer  → dojo
 T06  /prep "ship the rename batch"              pdctx: personal:developer  → dojo (alias /prep)
 T07  /grill 想做一個 points system              pdctx: -                   → grill (default mode)
@@ -43,7 +43,7 @@ T12  /retro week                                pdctx: -                   → r
 
 ```
 T13  /morning-briefing                          pdctx: personal:writer     → brief-morning (alias)
-T14  /weekly-retro-prep                         pdctx: personal:writer     → retro-prep-week (alias)
+T14  /weekly-retro-prep                         pdctx: personal:writer     → FAIL (retro-prep-week was cut in v2.0.0; expect "skill not found")
 T15  /feed-curator                              pdctx: personal:knowledge-manager  → curate-feeds (alias)
 T16  /content-write                             pdctx: personal:writer     → write (alias)
 T17  /tool-browser open https://example.com     pdctx: -                   → agent-browser (alias, v1.4.0)
@@ -73,9 +73,9 @@ T27  "morning briefing into today's note"       pdctx: personal:writer     → b
 ### Capability-probe degradation (3 cases)
 
 ```
-T28  /sprint <topic>     env: gbq broken (pglite locked)
-                                                                          → sprint runs, capability-probe outputs `gbq: broken`,
-                                                                            stage 1 dojo falls back to rg, stage proceeds
+T28  /sprint <topic>     env: ripgrep missing
+                                                                          → sprint runs, capability-probe surfaces missing rg,
+                                                                            stage 1 dojo falls back to find, stage proceeds
 T29  /office-hours <topic>  env: ~/.agents/AGENTS.md missing
                                                                           → office-hours ABORTS with capability-probe error,
                                                                             does NOT silently degrade
@@ -104,7 +104,7 @@ T30  /boardroom <plan>      env: skills/eng-lead/ deleted
 
 For each fail:
 
-1. Run `gbq smoke` to confirm substrate is healthy at test time.
+1. Run `bash scripts/bootstrap.sh` to confirm substrate is healthy at test time.
 2. Read the skill's frontmatter `description:` — does it contain triggering keywords from the prompt?
 3. If description gap: patch description, re-run that case only.
 4. If actual skill is wrong: this is a real regression; examine the resolver's matching logic.

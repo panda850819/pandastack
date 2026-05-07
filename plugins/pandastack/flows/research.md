@@ -6,7 +6,7 @@ type: lifecycle-flow
 
 # Research Flow
 
-> Triggered when facing an unfamiliar concept, entering a new domain, or needing prior art before a major decision. The flow is distinct from the knowledge flow: knowledge flow handles material that already exists as raw capture; research flow starts with a question and goes out to find the answer. It enforces brain-first lookup (vault before web), scope-lock before fetch (to prevent rabbit holes), and quality gates on the deep-research pass. The flow ends only when a verified note exists in `knowledge/` and is connected to the existing graph — raw material that stays in `Inbox/` is not a completed research cycle.
+> Triggered when facing an unfamiliar concept, entering a new domain, or needing prior art before a major decision. The flow is distinct from the knowledge flow: knowledge flow handles material that already exists as raw capture; research flow starts with a question and goes out to find the answer. It enforces brain-first lookup (vault before web), scope-lock before fetch (to prevent rabbit holes), and quality gates on synthesis. The flow ends only when a verified note exists in `knowledge/` and is connected to the existing graph — raw material that stays in `Inbox/` is not a completed research cycle.
 
 ## Trigger
 
@@ -35,10 +35,10 @@ type: lifecycle-flow
 - **Skills used**: `pandastack:curate-feeds` (for finding relevant feed sources and queued items); `defuddle parse <url> --md` for clean markdown from web pages (per `~/.claude/rules/url-routing.md`); `pandastack:summarize` (for YouTube, podcasts, long-form audio); `pandastack:bird` (for X/Twitter threads relevant to the question); `pandastack:deepwiki` (for GitHub repo documentation)
 - **Output**: Raw materials accumulated in `Inbox/research/<slug>/` or a staging scratch note, with source URLs recorded
 
-### Phase 4 — Deep research
+### Phase 4 — Synthesis
 
-- **What happens**: Run the two-layer autonomous research system: planner produces a research plan, researcher executes against quality gates. For overnight runs, set explicit auto-pause criteria to prevent runaway token spend. Quality gates: minimum 3 primary sources, at least one contrarian perspective, no single-source claims on core assertions.
-- **Skills used**: `pandastack:deep-research` (planner + researcher layers)
+- **What happens**: Manually synthesize the raw materials into one document. Apply quality gates: minimum 3 primary sources, at least one contrarian perspective, no single-source claims on core assertions. For longer studies, dispatch an Explore subagent over `Inbox/research/<slug>/` to produce a draft synthesis the user reviews.
+- **Skills used**: Direct read + write; optional Explore subagent for breadth
 - **Output**: Synthesized research document in `Inbox/research/<slug>/synthesis.md` — not yet in `knowledge/`, still raw
 
 ### Phase 5 — Distill
@@ -64,7 +64,7 @@ type: lifecycle-flow
 
 - **Skip vault-first lookup and go straight to web**: brain-first-lookup is the most frequently violated rule. The vault almost always has partial coverage. Skipping it produces duplicate notes and misses the compound effect of connected knowledge.
 - **Skip scope lock and start fetching**: open-ended research without a locked question scope is how a 30-minute task becomes an overnight session. Grill produces the question; then fetch.
-- **Run deep-research overnight without quality gates or auto-pause**: without gates, the researcher agent will keep fetching until token limit. Set explicit auto-pause thresholds before any overnight run.
+- **Synthesize without quality gates**: without gates (3+ primary sources, one contrarian perspective, no single-source claims), the synthesis becomes a single-source rephrase. Apply the gates explicitly before writing the synthesis.
 - **Leave synthesis in `Inbox/research/` without distilling to `knowledge/`**: raw material that never gets distilled is pure waste. The research cycle is not complete until `knowledge/` has a verified note.
 - **Write knowledge note without wiki-links**: an isolated node in the graph cannot be retrieved by relation traversal. Every new note should connect to at least one existing note.
 
@@ -85,7 +85,7 @@ pandastack:curate-feeds
   (fetch from appropriate sources in parallel)
   |
   v
-pandastack:deep-research  (planner + researcher, quality gates)
+[synthesis]  (manual write or Explore subagent; quality gates: ≥3 primary sources, contrarian view)
   |
   v
 [distill → knowledge/ root]

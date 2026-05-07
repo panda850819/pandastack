@@ -64,7 +64,7 @@ Skip if session was purely mechanical.]
 2. **Dev tasks** → suggest `gh issue create` — only create if user confirms
 3. **Everything else** → drop it. If it's not P0/P1, it won't get done. Don't write it down.
 
-If you maintain a separate vault search index (gbrain or other), this is the natural point to refresh it for today's session and daily note. That refresh is your concern, not this skill's — `done` writes vault files and stops there.
+If you maintain a separate vault search index, this is the natural point to refresh it for today's session and daily note. That refresh is your concern, not this skill's — `done` writes vault files and stops there.
 
 ### Sync to daily note
 
@@ -331,8 +331,7 @@ Per `~/.agents/AGENTS.md` Routing Principles, vault writes are auto-resolve scop
 |-----------|--------|
 | No git repo | Use conversation topic as slug, skip Step 4 |
 | MEMORY.md > 190 lines | Slim down first |
-| Targeted `gbrain import --no-embed` fails | Run `gbrain doctor --fast --json`, follow remediation; surface as P1 in daily note if recovery fails |
-| gbrain / gbq unavailable for other reason | Skip 3b/3c silently, still run 3a/3d, surface as P1 follow-up |
+| `rg` / vault scan fails | Skip 3b/3c silently, still run 3a/3d, surface as P1 follow-up |
 | feedback-log.md missing | Skip 3d silently |
 | Session < 5 substantive turns | Skip Step 3 entirely (still run Step 4 if diff exists) |
 | Working tree clean | Skip Step 4 silently |
