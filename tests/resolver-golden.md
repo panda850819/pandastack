@@ -1,12 +1,13 @@
 ---
 date: 2026-05-04
+last_updated: 2026-05-07
 type: test
 tags: [resolver, regression, b-test]
 ---
 
-# Resolver Golden Test — pandastack v1.1
+# Resolver Golden Test — pandastack v1.4.x
 
-> 30 prompts × expected skill mapping. Run before merging B5 / B6 changes. Catches regressions when prompts → skill matching changes due to renames, new skills, or description tweaks.
+> 30 prompts × expected skill mapping. Run before merging changes. Catches regressions when prompts → skill matching changes due to renames, new skills, or description tweaks. Updated 2026-05-07 for v1.4.0 tool-* prefix drop and v1.4.1 pdf removal.
 
 ## How to run
 
@@ -38,16 +39,22 @@ T11  /ship                                      pdctx: personal:developer  → s
 T12  /retro week                                pdctx: -                   → retro-week
 ```
 
-### Old-name aliases — 90-day grace (7 cases)
+### Old-name aliases — 90-day grace (13 cases)
 
 ```
 T13  /morning-briefing                          pdctx: personal:writer     → brief-morning (alias)
 T14  /weekly-retro-prep                         pdctx: personal:writer     → retro-prep-week (alias)
 T15  /feed-curator                              pdctx: personal:knowledge-manager  → curate-feeds (alias)
 T16  /content-write                             pdctx: personal:writer     → write (alias)
-T17  /agent-browser open https://example.com    pdctx: -                   → tool-browser (alias)
+T17  /tool-browser open https://example.com     pdctx: -                   → agent-browser (alias, v1.4.0)
 T18  /slowmist-agent-security check this repo   pdctx: -                   → gatekeeper (alias)
 T19  /harness-survey scan public ecosystem      pdctx: -                   → scout (alias)
+T19a /tool-bird read tweet                      pdctx: -                   → bird (alias, v1.4.0)
+T19b /tool-slack search                         pdctx: -                   → slack (alias, v1.4.0)
+T19c /tool-notion get page                      pdctx: -                   → notion (alias, v1.4.0)
+T19d /tool-deepwiki repo                        pdctx: -                   → deepwiki (alias, v1.4.0)
+T19e /tool-summarize https://...                pdctx: -                   → summarize (alias, v1.4.0)
+T19f /agent-browser ...                         pdctx: -                   → agent-browser (no alias; canonical name kept)
 ```
 
 ### Natural language triggers (8 cases)
@@ -108,5 +115,6 @@ Log all fails to `Inbox/cron-reports/2026-05-04-resolver-test-results.md` with v
 ## Origin
 
 - codex Blind Spot 2 (2026-05-04 review) — pandastack has no resolver regression test, all dogfood is manual
-- v1.1 cut introduces 7 renames + 4 new flow skills + Layer 1/2/3 split — high regression surface
-- 30 cases is enough to catch obvious breaks; not exhaustive (a v1.2 follow-up may automate to 100+)
+- v1.1 cut introduced 7 renames + 4 new flow skills + Layer 1/2/3 split
+- 2026-05-07 update: v1.4.0 dropped the `tool-` prefix on 6 wrappers (added T17, T19a-T19e); v1.4.1 removed `pdf` skill (no test case needed — skill no longer resolves at all)
+- 30 cases is enough to catch obvious breaks; not exhaustive (automation pending)

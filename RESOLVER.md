@@ -72,7 +72,6 @@ Additional work-specific skills (alert triage, Slack scans) ship in the private 
 | `pandastack:bird` | bird CLI (X / Twitter) |
 | `pandastack:notion` | notion-cli |
 | `pandastack:slack` | slack-cli |
-| `pandastack:pdf` | PDF read / extract / OCR |
 | `pandastack:deepwiki` | DeepWiki repo docs |
 | `pandastack:agent-browser` | Browser automation (was: `agent-browser`) |
 

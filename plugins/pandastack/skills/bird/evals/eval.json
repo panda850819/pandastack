@@ -18,7 +18,7 @@
     "last_improvement": "2026-03-27"
   },
   "meta": {
-    "generated_from": "<skills-dir>/tool-bird/SKILL.md",
+    "generated_from": "<skills-dir>/bird/SKILL.md",
     "generated_at": "2026-03-27",
     "checklist_version": 1,
     "scoring": "binary: PASS(1.0) / FAIL(0.0)",

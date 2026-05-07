@@ -19,8 +19,6 @@ reads:
 writes:
   - vault: Inbox/boardroom-*.md
   - cli: stdout
-forbids:
-  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: lifecycle-flow
 capability_required:

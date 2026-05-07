@@ -32,7 +32,6 @@ writes:
 forbids:
   - cli: gh repo create
   - cli: git push
-  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: hybrid
 ---

@@ -11,8 +11,6 @@ writes:
   - vault: Inbox/retro-prep-*.md
   - file: /tmp/retro-prep-smoke.md
   - cli: stdout
-forbids:
-  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: personal
 classification: hybrid
 allowed-tools: Bash, Read, Write, Edit, Grep

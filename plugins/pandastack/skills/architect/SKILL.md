@@ -7,8 +7,6 @@ reads:
   - repo: lib/escape-hatch.md
   - repo: lib/bad-good-calibration.md
   - repo: lib/learning-format.md
-forbids:
-  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: persona-skill
 ---

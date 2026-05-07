@@ -11,8 +11,6 @@ writes:
   - vault: Blog/_daily/*.md
   - file: /tmp/morning-briefing-smoke.md
   - cli: stdout
-forbids:
-  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: personal
 classification: hybrid
 allowed-tools: Bash, Read, Write, Edit, Grep

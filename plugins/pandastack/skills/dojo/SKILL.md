@@ -16,8 +16,6 @@ reads:
 writes:
   - vault: Inbox/prep-*.md
   - cli: stdout
-forbids:
-  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: personal
 classification: lifecycle-flow
 capability_required:

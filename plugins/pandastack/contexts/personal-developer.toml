@@ -14,23 +14,20 @@ side = ["retro"]
 
 [skills]
 public = [
-  "pandastack:grill",           # --mode structured for requirement lock
+  "pandastack:grill",           # adversarial requirement discovery
   "pandastack:careful",         # production / shared infra gate
   "pandastack:qa",              # browser-based UI verification
   "pandastack:review",          # 3-pass + Codex cross-check
   "pandastack:ship",            # commit + push + PR
   "pandastack:checkpoint",      # save/resume working state
   "pandastack:freeze",          # lock editing scope before ship
-  "pandastack:deep-research",   # prior art / library research
-  "pandastack:deepwiki",   # GitHub repo docs
-  "pandastack:bird",       # X/Twitter read for ecosystem signal
-  "pandastack:notion",     # Notion read (project context)
-  "pandastack:summarize",  # summarize docs / changelogs
+  "pandastack:deepwiki",        # GitHub repo docs
+  "pandastack:summarize",       # summarize docs / changelogs
   "pandastack:retro-week",
   "pandastack:retro-month",
   "pandastack:done",
 ]
-private = []
+private = []  # tier=personal skills (deep-research / bird / notion) load via private overlay only
 
 [memory]
 namespace    = "personal/developer"

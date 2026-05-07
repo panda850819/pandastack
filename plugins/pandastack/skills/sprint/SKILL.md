@@ -25,8 +25,6 @@ writes:
   - vault: docs/sessions/*.md
   - cli: stdout
   - git: commits via /ship
-forbids:
-  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: lifecycle-flow
 capability_required:

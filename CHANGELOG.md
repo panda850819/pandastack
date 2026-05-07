@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.4.2 — 2026-05-07
+
+> Third-pass audit on v1.4.x. Fixes leftover staleness from the rename + tier work: false L5 enforcement claim in README, env-var `forbids:` on 17 SKILL.md (the L5 hook does not expand env vars, so the line was dead weight), tier=personal skills still listed in three public context recipes, broken doc link, stale `/tool-bird` references in `write-ship`, and eval.json `generated_from` pointing at deleted paths.
+
+### Removed
+
+- `README.md`: L5 firewall section. The previous version walked through frontmatter contract + status. The frontmatter is real; the README claim was confusing because L5 enforcement is a private overlay (`pdctx-l5-allowlist` hook), not a public feature. Replaced with a short Telemetry opt-out section.
+- `forbids: ${PANDASTACK_WORK_VAULT}/**` removed from 17 SKILL.md files. The L5 hook (when it loads via private overlay) reads literal paths with `vault:` / `file:` prefixes per `docs/firewall-l5.md`; env-var-style placeholders never matched. Removing dead config.
+- Tier=personal skills pulled from public context lists:
+  - `personal-developer.toml`: removed `pandastack:deep-research`, `pandastack:bird`, `pandastack:notion` (already moved to private overlay).
+  - `personal-knowledge-manager.toml`: removed `pandastack:deep-research`, `pandastack:curate-feeds`, `pandastack:bird`.
+  - `personal-writer.toml`: removed `pandastack:bird`, `pandastack:brief-morning`, `pandastack:evening-distill`, `pandastack:retro-prep-week`.
+- `RESOLVER.md`: removed `pandastack:pdf` row from "Tool wrappers" table (skill was deleted in v1.4.1; row was missed).
+
+### Changed
+
+- `docs/skills.md`: the README link previously pointed at `README.md` skill list. Now points at `plugins/pandastack/manifest.toml` which is the SSOT.
+- `README.md` line 234: skill count "39 skills grouped by lifecycle" → "48 skills grouped by lifecycle (35 core / 5 ext / 8 personal — see plugins/pandastack/manifest.toml)".
+- `plugins/pandastack/skills/write-ship/SKILL.md` lines 146, 213: `/tool-bird` → `/bird`.
+- `plugins/pandastack/skills/bird/evals/eval.json`, `plugins/pandastack/skills/notion/evals/eval.json`: `generated_from` updated to current paths (`<skills-dir>/bird/SKILL.md`, `<skills-dir>/notion/SKILL.md`).
+- `personal-developer.toml` notes: stale comment about `grill --mode structured` (deprecated in v1.2) replaced with current behavior description.
+- `tests/resolver-golden.md`: header bumped to `v1.4.x`; added test cases T17, T19a–T19f for new aliases (`/tool-browser` → agent-browser, `/tool-bird` → bird, etc.); pdf removal noted in Origin section.
+
+### Why this batch
+
+User's third audit caught issues that survived v1.4.0 + v1.4.1 because each prior cut focused on a different surface. This pass walks the whole tree once and verifies every claim against actual file state. Specifically: (a) `forbids:` env-var lines that never enforced anything; (b) public context recipes still loading personal-tier skills (would 404 on fresh install); (c) eval.json paths pointing at directories that were renamed or deleted; (d) docs link rot. Bumping minor patch instead of folding into v1.4.1 because the L5 README change is user-visible and worth its own entry.
+
 ## v1.4.1 — 2026-05-07
 
 > Removed `pdf` skill. Python pipeline (pypdf / pdfplumber / reportlab / pytesseract / pdf2image + poppler + tesseract) was a heavy dependency stack for a wrapper that mostly duplicated `pdftotext` + standard library workflows. Skill count 49 → 48.

@@ -19,8 +19,6 @@ writes:
   - vault: Inbox/team-orchestrate-*.md
   - cli: stdout
   - git: worktrees + commits per branch
-forbids:
-  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: lifecycle-flow
 capability_required:

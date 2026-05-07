@@ -231,7 +231,7 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 
 ## Skills
 
-39 skills grouped by lifecycle. Persona names follow the gstack convention — each skill is "your specialist" for that step.
+48 skills grouped by lifecycle (35 core / 5 ext / 8 personal — see `plugins/pandastack/manifest.toml`). Persona names follow the gstack convention — each skill is "your specialist" for that step.
 
 ### Think / intake
 
@@ -312,7 +312,7 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 | `/done` | Session Closer | Save context, summarize work, persist memory at session end. |
 | `/checkpoint` | The Bookmarker | Save / resume working state snapshots. |
 
-Tool wrappers (`bird`, `slack`, `notion`, `summarize`, `agent-browser`, `deepwiki`) and thinking lenses (`think-like-naval`, `think-like-karpathy`, `think-like-alan-chan`) round out the lineup — see [`docs/skills.md`](docs/skills.md) for the full list.
+Tool wrappers (`bird`, `slack`, `notion`, `summarize`, `agent-browser`, `deepwiki`) and thinking lenses (`think-like-naval`, `think-like-karpathy`, `think-like-alan-chan`) round out the lineup — see [`plugins/pandastack/manifest.toml`](plugins/pandastack/manifest.toml) for the full tier-tagged list.
 
 ## Personas
 
@@ -340,36 +340,23 @@ Tool wrappers (`bird`, `slack`, `notion`, `summarize`, `agent-browser`, `deepwik
 | `retro` | daily / weekly / monthly cadence with auto-scan |
 | `decision` | cron-driven decision triage |
 
-## Telemetry opt-out
+## Telemetry opt-out (pdctx, optional)
 
-pandastack appends one JSON event per action to a daily JSONL timeline:
+If you have the `pdctx` private overlay installed, it appends one JSON event per action to a daily JSONL timeline:
 
 ```
 ~/.pdctx/audit/timeline-YYYY-MM-DD.jsonl
 ```
 
-Events: `session_start`, `skill_invoke`, `tool_use`, `firewall_decision`, `session_end`. No prompt content, tool arguments, or file contents are logged.
+Events: `session_start`, `skill_invoke`, `tool_use`, `session_end`. No prompt content, tool arguments, or file contents are logged.
 
 ```bash
 export PDCTX_TIMELINE_DISABLED=1   # disable the timeline entirely
-export PDCTX_L5_DISABLED=1         # disable L5 firewall only (timeline stays on)
 ```
 
-See [`docs/telemetry.md`](docs/telemetry.md) for the schema and sample analysis queries.
+See [`plugins/pandastack/docs/telemetry.md`](plugins/pandastack/docs/telemetry.md) for the schema and sample analysis queries.
 
-## Layer model (firewall, partial)
-
-Layers L1–L4 are implemented. L5 is documented in skill frontmatter (`reads` / `writes` / `forbids` / `classification`) but the enforcement hook is not currently shipped — frontmatter today is a contract for human review, not a runtime gate.
-
-| Layer | Mechanism | Status |
-|---|---|---|
-| L1 | Prompt-level persona / voice / banned phrases | shipped |
-| L2 | Filesystem chmod on memory namespace per context | shipped |
-| L3 | MCP deny list enforced at PreToolUse | shipped (via host hook) |
-| L4 | Context recipe loaded via `pdctx use` | shipped (private overlay) |
-| L5 | Per-skill allowlist on tool args and file paths | **frontmatter only, no runtime enforcement** |
-
-If you set `${PANDASTACK_WORK_VAULT}` and rely on L5 `forbids` to keep public skills out of work-vault, today that is documentation, not enforcement. Treat skill frontmatter as audit metadata until the L5 hook ships.
+Without pdctx, no telemetry runs at all — pandastack public surface emits no events.
 
 ## Hermes jobs (current)
 
@@ -444,7 +431,7 @@ Recommended release loop:
 pdctx skill-validate
 ```
 
-Frontmatter fields `reads`, `writes`, `forbids`, `domain`, and `classification` are optional but recommended for L5 coverage. See [SKILL-FRONTMATTER.md](SKILL-FRONTMATTER.md) for the schema.
+Frontmatter fields `reads`, `writes`, `domain`, and `classification` are optional. They were originally specified for an L5 firewall hook (consumed by the `pdctx` private overlay); the public pandastack surface treats them as audit metadata. See [SKILL-FRONTMATTER.md](SKILL-FRONTMATTER.md) for the schema.
 
 ### How to open a PR
 

@@ -19,8 +19,6 @@ writes:
   - vault: Inbox/office-hours-*.md
   - vault: docs/briefs/*.md
   - cli: stdout
-forbids:
-  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: lifecycle-flow
 capability_required:

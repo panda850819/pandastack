@@ -15,8 +15,6 @@ reads:
 writes:
   - vault: Inbox/grill-*.md
   - cli: stdout
-forbids:
-  - file: ${PANDASTACK_WORK_VAULT}/**
 domain: shared
 classification: tool
 ---

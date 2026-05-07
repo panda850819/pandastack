@@ -143,7 +143,7 @@ If `distribution` includes `twitter`, generate `Inbox/x-drafts/<slug>.md` with:
 - 7-12 tweet thread, each <280 chars
 - Hook tweet first
 - Tail tweet links back to blog post
-- DO NOT post — this is a draft for `/tool-bird` to handle later
+- DO NOT post — this is a draft for `/bird` to handle later
 
 ---
 
@@ -210,7 +210,7 @@ Two weeks of `/write-ship` gives you:
 1. **Findability**: `gbq "<topic>"` finds your published posts ranked by your own usage signals
 2. **Knowledge graph density**: `cited_in:` reverse links mean every published article enriches the notes it stood on. Wiki-lint stops flagging cited notes as "orphan".
 3. **Voice self-correction**: voice / slop patterns auto-feed back into content-write next session
-4. **Pipeline visibility**: `Inbox/x-drafts/` accumulates Twitter threads waiting for `/tool-bird`; byproduct stubs accumulate in `Inbox/` for daily-distill
+4. **Pipeline visibility**: `Inbox/x-drafts/` accumulates Twitter threads waiting for `/bird`; byproduct stubs accumulate in `Inbox/` for daily-distill
 5. **Synthesizer index**: `_index.md` "Synthesizer posts" becomes a curated "best-of" list per domain — useful for newsletter / portfolio / handoff
 
 Ship is not the publish moment. Ship is the moment knowledge graph + voice rules + idea backlog all update at once.
