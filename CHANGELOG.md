@@ -16,7 +16,7 @@ These three were called out in the v2.1.0 audit as "still coupled but small enou
 
 ### Not changed
 
-Obsidian-specific vault paths (`Blog/_daily/`, `Inbox/ship-log/`, `Inbox/feeds/`, `docs/learnings/`, `knowledge/`) remain hardcoded across 20 skills. That's the v2 multi-vault provider abstraction work in ROADMAP and is not in scope for a patch release.
+Skill prompts still reference Panda's vault conventions (`Blog/_daily/`, `Inbox/ship-log/`, `Inbox/feeds/`, `docs/learnings/`, `knowledge/`). These are convention defaults written into prompt text, not code-level coupling — an LLM agent can adapt to a different vault layout per session, or the user can edit skill text. The only real code-level path is `curate-feeds.ts`'s `RAW_ROOT`, which already accepts any vault with `.obsidian/` or `Inbox/`. The v2 multi-vault provider abstraction was removed from ROADMAP on the same day this patch shipped — it was over-engineered for prompt-based skills.
 
 ## v2.1.0 — 2026-05-07
 

@@ -17,8 +17,7 @@ What v1 is:
 What v1 is **not**:
 
 - Public-ready for fresh users. As of 2026-05-06, the count of fresh A-class users (Obsidian + Coding Agent power users) who have run `/plugin install` end-to-end without author intervention is 0. The v1 README "Quick start" section ships in dev-mode framing for this reason.
-- Onboarding-scaffold-bundled. v1 assumes the user brings their own Obsidian vault and pdctx config. capability-probe will surface gaps; v1 does not paper over them.
-- Vault-provider-agnostic. v1 hard-codes Obsidian as the vault layer. Logseq / Roam / Notion users are out of scope until v2.
+- Onboarding-scaffold-bundled. v1 assumes the user brings their own vault and pdctx config. capability-probe will surface gaps; v1 does not paper over them.
 
 Maintenance window through v2: skill content can iterate (new skills, refactors, lib extractions) under v1.x minor versions as long as Tier 1 substrate primitives (persona / context / skill-as-markdown) stay stable. Breaking changes to the three primitives go behind a v2.0 cut, not v1.x.
 
@@ -29,7 +28,6 @@ Goal: a fresh A-class user can `/plugin install pandastack@pandastack` and reach
 Scope:
 
 - **Onboarding scaffold** `[partial — shipped in v1.3.0 / v1.4.0; env-var requirement removed in v2.0.1; brain-index assumption removed in v2.1.0]`. Bootstrap script (`scripts/bootstrap.sh`) + manifest-driven tier model (`plugins/pandastack/manifest.toml`) replaced the previous 4-section README install dance. Skills derive vault path from cwd and Google account from `gog` defaults — no env vars to set, no brain index to bootstrap. Remaining for v2.x: vault scaffolding (auto-create `Inbox/`, `Blog/_daily/`, `docs/learnings/atoms/` if absent), pdctx context picker, first-session walkthrough.
-- **Multi-vault provider abstraction**. v1 hard-codes Obsidian + plain markdown. v2 introduces a vault-provider interface so Logseq / Roam / Notion users can plug their own backend. Reference implementation: Obsidian (existing) + at least one alternative.
 - **Fresh A-user dogfood criteria**. v2 cut requires real-user validation, not author-only. Concrete bar: 3 fresh A-class users complete install + 1 week of daily use without author hand-holding. Below that, v2 stays in pre-release. v1.3.0+ structural fix opens the verification window — before this, the install bar was too high to ask anyone to try.
 - **Public capability-probe defaults** `[partial — shipped in v1.3.0]`. Manifest tier metadata + bootstrap.sh probe table now route fresh users through "what runs now / what to install / what is private overlay" rather than a "you're on your own" dump. Remaining for v2: capability-probe itself (the in-skill `lib/capability-probe.md` invocation) needs to consume manifest data and emit the same actionable framing rather than the current generic gap dump.
 - **L5 firewall hook**. README v1.4.0 was honest about L5 currently being frontmatter-only metadata with no runtime enforcement. v2 should ship the actual PreToolUse hook that reads `reads` / `writes` / `forbids` / `classification` from each SKILL.md and enforces them — or formally retire L5 as a design choice and update the architecture doc accordingly.
@@ -39,6 +37,7 @@ Out of v2 scope (deferred or rejected):
 - B-class TA (no vault, want to start from zero). Bundling a vault-less mode adds a second product surface; not worth the complexity in v2.
 - D-class TA (no vault, just want multi-CLI persona switching). pdctx already does this standalone; pandastack does not need to compete with itself.
 - Hosted SaaS variant. Cofounder.co occupies that surface; pandastack stays self-hosted personal-OS by design.
+- Vault-provider abstraction (Logseq / Roam / Notion adapter layer). Removed from v2 scope on 2026-05-07 after re-audit. pandastack skills are LLM prompts, not compiled code — path conventions in skill text are defaults the agent can override per-session. The only real code-level path coupling is `curate-feeds.ts`'s `RAW_ROOT`, which already accepts any vault with `.obsidian/` or `Inbox/`. Building a vault-provider interface for prompt-based skills was over-engineered: a non-Obsidian user adapts conventions in conversation or by editing skill text, not by swapping a backend. If Logseq / Roam / Notion users show up, the right move is to document convention overrides, not to ship an interface.
 
 ## Open questions (v2 timeline)
 

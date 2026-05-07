@@ -14,7 +14,7 @@ What this means for you:
 
 - If you are the author or a fork-and-learn power user, v1 is stable for daily use.
 - If you are a fresh A-class user (Obsidian + Coding Agent power user willing to bring your own vault and CLIs), `bash scripts/bootstrap.sh` reports what runs now and what install steps remain. Core (27 skills) should run on a clean clone.
-- If you do not have an Obsidian vault, or you use Logseq / Roam / Notion, v1 is not for you. Multi-vault provider abstraction is v2 roadmap.
+- If you use Logseq / Roam / Notion instead of Obsidian, skills will reference Panda's vault conventions (`Blog/_daily/`, `Inbox/ship-log/`, etc.) — these are prompt defaults, not hard-coded interfaces. You'd adapt them per session or by editing skill text. There's no built-in adapter layer; whether that matters depends on your tolerance for hand-tuning conventions.
 
 **Who this is for:**
 - **Multi-CLI users** who want the same skills across Claude Code, Codex CLI, and Hermes
