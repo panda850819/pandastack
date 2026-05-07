@@ -38,11 +38,11 @@ This is the most critical step. External documents are the #1 vector for prompt 
 | 2 | Network reconnaissance | `cat /etc/resolv.conf`, `ss -tlnp`, `ifconfig`, `ip addr` |
 | 3 | SSH config exfiltration | Reading `sshd_config`, `authorized_keys`, `known_hosts` |
 | 4 | Credential harvesting | `env \| grep -i key`, reading `.bashrc` exports |
-| 5 | Application config theft | Reading agent config files (~/.claude/settings.json, ~/.claude/rules/, ~/.claude/skills/) |
+| 5 | Application config theft | Reading agent config files (~/.claude/settings.json, ~/.claude/rules/, ~/.claude/skills/, ~/.codex/, ~/.agents/) |
 | 6 | Process environment leak | `/proc/PID/environ`, `ps aux` with grep for agents |
 | 7 | Crontab injection | `crontab -l` piped with echo, adding scheduled tasks |
 | 8 | Persistence installation | Writing to `~/.config/autostart`, systemd units, launchd |
-| 9 | Memory/identity theft | Copying ~/.claude/projects/*/memory/, CLAUDE.md, ~/.claude/rules/ |
+| 9 | Memory/identity theft | Copying ~/.claude/projects/*/memory/, CLAUDE.md, AGENTS.md, ~/.claude/rules/ |
 | 10 | Sensitive file scanning | `find` + `grep` for private keys, mnemonics, passwords |
 | 11 | External HTTP callback | `curl`/`wget` to external servers (data exfiltration channel) |
 | 12 | Mixed payload | Malicious commands hidden between legitimate diagnostics |

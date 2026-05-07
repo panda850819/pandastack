@@ -110,7 +110,7 @@ v1.x had `think-like-karpathy` for agent architecture framing; cut in v2.0.0 bec
 
 ## Private supplement
 
-Some lifecycles (work alert triage, on-chain trading research, Sommet network ops) ship as a private overlay outside this index. If you have access to the private stack, its `RESOLVER.md` lists those skills with the same table format. The public index above stays self-contained: anything you can read here, you can install from this repo alone.
+Some lifecycles (work alert triage, on-chain trading research) ship as a private overlay outside this index. If you have access to the private stack, its `RESOLVER.md` lists those skills with the same table format. The public index above stays self-contained: anything you can read here, you can install from this repo alone.
 
 ---
 

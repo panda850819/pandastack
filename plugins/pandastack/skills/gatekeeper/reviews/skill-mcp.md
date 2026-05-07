@@ -45,7 +45,7 @@ For each executable file, check against [patterns/red-flags.md](../patterns/red-
 1. **Outbound data** — Does it send data anywhere? Where? Is the destination expected for its stated purpose?
 2. **Credential access** — Does it read environment variables, config files, or credential stores?
 3. **File system scope** — What directories does it read/write? Is it confined to its own scope?
-4. **Identity file access** — Does it touch `~/.claude/memory/`, `~/.claude/settings.json`, `~/.claude/rules/`, CLAUDE.md, or agent config files?
+4. **Identity file access** — Does it touch `~/.claude/memory/`, `~/.claude/settings.json`, `~/.claude/rules/`, `~/.codex/`, `~/.agents/`, CLAUDE.md, AGENTS.md, or agent config files?
 5. **Code injection** — Any eval(), exec(), Function(), or dynamic code execution?
 6. **Privilege escalation** — Any sudo, chmod, chown, or setuid operations?
 7. **Persistence** — Does it install crontabs, systemd units, startup scripts, or shell rc modifications?
