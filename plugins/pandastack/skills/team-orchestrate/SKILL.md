@@ -5,14 +5,13 @@ description: |
   in a single message, each in its own git worktree, gates each branch as it returns.
   Use after a plan is approved AND its branches are genuinely independent (no shared
   files, no inter-branch dependencies). Triggers on /team-orchestrate, "run these in
-  parallel", "fan out", "N branches independent". Skip for sequential work (use
-  execute-plan) or single-track iterative work (use sprint).
+  parallel", "fan out", "N branches independent". Skip for sequential work (run N
+  sequential sprints) or single-track iterative work (use sprint).
 reads:
   - repo: lib/capability-probe.md
   - repo: lib/persona-frame.md
   - repo: lib/skill-decision-tree.md
   - repo: lib/gate-contract.md
-  - repo: skills/execute-plan/SKILL.md
   - cli: gbq
   - vault: knowledge/**
 writes:
@@ -26,17 +25,15 @@ capability_required:
   - vault
   - lib/persona-frame.md
   - lib/skill-decision-tree.md
-  - skills/execute-plan
 ---
 
 # Team-Orchestrate
 
-Conductor-driven parallel execution. The third execution locus per `lib/skill-decision-tree.md`:
+Conductor-driven parallel execution. The second execution locus per `lib/skill-decision-tree.md`:
 
 | Skill | Locus | Time ordering |
 |---|---|---|
-| `/sprint` | Main session executes | Single track |
-| `/execute-plan` | One subagent per task | Sequential, gate between tasks |
+| `/sprint` | Main session executes | Single track (run N sequentially for multi-step) |
 | `/team-orchestrate` | N subagents at once | **Parallel**, gate per branch as it returns |
 
 Main session is the conductor. It dispatches, reviews returns, merges. It does NOT edit during dispatch — that defeats both parallelism and worktree isolation.
@@ -50,10 +47,10 @@ Main session is the conductor. It dispatches, reviews returns, merges. It does N
 
 ## When to skip
 
-- Branches share files OR depend on each other's output → use `/execute-plan` (sequential gates)
+- Branches share files OR depend on each other's output → run N sequential sprints
 - Single iterative task → use `/sprint`
 - Branches would each take <2 min → serial in main session is faster than dispatch overhead
-- Branch independence is unclear → default to `/execute-plan`, not this skill
+- Branch independence is unclear → default to N sequential sprints, not this skill
 
 ---
 
@@ -68,13 +65,13 @@ Read the plan / brief. Extract branches into a numbered list with:
 - **Risk**: low / medium / high
 - **Worktree branch name**: `team-{slug}-{n}` (used for `isolation: "worktree"`)
 
-**Independence audit** (mandatory): cross-check the file lists. If any two branches touch the same file, ABORT and route to `/execute-plan`. Independence is not optional — parallel writes to the same file under worktrees produce silent merge conflicts on conductor merge.
+**Independence audit** (mandatory): cross-check the file lists. If any two branches touch the same file, ABORT and route to N sequential sprints. Independence is not optional — parallel writes to the same file under worktrees produce silent merge conflicts on conductor merge.
 
 Announce: `Team-orchestrate intake — N branches, M-way parallel dispatch. Independence audit: PASS.`
 
 ### Phase 0.5: Persona routing per branch
 
-Read `lib/skill-decision-tree.md` § "Persona routing table". For each branch, classify task signal → pick persona skill. Same routing as `execute-plan` Phase 0.5. Print routing block:
+Read `lib/skill-decision-tree.md` § "Persona routing table". For each branch, classify task signal → pick persona skill. Print routing block:
 
 ```
 PERSONA ROUTING
@@ -102,7 +99,7 @@ Agent({
   subagent_type: "general-purpose",
   prompt: "{persona block + hard rules + branch 1 brief}",
   isolation: "worktree",
-  model: "{per heuristic — sonnet default, opus for architect, haiku for pure read}",
+  model: "{per heuristic — sonnet default, opus for ceo strategic depth, haiku for pure read}",
 })
 Agent({
   description: "Branch 2 — {title}",
@@ -205,23 +202,23 @@ Suggest next skill if applicable (typically `/review` for cross-branch coherence
 
 - ❌ Skipping the independence audit — parallel writes to the same file = silent corruption at merge
 - ❌ Conductor edits files during dispatch — defeats isolation, contaminates main branch state
-- ❌ Bundling sequential dependencies as parallel branches ("branch 2 uses branch 1's output") — that's `/execute-plan`
+- ❌ Bundling sequential dependencies as parallel branches ("branch 2 uses branch 1's output") — run N sequential sprints instead
 - ❌ Using team-orchestrate for parallelism feel when branches really run <2 min each — dispatch overhead > savings
 - ❌ Auto-merging on subagent return without verification — gate exists because subagent self-report drifts from actual worktree state
-- ❌ Defaulting to team-orchestrate when independence is unclear — default is `/execute-plan` (sequential gates catch what parallel hides)
-- ❌ Mixing personas within one branch — same rule as execute-plan, one branch = one persona
+- ❌ Defaulting to team-orchestrate when independence is unclear — default to N sequential sprints
+- ❌ Mixing personas within one branch — one branch = one persona
 
 ---
 
 ## Relationship to other skills
 
 - **`/office-hours`** Stage 5 routes here when brief shape = "N branches independent, wall-clock parallel meaningful"
-- **`/execute-plan`** is the safer cousin — when independence is uncertain, use that with sequential gates
+- **`/sprint`** (run N sequentially) is the safer cousin — when independence is uncertain, use that
 - **`pandastack:review`** runs after team-orchestrate on the merged state for cross-branch coherence
 - **`pandastack:ship`** runs after review for final commit / push / PR
 
 ## Origin
 
-- `lib/skill-decision-tree.md` Q3 (2026-05-05) — defined the third execution locus, marked "future / two-strike pending"
-- pandastack 2026-05-05 cut — built early because the decision tree's Q3 had no destination, leaving the architecture incomplete. User judgment: this is a structural hole, not an emergent pattern, so two-strike doesn't apply.
-- Mirror of `skills/execute-plan/SKILL.md` Phase 0-3 structure, swapped sequential dispatch for single-message multi-Agent parallel.
+- `lib/skill-decision-tree.md` Q2 (2026-05-05; previously Q3 in v1.x with execute-plan as Q2) — defined parallel execution locus, marked "future / two-strike pending"
+- pandastack 2026-05-05 cut — built early because the decision tree's parallel branch had no destination, leaving the architecture incomplete. User judgment: this is a structural hole, not an emergent pattern, so two-strike doesn't apply.
+- v2.0.0: execute-plan was cut; this skill is now the sole parallel-dispatch skill, with N-sequential-sprints covering the sequential case.

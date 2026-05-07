@@ -192,20 +192,19 @@ Out: {what's explicitly excluded}
 
 ## Next skill (recommended)
 
-Apply `lib/skill-decision-tree.md` 3-question test against the chosen approach:
+Apply `lib/skill-decision-tree.md` 2-question test against the chosen approach:
 
 ```
-Shape: {single-target-iterative / N-step-sequential / N-branch-parallel}
-Reasoning: {one line — which question of Q1/Q2/Q3 hit Yes and why}
+Shape: {single-target-iterative / N-sequential-sprints / N-branch-parallel}
+Reasoning: {one line — which question of Q1/Q2 hit Yes and why}
 
 Recommended skill:
-  → /sprint {topic-slug}                        # if Q1=Yes (single-target, iteration expected)
-  → /execute-plan (with this brief as input)    # if Q2=Yes (N-step sequential with verify gates)
-  → /team-orchestrate (with this brief as input) # if Q3=Yes (N-branch parallel, independence audit required)
+  → /sprint {topic-slug}                          # if Q1=Yes (single-target, iteration expected; for N-step, run N sprints)
+  → /team-orchestrate (with this brief as input)  # if Q2=Yes (N-branch parallel, independence audit required)
 
 Persona for next skill (per lib/skill-decision-tree.md routing table):
-  → {architect | eng-lead | design-lead | ops-lead | product-lead | ceo}
-  Reason: {dominant task signal — tech-stack / code / UI / process / scope / strategic}
+  → {eng-lead | design-lead | ops-lead | product-lead | ceo}
+  Reason: {dominant task signal — code / UI / process / scope / strategic}
 ```
 
 ## Gotchas surfaced

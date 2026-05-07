@@ -50,4 +50,4 @@ deny = [
 [notes]
 # grill --mode structured replaces brief (A4 consolidation); use /grill --mode structured to lock requirements before plan.
 # pandastack:review is the default review; security-review --mode agent handles security-focused passes separately.
-# tool-notion is an informational read only in this context; writes go through ship-proposal + /process-decisions.
+# notion is an informational read only in this context; writes go through ship-proposal + manual walk.

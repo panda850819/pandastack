@@ -23,7 +23,7 @@ Add to your Codex config (`~/.codex/config.toml`):
 multi_agent = true
 ```
 
-This enables `spawn_agent`, `wait`, and `close_agent` for skills like `pandastack:execute-plan`, `pandastack:deep-research`, and `pandastack:persona-pipeline`.
+This enables `spawn_agent`, `wait`, and `close_agent` for skills like `pandastack:team-orchestrate`, `pandastack:deep-research`, and `pandastack:boardroom`.
 
 ## Named subagent dispatch
 
@@ -72,9 +72,9 @@ Many pandastack skills (especially `tool-*`) invoke Panda's local CLI tools. The
 
 | Tool | Pandastack skills that depend on it | What it needs |
 |---|---|---|
-| `gbq` | knowledge-ship, brain-first lookups, vault search | gbrain index at `<personal-vault>` |
-| `bird` | tool-bird | X/Twitter cookie auth |
-| `notion-cli` | tool-notion, work-ship (notion proposals) | Notion API token in env |
+| `gbq` | ship knowledge, brain-first lookups, vault search, vault hygiene queries | gbrain index at `<personal-vault>` |
+| `bird` | bird | X/Twitter cookie auth |
+| `notion-cli` | notion, work-ship (notion proposals) | Notion API token in env |
 | `defuddle` | url-routing rule (Defuddle command reference) | Bun + defuddle binary |
 | `gog` | (Google Workspace skills) | Google OAuth config |
 | `slack` (slack-cli) | tool-slack, misalignment | Slack token in Keychain |

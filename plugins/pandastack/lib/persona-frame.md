@@ -49,7 +49,7 @@ User direction (2026-05-04): pandastack is skill-first. Reasons:
 
 ## Inline-from-skill dispatch pattern (skill-as-persona)
 
-When a flow skill (e.g. `execute-plan`, `boardroom`, `team-orchestrate`) needs to dispatch a persona-flavored subagent, use this pattern:
+When a flow skill (e.g. `boardroom`, `team-orchestrate`) needs to dispatch a persona-flavored subagent, use this pattern:
 
 ```
 1. Resolve the persona SKILL.md path. Try in order:
@@ -78,7 +78,7 @@ When a flow skill (e.g. `execute-plan`, `boardroom`, `team-orchestrate`) needs t
 
 4. Append the task brief below the fence
 5. Dispatch as subagent_type: "general-purpose" (or task-specific built-in like Plan / Explore)
-6. Pass model: per task heuristic (architect=opus, eng-lead=sonnet, etc.)
+6. Pass model: per task heuristic (ceo=opus for strategic depth, eng-lead/product-lead/design-lead/ops-lead=sonnet, etc.)
 ```
 
 **Why this pattern beats agent files**:
@@ -90,7 +90,7 @@ When a flow skill (e.g. `execute-plan`, `boardroom`, `team-orchestrate`) needs t
 
 **Persona contract enforcement in subagent**:
 
-Inline the contract as the FIRST content of the user prompt. The subagent's adherence is empirically as strong as if the contract were in the system prompt (validated 2026-05-05: architect ADR test produced 7/7 Iron-Law-compliant output via inline pattern with general-purpose subagent).
+Inline the contract as the FIRST content of the user prompt. The subagent's adherence is empirically as strong as if the contract were in the system prompt (validated 2026-05-05: persona ADR test produced 7/7 Iron-Law-compliant output via inline pattern with general-purpose subagent).
 
 Hard rules (Panda's voice / commit style / no em dash / no Co-Authored-By trailer / etc.) MUST be inlined explicitly — subagent does NOT read `~/.agents/AGENTS.md`. Caller is responsible for inlining substrate rules relevant to the task.
 

@@ -14,8 +14,7 @@ side = ["research", "retro"]
 
 [skills]
 public = [
-  "pandastack:knowledge-ship",   # Close → Extract → Backflow for knowledge/ notes
-  "pandastack:wiki-lint",        # stale / orphan / superseded detection
+  "pandastack:ship",             # /ship knowledge <note> — Close + Extract + Backflow on knowledge/ note
   "pandastack:summarize",        # summarize long-form content
   "pandastack:deepwiki",         # GitHub repo docs for technical deep-dives
   "pandastack:grill",            # adversarial mode to scope research questions
@@ -46,4 +45,4 @@ deny = [
 [notes]
 # Brain-first lookup rule applies: gbq query before fetching any URL or writing new notes.
 # Absorb-first: if 60%+ overlap with existing note, update existing rather than creating new.
-# wiki-lint is monthly cadence; knowledge-ship runs per note at distill time.
+# /ship knowledge runs per note at distill time. Vault hygiene (orphans / stale / dead redirects) is now a gbq query, not a skill.

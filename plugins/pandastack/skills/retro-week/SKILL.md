@@ -4,7 +4,7 @@ description: Interactive weekly retro — read the prep brief, conduct an interv
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 user-invocable: true
 tags: [retro, weekly, reflection]
-related_skills: [retro-month, wiki-lint]
+related_skills: [retro-month, ship]
 source: manual
 ---
 

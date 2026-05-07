@@ -4,7 +4,7 @@ Personal context-aware AI operator OS — one substrate, four runtimes, no vendo
 
 I built pandastack to run my own work across multiple AI CLIs without dotdir sprawl. Skills are version-controlled markdown. Personas are replaceable. Context recipes ship as TOML. Same content runs across Claude Code, Codex CLI, Gemini CLI, and Hermes; per-CLI shims handle syntax differences. No data-layer vendor lock-in.
 
-The stack is 48 skills covering dev, knowledge, writing, work, research, retro, and decision lifecycles, tiered into 35 core (markdown-only, fresh-clone runnable), 5 ext (publicly installable CLI), and 8 personal (private overlay required). Anchored on a personal Obsidian vault as SSOT.
+The stack is 39 skills covering dev, knowledge, writing, work, research, retro, and decision lifecycles, tiered into 27 core (markdown-only, fresh-clone runnable), 5 ext (publicly installable CLI), and 7 personal (private overlay required). Anchored on a personal Obsidian vault as SSOT.
 
 **Stability scope (read this first):**
 
@@ -13,7 +13,7 @@ v1 is **personal-substrate stable**: API, schema, and skill content are stable f
 What this means for you:
 
 - If you are the author or a fork-and-learn power user, v1 is stable for daily use.
-- If you are a fresh A-class user (Obsidian + Coding Agent power user willing to bring your own vault and CLIs), `bash scripts/bootstrap.sh` reports what runs now and what install steps remain. Core (35 skills) should run on a clean clone.
+- If you are a fresh A-class user (Obsidian + Coding Agent power user willing to bring your own vault and CLIs), `bash scripts/bootstrap.sh` reports what runs now and what install steps remain. Core (27 skills) should run on a clean clone.
 - If you do not have an Obsidian vault, or you use Logseq / Roam / Notion, v1 is not for you. Multi-vault provider abstraction is v2 roadmap.
 
 **Who this is for:**
@@ -31,23 +31,23 @@ bash pandastack/scripts/bootstrap.sh --claude    # or --codex
 
 `bootstrap.sh` reports:
 - substrate state (`~/.agents/AGENTS.md`, `PANDASTACK_VAULT`, `PANDASTACK_USER_EMAIL`)
-- 35 core skills runnable on this clone with no external CLI
+- 27 core skills runnable on this clone with no external CLI
 - 5 extension skills with the exact `brew install` / `npm install -g` to enable each
-- 8 personal skills hidden behind the `pandastack-private` overlay
+- 7 personal skills hidden behind the `pandastack-private` overlay
 
 After install:
 
 1. `/pandastack:init` once inside your project
 2. `/office-hours` — bring a fuzzy idea, walk out with a written brief
 3. `/sprint` — 1-2h focused execution, ends in SHIPPED / PAUSED / FAILED
-4. `/knowledge-ship <path>` on a finished note in your vault
+4. `/ship knowledge <path>` on a finished note in your vault
 5. Stop there. You'll know if pandastack fits how you work.
 
 > **Tier model (v1.3)**: Skills are tiered in `plugins/pandastack/manifest.toml`. Core = markdown-only, runs on a fresh clone. Ext = needs a public CLI install. Personal = needs the private overlay (gbq, gbrain, gog, bird, pdctx, ...). `capability-probe` only ABORTs when substrate is missing, not when ext / personal CLIs are absent.
 
 ## How skills connect
 
-`/office-hours` writes a brief. `/sprint` reads the brief and executes. `/sprint` ends in SHIPPED, then `/knowledge-ship` or `/work-ship` reads the session note and runs Close + Extract + Backflow. Each step writes an artifact the next step picks up. You decide when to fire each step; the brief, session note, and decision log are the contracts between phases.
+`/office-hours` writes a brief. `/sprint` reads the brief and executes. `/sprint` ends in SHIPPED, then `/ship knowledge <path>` or `/work-ship` reads the session note and runs Close + Extract + Backflow. Each step writes an artifact the next step picks up. You decide when to fire each step; the brief, session note, and decision log are the contracts between phases.
 
 ## See it work
 
@@ -77,7 +77,7 @@ Claude: [execute] ~400 lines across 4 files. bun test 12/12 passed.
         [review] /review → 1 ASK (fingerprint hash 衝突) → 你 approve fix.
         [terminal] State: SHIPPED. Session note: docs/sessions/2026-05-05-sprint-feed-curator.md
 
-You:    /knowledge-ship docs/sessions/2026-05-05-sprint-feed-curator.md
+You:    /ship knowledge docs/sessions/2026-05-05-sprint-feed-curator.md
 Claude: [Close]    frontmatter / used_in / wiki-link 補齊
         [Extract]  3 questions:
                    - 最大發現? 「fingerprint 比 keyword 過濾乾淨」
@@ -186,7 +186,7 @@ Re-run `bash scripts/bootstrap.sh` any time to verify.
 
 ## Optional: private overlay (`pandastack-private`)
 
-Tier=personal skills (`brief-morning`, `evening-distill`, `retro-prep-week`, `deep-research`, `curate-feeds`, `tool-bird`, `tool-slack`, `tool-notion`) plus `pdctx` context routing live in a private overlay that is not currently published. The public install runs without them — `bootstrap.sh` reports them as hidden. If you have access to `pandastack-private`:
+Tier=personal skills (`brief-morning`, `evening-distill`, `deep-research`, `curate-feeds`, `bird`, `slack`, `notion`) plus `pdctx` context routing live in a private overlay that is not currently published. The public install runs without them — `bootstrap.sh` reports them as hidden. If you have access to `pandastack-private`:
 
 | Command | Outcome |
 |---|---|
@@ -231,7 +231,7 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 
 ## Skills
 
-48 skills grouped by lifecycle (35 core / 5 ext / 8 personal — see `plugins/pandastack/manifest.toml`). Persona names follow the gstack convention — each skill is "your specialist" for that step.
+39 skills grouped by lifecycle (27 core / 5 ext / 7 personal — see `plugins/pandastack/manifest.toml`). Persona names follow the gstack convention — each skill is "your specialist" for that step.
 
 ### Think / intake
 
@@ -245,7 +245,6 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 
 | Skill | Your specialist | What they do |
 |---|---|---|
-| `/architect` | System Architect | Greenfield design. Tech stack, DB schema, service boundaries, ADRs, trade-offs. |
 | `/boardroom` | The Boardroom | 4-voice plan critique (CEO → product → design → eng). Per-finding apply gate. |
 | `/ceo` | Strategic Advisor | Multi-framework thinking. Kill / pivot / continue judgment. |
 | `/product-lead` | VP Product | User problems over solutions. Says no more than yes. |
@@ -255,10 +254,9 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 
 | Skill | Your specialist | What they do |
 |---|---|---|
-| `/sprint` | Sprint Coach | 1-2h focused execution. Internal flow: dojo → grill (lite) → execute → review → ship. Ends in SHIPPED / PAUSED / FAILED. |
-| `/execute-plan` | The Executor | Subagent dispatch per approved plan. Verification gate per task. |
-| `/team-orchestrate` | The Conductor | N independent branches in parallel git worktrees. |
-| `/eng-lead` | Staff Engineer | Build, debug, ship. Minimal diff, root cause, no spiral. |
+| `/sprint` | Sprint Coach | 1-2h single-track focused execution. Internal flow: dojo → grill (lite) → execute → review → ship. For multi-step work, run multiple sprints in sequence. |
+| `/team-orchestrate` | The Conductor | N independent branches in parallel git worktrees. Use only when branches are truly independent. |
+| `/eng-lead` | Staff Engineer | Build, debug, ship. Minimal diff, root cause, no spiral. Also covers tech-stack / DB schema / API contract decisions. |
 | `/design-lead` | Senior Designer | Intentional over decorative. Anti-slop, accessibility-first. |
 | `/careful` | Safety Gate | Confirmation gates before destructive commands (force push, rm -rf, DROP). |
 | `/freeze` | Scope Freezer | Lock edits to specific paths for the session. |
@@ -270,18 +268,11 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 | `/review` | Code Reviewer | Parallel 3-pass review (correctness, security, architecture) + Codex adversarial cross-check. |
 | `/qa` | QA Lead | Browser-based QA. Opens real pages, runs flows, finds bugs. |
 
-### Ship
+### Ship (multi-mode)
 
 | Skill | Your specialist | What they do |
 |---|---|---|
-| `/ship` | Release Engineer | Test, commit, push, open PR. One command from "code done" to "PR open". |
-
-### Close (lifecycle backflow)
-
-| Skill | Your specialist | What they do |
-|---|---|---|
-| `/knowledge-ship` | Knowledge Closer | Close vault note: Close (verify + used_in) → Extract (3 questions) → Backflow (route principle / SOP / signal). |
-| `/write-ship` | Writing Closer | Close a Blog/_daily draft → publish. Close → Extract → Backflow for writing. |
+| `/ship` | Release Engineer | Multi-mode close. `/ship` (no args) = test + commit + push + PR. `/ship knowledge <path>` = Close + Extract + Backflow on a knowledge note. `/ship write <draft>` = Close + Extract + Backflow on a Blog draft. |
 | `/work-ship` | Work Closer | Close a work topic. Vault-only writes; external system updates ship as proposals to Inbox/. |
 
 ### Research
@@ -296,13 +287,12 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 
 | Skill | Your specialist | What they do |
 |---|---|---|
-| `/retro-week` | Weekly Retro | Read prep brief, conduct interview, write final retro. |
+| `/retro-week` | Weekly Retro | Three-phase weekly retro. Phase 1 calls gbq directly to fetch retro inputs. |
 | `/retro-month` | Monthly Retro | Strategic monthly review with project memory updates. |
-| `/process-decisions` | Decision Processor | Walk through ticked items in cron-reports/, execute each one. |
-| `/atomize` | The Atomizer | Distill a learning into atomic principles. AI never writes a claim the user hasn't ratified. |
-| `/wiki-lint` | Vault Janitor | Vault hygiene audit. Orphans, duplicates, stale, dead redirects. |
 | `/inbox-triage` | Inbox Triage | Weekly Inbox/ hygiene. Bucket stale .md by category. |
 | `/curate-feeds` | Feed Fetcher | Fetch raw feed items to Inbox/feeds/raw/ with dedupe and noise filter. |
+
+Vault hygiene (orphans / stale / superseded) is now a `gbq` query, not a dedicated skill.
 
 ### Session
 
@@ -312,7 +302,7 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 | `/done` | Session Closer | Save context, summarize work, persist memory at session end. |
 | `/checkpoint` | The Bookmarker | Save / resume working state snapshots. |
 
-Tool wrappers (`bird`, `slack`, `notion`, `summarize`, `agent-browser`, `deepwiki`) and thinking lenses (`think-like-naval`, `think-like-karpathy`, `think-like-alan-chan`) round out the lineup — see [`plugins/pandastack/manifest.toml`](plugins/pandastack/manifest.toml) for the full tier-tagged list.
+Tool wrappers (`bird`, `slack`, `notion`, `summarize`, `agent-browser`, `deepwiki`) and thinking lenses (`think-like-naval`, `think-like-alan-chan`) round out the lineup — see [`plugins/pandastack/manifest.toml`](plugins/pandastack/manifest.toml) for the full tier-tagged list.
 
 ## Personas
 
@@ -362,9 +352,10 @@ Without pdctx, no telemetry runs at all — pandastack public surface emits no e
 
 | Job | Schedule | Skill |
 |---|---|---|
-| Morning Briefing | `0 8 * * *` (daily 8 AM) | `/brief-morning` (was: `/morning-briefing`) |
+| Morning Briefing | `0 8 * * *` (daily 8 AM) | `/brief-morning` |
 | Evening Distill | `0 22 * * *` (daily 10 PM) | `/evening-distill` |
-| Weekly Retro Prep | `0 9 * * 5` (Fri 9 AM) | `/retro-prep-week` (was: `/weekly-retro-prep`) |
+
+`retro-prep-week` was retired in v2.0.0 — `/retro-week` Phase 1 now calls gbq directly, no separate cron needed.
 
 ## Updating
 

@@ -15,7 +15,7 @@ side = ["retro"]
 [skills]
 public = [
   "pandastack:write",            # voice + slop detection (was: content-write, v1.1 rename)
-  "pandastack:write-ship",       # Close → Extract → Backflow for published pieces
+  "pandastack:ship",             # /ship write <draft> — Close + Extract + Backflow for published pieces
   "pandastack:grill",            # adversarial mode to stress-test thesis before committing
   "pandastack:summarize",        # summarize source material
   "pandastack:think-like-naval", # framing / mental models check
@@ -24,7 +24,7 @@ public = [
   "pandastack:retro-month",
   "pandastack:done",
 ]
-private = []  # tier=personal skills (bird / brief-morning / evening-distill / retro-prep-week) load via private overlay only
+private = []  # tier=personal skills (bird / brief-morning / evening-distill) load via private overlay only
 
 [memory]
 namespace    = "personal/writer"
@@ -49,5 +49,5 @@ deny = [
 
 [notes]
 # grill in adversarial (default) mode is the thesis stress-tester; run before write structure stage to catch weak arguments early.
-# write-ship handles the full publish loop including mv to Blog/Published/, reverse-citations, and X-thread draft routing to Inbox/x-drafts/.
+# /ship write handles the full publish loop including mv to Blog/Published/, reverse-citations, and X-thread draft routing to Inbox/x-drafts/.
 # No persona is intentional; write's slop detection is the quality gate, not a persona filter.

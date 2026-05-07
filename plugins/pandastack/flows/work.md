@@ -14,7 +14,7 @@ type: lifecycle-flow
 - New ticket created in Linear or Jira
 - Slack message from core team that implies a decision or action
 - Direct assignment from your principal (P0: interrupt immediately)
-- `/process-decisions` surfaces a `[ ]` item from a prior cron report
+- A prior cron report's `[ ]` item surfaces during morning review
 
 ## Phases
 
@@ -38,14 +38,14 @@ type: lifecycle-flow
 
 ### Phase 4 — Ship (vault close)
 
-- **What happens**: Formalize the decision, write the work-vault decision log, and produce the ship proposal for external systems. The ship proposal contains checkbox items that `/process-decisions` or the user can walk through when ready.
+- **What happens**: Formalize the decision, write the work-vault decision log, and produce the ship proposal for external systems. The ship proposal contains checkbox items the user can walk through manually when ready.
 - **Skills used**: `pandastack:work-ship` (Close: decision log + ship-proposal; Extract: decision / cycle waste / counterfactual / scope; Backflow: work-vault SOP, personal knowledge if generalizable, skill candidate, feedback)
 - **Output**: `work-vault/decisions/<date>-<slug>.md` (SSOT for this decision); `Inbox/ship-proposals/<date>-<slug>.md` (pending manual push); ship log entry
 
 ### Phase 5 — External push (manual)
 
-- **What happens**: Panda or a future authorized session runs `/process-decisions` to walk through the ship proposal checkboxes: update Notion status, close Jira/Linear ticket, send Slack notification. Never automatic.
-- **Skills used**: `pandastack:process-decisions`
+- **What happens**: Panda walks through the ship proposal checkboxes manually: update Notion status, close Jira/Linear ticket, send Slack notification. Never automatic.
+- **Skills used**: `pandastack:notion` / `pandastack:slack` per item; mark each `[x]` in the proposal as it executes
 - **Output**: External systems updated, checkboxes marked `[x]` in ship proposal, daily note records what was pushed
 
 ## Exit criteria
@@ -84,5 +84,5 @@ pandastack:work-ship
   └── Stage 3: Backflow (work-vault SOP, personal knowledge, skill candidate)
   |
   v
-pandastack:process-decisions  (manual push, when ready)
+pandastack:notion / pandastack:slack  (manual push per item, when ready)
 ```

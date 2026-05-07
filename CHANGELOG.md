@@ -1,5 +1,70 @@
 # Changelog
 
+## v2.0.0 — 2026-05-07
+
+> Major cut. Aligns the stack to Panda's 6 actual lifecycles (work / writing / dev / knowledge / decision / ops-retro) plus security as a discipline. 48 → 39 skills. Aliases keep old names resolving for 90 days.
+
+### Removed (7 orphan skills)
+
+| Skill | Why |
+|---|---|
+| `atomize` | atoms.jsonl pattern died; not invoked since Q1. |
+| `architect` | Greenfield design rare; folded into `eng-lead` (which now covers tech-stack / DB schema / API contract decisions). |
+| `execute-plan` | Sequential subagent coordinator overlapped sprint Phase 3. For N-step sequential work, run N sprints in sequence. `team-orchestrate` remains for true parallel branches. |
+| `think-like-karpathy` | Frame referenced in notes but not actively used to think; Naval + Alan-Chan cover the live frames. |
+| `process-decisions` | `[x]` walker for cron-reports; cron-reports sparse since launchd disable, ad-hoc execution via `inbox-triage` + relevant skills is faster. |
+| `wiki-lint` | All 4 lint signals (orphan / stale / superseded / dead redirect) are now `gbq` queries against the brain index, no dedicated skill needed. |
+| `retro-prep-week` | Pre-fetch retro inputs; `retro-week` Phase 1 now calls gbq + gog directly, saving a separate cron. |
+
+### Merged (`/ship` is now multi-mode)
+
+`knowledge-ship` and `write-ship` merged into `/ship` as modes. One verb, one mental model:
+
+| Invocation | What it does |
+|---|---|
+| `/ship` (no args) or git-mode flags | git mode (default): test + commit + push + PR |
+| `/ship knowledge <path>` or `/ship knowledge/...` | knowledge mode: Close + Extract + Backflow on a knowledge note |
+| `/ship write <draft>` or `/ship Blog/_daily/...` | write mode: Close + Extract + Backflow on a Blog draft |
+
+The merged mode bodies live at `skills/ship/modes/knowledge.md` and `skills/ship/modes/write.md`. `/knowledge-ship` and `/write-ship` continue to resolve via `aliases:` frontmatter for 90 days (until 2026-08-05).
+
+`work-ship` stays separate (different artifact: external system push proposals). Long-term plan (T2) is to move work-ship + slack + notion to a separate `yei-stack` plugin so pandastack stays purely personal.
+
+### Kept (after re-audit pushback)
+
+| Skill | Why kept |
+|---|---|
+| `team-orchestrate` | Active use case in companyos-style multi-branch parallel work (5/6 merge train). Different shape from sprint (space cut vs time line), not collapsible. |
+| `design-lead` | Boardroom 4-voice signature stays intact. Panda's call: design-lead is a product framing decision, not just an engineering one. |
+
+### Skill choreography updates
+
+- `lib/skill-decision-tree.md`: rewrote from 3-question test to 2-question test. Sprint vs team-orchestrate is now the only execution-locus axis. Persona routing table loses `architect` (folded into eng-lead).
+- `lib/persona-frame.md`: dispatch examples updated (`execute-plan` removed from list; model heuristic example switched from architect=opus to ceo=opus).
+- `flows/decision.md`: rewrote Phase 3 from "process-decisions walks all `[x]` items" to "Panda walks each `[x]` manually using whichever skill matches" (inbox-triage / sprint / notion / slack ad-hoc).
+- `flows/knowledge.md`: ship phase points at `/ship knowledge`; lint phase changed from cron-driven `wiki-lint` to on-demand `gbq` queries.
+- `flows/writing.md` + `flows/research.md`: ship references updated to `/ship write` / `/ship knowledge`.
+- `flows/work.md` + `flows/retro.md`: process-decisions references replaced with `inbox-triage` + manual notion/slack walks.
+- `office-hours/SKILL.md` Stage 5: routing block now covers sprint and team-orchestrate only (no execute-plan).
+- `sprint/SKILL.md` Stage 3: persona routing table loses architect row; eng-lead absorbs tech-stack / DB schema / API contract signals.
+- `team-orchestrate/SKILL.md`: scope table rewritten from 3-row (sprint / execute-plan / team-orchestrate) to 2-row (sprint / team-orchestrate); "fall back to execute-plan" advice replaced with "fall back to N sequential sprints".
+- `using-pandastack/SKILL.md`: lifecycle map updated; red-flag table updated.
+- `inbox-triage/SKILL.md`: cron-report flow updated; related_skills tightened.
+- `work-ship/SKILL.md`: process-decisions references replaced with manual proposal walks.
+
+### Counts
+
+| Tier | v1.4.2 | v2.0.0 |
+|---|---|---|
+| core | 35 | 27 |
+| ext | 5 | 5 |
+| personal | 8 | 7 |
+| **total** | **48** | **39** |
+
+### Why a major bump
+
+Prior bumps (v1.4.x) were mechanical (rename, alias, cleanup). v2.0.0 is the first cut that changes the public surface in a way that breaks downstream automation if you have hardcoded skill names. Aliases cushion the break for 90 days, but tier counts, manifest entries, RESOLVER catalog, and several flow files all shift, so the major bump signals "audit your context recipes / cron jobs / launchd plists before updating".
+
 ## v1.4.2 — 2026-05-07
 
 > Third-pass audit on v1.4.x. Fixes leftover staleness from the rename + tier work: false L5 enforcement claim in README, env-var `forbids:` on 17 SKILL.md (the L5 hook does not expand env vars, so the line was dead weight), tier=personal skills still listed in three public context recipes, broken doc link, stale `/tool-bird` references in `write-ship`, and eval.json `generated_from` pointing at deleted paths.

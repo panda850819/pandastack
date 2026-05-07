@@ -12,8 +12,8 @@ type: lifecycle-flow
 
 - New note captured to `Inbox/` or appended to `Blog/_daily/`
 - Daily distill cron completes and surfaces candidates for `knowledge/`
-- User runs `/knowledge-ship <note-path>` on an existing draft
-- `pandastack:wiki-lint` flags a note as stale, orphan, or superseded
+- User runs `/ship knowledge <note-path>` on an existing draft
+- `gbq` query surfaces a note as stale, orphan, or superseded
 
 ## Phases
 
@@ -44,20 +44,20 @@ type: lifecycle-flow
 ### Phase 5 — Ship
 
 - **What happens**: Close the note's lifecycle. Record where it was used, update source-quality signal, run backflow if triggered (generalizable principle, citation count, work-problem pattern).
-- **Skills used**: `pandastack:knowledge-ship` (Close → Extract → Backflow)
+- **Skills used**: `pandastack:ship knowledge <path>` (Close → Extract → Backflow)
 - **Output**: `Inbox/ship-log/YYYY-MM-DD.md` entry; optional `docs/learnings/` entry; optional feed-curator `source-quality.json` update
 
-### Phase 6 — Lint (monthly hygiene)
+### Phase 6 — Lint (on-demand hygiene)
 
-- **What happens**: Monthly cron scans `knowledge/` for stale notes (verified=true but `last_human_review` older than 6 months), orphan notes (no inbound links, no tags), and dead `superseded_by` targets.
-- **Skills used**: `pandastack:wiki-lint`
-- **Output**: `Inbox/cron-reports/wiki-lint-<date>.md` with flagged notes and recommended actions
+- **What happens**: When you want to clean the vault, run gbq queries against the brain index for stale notes (verified=true but `last_human_review` older than 6 months), orphan notes (no inbound links, no tags), and dead `superseded_by` targets. No dedicated skill or cron — gbq covers all four lint signals in single queries.
+- **Skills used**: `gbq` (direct vault query)
+- **Output**: Console output of flagged notes; act on each manually via Edit
 
 ## Exit criteria
 
 - Note exists in `knowledge/` root with `verified: true`, `last_human_review` set to today
 - Ship log entry written to `Inbox/ship-log/`
-- wiki-lint will not flag this note as stale for at least 6 months
+- gbq stale-check will not flag this note for at least 6 months
 
 ## Anti-patterns
 
@@ -84,11 +84,11 @@ daily-distill cron  (Phase 3, async)
 [human verify — Edit frontmatter]
   |
   v
-pandastack:knowledge-ship
+pandastack:ship knowledge <path>
   |── Stage 1: Close (verified, source-quality.json)
   |── Stage 2: Extract (semantic, optional)
   └── Stage 3: Backflow (rules/learnings/memory, optional)
   |
   v
-pandastack:wiki-lint  (monthly, async)
+gbq  (on-demand: stale / orphan / superseded queries)
 ```

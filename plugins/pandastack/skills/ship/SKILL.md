@@ -1,8 +1,13 @@
 ---
 name: ship
+aliases: [knowledge-ship, write-ship]
 description: |
-  Test, commit, and create PR. One command from "code done" to
-  "PR open". Use when asked to "ship", "create PR", or "we're done".
+  Multi-mode ship verb. Closes work to its proper destination.
+  - /ship                    → git mode: test, commit, push, PR
+  - /ship knowledge <path>   → vault: Close + Extract + Backflow on a knowledge/ note
+  - /ship write <draft>      → vault: Close + Extract + Backflow on a Blog/_daily draft
+  Vault modes never write to external systems.
+  Use when asked to "ship", "create PR", "ship this note", "publish this draft".
 reads:
   - repo: "**"
   - repo: CLAUDE.md
@@ -27,11 +32,37 @@ classification: exec
 
 # Ship
 
-## Step 0: Read Config
+`/ship` closes a unit of work. The mode determines what "closing" means: pushing code, filing a knowledge note, or publishing a draft.
+
+## Mode dispatch
+
+Pick mode from first arg:
+
+| First arg | Mode | Branch |
+|---|---|---|
+| `knowledge` | knowledge mode | @./modes/knowledge.md |
+| `write` | write mode | @./modes/write.md |
+| (none, or a path/flag for git) | git mode | continue below |
+
+If first arg is a path (no explicit mode word), sniff:
+
+- Path matches `knowledge/**` → knowledge mode
+- Path matches `Blog/_daily/**` or `Blog/Drafts/**` → write mode
+- Otherwise → git mode (treat as filename for staged commit)
+
+Aliases `/knowledge-ship` and `/write-ship` route here automatically.
+
+---
+
+## Git mode (default)
+
+Test, commit, create PR. One command from "code done" to "PR open".
+
+### Step 0: Read Config
 
 Read pstack config from CLAUDE.md for: test command, tag format, release preference.
 
-## Step 1: Pre-flight
+### Step 1: Pre-flight
 
 1. Run `git pull` to sync with remote (avoid conflicts from auto-backup).
 2. Run the project's test/build command. If it fails, stop and report.
@@ -39,18 +70,18 @@ Read pstack config from CLAUDE.md for: test command, tag format, release prefere
 4. Run `git log origin/{main}..HEAD --oneline` for commit history.
 5. Check current branch: `git branch --show-current`.
 
-## Step 2: Load Learnings
+### Step 2: Load Learnings
 
 Search `{learnings_dir}` for `type: pitfall` related to the changed files.
 If any match, do a quick sanity check against the diff before proceeding.
 
-## Step 3: Scope Check
+### Step 3: Scope Check
 
 If a brief exists for this branch (check `docs/briefs/`):
 1. Read the brief's **Scope > In/Out** sections.
 2. Get the **current** full diff: `git diff origin/{main} --stat`.
 3. Compare against the brief scope. Flag any files or features outside stated scope.
-4. Also compare against the diff at review time (if `/review` was run earlier, the reviewed diff may be smaller than the current diff). Check for **post-review additions**: files changed after the last review that were never reviewed.
+4. Also compare against the diff at review time (if `/review` was run earlier). Check for **post-review additions**.
 5. Output:
    - "Scope: ON TRACK" if all changes match the brief and nothing was added post-review.
    - "SCOPE DRIFT: [description]" for each out-of-scope change.
@@ -59,20 +90,17 @@ If a brief exists for this branch (check `docs/briefs/`):
 
 If no brief exists, still check for post-review additions:
 1. Run `git log --oneline --since="1 hour ago"` to see recent commits.
-2. If there are commits after the last `/review` in this session, list the changed files and warn:
-   "These files were changed after the last review: [list]. Proceed without re-review?"
+2. If there are commits after the last `/review` in this session, list them and warn.
 
 If neither brief nor review history exists, skip silently.
 
-## Step 4: Review Gate
+### Step 4: Review Gate
 
 If `/review` has NOT been run on the current diff in this session:
 1. Warn: "Review not run. Run /review first?"
 2. If user says skip, proceed. Otherwise run review.
 
-This prevents shipping unreviewed code by default.
-
-## Step 5: Commit
+### Step 5: Commit
 
 If there are uncommitted changes:
 1. Analyze the diff
@@ -80,7 +108,7 @@ If there are uncommitted changes:
 3. Stage relevant files (never `git add -A`)
 4. Commit (don't amend, don't skip hooks)
 
-## Step 6: Branch (mandatory)
+### Step 6: Branch (mandatory)
 
 **Never push directly to main/master.** Always ship via PR.
 
@@ -88,10 +116,9 @@ If there are uncommitted changes:
    - `fix/*` for bug fixes
    - `feat/*` for features
    - `refactor/*` for refactoring
-   - Branch name should be short and descriptive (e.g., `fix/mainnet-label`)
 2. If already on a feature branch, stay on it.
 
-## Step 7: Tag (if configured)
+### Step 7: Tag (if configured)
 
 If pstack config has `tag: semver`:
 1. Read current version from package.json, VERSION, or latest git tag
@@ -100,16 +127,16 @@ If pstack config has `tag: semver`:
 
 If `tag: none`: skip.
 
-## Step 8: Push + PR
+### Step 8: Push + PR
 
 1. Push the branch with `-u` (and tags if created)
 2. Create PR with `gh pr create`:
    - Title: short, under 70 chars
    - Body: what changed, why, how to test
    - If learnings were written this session, mention in PR body
-3. Return the PR URL to the user.
+3. Return the PR URL.
 
-## Step 9: Release (if configured)
+### Step 9: Release (if configured)
 
 If pstack config has `release: true`:
 - Create GitHub Release from the tag
@@ -117,11 +144,20 @@ If pstack config has `release: true`:
 
 If `release: false`: skip.
 
-## Step 10: Write Learnings (if applicable)
+### Step 10: Write Learnings (if applicable)
 
-If the ship process itself revealed something useful:
-- A test that caught a subtle bug
-- A deploy pattern worth remembering
-- A CI configuration gotcha
+If the ship process itself revealed something useful (a test that caught a subtle bug, a deploy pattern worth remembering, a CI gotcha):
 
 Write a learning to `{learnings_dir}/pitfalls/` or `{learnings_dir}/patterns/`.
+
+---
+
+## Knowledge mode
+
+@./modes/knowledge.md
+
+---
+
+## Write mode
+
+@./modes/write.md

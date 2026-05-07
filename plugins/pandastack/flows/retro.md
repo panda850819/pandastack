@@ -44,7 +44,7 @@ type: lifecycle-flow
 ### Phase 5 — Priority feed-forward
 
 - **What happens**: The retro's output is not just reflection — it must produce explicit next-period priorities. Weekly retro produces next week's P0 list (max 3). Monthly retro produces next month's 3 strategic focuses. These get written to the next day's daily note or a scratch priority file.
-- **Skills used**: `pandastack:daily` (write priorities to next daily note); `pandastack:process-decisions` (if retro surfaced deferred decisions that now need action)
+- **Skills used**: `pandastack:daily` (write priorities to next daily note); `pandastack:inbox-triage` (if retro surfaced deferred decisions that now need action)
 - **Output**: Explicit P0 items for the next period, written to a dated file — not left as notes inside the retro doc
 
 ## Exit criteria
@@ -81,5 +81,5 @@ pandastack:retro-month  (reads 4x retro-week files)
 
 [all periods]
 pandastack:daily  (write P0 carry-forwards to next daily note)
-pandastack:process-decisions  (if deferred decisions surfaced)
+pandastack:inbox-triage  (if deferred decisions surfaced as Inbox/cron-reports/ items)
 ```

@@ -27,25 +27,19 @@
 # This file is hand-curated. When you add or rename a skill, update here.
 
 [manifest]
-version = "1.4.2"
+version = "2.0.0"
 schema  = "skill-tier-v1"
 updated = "2026-05-07"
 
+# v2.0.0: cut 7 orphan skills (atomize, architect, execute-plan, think-like-karpathy,
+# process-decisions, wiki-lint, retro-prep-week). knowledge-ship + write-ship merged
+# into /ship as modes. Aliases keep old names resolving for 90 days.
 # v1.4.0: tool-* skills renamed to drop the prefix. tool-pdf -> pdf, tool-bird -> bird,
 # etc. 90-day alias grace via SKILL.md frontmatter `aliases:`.
 
 # ============================================================================
-# CORE (35) — markdown-only, fresh-clone runnable
+# CORE (27) — markdown-only, fresh-clone runnable
 # ============================================================================
-
-[skill.architect]
-tier = "core"
-description = "Greenfield design: tech stack, DB schema, service boundaries, ADRs."
-
-[skill.atomize]
-tier = "core"
-config = ["env:PANDASTACK_VAULT"]
-description = "Distill learnings into atomic principles in atoms.jsonl."
 
 [skill.boardroom]
 tier = "core"
@@ -79,10 +73,6 @@ description = "Save session context, persist memory at session end."
 tier = "core"
 description = "Staff engineer persona — minimal diff, root cause."
 
-[skill.execute-plan]
-tier = "core"
-description = "Subagent-driven plan execution with verification gates."
-
 [skill.freeze]
 tier = "core"
 description = "Lock editing scope to specific paths for the session."
@@ -104,11 +94,6 @@ description = "Weekly Inbox/ hygiene, bucket stale .md by category."
 tier = "core"
 description = "One-time pandastack init per project."
 
-[skill.knowledge-ship]
-tier = "core"
-config = ["env:PANDASTACK_VAULT"]
-description = "Close + Extract + Backflow on a knowledge note."
-
 [skill.office-hours]
 tier = "core"
 description = "5-stage flow: load context, grill, premise challenge, alternatives, brief."
@@ -116,11 +101,6 @@ description = "5-stage flow: load context, grill, premise challenge, alternative
 [skill.ops-lead]
 tier = "core"
 description = "COO persona — systems that run without you."
-
-[skill.process-decisions]
-tier = "core"
-config = ["env:PANDASTACK_VAULT"]
-description = "Walk ticked [x] items in cron-reports/, execute each."
 
 [skill.product-lead]
 tier = "core"
@@ -142,7 +122,8 @@ description = "Parallel 3-pass review (correctness, security, architecture)."
 [skill.ship]
 tier = "core"
 requires = ["cli:git", "cli:gh"]
-description = "Test, commit, push, open PR."
+config = ["env:PANDASTACK_VAULT"]  # only required for knowledge / write modes
+description = "Multi-mode ship verb: git (default), knowledge, write. Aliases: knowledge-ship, write-ship."
 
 [skill.sprint]
 tier = "core"
@@ -157,10 +138,6 @@ description = "N independent branches in parallel git worktrees."
 tier = "core"
 description = "Apply Alan Chan framing: 0->1 product / focus / learning."
 
-[skill.think-like-karpathy]
-tier = "core"
-description = "Apply Karpathy framing: agent orchestration / verifiability / jaggedness."
-
 [skill.think-like-naval]
 tier = "core"
 description = "Apply Naval framing: leverage / specific knowledge / long-horizon."
@@ -168,11 +145,6 @@ description = "Apply Naval framing: leverage / specific knowledge / long-horizon
 [skill.using-pandastack]
 tier = "core"
 description = "Cognitive contract loaded at session start."
-
-[skill.wiki-lint]
-tier = "core"
-config = ["env:PANDASTACK_VAULT"]
-description = "Vault hygiene scan: orphans, stale, duplicates, dead redirects."
 
 [skill.work-ship]
 tier = "core"
@@ -182,11 +154,6 @@ description = "Close + Extract + Backflow on a work topic. Vault-only."
 [skill.write]
 tier = "core"
 description = "Voice-aware drafting + slop detection."
-
-[skill.write-ship]
-tier = "core"
-config = ["env:PANDASTACK_VAULT"]
-description = "Close + Extract + Backflow on a Blog/_daily draft."
 
 # ============================================================================
 # EXT (5) — public CLI dependencies
@@ -218,7 +185,7 @@ requires = ["brew-tap:steipete/tap/summarize"]
 description = "Summarize URL / YouTube / podcast / PDF."
 
 # ============================================================================
-# PERSONAL (10) — private CLI / private overlay required
+# PERSONAL (7) — private CLI / private overlay required
 # ============================================================================
 
 [skill.brief-morning]
@@ -243,12 +210,6 @@ tier = "personal"
 requires = ["private:gog", "private:gbq"]
 config = ["env:PANDASTACK_USER_EMAIL", "env:PANDASTACK_VAULT"]
 description = "Daily 10pm end-of-day distill into daily note."
-
-[skill.retro-prep-week]
-tier = "personal"
-requires = ["private:gog", "private:slack-cli", "private:gbq"]
-config = ["env:PANDASTACK_USER_EMAIL"]
-description = "Friday 9am pre-fetch retro inputs."
 
 [skill.bird]
 tier = "personal"

@@ -1,12 +1,12 @@
 # RESOLVER.md
 
-> Map of every skill / agent / flow / context in pandastack v1. Use this as the index when something looks like overlap or you can't tell which skill to invoke.
+> Map of every skill / persona / flow / context in pandastack v2. Use this as the index when something looks like overlap or you can't tell which skill to invoke.
 >
 > Companion to PHILOSOPHY.md (the why) and the per-skill SKILL.md files (the how).
 
 ## Why this file exists
 
-pandastack v1 ships 48 skills, 5 personas, 7 lifecycle flows, and 8 context recipes. That's a lot of surface area. RESOLVER.md is the disambiguation layer — when two things look similar but serve different purposes, you read this file to learn the boundary.
+pandastack v2 ships 39 skills, 5 personas, 7 lifecycle flows, and 8 context recipes. That's a lot of surface area. RESOLVER.md is the disambiguation layer — when two things look similar but serve different purposes, you read this file to learn the boundary.
 
 This is the pattern used by gstack, gbrain, and alirezarezvani: monorepo + RESOLVER.md beats multi-repo split, because the categorization lives next to the content.
 
@@ -19,51 +19,62 @@ This is the pattern used by gstack, gbrain, and alirezarezvani: monorepo + RESOL
 | Skill | Purpose | Trigger |
 |---|---|---|
 | `pandastack:deep-research` | Two-layer planner+researcher with quality gates | overnight research, deep explore |
-| `pandastack:curate-feeds` | Process Inbox feeds, route by source quality (was: `feed-curator`) | weekly cron, feed pipeline |
-| `pandastack:knowledge-ship` | Close + Extract + Backflow on a knowledge note | ship this note |
-| `pandastack:wiki-lint` | Vault hygiene scan (orphans, stale, duplicates) | weekly hygiene |
-| `pandastack:scout` | Recon public ecosystem for skill / harness patterns (was: `harness-survey`) | survey other harnesses |
+| `pandastack:curate-feeds` | Process Inbox feeds, route by source quality | weekly cron, feed pipeline |
+| `pandastack:ship knowledge <path>` | Close + Extract + Backflow on a knowledge note (was: `knowledge-ship`) | ship this note |
+| `pandastack:scout` | Recon public ecosystem for skill / harness patterns | survey other harnesses |
 | `pandastack:summarize` | Summarize URL / podcast / file | summarize, TL;DR |
+
+Vault hygiene (orphans / stale / superseded / dead redirects) is now a `gbq` query against the brain index, not a dedicated skill. v1.x had `wiki-lint` for this; cut in v2.0.0.
 
 ### Writing
 
 | Skill | Purpose | Trigger |
 |---|---|---|
-| `pandastack:write` | Voice-aware drafting + slop detection (was: `content-write`) | help me write |
-| `pandastack:write-ship` | Close + Extract + Backflow on a Blog draft | ship this draft |
-| `pandastack:brief-morning` | Morning briefing into daily note (was: `morning-briefing`) | Hermes 8am cron |
+| `pandastack:write` | Voice-aware drafting + slop detection | help me write |
+| `pandastack:ship write <draft>` | Close + Extract + Backflow on a Blog draft (was: `write-ship`) | ship this draft, publish this post |
+| `pandastack:brief-morning` | Morning briefing into daily note | Hermes 8am cron |
 | `pandastack:evening-distill` | End-of-day distill into daily note | Hermes 10pm cron |
-| `pandastack:retro-prep-week` | Pre-fetch retro inputs (was: `weekly-retro-prep`) | Friday 9am cron |
 
 ### Work execution (vault-only, external pushed manually)
 
 | Skill | Purpose | Trigger |
 |---|---|---|
 | `pandastack:work-ship` | Close + Extract + Backflow on a work topic | close out this topic |
-| `pandastack:process-decisions` | Walk ticked items in Inbox/cron-reports/ | post-cron decision sweep |
 
-Additional work-specific skills (alert triage, Slack scans) ship in the private overlay — see [Private supplement](#private-supplement) below.
+The `[ ]` items in ship-proposals / cron-reports are walked manually using whichever skill matches each item (`/notion`, `/slack`, `/inbox-triage`). v1.x had `process-decisions` as a central walker; cut in v2.0.0 because cron-report flow is sparse and ad-hoc execution is faster.
+
+Additional work-specific skills (alert triage, Slack scans) ship in the private overlay — see [Private supplement](#private-supplement) below. Long-term plan (T2): work-ship + slack + notion move to a separate `yei-stack` plugin.
 
 ### Dev workflow
 
 | Skill | Purpose | Trigger |
 |---|---|---|
-| `pandastack:grill` | Adversarial requirement discovery, atomic 5-10 min, surfaces unknown unknowns, no brief output. For structured-brief output use `pandastack:office-hours`. | grill me, stress test, what am I missing |
-| `pandastack:office-hours` | Structured 5-stage flow that produces a brief in `docs/briefs/`. Default ~30 min; `--quick` mode skips capability probe + goal mapping when context is pre-loaded. Absorbs the structured-brief role formerly under `grill --mode structured`. | office hours, draft a brief, structured intake |
+| `pandastack:grill` | Adversarial requirement discovery, atomic 5-10 min, surfaces unknown unknowns. For structured-brief output use `office-hours`. | grill me, stress test, what am I missing |
+| `pandastack:office-hours` | Structured 5-stage flow producing a brief in `docs/briefs/`. `--quick` mode skips capability probe + goal mapping. | office hours, draft a brief, structured intake |
 | `pandastack:careful` | Confirmation gates for production / shared infra | working on prod |
 | `pandastack:checkpoint` | Save / resume working state snapshot | pausing work |
 | `pandastack:freeze` | Lock editing scope to specific paths | scope discipline |
 | `pandastack:qa` | Browser-based UI QA | test this UI |
 | `pandastack:review` | Parallel 3-pass review + Codex cross-check | review PR |
-| `pandastack:ship` | Test + commit + PR | code done, ship it |
+| `pandastack:ship` | Test + commit + PR (git mode is default) | code done, ship it |
+| `pandastack:sprint` | Single-track 1-2h focused execution: dojo → grill-lite → execute → review → ship | small focused task |
+| `pandastack:dojo` | Pre-action prep, surfaces gotchas | before a work session |
+| `pandastack:team-orchestrate` | Conductor-driven parallel execution across N independent worktree branches | fan out, run these in parallel |
+
+For multi-step sequential work, run multiple sprints in sequence. v1.x had `execute-plan` as a sequential subagent coordinator; cut in v2.0.0 because it overlapped sprint Phase 3 without earning its complexity.
+
+For greenfield design (DB schema / service topology / ADRs), use `eng-lead` persona inside a sprint. v1.x had a separate `architect` persona; folded into eng-lead in v2.0.0 because Panda's day-to-day is maintenance, not greenfield.
 
 ### Retro / session
 
 | Skill | Purpose | Trigger |
 |---|---|---|
-| `pandastack:retro-week` | Three-phase weekly retro (Auto-scan → Interview → Write) | weekly retro |
+| `pandastack:retro-week` | Three-phase weekly retro (Auto-scan → Interview → Write). Phase 1 calls gbq directly to fetch retro inputs. | weekly retro |
 | `pandastack:retro-month` | Three-phase monthly retro (with weekly retros referenced) | monthly retro |
 | `pandastack:done` | Save session context, persist memory | session done, /done |
+| `pandastack:inbox-triage` | Weekly Inbox/ hygiene, bucket stale .md by category | clean inbox, scheduled weekly |
+
+v1.x had a separate `retro-prep-week` cron that pre-fetched retro inputs; cut in v2.0.0 and folded into retro-week Phase 1 (gbq is fast enough that a separate cron earned no time savings).
 
 ### Tool wrappers (1:1 with CLIs)
 
@@ -73,7 +84,7 @@ Additional work-specific skills (alert triage, Slack scans) ship in the private 
 | `pandastack:notion` | notion-cli |
 | `pandastack:slack` | slack-cli |
 | `pandastack:deepwiki` | DeepWiki repo docs |
-| `pandastack:agent-browser` | Browser automation (was: `agent-browser`) |
+| `pandastack:agent-browser` | Browser automation (npm `agent-browser`) |
 
 ### Persona thinking frames
 
@@ -81,19 +92,20 @@ Additional work-specific skills (alert triage, Slack scans) ship in the private 
 |---|---|
 | `pandastack:think-like-naval` | Leverage / specific knowledge / wealth-vs-capture |
 | `pandastack:think-like-alan-chan` | Product 0→1 / focus discipline / unfounded inference |
-| `pandastack:think-like-karpathy` | Agent architecture / skill-as-code / human-vs-agent boundary |
+
+v1.x had `think-like-karpathy` for agent architecture framing; cut in v2.0.0 because Panda cites Karpathy in notes but does not actively use his frame to think.
 
 ### Multi-lens review
 
 | Skill | Purpose |
 |---|---|
-| `pandastack:boardroom` | Single-skill 4-voice critique (CEO → product → design → eng) on a plan. Per-finding apply gate. Replaces deleted `persona-pipeline`. |
+| `pandastack:boardroom` | Single-skill 4-voice critique (CEO → product → design → eng) on a plan. Per-finding apply gate. |
 
 ### Trust evaluation (NOT code review)
 
 | Skill | Purpose |
 |---|---|
-| `pandastack:gatekeeper` | Pre-adoption trust check for external agents / MCP / repos / on-chain (was: `slowmist-agent-security`). NOT a code review skill. STRIDE classification at Step 0 (B1). |
+| `pandastack:gatekeeper` | Pre-adoption trust check for external agents / MCP / repos / on-chain. NOT a code review skill. STRIDE classification at Step 0. |
 
 ---
 
@@ -104,6 +116,16 @@ Some lifecycles (work alert triage, on-chain trading research, Sommet network op
 ---
 
 ## Disambiguation: where things look like overlap but aren't
+
+### Sprint vs team-orchestrate
+
+| | sprint | team-orchestrate |
+|---|---|---|
+| Tracks | 1 | N |
+| Executor | Main session | N subagents (one per worktree) |
+| Use when | Single focused task; for N-step sequential, run N sprints | N truly independent branches, wall-clock parallelism matters |
+
+Different shapes. Sprint = time line. team-orchestrate = space cut. They are not "sprint × N".
 
 ### Four "review" skills
 
@@ -119,20 +141,26 @@ If you're reviewing your own PR → `pandastack:review`. If you're deciding whet
 ### Requirement-discovery skills (split by output)
 
 - `pandastack:grill` — adversarial, one-question-at-a-time, surfaces unknown unknowns. Atomic 5-10 min, no brief output (just `Inbox/grill-*.md` log).
-- `pandastack:office-hours` — structured 5-stage flow that produces a brief in `docs/briefs/`. Default ~30 min; `--quick` mode (~10-15 min) skips capability probe + goal mapping when context is pre-loaded. **Absorbs the structured-brief role formerly under `grill --mode structured` (deprecated 2026-05-05).**
+- `pandastack:office-hours` — structured 5-stage flow that produces a brief in `docs/briefs/`. Default ~30 min; `--quick` mode (~10-15 min) skips capability probe + goal mapping when context is pre-loaded.
 
-### Two retro skills (was three)
+### Two retro skills
 
 | Skill | When |
 |---|---|
-| `pandastack:retro-week` | Sunday or end of week. Three phases now (Auto-scan / Interview / Write) — Phase 1 absorbed the old standalone `pandastack:retro` from v0.16. |
+| `pandastack:retro-week` | Sunday or end of week. Three phases (Auto-scan / Interview / Write). |
 | `pandastack:retro-month` | End of month. References past 4 weekly retros. |
 
-The old `pandastack:retro` (v0.16) is gone in v1. Its git-activity-scan logic moved into `retro-week` Phase 1.
+### Three ship modes (single skill)
 
-### Compound is gone (absorbed into ship)
+`/ship` is one skill with three modes:
 
-The old `pandastack:compound` from v0.16 is removed. Compound logic (write a learning to `docs/learnings/`) is now a Backflow row in `pandastack:knowledge-ship` and `pandastack:work-ship` Stage 3. If you want to "remember this", run the appropriate ship and answer the Extract questions — Stage 3 will route to `docs/learnings/` automatically.
+| Mode | Trigger | What it does |
+|---|---|---|
+| git (default) | `/ship` (no args) or `/ship <branch-flag>` | test + commit + push + PR |
+| knowledge | `/ship knowledge <path>` or `/ship knowledge/...` | Close + Extract + Backflow on a knowledge note |
+| write | `/ship write <draft>` or `/ship Blog/_daily/...` | Close + Extract + Backflow on a Blog draft |
+
+`work-ship` stays separate (different artifact: external system push proposals). Will move to yei-stack in T2.
 
 ### `done` vs `retro-week`
 
@@ -152,10 +180,10 @@ pandastack is **skill-only**. No agent dispatch. The 5 lead personas live as ski
 | `pandastack:ceo` | Strategic decisions, kill/pivot/continue, framework tension |
 | `pandastack:ops-lead` | COO-level — systems that run without you, process-when-painful, decision shape (action / owner / deadline) |
 | `pandastack:product-lead` | User problems over solutions, metric-driven, says no more often than yes |
-| `pandastack:eng-lead` | Build / debug / ship — minimal diff, root cause, no spiral |
+| `pandastack:eng-lead` | Build / debug / ship — minimal diff, root cause, no spiral. Also covers tech-stack / DB schema / API contract decisions (was: separate `architect` persona in v1.x, folded in v2.0.0). |
 | `pandastack:design-lead` | Intentional over decorative, every element earns its place |
 
-All 5 are READ-ONLY persona skills. They recommend; user decides. Previously also shipped as agents at `agents/{ceo,design,eng,ops,product}.md` — agents/ deleted in v1.1.
+All 5 are READ-ONLY persona skills. They recommend; user decides.
 
 ---
 
@@ -173,7 +201,7 @@ Read these when you need to know which skill chain handles a given lifecycle. Ea
 | retro | daily / weekly / monthly cadence | `flows/retro.md` |
 | decision | cron reports accumulated for triage | `flows/decision.md` |
 
-Flows are not skills — they're choreography spec. The skills they call ARE the work. (`solo.md` and `full.md` from earlier versions removed in v1.0.0-rc.3 trim.)
+Flows are not skills — they're choreography spec. The skills they call ARE the work.
 
 ---
 
@@ -196,39 +224,55 @@ Private contexts (in the private overlay) may reference additional skills beyond
 
 ---
 
+## v2.0.0 cut summary
+
+| Action | Skills | Reason |
+|---|---|---|
+| Cut (orphan / overlap / replaced) | `atomize`, `architect`, `execute-plan`, `team-orchestrate` (kept), `think-like-karpathy`, `process-decisions`, `wiki-lint`, `retro-prep-week` | atoms.jsonl pattern died; greenfield rare → fold into eng-lead; sequential subagent overlapped sprint Phase 3; Karpathy frame referenced not used; cron-reports sparse → manual walk; vault lint → gbq query; retro pre-fetch → fold into retro-week Phase 1 |
+| Merged into `/ship` | `knowledge-ship`, `write-ship` → `/ship knowledge`, `/ship write` | one verb, one mental model |
+| Renamed in v1.4.0 (still aliased) | `tool-pdf`→`pdf` (then deleted v1.4.1), `tool-bird`→`bird`, `tool-slack`→`slack`, `tool-notion`→`notion`, `tool-deepwiki`→`deepwiki`, `tool-summarize`→`summarize`, `tool-browser`→`agent-browser` | drop tool- prefix, names already disambiguate via `pandastack:` namespace |
+
 ## Provenance: how skills came to live here
 
 | Origin | Skills |
 |---|---|
-| Built in v0.16 | careful, checkpoint, freeze, init, qa, review, ship (compound / retro / brief / learn from v0.16 removed in v1.0.0-rc.3 — compound + brief absorbed into knowledge-ship/work-ship + office-hours; retro absorbed into retro-week Phase 1; learn dropped, learning search is LLM-native) |
-| Added in v1 from `~/.claude/skills/` (local) | deep-research, curate-feeds (renamed from feed-curator in v1.1), grill, knowledge-ship, work-ship, write-ship, persona-pipeline (deprecated v1.1), process-decisions, retro-week, retro-month, gatekeeper (renamed from slowmist-agent-security in v1.1), wiki-lint, tool-bird, tool-notion, tool-railway (removed v1.3, leaked work-project name) |
-| Added in v1 from `claude-skills` repo | tool-browser (renamed from agent-browser in v1.1), write (renamed from content-write in v1.1), done, think-like-naval, think-like-alan-chan, think-like-karpathy, tool-deepwiki, tool-pdf, tool-slack, tool-summarize (tool-web-extract removed in v1.2 — folded into `~/.claude/rules/url-routing.md`) |
-| Added in v1 (Hermes cron lifecycle) | brief-morning (renamed from morning-briefing in v1.1), evening-distill, retro-prep-week (renamed from weekly-retro-prep in v1.1) |
-| Two-strike promoted in v1 | scout (renamed from harness-survey in v1.1) |
-| New v1 agent | ops |
-
-`claude-skills` repo's role after v1: hold the residual community-curated content (ops-lead reference, wave-analyst, _archived-*). Most of Panda's personal stack is in pandastack now.
+| Built in v0.16 | careful, checkpoint, freeze, init, qa, review, ship |
+| Added in v1 from `~/.claude/skills/` (local) | deep-research, curate-feeds, grill, knowledge-ship (v2: merged into ship), work-ship, write-ship (v2: merged into ship), retro-week, retro-month, gatekeeper, bird, notion, summarize, deepwiki, agent-browser, slack |
+| Added in v1 (Hermes cron lifecycle) | brief-morning, evening-distill |
+| Two-strike promoted in v1 | scout |
+| Persona skills | ceo, eng-lead, design-lead, ops-lead, product-lead |
+| Frame skills | think-like-naval, think-like-alan-chan |
+| Decision/sprint flow | sprint, dojo, office-hours, boardroom, team-orchestrate |
+| Meta | using-pandastack, init, done, inbox-triage |
 
 ---
 
 ## Version
 
-This RESOLVER.md is for pandastack v1.1 (rename batch B0). Update when adding / removing / renaming skills.
+This RESOLVER.md is for pandastack v2.0.0. Update when adding / removing / renaming skills.
 
 ---
 
-## Aliases (v1.1, 90-day grace period through 2026-08-04)
+## Aliases (90-day grace)
 
-The following skill names were renamed in v1.1 B0. Old names still resolve via `aliases:` frontmatter for 90 days. After 2026-08-04, alias entries removed and old names will fail.
+The following skill names were renamed/merged across versions. Old names still resolve via `aliases:` frontmatter for 90 days from each rename. After grace period, alias entries are removed and old names will fail.
 
-| Old name (alias) | New name | Reason |
-|---|---|---|
-| `agent-browser` | `tool-browser` | cluster `tool-*` |
-| `content-write` | `write` | drop redundant prefix |
-| `feed-curator` | `curate-feeds` | verb-first |
-| `harness-survey` | `scout` | metaphor (Layer 2) |
-| `morning-briefing` | `brief-morning` | verb-first |
-| `slowmist-agent-security` | `gatekeeper` | metaphor (Layer 2), drop brand |
-| `weekly-retro-prep` | `retro-prep-week` | cluster `retro-*` |
+| Old name (alias) | New name | Renamed in | Grace until |
+|---|---|---|---|
+| `knowledge-ship` | `ship knowledge` | v2.0.0 (2026-05-07) | 2026-08-05 |
+| `write-ship` | `ship write` | v2.0.0 (2026-05-07) | 2026-08-05 |
+| `tool-bird` | `bird` | v1.4.0 | 2026-08-05 |
+| `tool-slack` | `slack` | v1.4.0 | 2026-08-05 |
+| `tool-notion` | `notion` | v1.4.0 | 2026-08-05 |
+| `tool-deepwiki` | `deepwiki` | v1.4.0 | 2026-08-05 |
+| `tool-summarize` | `summarize` | v1.4.0 | 2026-08-05 |
+| `tool-browser` | `agent-browser` | v1.4.0 | 2026-08-05 |
+| `agent-browser` | `tool-browser` | v1.1 (then reverted in v1.4.0) | n/a |
+| `content-write` | `write` | v1.1 | expired 2026-08-04 |
+| `feed-curator` | `curate-feeds` | v1.1 | expired 2026-08-04 |
+| `harness-survey` | `scout` | v1.1 | expired 2026-08-04 |
+| `morning-briefing` | `brief-morning` | v1.1 | expired 2026-08-04 |
+| `slowmist-agent-security` | `gatekeeper` | v1.1 | expired 2026-08-04 |
+| `weekly-retro-prep` | `retro-prep-week` (then deleted v2.0.0) | v1.1 → cut v2.0.0 | n/a |
 
-If you have hardcoded old names in cron jobs, launchd plists, Hermes manifests, or pdctx context recipes, update before 2026-08-04. `pandastack:scout` will surface remaining old-name references on each run.
+If you have hardcoded old names in cron jobs, launchd plists, Hermes manifests, or pdctx context recipes, update before 2026-08-05.

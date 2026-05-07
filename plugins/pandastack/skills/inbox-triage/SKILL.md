@@ -7,13 +7,13 @@ description: |
   Trigger on: /inbox-triage, "clean inbox", "整理 inbox", scheduled weekly cron (suggested Sat 09:00).
   Skip when: a single Inbox file needs handling (just mv it manually).
 tags: [vault, hygiene, weekly, inbox]
-related_skills: [wiki-lint, knowledge-ship, write-ship]
+related_skills: [ship]
 source: manual-draft
 status: staging
 origin: |
-  2026-05-04 — Inbox 累積 48 個 .md 觸發。pandastack:wiki-lint 只看 knowledge/，
-  Inbox/ 是 lint 盲區，但每月會堆積 codex-brief / grill artifact / proposal / aside stub
-  / topical research，沒有 ritual 就會永遠在那。Two-strike: Panda 之前手動清過至少兩次。
+  2026-05-04 — Inbox 累積 48 個 .md 觸發。Inbox/ 是 vault 整理的盲區，
+  每月會堆積 codex-brief / grill artifact / proposal / aside stub / topical research，
+  沒有 ritual 就會永遠在那。Two-strike: Panda 之前手動清過至少兩次。
 ---
 
 # Inbox Triage
@@ -52,7 +52,7 @@ Bucket each `.md` by filename pattern + age + reference count:
 | Architecture note | `*-architecture-*` / `*-flows-*` / `*-vs-*` | If referenced from `knowledge/` or `docs/sessions/` → keep. Else flag for `/knowledge promote` decision. |
 | Handover / next | `handover-*` / `*-next.md` | If date > 7 days → mv to `_archive-extracts/`. Handover is short-lived. |
 | Topical research batch | matched on `tags` frontmatter or filename theme cluster (≥3 files same theme) | Flag entire cluster for `/knowledge promote` (rewrite as own-voice notes) or `_archive`. Don't auto-decide. |
-| Dogfood / scheduled-reviews / wiki-lint reports | known names | Keep, active operational state. |
+| Dogfood / scheduled-reviews / cron-reports | known names | Keep, active operational state. |
 | Other (uncategorized > 30 days) | anything else aged out, never grep-referenced | Flag for review. |
 
 **Reference check** (before any "untouched + unreferenced" verdict):
@@ -200,7 +200,7 @@ Append to `Inbox/ship-log/<TODAY>.md`:
 0 9 * * 6 cd ~/site/knowledge/obsidian-vault && pdctx call personal:writer "/inbox-triage --dry-run > Inbox/cron-reports/$(date +%Y-%m-%d)-inbox-triage.md"
 ```
 
-Dry-run mode writes the plan to `Inbox/cron-reports/`. Panda runs `/process-decisions` to approve.
+Dry-run mode writes the plan to `Inbox/cron-reports/`. Panda walks the `[ ]` items manually and re-runs `/inbox-triage` (without `--dry-run`) to execute approved items.
 
 ## Why this is a skill, not just a shell script
 
@@ -212,7 +212,7 @@ Dry-run mode writes the plan to `Inbox/cron-reports/`. Panda runs `/process-deci
 ## Two-strike origin
 
 Strike 1: 2026-04-29 manual cleanup of skill-discovery / pandastack pre-v1 artifacts in Inbox.
-Strike 2: 2026-05-04 Panda asks "Inbox 裡頭有很多東西我該怎麼清" during /write-ship Stage 3.
+Strike 2: 2026-05-04 Panda asks "Inbox 裡頭有很多東西我該怎麼清" during `/ship write` Stage 3.
 
 ## Status
 

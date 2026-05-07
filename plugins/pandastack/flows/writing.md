@@ -37,7 +37,7 @@ type: lifecycle-flow
 ### Phase 4 — Ship
 
 - **What happens**: Move the draft to its permanent published location, set frontmatter, add reverse-citations to any `knowledge/` notes the post references, and route extracted byproducts (thesis statement, sub-arguments, voice patterns, new knowledge fragments) back into the vault.
-- **Skills used**: `pandastack:write-ship` (Close: mv + frontmatter + reverse-cite; Extract: thesis / byproducts / voice; Backflow: route to `_index`, `Inbox/`, memory)
+- **Skills used**: `pandastack:ship write <draft>` (Close: mv + frontmatter + reverse-cite; Extract: thesis / byproducts / voice; Backflow: route to `_index`, `Inbox/`, memory)
 - **Output**: File at `Blog/Published/<slug>.md` with complete frontmatter; reverse-citations updated in referenced knowledge notes; ship log entry
 
 ### Phase 5 — Distribute (manual)
@@ -74,7 +74,7 @@ pandastack:content-write  (full draft + voice editing)
 [optional: pandastack:grill --adversarial to stress-test argument]
   |
   v
-pandastack:write-ship
+pandastack:ship write <draft>
   |── Stage 1: Close (mv to Published/, frontmatter, reverse-cite)
   |── Stage 2: Extract (thesis, byproducts, voice pattern)
   └── Stage 3: Backflow (_index, Inbox/, memory)

@@ -14,7 +14,7 @@ description: |
   Trigger: /work-ship <topic>, "ship this topic", "close out <topic>",
   "decision made on <topic>".
 tags: [work, lifecycle, ship]
-related_skills: [knowledge-ship, write-ship, retro-week, retro-month, process-decisions]
+related_skills: [ship, retro-week, retro-month]
 ---
 
 # /work-ship
@@ -27,7 +27,7 @@ This skill **never writes to Notion, Jira, Linear, Slack, or any external system
 
 - `<work-vault>/decisions/` — decision log (SSOT for the decision itself)
 - `<work-vault>/sop/` — SOP drafts
-- `<personal-vault>/Inbox/ship-proposals/` — markdown drafts of what to update in Notion / Jira / Linear (you push them manually later, via `/process-decisions` or by hand)
+- `<personal-vault>/Inbox/ship-proposals/` — markdown drafts of what to update in Notion / Jira / Linear (you push them manually later by walking the `[ ]` items)
 - `<personal-vault>/Inbox/ship-log/` — audit log
 
 Why: external mutations on team-visible systems should never be silent. Drafting to vault first means you can review the proposed update, edit wording, and push when ready — or not push at all.
@@ -139,7 +139,7 @@ Draft message:
 > <one-line resolution summary + link to Notion / decision log>
 ```
 
-**Important**: this file uses `[ ]` checkboxes so `/process-decisions` can pick it up later and walk through pushes one-by-one. The user (or a future Claude session with explicit external-write authorization) executes; this skill does not.
+**Important**: this file uses `[ ]` checkboxes so the user (or a future Claude session with explicit external-write authorization) can walk through pushes one-by-one. This skill never executes external pushes.
 
 ### 1.5 Show & Confirm (gate)
 
@@ -169,12 +169,12 @@ Close 完成: <topic>
 - Ship proposal 是 [ ] checkbox 格式，你可以：
   a) 自己看著它手動操作
   b) 直接編輯這個檔案調整措辭
-  c) 等需要時跑 /process-decisions 走一遍 push 流程
+  c) 等需要時用 /notion / /slack 走一遍 push 流程
   d) 什麼都不做
 - 要繼續 Stage 2 (Extract) + Stage 3 (Backflow) 嗎？[y/N]
 ```
 
-If user says no / stops here, write ship-log entry and exit. Tell user to run `/process-decisions` when ready to push proposals.
+If user says no / stops here, write ship-log entry and exit. Tell user to walk the proposal manually when ready to push.
 
 If no Backflow triggers AND Close-only, default stop. Don't ask Stage 2 question.
 
@@ -199,7 +199,7 @@ Backfill answers into the decision log's "Cycle" section if user is OK with it.
 |---|---|---|
 | Q4 = work-specific AND topic has reusable workflow | Draft SOP at `work-vault/sop/<slug>.md` from Q3 (反事實最快路徑就是 SOP 草稿) | `work-vault/sop/` |
 | Q4 = generalizable AND can be de-sensitive | Draft note at `knowledge/<domain>/<slug>.md` — STRIP 公司名 / 人名 / $ / ticker / 內部代號 | `knowledge/<domain>/` |
-| Q2 cycle waste = pitfall pattern (反覆撞同一個錯) OR Q3 反事實揭露 architecture decision | Draft `docs/learnings/<category>/<slug>.md` (categories: patterns / pitfalls / architecture). Replaces standalone `pandastack:compound`. Format: 問題 / 失敗嘗試 / root cause / 修正 / 下次怎麼避免。 | `docs/learnings/<category>/` |
+| Q2 cycle waste = pitfall pattern (反覆撞同一個錯) OR Q3 反事實揭露 architecture decision | Draft `docs/learnings/<category>/<slug>.md` (categories: patterns / pitfalls / architecture). Format: 問題 / 失敗嘗試 / root cause / 修正 / 下次怎麼避免。 | `docs/learnings/<category>/` |
 | Repeat pattern detected (similar topic in `decisions/` past 90d) AND ≥2 occurrences | Draft skill candidate at `~/.claude/skills/_staging/<auto-name>/SKILL.md` (two-strike rule per `rules/skill-emergence.md`) | `_staging/` |
 | Q3 reveals high-cost mistake (cycle waste > 3 rounds OR delayed by ambiguity) | Draft entry to `knowledge/personal/feedback-log.md` under "Active Patterns" | feedback-log |
 | Q3 reveals new heuristic for similar topics | Draft addition to user memory `feedback_*` or `project_*` | memory (vault path) |
@@ -225,7 +225,7 @@ Append to `Inbox/ship-log/YYYY-MM-DD.md`:
   - <action> → <落點>
 - Triggers: [<list>]
 - Cycle waste: <Q2 summary> (high / medium / low)
-- External pushes pending: Notion ✗, Jira ✗, Linear ✗ (run /process-decisions)
+- External pushes pending: Notion ✗, Jira ✗, Linear ✗ (walk proposal manually)
 ```
 
 retro-month reads this to compute "topics shipped per month" and "cycle waste trend".
@@ -253,6 +253,6 @@ The point of `/work-ship` is not to mark Notion green. The point is:
 3. **Personal knowledge gets work-tested principles** — only generalizable, de-sensitive lessons cross over. This is the L2 → L3 bridge your memory keeps pointing at.
 4. **retro-month metric** — `cycle waste trend` is a leading indicator. Flat over 3 months = not learning.
 5. **Skill emergence** — work-ship is one of the highest-signal sources for skill-discovery. Repeat patterns surface here first.
-6. **Ship proposals are reviewable** — you (or `/process-decisions` later) push to Notion / Jira / Linear only after reading what's about to be sent. No silent team-visible mutations.
+6. **Ship proposals are reviewable** — you push to Notion / Jira / Linear manually only after reading what's about to be sent. No silent team-visible mutations.
 
 Without ship, work happens but doesn't compound. With ship, every resolved topic makes the next one cheaper — and nothing escapes the vault until you say so.

@@ -50,7 +50,7 @@ type: lifecycle-flow
 ### Phase 6 — Ship
 
 - **What happens**: Close the research cycle. Verify the note, record wiki-links to related notes, update source-quality signal, run backflow if the research surfaced a generalizable principle or work-relevant SOP.
-- **Skills used**: `pandastack:knowledge-ship` (Close → Extract → Backflow)
+- **Skills used**: `pandastack:ship knowledge <path>` (Close → Extract → Backflow)
 - **Output**: `knowledge/` note with `verified: true`, wiki-links to at least one related existing note, ship log entry
 
 ## Exit criteria
@@ -92,7 +92,7 @@ pandastack:deep-research  (planner + researcher, quality gates)
   (absorb-first: gbq dedup check before creating new note)
   |
   v
-pandastack:knowledge-ship
+pandastack:ship knowledge <path>
   |── Stage 1: Close (verified, wiki-links, source-quality.json)
   |── Stage 2: Extract (optional)
   └── Stage 3: Backflow (optional: rules/SOP/memory)

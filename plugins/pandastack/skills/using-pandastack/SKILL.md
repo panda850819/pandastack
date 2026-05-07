@@ -15,9 +15,9 @@ This is not negotiable. Skills override default behavior. Rationalizing your way
 
 ## Why this file exists
 
-pandastack ships 48 skills, 5 personas, 7 lifecycle flows. The surface area is too large for ad-hoc invocation. Without a forcing function, the model defaults to "I'll just answer directly" and the skills never run. This file is the forcing function.
+pandastack ships 39 skills, 5 personas, 7 lifecycle flows. The surface area is too large for ad-hoc invocation. Without a forcing function, the model defaults to "I'll just answer directly" and the skills never run. This file is the forcing function.
 
-The failure mode this exists to prevent (observed across many sessions): writing code without running `careful` for prod paths, shipping without `review`, finishing a knowledge note without `knowledge-ship`. The skills exist; they just don't get invoked unless something pressures the check.
+The failure mode this exists to prevent (observed across many sessions): writing code without running `careful` for prod paths, shipping without `review`, finishing a knowledge note without `/ship knowledge`. The skills exist; they just don't get invoked unless something pressures the check.
 
 ## Instruction priority
 
@@ -36,8 +36,8 @@ When the current task matches one of these signals, the corresponding skill must
 | About to write/edit code in any production / shared-infra path | `pandastack:careful` (gate), then dev flow |
 | Bug fix / feature / refactor (3+ files OR new abstraction) | `pandastack:grill` or `/plan` first, NOT direct edits |
 | About to commit | `pandastack:review` first, THEN `pandastack:ship` |
-| Finished a knowledge note (`knowledge/<domain>/<note>.md` style) | `pandastack:knowledge-ship` to Close + Extract + Backflow |
-| Finished a draft ready to publish (Obsidian `Blog/_daily/` or equivalent) | `pandastack:write-ship` |
+| Finished a knowledge note (`knowledge/<domain>/<note>.md` style) | `pandastack:ship knowledge <path>` to Close + Extract + Backflow |
+| Finished a draft ready to publish (Obsidian `Blog/_daily/` or equivalent) | `pandastack:ship write <draft>` |
 | Finished a work topic with a decision to log | `pandastack:work-ship` |
 | Researching an unfamiliar concept | `pandastack:grill` (adversarial) → `pandastack:deep-research` |
 | Weekly / monthly retrospective time | `pandastack:retro-week` / `pandastack:retro-month` |
@@ -57,9 +57,9 @@ These thoughts mean you are about to skip a skill that applies. Stop and check.
 | "I'll do the skill check after I look at the code" | Skill check is BEFORE exploration. Skills tell you HOW to explore. |
 | "It's just a typo / rename" | Then it takes 10 seconds. Run it. |
 | "Running review/ship feels like overkill" | The skill itself decides if it's overkill. Invoke it and let it short-circuit. |
-| "I'll bundle the learning extract for later" | Later = never. `knowledge-ship` Stage 2 is the contract. |
+| "I'll bundle the learning extract for later" | Later = never. `/ship knowledge` Stage 2 is the contract. |
 | "I'll skip ship-log, the commit message captures it" | Ship logs aggregate; commit messages do not. |
-| "I remember what knowledge-ship does" | Skills evolve. Read the current version via the Skill tool. |
+| "I remember what `/ship knowledge` does" | Skills evolve. Read the current version via the Skill tool. |
 | "The user said 'just do X'" | "Just do X" is WHAT, not HOW. Skills handle HOW. |
 | "This is meta / harness work, not real work" | Harness work goes through the same gates. Especially `careful` on shared config. |
 | "There's no exact match" | Pick the closest. Mismatch is fine; skipped check is not. |
