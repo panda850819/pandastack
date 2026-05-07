@@ -32,7 +32,7 @@ firewall_from = ["work/yei/*", "work/sommet/*"]
 
 [sources]
 vault = "personal-vault"
-google_account = "${PANDASTACK_USER_EMAIL}"
+# google_account: configure once via `gog config set default_account` — skills don't override per-call
 
 [gbrain]
 allow      = ["panda-vault"]

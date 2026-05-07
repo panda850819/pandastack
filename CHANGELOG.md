@@ -1,5 +1,31 @@
 # Changelog
 
+## v2.0.1 — 2026-05-07
+
+> Cut the env var requirement. Skills now derive everything from natural sources: vault from cwd, Google account from `gog config set default_account`, plugin path from host resolver / relative resolution. Bootstrap output drops 3 warnings that were ceremonial.
+
+### Removed (env var dependencies)
+
+- `PANDASTACK_VAULT` — skills run from vault root (`cd <vault> && /<skill>`). `curate-feeds.ts` script now reads cwd + sanity-checks for `.obsidian/` or `Inbox/`.
+- `PANDASTACK_USER_EMAIL` — `brief-morning` and `evening-distill` use `gog`'s default account (`gog config set default_account <email>` once).
+- `PANDASTACK_HOME` — persona dispatch uses host plugin-resolver + plugin-relative paths. Overlay resolution checks for sibling `pandastack-private/` directory.
+- `PANDASTACK_WORK_VAULT` — `work-ship` runs from work-vault root.
+
+### Changed
+
+- `manifest.toml`: dropped all `config = ["env:..."]` lines from skill entries. Header doc updated to reflect cwd-based resolution.
+- `scripts/bootstrap.sh`: removed env var checks from substrate section. Only verifies `~/.agents/AGENTS.md`. Personal skill listing updated.
+- `skills/brief-morning/SKILL.md`, `skills/evening-distill/SKILL.md`: `gog calendar` and `gog gmail` calls drop the `--account "${PANDASTACK_USER_EMAIL}"` flag; rely on `gog` default.
+- `skills/curate-feeds/SKILL.md` + `scripts/curate-feeds.ts`: vault detected from cwd; aborts with vault-not-found error if cwd lacks `.obsidian/` or `Inbox/`.
+- `lib/persona-frame.md`: persona path resolution rewritten — host resolver → plugin-relative → cwd walk-up. No env var fallback.
+- `using-pandastack/SKILL.md`: overlay resolution checks for sibling `pandastack-private/` first; `PANDASTACK_OVERLAY` kept as escape hatch only.
+- `contexts/personal-writer.toml`: dropped `google_account = "${PANDASTACK_USER_EMAIL}"` line.
+- `README.md`: substrate config section rewritten — only `~/.agents/AGENTS.md` required.
+
+### Why
+
+The 3 env vars created cognitive load (bootstrap warnings on every fresh shell) without earning their keep. Vault path lives in the cron plist or shell cwd, account lives in `gog` config, plugin path lives in the host resolver. Pushing those into env vars was duplicating state. Removing them simplifies fresh-clone setup to "run bootstrap, see AGENTS.md status, install".
+
 ## v2.0.0 — 2026-05-07
 
 > Major cut. Aligns the stack to Panda's 6 actual lifecycles (work / writing / dev / knowledge / decision / ops-retro) plus security as a discipline. 48 → 39 skills. Aliases keep old names resolving for 90 days.

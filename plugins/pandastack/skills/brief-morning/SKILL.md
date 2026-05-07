@@ -27,7 +27,7 @@ Produce a one-page morning briefing for Panda and prepend it to today's daily no
 - Run from `<personal-vault>`.
 - Default target: `Blog/_daily/YYYY-MM-DD.md`.
 - Smoke target: if the user/task names `/tmp/morning-briefing-smoke.md`, write there instead of the daily note.
-- Use the personal Google account configured at `${PANDASTACK_USER_EMAIL}` for all Google sources in this workflow. If the env var is unset, abort with an actionable error rather than guessing.
+- Use the default `gog` account for all Google sources (configure once via `gog config set default_account`). If `gog` has no default, abort with the actionable error from `gog` itself rather than guessing.
 - Never read Slack or work-only sources.
 - If today's briefing already exists, replace only that briefing block.
 - Never replace the rest of the daily note.
@@ -39,8 +39,8 @@ Produce a one-page morning briefing for Panda and prepend it to today's daily no
 ## Sources
 
 1. Yesterday's daily note: read `Blog/_daily/$(date -v-1d +%Y-%m-%d).md`; within `## Action Items`, extract unchecked `- [ ]` lines.
-2. Calendar: `gog calendar events "${PANDASTACK_USER_EMAIL}" --today --max 5 --plain --account "${PANDASTACK_USER_EMAIL}"`; format the first 3 events as start time, title, attendee count, and prep needed.
-3. Gmail: `gog gmail search 'is:unread newer_than:12h' --max 10 --plain --account "${PANDASTACK_USER_EMAIL}"`; keep the top 3 personal-priority or urgent threads.
+2. Calendar: `gog calendar events --today --max 5 --plain`; format the first 3 events as start time, title, attendee count, and prep needed.
+3. Gmail: `gog gmail search 'is:unread newer_than:12h' --max 10 --plain`; keep the top 3 personal-priority or urgent threads.
 4. Vault focus seed: `gbq "yesterday distill OR open todos OR P0"`, use the top relevant hit.
 5. Writing seeds: reuse the strongest 3 note candidates from yesterday's distill / queue-worthy items in the vault.
 

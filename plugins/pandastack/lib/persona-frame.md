@@ -53,9 +53,9 @@ When a flow skill (e.g. `boardroom`, `team-orchestrate`) needs to dispatch a per
 
 ```
 1. Resolve the persona SKILL.md path. Try in order:
-   a. ${PANDASTACK_HOME}/skills/<persona>/SKILL.md (set by /pandastack:init)
-   b. host plugin-resolver lookup of `pandastack:<persona>`
-   c. fallback: ~/site/skills/pandastack/plugins/pandastack/skills/<persona>/SKILL.md
+   a. host plugin-resolver lookup of `pandastack:<persona>` (Claude Code / Codex SDK exposes the install path)
+   b. plugin-relative: `<this-skill>/../<persona>/SKILL.md` (relative resolution from the calling skill's directory)
+   c. fallback: walk up from cwd looking for `plugins/pandastack/skills/<persona>/SKILL.md`
 2. Extract the 6 contract sections (Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns + Apply BAD/GOOD calibration)
 3. Inline them at the TOP of the Agent tool prompt, fenced as a persona block:
 

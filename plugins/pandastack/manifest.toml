@@ -22,15 +22,20 @@
 #   npm:<pkg>           — npm install -g <pkg>
 #   pipx:<pkg>          — pipx install <pkg>
 #   private:<name>      — private CLI from pandastack-private overlay
-#   env:<VAR>           — env var must be set (typically by /pandastack:init)
+#
+# Skills derive vault path from cwd (run from vault root) and auth from CLI defaults
+# (e.g. `gog config set default_account`). No env vars required as of v2.0.1.
 #
 # This file is hand-curated. When you add or rename a skill, update here.
 
 [manifest]
-version = "2.0.0"
+version = "2.0.1"
 schema  = "skill-tier-v1"
 updated = "2026-05-07"
 
+# v2.0.1: cut env var requirement (PANDASTACK_VAULT / PANDASTACK_USER_EMAIL /
+# PANDASTACK_HOME). Skills derive vault from cwd; gog uses default account; persona
+# dispatch uses plugin-relative path resolution.
 # v2.0.0: cut 7 orphan skills (atomize, architect, execute-plan, think-like-karpathy,
 # process-decisions, wiki-lint, retro-prep-week). knowledge-ship + write-ship merged
 # into /ship as modes. Aliases keep old names resolving for 90 days.
@@ -87,8 +92,7 @@ description = "Atomic adversarial requirement discovery."
 
 [skill.inbox-triage]
 tier = "core"
-config = ["env:PANDASTACK_VAULT"]
-description = "Weekly Inbox/ hygiene, bucket stale .md by category."
+description = "Weekly Inbox/ hygiene, bucket stale .md by category. Run from vault root."
 
 [skill.init]
 tier = "core"
@@ -122,8 +126,7 @@ description = "Parallel 3-pass review (correctness, security, architecture)."
 [skill.ship]
 tier = "core"
 requires = ["cli:git", "cli:gh"]
-config = ["env:PANDASTACK_VAULT"]  # only required for knowledge / write modes
-description = "Multi-mode ship verb: git (default), knowledge, write. Aliases: knowledge-ship, write-ship."
+description = "Multi-mode ship verb: git (default), knowledge, write. Knowledge / write modes run from vault root. Aliases: knowledge-ship, write-ship."
 
 [skill.sprint]
 tier = "core"
@@ -148,8 +151,7 @@ description = "Cognitive contract loaded at session start."
 
 [skill.work-ship]
 tier = "core"
-config = ["env:PANDASTACK_WORK_VAULT"]
-description = "Close + Extract + Backflow on a work topic. Vault-only."
+description = "Close + Extract + Backflow on a work topic. Run from work-vault root. Vault-only."
 
 [skill.write]
 tier = "core"
@@ -191,14 +193,12 @@ description = "Summarize URL / YouTube / podcast / PDF."
 [skill.brief-morning]
 tier = "personal"
 requires = ["private:gog", "private:gbq"]
-config = ["env:PANDASTACK_USER_EMAIL", "env:PANDASTACK_VAULT"]
-description = "Daily 8am morning briefing into daily note."
+description = "Daily 8am morning briefing into daily note. Run from vault root; gog uses its default account."
 
 [skill.curate-feeds]
 tier = "personal"
 requires = ["private:feed-server", "cli:defuddle"]
-config = ["env:PANDASTACK_VAULT"]
-description = "Pull feed items to Inbox/feeds/raw/ via private feed-server."
+description = "Pull feed items to Inbox/feeds/raw/ via private feed-server. Run from vault root."
 
 [skill.deep-research]
 tier = "personal"
@@ -208,8 +208,7 @@ description = "Two-layer planner+researcher with vault gap analysis."
 [skill.evening-distill]
 tier = "personal"
 requires = ["private:gog", "private:gbq"]
-config = ["env:PANDASTACK_USER_EMAIL", "env:PANDASTACK_VAULT"]
-description = "Daily 10pm end-of-day distill into daily note."
+description = "Daily 10pm end-of-day distill into daily note. Run from vault root; gog uses its default account."
 
 [skill.bird]
 tier = "personal"

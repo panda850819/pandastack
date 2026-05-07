@@ -3,7 +3,7 @@ name: curate-feeds
 aliases: [feed-curator]
 description: |
   Pull unprocessed items from feed-server, enrich web articles via defuddle, write obsidian-clipper-style markdown to Inbox/feeds/raw/.
-  Implementation ships with this skill at `scripts/curate-feeds.ts` (resolved via `${PANDASTACK_HOME}/skills/curate-feeds/scripts/curate-feeds.ts`). AI does NOT summarize, score P0-P3, or author substance — defuddle extracts, the script writes, Panda triages.
+  Implementation ships with this skill at `scripts/curate-feeds.ts` (resolved relative to the plugin install). AI does NOT summarize, score P0-P3, or author substance — defuddle extracts, the script writes, Panda triages.
 
   Trigger on: /curate-feeds, /feed-curator (alias), "fetch feeds", "pull feeds", scheduled cron.
   Skip when: user wants summaries or analysis (use /knowledge after triage instead).
@@ -24,13 +24,13 @@ If the script breaks or behavior needs to change, edit the script. The skill sta
 - Feed server daemon (the `feed-server` bun project) running at `${PANDASTACK_FEED_SERVER:-http://localhost:3456}`. Clone separately from the public feed-server repo if you want this skill operational; without the daemon, the script exits early with `0 items`.
 - `defuddle` CLI on PATH (`which defuddle`) — `npm install -g defuddle`
 - `bun` on PATH (`which bun`) — `curl -fsSL https://bun.sh/install | bash`
-- `PANDASTACK_VAULT` env var pointing at your personal vault (script aborts if unset)
+- Run from vault root. The script writes to `Inbox/feeds/raw/<date>/` relative to cwd.
 - Optional: `PANDASTACK_FEED_SERVER` to override the default daemon URL
 
 ## Run
 
 ```bash
-bun run "${PANDASTACK_HOME}/skills/curate-feeds/scripts/curate-feeds.ts"
+cd <your-vault> && bun run <plugin-path>/skills/curate-feeds/scripts/curate-feeds.ts
 ```
 
 Default: process up to 100 unprocessed items per run.

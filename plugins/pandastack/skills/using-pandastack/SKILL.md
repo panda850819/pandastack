@@ -75,8 +75,8 @@ These thoughts mean you are about to skip a skill that applies. Stop and check.
 
 A personal / org overlay may be appended to this contract by the SessionStart hook. Resolution order:
 
-1. `${PANDASTACK_OVERLAY}` if set
-2. `${PANDASTACK_HOME}/overlays/using-pandastack.md` if exists
+1. Sibling overlay: `<pandastack-private>/overlays/using-pandastack.md` if a `pandastack-private/` directory sits next to `pandastack/` on disk
+2. `${PANDASTACK_OVERLAY}` env var if explicitly set (escape hatch for non-standard layouts)
 3. (no overlay loaded — public contract is self-contained)
 
 The SessionStart hook MUST log explicitly which step matched. Silent fallback to a private path is a bug — fresh users without an overlay get no signal that the lifecycle map is running on public defaults only.

@@ -30,7 +30,7 @@ bash pandastack/scripts/bootstrap.sh --claude    # or --codex
 ```
 
 `bootstrap.sh` reports:
-- substrate state (`~/.agents/AGENTS.md`, `PANDASTACK_VAULT`, `PANDASTACK_USER_EMAIL`)
+- substrate state (`~/.agents/AGENTS.md` only)
 - 27 core skills runnable on this clone with no external CLI
 - 5 extension skills with the exact `brew install` / `npm install -g` to enable each
 - 7 personal skills hidden behind the `pandastack-private` overlay
@@ -173,16 +173,16 @@ bash scripts/bootstrap.sh --codex     # also print Codex CLI install steps
 
 After install, run `/pandastack:init` once inside your project.
 
-### Substrate config (set in your shell rc)
+### Substrate config
 
-```bash
-export PANDASTACK_VAULT=$HOME/path/to/your/vault            # required for vault skills
-export PANDASTACK_HOME=/absolute/path/to/pandastack/plugins/pandastack
-export PANDASTACK_USER_EMAIL=you@example.com                # only for brief-morning / evening-distill
-export PANDASTACK_WORK_VAULT=$HOME/path/to/work-vault       # only if you keep a separate work vault
-```
+`~/.agents/AGENTS.md` is the only required substrate. No env vars needed as of v2.0.1:
 
-Re-run `bash scripts/bootstrap.sh` any time to verify.
+- **Vault path**: skills run from vault root (`cd <your-vault> && /<skill>`). Cron entries `cd` first.
+- **Google account** (for `brief-morning`, `evening-distill`): configure once via `gog config set default_account <you@example.com>`.
+- **Plugin path**: resolved via host plugin-resolver (Claude Code / Codex SDK) or relative path from the calling skill.
+- **Work vault**: `cd <work-vault> && /work-ship` — same pattern.
+
+Re-run `bash scripts/bootstrap.sh` any time to verify substrate.
 
 ## Optional: private overlay (`pandastack-private`)
 

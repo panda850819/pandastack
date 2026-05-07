@@ -20,10 +20,13 @@ import {
 } from "node:fs";
 import { join } from "node:path";
 
-const VAULT = process.env.PANDASTACK_VAULT;
-if (!VAULT) {
+// Vault is the cwd. Run from vault root: cd <vault> && bun run <this-script>.
+// Sanity-check by looking for an Obsidian vault marker (.obsidian/) or Inbox/.
+const VAULT = process.cwd();
+if (!existsSync(join(VAULT, ".obsidian")) && !existsSync(join(VAULT, "Inbox"))) {
   console.error(
-    "PANDASTACK_VAULT not set. Export it (e.g. export PANDASTACK_VAULT=$HOME/path/to/vault) or run /pandastack:init.",
+    `cwd does not look like an Obsidian vault: ${VAULT}\n` +
+      "Run from your vault root (the directory containing .obsidian/ or Inbox/).",
   );
   process.exit(1);
 }

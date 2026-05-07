@@ -46,26 +46,6 @@ else
   echo "      Fix: create ~/.agents/AGENTS.md (see README § Substrate)"
 fi
 
-if [ -n "${PANDASTACK_VAULT:-}" ] && [ -d "${PANDASTACK_VAULT}" ]; then
-  ok "PANDASTACK_VAULT=${PANDASTACK_VAULT}"
-else
-  warn "PANDASTACK_VAULT not set"
-  echo "      Fix: export PANDASTACK_VAULT=\$HOME/path/to/your/vault"
-fi
-
-if [ -n "${PANDASTACK_USER_EMAIL:-}" ]; then
-  ok "PANDASTACK_USER_EMAIL=${PANDASTACK_USER_EMAIL}"
-else
-  warn "PANDASTACK_USER_EMAIL not set (only needed for brief-morning / evening-distill)"
-fi
-
-if [ -n "${PANDASTACK_HOME:-}" ]; then
-  ok "PANDASTACK_HOME=${PANDASTACK_HOME}"
-else
-  warn "PANDASTACK_HOME not set; persona dispatch will use fallback resolution"
-  echo "      Suggested: export PANDASTACK_HOME=$REPO_ROOT/plugins/pandastack"
-fi
-
 echo
 
 # ----------------------------------------------------------------------------
