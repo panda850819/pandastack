@@ -96,13 +96,13 @@ echo
 echo "[4/4] Personal skills (private overlay)"
 if [ -d "$HOME/site/skills/pandastack-private" ] || [ -n "${PANDASTACK_PRIVATE:-}" ]; then
   ok "private overlay detected at $HOME/site/skills/pandastack-private"
-  echo "      Unlocks: brief-morning, evening-distill, deep-research,"
-  echo "               curate-feeds, bird, slack, notion"
+  echo "      Unlocks: brief-morning, evening-distill, curate-feeds,"
+  echo "               bird, slack, notion"
 else
-  warn "no private overlay (7 skills hidden)"
-  echo "      brief-morning, evening-distill, deep-research,"
-  echo "      curate-feeds, bird, slack, notion"
-  echo "      These need private CLIs (gbq / gbrain / gog / bird / pdctx / ..)."
+  warn "no private overlay (6 skills hidden)"
+  echo "      brief-morning, evening-distill, curate-feeds,"
+  echo "      bird, slack, notion"
+  echo "      These need private CLIs (gog / bird / pdctx / ..)."
   echo "      pandastack-private is not currently published."
 fi
 

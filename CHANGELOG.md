@@ -1,5 +1,38 @@
 # Changelog
 
+## v2.1.0 — 2026-05-07
+
+> Substrate-agnostic cut. Drops the `gbq` / `gbrain` dependency that fresh installs couldn't satisfy. Cuts `deep-research` (gbrain-core) and `work-sommet-abyss-po` context. 39 → 38 skills, 8 → 7 contexts.
+
+### Removed
+
+- **Skill: `deep-research`** — required `gbrain` CLI + brain index. pandastack v2.1.0 stops assuming a brain index; vault scans now run via `rg` / `find`. Two-layer planner+researcher pattern can be re-introduced later as a generic skill that doesn't depend on a specific index.
+- **Context: `work-sommet-abyss-po`** — Sommet Abyss inactive; if revived, will land in a separate plugin (`sommet-stack`).
+- **Substrate dependency: `gbq` / `gbrain`** across `brief-morning`, `evening-distill`, `dojo`, `done`, `retro-week`, `flows/decision.md`, `flows/knowledge.md`, `flows/research.md`, `flows/work.md`. Replaced with direct file scans (`rg` / `find` on `Blog/_daily/`, `Inbox/ship-log/`, `knowledge/`, `docs/sessions/`).
+- **Capability probe checks**: `gbq` and `pdctx` removed from `lib/capability-probe.md` (8 checks → 6 checks).
+
+### Changed
+
+- `manifest.toml`: removed `[skill.deep-research]` entry. PERSONAL count 7 → 6. Total skills 39 → 38.
+- `RESOLVER.md`: dropped `pandastack:deep-research` row from Knowledge / research section. Updated v2.1.0 cut summary table. Aliases section notes `deep-research` cut. Drop `work-sommet-abyss-po` row from Contexts table.
+- `README.md`: skill counts 39 → 38, contexts 8 → 7. Personal listing dropped `deep-research`. All `gbq` mentions in skill descriptions replaced with vault scan equivalents. Optional private overlay skills list and tier=personal CLI list trimmed (`gbq` / `gbrain` removed).
+- `ROADMAP.md`: skill counts updated. Onboarding scaffold note updated to reflect brain-index assumption removal.
+- `scripts/bootstrap.sh`: personal listing dropped `deep-research`; CLI hint dropped `gbq` / `gbrain`. (6 personal skills now.)
+- `using-pandastack/SKILL.md`: research-trigger row replaces `deep-research` with `scout`.
+- `.codex/INSTALL.md`: skill count 48 → 38; `gbq` removed from local-CLI list.
+- `flows/*.md`: `gbq` references replaced with `rg` / `find` direction.
+- `contexts/*.toml` (personal): `[gbrain]` blocks removed. Sommet entries in firewall lists removed.
+- `skills/work-ship/SKILL.md`: domain options simplified to `yei | other`.
+- `skills/ship/modes/knowledge.md`: work keyword check no longer references `sommet` / `abyss`. Suggestion text uses `rg -l` instead of `gbq`.
+
+### Why
+
+`gbq` / `gbrain` is a personal CLI requiring a brain index that fresh installs can't replicate without separate setup. Skills that called it were silently failing for non-author users. Replacing with `rg` / `find` on standard vault paths makes the substrate self-contained: any clone with a markdown vault works without a side index.
+
+The `work-sommet-abyss-po` context was inactive and pulled the substrate footprint into a side product. Cutting it keeps pandastack focused on Panda's personal + work contexts.
+
+`deep-research` was the only skill that was fundamentally gbrain-shaped. Cutting it (rather than rewriting) is honest: a substrate-agnostic deep-research belongs to a future iteration, not a forced port.
+
 ## v2.0.1 — 2026-05-07
 
 > Cut the env var requirement. Skills now derive everything from natural sources: vault from cwd, Google account from `gog config set default_account`, plugin path from host resolver / relative resolution. Bootstrap output drops 3 warnings that were ceremonial.

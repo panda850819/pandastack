@@ -3,13 +3,12 @@ name: dojo
 aliases: [prep]
 mode: skill
 description: |
-  Pre-action prep — runs before any sprint / office-hours / boardroom or standalone before a non-trivial work session. gbq past similar cases, load relevant lib/ refs, surface gotchas before user starts work. Outputs a brief prep section the user reads before diving in.
+  Pre-action prep — runs before any sprint / office-hours / boardroom or standalone before a non-trivial work session. Scan past similar cases via filename + grep, load relevant lib/ refs, surface gotchas before user starts work. Outputs a brief prep section the user reads before diving in.
   Triggers on /dojo, /prep (alias), "before I start", "let me prep first", auto-invoked by /sprint and /office-hours at Stage 0.
   Skill metaphor: dojo = practice space before stepping into the ring. Don't go in cold.
 reads:
   - repo: lib/capability-probe.md
   - repo: lib/escape-hatch.md
-  - cli: gbq
   - vault: knowledge/**
   - vault: docs/sessions/**
   - vault: docs/learnings/**
@@ -21,7 +20,6 @@ classification: lifecycle-flow
 capability_required:
   - agents.md
   - vault
-  - gbq        # optional — degraded mode falls back to rg
   - lib/capability-probe.md
 ---
 
@@ -41,7 +39,7 @@ Universal Stage 0 for every Layer 1 flow (sprint, office-hours, boardroom, work,
 
 - Trivial fix (1-line typo, single config)
 - User explicitly says "skip prep"
-- gbq broken AND vault inaccessible (capability-probe blocks)
+- Vault inaccessible (capability-probe blocks)
 
 ## Stages
 
@@ -49,21 +47,20 @@ Universal Stage 0 for every Layer 1 flow (sprint, office-hours, boardroom, work,
 
 @../../lib/capability-probe.md
 
-Run probe. Abort if substrate broken. Degrade if gbq unavailable (fall back to `rg` on vault root). Continue if all green.
+Run probe. Abort if substrate broken. Continue if all green.
 
-### Stage 0b: Past-case lookup (gbq)
+### Stage 0b: Past-case lookup
 
-Take the user's stated topic. Run 3 queries against vault:
+Take the user's stated topic. Run filename + content scans against vault:
 
 ```
-gbq "<topic>"                         # direct match
-gbq "<topic-noun-phrase>"             # extract noun phrases for variant
-gbq "previous decisions <topic>"      # look for prior decision logs
+ls docs/sessions/ docs/learnings/ knowledge/ | rg -i "<topic>"  # filename match
+rg -l "<topic>" docs/sessions/ docs/learnings/ knowledge/ Blog/_daily/ | head -10  # content match
 ```
 
-Take top 5 hits per query. De-dup. Read the matched file's first 200 chars to extract context.
+Take top 5 hits across both. De-dup. Read the matched file's first 200 chars to extract context.
 
-If 0 hits across all 3 queries: surface "no prior context found, this looks new". User can confirm or correct ("you've worked on this — search again with different terms").
+If 0 hits: surface "no prior context found, this looks new". User can confirm or correct ("you've worked on this — search again with different terms").
 
 ### Stage 0c: Lib + relevant pattern load
 
@@ -142,7 +139,7 @@ If invoked auto from `/sprint` or `/office-hours`, the parent flow's Stage 1 rea
 
 @../../lib/escape-hatch.md
 
-If user says "skip prep" / "夠了" during the gbq lookup phase, stop the lookup, write whatever past-cases were found, mark gotcha section as `[skipped, escape-hatch]`, output the prep file. Do not abort the prep entirely — partial prep is better than none.
+If user says "skip prep" / "夠了" during the past-case lookup phase, stop the lookup, write whatever past-cases were found, mark gotcha section as `[skipped, escape-hatch]`, output the prep file. Do not abort the prep entirely — partial prep is better than none.
 
 ## Origin
 

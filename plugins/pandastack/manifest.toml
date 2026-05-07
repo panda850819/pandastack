@@ -29,10 +29,13 @@
 # This file is hand-curated. When you add or rename a skill, update here.
 
 [manifest]
-version = "2.0.1"
+version = "2.1.0"
 schema  = "skill-tier-v1"
 updated = "2026-05-07"
 
+# v2.1.0: cut gbq / gbrain dependency. deep-research removed (gbrain-core skill).
+# brief-morning + evening-distill drop gbq vault-focus seed (use file scan instead).
+# Sommet skills + work-sommet-abyss-po context removed from pandastack-private.
 # v2.0.1: cut env var requirement (PANDASTACK_VAULT / PANDASTACK_USER_EMAIL /
 # PANDASTACK_HOME). Skills derive vault from cwd; gog uses default account; persona
 # dispatch uses plugin-relative path resolution.
@@ -187,12 +190,12 @@ requires = ["brew-tap:steipete/tap/summarize"]
 description = "Summarize URL / YouTube / podcast / PDF."
 
 # ============================================================================
-# PERSONAL (7) — private CLI / private overlay required
+# PERSONAL (6) — private CLI / private overlay required
 # ============================================================================
 
 [skill.brief-morning]
 tier = "personal"
-requires = ["private:gog", "private:gbq"]
+requires = ["private:gog"]
 description = "Daily 8am morning briefing into daily note. Run from vault root; gog uses its default account."
 
 [skill.curate-feeds]
@@ -200,14 +203,9 @@ tier = "personal"
 requires = ["private:feed-server", "cli:defuddle"]
 description = "Pull feed items to Inbox/feeds/raw/ via private feed-server. Run from vault root."
 
-[skill.deep-research]
-tier = "personal"
-requires = ["private:gbq", "private:gbrain"]
-description = "Two-layer planner+researcher with vault gap analysis."
-
 [skill.evening-distill]
 tier = "personal"
-requires = ["private:gog", "private:gbq"]
+requires = ["private:gog"]
 description = "Daily 10pm end-of-day distill into daily note. Run from vault root; gog uses its default account."
 
 [skill.bird]

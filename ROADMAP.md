@@ -8,7 +8,7 @@ Status: stable since 2026-04-29 (`aab8f49`). API, schema, and skill content are 
 
 What v1 is:
 
-- 39 skills (27 core / 5 ext / 7 personal) covering dev / knowledge / writing / work / research / retro / decision lifecycles
+- 38 skills (27 core / 5 ext / 6 personal) covering dev / knowledge / writing / work / research / retro / decision lifecycles
 - 5 personas (eng / design / ceo / ops / product) replaceable per project
 - 4 personal contexts + private overlay for work contexts
 - 5-layer firewall (L1 voice / L2 fs chmod / L3 MCP deny / L4 context recipe / L5 per-skill allowlist)
@@ -17,7 +17,7 @@ What v1 is:
 What v1 is **not**:
 
 - Public-ready for fresh users. As of 2026-05-06, the count of fresh A-class users (Obsidian + Coding Agent power users) who have run `/plugin install` end-to-end without author intervention is 0. The v1 README "Quick start" section ships in dev-mode framing for this reason.
-- Onboarding-scaffold-bundled. v1 assumes the user brings their own Obsidian vault, gbq via gbrain index, and pdctx config. capability-probe will surface gaps; v1 does not paper over them.
+- Onboarding-scaffold-bundled. v1 assumes the user brings their own Obsidian vault and pdctx config. capability-probe will surface gaps; v1 does not paper over them.
 - Vault-provider-agnostic. v1 hard-codes Obsidian as the vault layer. Logseq / Roam / Notion users are out of scope until v2.
 
 Maintenance window through v2: skill content can iterate (new skills, refactors, lib extractions) under v1.x minor versions as long as Tier 1 substrate primitives (persona / context / skill-as-markdown) stay stable. Breaking changes to the three primitives go behind a v2.0 cut, not v1.x.
@@ -28,8 +28,8 @@ Goal: a fresh A-class user can `/plugin install pandastack@pandastack` and reach
 
 Scope:
 
-- **Onboarding scaffold** `[partial — shipped in v1.3.0 / v1.4.0; env-var requirement removed in v2.0.1]`. Bootstrap script (`scripts/bootstrap.sh`) + manifest-driven tier model (`plugins/pandastack/manifest.toml`) replaced the previous 4-section README install dance. Skills derive vault path from cwd and Google account from `gog` defaults — no env vars to set. Remaining for v2.x: vault scaffolding (auto-create `Inbox/`, `Blog/_daily/`, `docs/learnings/atoms/` if absent), gbrain index bootstrap, pdctx context picker, first-session walkthrough.
-- **Multi-vault provider abstraction**. v1 hard-codes Obsidian + gbq. v2 introduces a vault-provider interface so Logseq / Roam / Notion users can plug their own backend. Reference implementation: Obsidian (existing) + at least one alternative.
+- **Onboarding scaffold** `[partial — shipped in v1.3.0 / v1.4.0; env-var requirement removed in v2.0.1; brain-index assumption removed in v2.1.0]`. Bootstrap script (`scripts/bootstrap.sh`) + manifest-driven tier model (`plugins/pandastack/manifest.toml`) replaced the previous 4-section README install dance. Skills derive vault path from cwd and Google account from `gog` defaults — no env vars to set, no brain index to bootstrap. Remaining for v2.x: vault scaffolding (auto-create `Inbox/`, `Blog/_daily/`, `docs/learnings/atoms/` if absent), pdctx context picker, first-session walkthrough.
+- **Multi-vault provider abstraction**. v1 hard-codes Obsidian + plain markdown. v2 introduces a vault-provider interface so Logseq / Roam / Notion users can plug their own backend. Reference implementation: Obsidian (existing) + at least one alternative.
 - **Fresh A-user dogfood criteria**. v2 cut requires real-user validation, not author-only. Concrete bar: 3 fresh A-class users complete install + 1 week of daily use without author hand-holding. Below that, v2 stays in pre-release. v1.3.0+ structural fix opens the verification window — before this, the install bar was too high to ask anyone to try.
 - **Public capability-probe defaults** `[partial — shipped in v1.3.0]`. Manifest tier metadata + bootstrap.sh probe table now route fresh users through "what runs now / what to install / what is private overlay" rather than a "you're on your own" dump. Remaining for v2: capability-probe itself (the in-skill `lib/capability-probe.md` invocation) needs to consume manifest data and emit the same actionable framing rather than the current generic gap dump.
 - **L5 firewall hook**. README v1.4.0 was honest about L5 currently being frontmatter-only metadata with no runtime enforcement. v2 should ship the actual PreToolUse hook that reads `reads` / `writes` / `forbids` / `classification` from each SKILL.md and enforces them — or formally retire L5 as a design choice and update the architecture doc accordingly.
@@ -44,9 +44,13 @@ Out of v2 scope (deferred or rejected):
 
 These are not yet decided. Each affects v2 priority but does not block v1 cut.
 
-- **When does v2 work start?** Three plausible triggers: (a) Sommet PO + companyos Phase 1 sprints close to free up author bandwidth; (b) ≥1 fresh A-class user reaches out organically and asks for install help (signals real demand); (c) calendar-driven start at 2026 Q3. No commitment yet.
+- **When does v2 work start?** Three plausible triggers: (a) companyos Phase 1 sprints close to free up author bandwidth; (b) ≥1 fresh A-class user reaches out organically and asks for install help (signals real demand); (c) calendar-driven start at 2026 Q3. No commitment yet.
 - **What do the 50 補丁 skills look like under v1.x stable?** The three substrate primitives (persona / context / skill-as-markdown) are locked. The补丁 layer (curate-feeds, gatekeeper, retro-week, etc.) iterates inside v1.x minor versions. Open: should a subset (careful / grill / sprint / review / ship) be promoted to substrate-tier and frozen, or stay iterable?
 - **Cofounder.co follow-up**. Cofounder shipped 1:1 architecture (Departments / Agents / Skills) as a closed-platform SaaS on 2026-05-04. Their multi-CLI / self-host stance at 2026-11 (6-month look-ahead) influences v2 priority: if they open self-host, pandastack's v2 differentiation narrows; if they stay closed-platform, pandastack's open-substrate position holds.
+
+## v2.1.0 cut (2026-05-07)
+
+Substrate-agnostic cut. Removed `gbq` / `gbrain` assumption from all skills (was personal-CLI dependency that fresh installs couldn't satisfy without separate brain index). Vault scans now use `rg` / `find` directly. Cut `deep-research` skill (gbrain-core) and `work-sommet-abyss-po` context. Net: 39 → 38 skills, 8 → 7 contexts. See `CHANGELOG.md` v2.1.0.
 
 ## Decision rationale
 

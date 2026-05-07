@@ -12,7 +12,6 @@ reads:
   - repo: lib/stop-rule.md
   - repo: lib/bad-good-calibration.md
   - repo: lib/goal-mapping.md
-  - cli: gbq
   - vault: knowledge/**
   - vault: docs/sessions/**
 writes:
@@ -24,7 +23,6 @@ classification: lifecycle-flow
 capability_required:
   - agents.md
   - vault
-  - gbq      # optional — degrade to rg
   - lib/push-once.md
   - lib/escape-hatch.md
   - lib/stop-rule.md
@@ -52,7 +50,7 @@ capability_required:
 ## Modes
 
 - **Default** (full): all 5 stages, ~30 min. Use for fuzzy ideas where context, goal mapping, and premise challenge all matter.
-- **`--quick`**: skip Stage 1 (capability probe + gbq load + goal mapping). Jump straight to Stage 2 premise challenge with user-provided context. ~10-15 min. Use when context is already loaded in-session and you only need premise challenge → alternatives → brief.
+- **`--quick`**: skip Stage 1 (capability probe + vault scan + goal mapping). Jump straight to Stage 2 premise challenge with user-provided context. ~10-15 min. Use when context is already loaded in-session and you only need premise challenge → alternatives → brief.
 
 `--quick` is the structured-brief replacement for the deprecated `grill --mode structured`. When user says "draft a brief" / "structured intake" and goal context is already established this session, run `/office-hours --quick`.
 
@@ -72,7 +70,7 @@ capability_required:
 @../../lib/capability-probe.md
 
 Then:
-1. gbq the topic — surface 3-5 prior vault hits
+1. Scan vault for the topic (filename + content match across `docs/sessions/`, `docs/learnings/`, `knowledge/`) — surface 3-5 prior hits
 2. Read `lib/goal-mapping.md` Step 1: identify L1 / L2 / L3 goals from memory
 3. State: "Today's office hours topic is: {topic}. Prior context: {summary}. Active goals: {L1/L2/L3}."
 4. Print: `Stage 1 done. Proceeding to Stage 2 — premise challenge. [press any key or write 'skip' to jump to Stage 3]`

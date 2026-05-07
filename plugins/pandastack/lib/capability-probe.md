@@ -1,12 +1,12 @@
 # lib/capability-probe.md — Substrate availability check + graceful degradation
 
-> Shared module. Loaded by Layer 1 flow skills (`sprint`, `office-hours`, `boardroom`, `dojo`, `prep`) at startup. Detects missing substrate (gbq, vault, pdctx, AGENTS.md, lib/ files) and either degrades to generic mode or aborts with a missing-deps list. Never silently fails.
+> Shared module. Loaded by Layer 1 flow skills (`sprint`, `office-hours`, `boardroom`, `dojo`, `prep`) at startup. Detects missing substrate (vault, AGENTS.md, lib/ files, declared CLIs) and either degrades to generic mode or aborts with a missing-deps list. Never silently fails.
 >
-> Origin: pandastack v1.0 is public, but slim skills assume Panda's substrate exists (gbq / vault / pdctx context / private overlay). Fresh-clone users hit silent degradation. Codex Q6 (2026-05-04 review) flagged this. capability-probe makes the substrate dependency explicit + load-bearing.
+> Origin: pandastack v1.0 is public, but slim skills assume the user has Obsidian + AGENTS.md + a few CLIs set up. Fresh-clone users hit silent degradation. Codex Q6 (2026-05-04 review) flagged this. capability-probe makes the substrate dependency explicit + load-bearing.
 
 ## When to load
 
-At the START of every Layer 1 flow skill — before any `gbq` call, before any vault read, before any pdctx context lookup. Atomic check that runs in <500ms.
+At the START of every Layer 1 flow skill — before any vault read, before any CLI call. Atomic check that runs in <500ms.
 
 Specifically:
 
@@ -19,22 +19,20 @@ Specifically:
 
 Skip for atomic skills that have no substrate dependency (`init`, `done`, `freeze`, `careful`, `checkpoint`).
 
-## Probe checks (8 items)
+## Probe checks (6 items)
 
-Run all 8 checks. Each returns `ok / missing / broken / unknown`.
+Run all 6 checks. Each returns `ok / missing / broken / unknown`.
 
 ```
 [1] AGENTS substrate    — `~/.agents/AGENTS.md` exists, readable, non-empty
-[2] vault root          — vault path from pdctx context exists, has Inbox/ + knowledge/ subdirs
-[3] gbq                 — `gbq --version` returns 0; `gbq smoke "test"` returns ≥1 result OR "no results" (not error)
-[4] pdctx               — `pdctx status` returns current context name; not stale
-[5] lib/ files          — required lib/ refs for THIS skill exist (read frontmatter `reads:` to determine list)
-[6] persona agents      — if skill chains personas, check `~/.claude/agents/{persona}.md` OR `agents/{persona}.md` source exists
-[7] cli tools           — domain-specific CLIs (gog, slack, bird, notion, defuddle) only if frontmatter `reads: cli: <name>`
-[8] write paths         — directories the skill will write to exist + are writable (Inbox/ / docs/ / Blog/ etc.)
+[2] vault root          — cwd looks like a vault (has Inbox/ or .obsidian/), or vault path from pdctx context exists
+[3] lib/ files          — required lib/ refs for THIS skill exist (read frontmatter `reads:` to determine list)
+[4] persona skills      — if skill chains personas, check `skills/{persona}/SKILL.md` exists in plugin
+[5] cli tools           — domain-specific CLIs (gog, slack, bird, notion, defuddle) only if frontmatter `reads: cli: <name>`
+[6] write paths         — directories the skill will write to exist + are writable (Inbox/ / docs/ / Blog/ etc.)
 ```
 
-Each check has a 500ms timeout. Probe total ≤4s.
+Each check has a 500ms timeout. Probe total ≤3s.
 
 ## Output protocol
 
@@ -42,14 +40,12 @@ Each check has a 500ms timeout. Probe total ≤4s.
 == capability-probe (skill: {name}) ==
 [1] AGENTS substrate    : ok
 [2] vault root          : ok
-[3] gbq                 : broken (gbrain doctor --fast returns 90/100 but gbq returns "DB connection failed")
-[4] pdctx               : ok (current: personal:developer)
-[5] lib/ files          : missing (lib/push-once.md not found)
-[6] persona agents      : ok
-[7] cli tools           : ok
-[8] write paths         : ok
+[3] lib/ files          : missing (lib/push-once.md not found)
+[4] persona skills      : ok
+[5] cli tools           : ok
+[6] write paths         : ok
 
-→ degraded: [3, 5]
+→ degraded: [3]
 → blocked:  [] (none — degrade rather than block)
 ```
 
@@ -57,24 +53,23 @@ Each check has a 500ms timeout. Probe total ≤4s.
 
 | Result | Action |
 |---|---|
-| All 8 ok | Proceed normally |
-| 1-3 degraded, 0 blocked | Proceed in degraded mode (see below) |
-| ≥4 degraded OR ≥1 blocked | Abort, print missing list, suggest fix command, exit |
+| All 6 ok | Proceed normally |
+| 1-2 degraded, 0 blocked | Proceed in degraded mode (see below) |
+| ≥3 degraded OR ≥1 blocked | Abort, print missing list, suggest fix command, exit |
 
 ### Degraded mode rules
 
 For each degraded check:
 
-- **gbq broken** → fall back to raw `rg` grep on vault root for the same query terms; mark output `[fallback: rg, no semantic ranking]`
 - **lib/ file missing** → load the inline fallback embedded in the skill body (each skill MUST have a 3-line summary of each lib it uses, for fallback) OR proceed with `[lib/X.md missing — using inline fallback]` warning
-- **persona agent missing** → use only persona skill if available; if neither present, prompt user "persona X not installed, proceed without?" with N as default
+- **persona skill missing** → if persona file isn't there, prompt user "persona X not installed, proceed without?" with N as default
 - **cli tool missing** → skip that integration, proceed without; log `[skipped: cli:X not available]`
 - **vault path missing** → ABORT (this is structural, can't degrade)
 - **AGENTS.md missing** → ABORT (substrate is gone, behavior would drift wildly)
 
-### Fresh-clone dev-mode note (v1 → v2)
+### Fresh-clone dev-mode note
 
-If you are a fresh-clone v1 user and this probe shows degraded items 2 / 3 / 4 (vault root / gbq / pdctx), this is **expected**, not broken. v1 is personal-substrate stable for the author's daily use; substrate dependencies (Obsidian vault, gbq via gbrain, pdctx, vault-resident memory) need to be set up separately. v2 will bundle the onboarding scaffold and a multi-vault provider abstraction. See `ROADMAP.md` at repo root and the `Stability scope` section in `README.md`.
+If you are a fresh-clone user and this probe shows degraded items 2 / 5 (vault root / cli tools), this is **expected**, not broken. pandastack assumes you bring your own Obsidian vault and the CLIs declared by the skill you're invoking. See `ROADMAP.md` at repo root and the `Stability scope` section in `README.md`.
 
 The skill will degrade gracefully where possible per the rules above. If degradation hits ≥4 items or the vault path itself is missing, the skill aborts cleanly. That is the contract, not a regression.
 
@@ -101,9 +96,9 @@ Exit cleanly. Do not partially run.
 
 ## Why probe ≠ trust
 
-Probe checks **availability**, not **correctness**. A `gbq smoke "test"` returning empty is "ok" (gbq works, just no match). A `gbq smoke "test"` returning "DB connection failed" is "broken" (gbq is unreachable).
+Probe checks **availability**, not **correctness**. A CLI `--version` returning 0 is "ok" (the binary loads); whether it produces correct output for your query is a runtime concern.
 
-Skills should NOT trust probe results indefinitely. Re-probe at start of every Layer 1 flow run; the substrate state is time-varying (gbrain SIGKILL'd this morning, pdctx context switched, vault path changed).
+Skills should NOT trust probe results indefinitely. Re-probe at start of every Layer 1 flow run; the substrate state is time-varying (a CLI got removed, vault path changed, etc.).
 
 ## Skills' obligation
 
@@ -113,11 +108,10 @@ Every Layer 1 flow skill MUST declare in frontmatter:
 capability_required:
   - agents.md
   - vault
-  - gbq          # mark "optional" if degraded mode is supported
-  - pdctx        # mark "optional" if generic context works
   - lib/push-once.md
   - lib/escape-hatch.md
   - lib/persona-frame.md  # if persona-routed
+  - cli:gog               # for skills that depend on a specific CLI
 ```
 
 `capability-probe` reads this list and runs the matching subset of checks. Items not declared = not probed = potential silent failure (and a lint flag against the skill).
@@ -125,13 +119,13 @@ capability_required:
 ## Anti-patterns
 
 - ❌ Probe runs only on first invocation per session, then cached forever — substrate state changes, re-probe each run
-- ❌ Probe failure ignored ("oh well, gbq broken, just continue silently") — defeats the whole point
+- ❌ Probe failure ignored ("oh well, CLI broken, just continue silently") — defeats the whole point
 - ❌ Probe expanded to validate substrate CONTENT ("does AGENTS.md have section Voice?") — that's a separate lint, keep probe to availability
-- ❌ Skill tries `gbq` directly without probe ("if it fails I'll catch it") — probe is the single point of truth for substrate, do NOT scatter checks
+- ❌ Skill tries a CLI directly without probe ("if it fails I'll catch it") — probe is the single point of truth for substrate, do NOT scatter checks
 - ❌ Probe degrade message buried in skill output — must print as opening block so user sees substrate state immediately
 
 ## Origin
 
 - codex Q6 (2026-05-04 review of pandastack v1.1 redesign) — public repo dogfood mismatch, slim skills silently fail on fresh clone
 - pandastack 2026-05-04 — `lib/capability-probe.md` created to make substrate dependency explicit + load-bearing
-- 5/3 gbrain SIGKILL incident — `gbrain doctor --fast` returned 90/100 but gbq itself was broken; probe must run real `gbq smoke query` not just CLI doctor
+- v2.1.0 (2026-05-07): probe simplified — gbq / pdctx checks removed. Vault path comes from cwd, persona skills resolve via plugin paths.

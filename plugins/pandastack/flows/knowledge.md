@@ -13,7 +13,7 @@ type: lifecycle-flow
 - New note captured to `Inbox/` or appended to `Blog/_daily/`
 - Daily distill cron completes and surfaces candidates for `knowledge/`
 - User runs `/ship knowledge <note-path>` on an existing draft
-- `gbq` query surfaces a note as stale, orphan, or superseded
+- A vault scan surfaces a note as stale, orphan, or superseded
 
 ## Phases
 
@@ -26,7 +26,7 @@ type: lifecycle-flow
 ### Phase 2 — Vault dedup check
 
 - **What happens**: Before promoting raw material to `knowledge/`, check whether a matching note already exists. If 60%+ overlap, absorb into the existing note rather than creating a new one.
-- **Skills used**: `gbq "<topic>"`
+- **Skills used**: `rg -l "<topic>" knowledge/` and direct file inspection
 - **Output**: Either a confirmed "no match, create new" decision, or a target note path to absorb into
 
 ### Phase 3 — Distill
@@ -49,19 +49,19 @@ type: lifecycle-flow
 
 ### Phase 6 — Lint (on-demand hygiene)
 
-- **What happens**: When you want to clean the vault, run gbq queries against the brain index for stale notes (verified=true but `last_human_review` older than 6 months), orphan notes (no inbound links, no tags), and dead `superseded_by` targets. No dedicated skill or cron — gbq covers all four lint signals in single queries.
-- **Skills used**: `gbq` (direct vault query)
+- **What happens**: When you want to clean the vault, run direct file scans for stale notes (verified=true but `last_human_review` older than 6 months — `rg "last_human_review:" knowledge/`), orphan notes (no inbound links — wiki-link grep), and dead `superseded_by` targets (frontmatter check). No dedicated skill or cron.
+- **Skills used**: `rg`, `find`, frontmatter parsers (yq / direct grep)
 - **Output**: Console output of flagged notes; act on each manually via Edit
 
 ## Exit criteria
 
 - Note exists in `knowledge/` root with `verified: true`, `last_human_review` set to today
 - Ship log entry written to `Inbox/ship-log/`
-- gbq stale-check will not flag this note for at least 6 months
+- The vault stale-check will not flag this note for at least 6 months
 
 ## Anti-patterns
 
-- **Create new note instead of absorbing (60%+ overlap)**: vault sprawl is the primary cause of retrieval noise. Always run `gbq` before creating.
+- **Create new note instead of absorbing (60%+ overlap)**: vault sprawl is the primary cause of retrieval noise. Always run `rg` / `find` for the topic before creating.
 - **Write directly to `knowledge/` during capture**: raw material needs one distill pass before landing as a durable note. Skipping the temporal layer produces half-formed notes that look verified but aren't.
 - **Add wiki-links without verifying backlinks**: `[[slug]]` that points to a renamed or deleted note produces silent dead links. Check backlinks before writing links manually.
 - **Set `verified: true` via automation**: verification is a human judgment call. A cron script cannot know if a note's core claims still hold. Automate the flag, lose the signal.
@@ -75,7 +75,7 @@ pandastack:daily  (capture to _daily/)
 direct file → Inbox/
   |
   v
-gbq  (vault dedup check)
+rg / find  (vault dedup check)
   |
   v
 daily-distill cron  (Phase 3, async)
@@ -90,5 +90,5 @@ pandastack:ship knowledge <path>
   └── Stage 3: Backflow (rules/learnings/memory, optional)
   |
   v
-gbq  (on-demand: stale / orphan / superseded queries)
+rg / find  (on-demand: stale / orphan / superseded scans)
 ```

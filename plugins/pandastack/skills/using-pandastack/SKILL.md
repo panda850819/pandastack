@@ -15,7 +15,7 @@ This is not negotiable. Skills override default behavior. Rationalizing your way
 
 ## Why this file exists
 
-pandastack ships 39 skills, 5 personas, 7 lifecycle flows. The surface area is too large for ad-hoc invocation. Without a forcing function, the model defaults to "I'll just answer directly" and the skills never run. This file is the forcing function.
+pandastack ships 38 skills, 5 personas, 7 lifecycle flows. The surface area is too large for ad-hoc invocation. Without a forcing function, the model defaults to "I'll just answer directly" and the skills never run. This file is the forcing function.
 
 The failure mode this exists to prevent (observed across many sessions): writing code without running `careful` for prod paths, shipping without `review`, finishing a knowledge note without `/ship knowledge`. The skills exist; they just don't get invoked unless something pressures the check.
 
@@ -39,7 +39,7 @@ When the current task matches one of these signals, the corresponding skill must
 | Finished a knowledge note (`knowledge/<domain>/<note>.md` style) | `pandastack:ship knowledge <path>` to Close + Extract + Backflow |
 | Finished a draft ready to publish (Obsidian `Blog/_daily/` or equivalent) | `pandastack:ship write <draft>` |
 | Finished a work topic with a decision to log | `pandastack:work-ship` |
-| Researching an unfamiliar concept | `pandastack:grill` (adversarial) → `pandastack:deep-research` |
+| Researching an unfamiliar concept | `pandastack:grill` (adversarial) → `pandastack:scout` |
 | Weekly / monthly retrospective time | `pandastack:retro-week` / `pandastack:retro-month` |
 | Don't know which skill | Read `RESOLVER.md` at pandastack repo root |
 

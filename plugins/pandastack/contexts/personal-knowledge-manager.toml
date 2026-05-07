@@ -22,19 +22,14 @@ public = [
   "pandastack:retro-month",
   "pandastack:done",
 ]
-private = []  # tier=personal skills (deep-research / curate-feeds / bird) load via private overlay only
+private = []  # tier=personal skills (curate-feeds / bird) load via private overlay only
 
 [memory]
 namespace    = "personal/knowledge"
-firewall_from = ["work/yei/*", "work/sommet/*"]
+firewall_from = ["work/yei/*"]
 
 [sources]
 vault = "personal-vault"
-
-[gbrain]
-allow      = ["panda-vault"]
-forbid     = []
-write_mode = "read-only"
 
 [mcp]
 deny = [
@@ -43,6 +38,6 @@ deny = [
 ]
 
 [notes]
-# Brain-first lookup rule applies: gbq query before fetching any URL or writing new notes.
+# Brain-first lookup rule applies: scan vault (rg / find) before fetching any URL or writing new notes.
 # Absorb-first: if 60%+ overlap with existing note, update existing rather than creating new.
-# /ship knowledge runs per note at distill time. Vault hygiene (orphans / stale / dead redirects) is now a gbq query, not a skill.
+# /ship knowledge runs per note at distill time. Vault hygiene (orphans / stale / dead redirects) is on-demand via direct file scans.

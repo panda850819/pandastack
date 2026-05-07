@@ -9,9 +9,8 @@ description: |
   Trigger on /scout, /harness-survey (alias), "scout the ecosystem", "look at someone
   else's harness for inspiration", or when own harness layer is stuck and needs
   external perspective.
-  Skip when: scope is single-concept lookup (use deep-research), already know
-  exactly what to copy (just do it), or query is internal vault content (use
-  pandastack:knowledge / gbq).
+  Skip when: already know exactly what to copy (just do it), or query is
+  internal vault content (search the vault directly).
 status: active
 origin: done-promote
 activated: 2026-05-04
@@ -24,7 +23,6 @@ reads:
   - vault: docs/learnings/**
   - vault: docs/sessions/**
   - cli: gh
-  - cli: gbq
 writes:
   - vault: docs/sessions/YYYY-MM-DD-<topic>-survey.md
   - vault: Inbox/ship-proposals/*.md
@@ -48,17 +46,17 @@ Mine the public ecosystem for harness / skill / framework patterns worth importi
 
 ## When to skip
 
-- Single-concept lookup ("what is MoE", "how does pgvector work") — use `pandastack:deep-research`
 - Already know which repo to read — `gh api` directly + skip the survey overhead
-- Internal vault search — use `gbq` / `pandastack:knowledge`
+- Internal vault search — read `knowledge/` / `docs/sessions/` directly
 - Domain-specific narrow query without public ecosystem (e.g. "how does our internal treasury process work" — internal only)
 
 ## Pre-check (cheap-first)
 
-Before launching the survey, gbq your own vault once for the topic:
+Before launching the survey, scan your own vault once for the topic:
 
 ```bash
-gbq "<topic 一句話>" --limit 5
+rg -l "<topic>" knowledge/ docs/sessions/ docs/learnings/ | head -5
+ls knowledge/ docs/sessions/ | rg -i "<topic>" | head -5
 ```
 
 If vault already has a recent (< 30 days) survey or strong related note, surface it and ask user: "你 N 天前已經survey過 [[<note>]]，要重做還是基於它擴充？" Skip the survey if user picks "基於它擴充" — go straight to Phase 5 with that note as input.

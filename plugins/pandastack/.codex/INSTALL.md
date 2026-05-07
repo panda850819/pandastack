@@ -45,7 +45,7 @@ ls -la ~/.codex/skills/pandastack
 codex exec --skip-git-repo-check 'List the pandastack skills you can see.'
 ```
 
-You should see a symlink pointing to your pandastack skills directory, and Codex should enumerate 48 skills as `pandastack:<name>`.
+You should see a symlink pointing to your pandastack skills directory, and Codex should enumerate 38 skills as `pandastack:<name>`.
 
 ## Updating
 
@@ -69,6 +69,6 @@ Pandastack is designed Claude-Code-first but the lifecycle skills are CLI-agnost
 
 - **Fully portable** (no CLI-specific tools): `careful`, `ship` (all modes: git / knowledge / write), `work-ship`, `review`, `checkpoint`, `think-like-naval`, `think-like-alan-chan`, `write`, `grill`, `init`, `freeze`, `done`, `inbox-triage`
 - **Needs Codex tool mapping** (uses `Skill` / `Agent` / subagent dispatch): see `skills/using-pandastack/references/codex-tools.md`
-- **Local-environment-bound** (depends on Panda's local CLIs like `gbq`, `bird`, `notion-cli`, `slack`, `gog`): `bird`, `notion`, `slack`, `curate-feeds`, `agent-browser`, `qa`. These will fail with clear "command not found" errors if dependencies are missing — that's intentional, not a bug. (Skills in the private overlay have similar local-CLI dependencies.)
+- **Local-environment-bound** (depends on Panda's local CLIs like `bird`, `notion-cli`, `slack`, `gog`): `bird`, `notion`, `slack`, `curate-feeds`, `agent-browser`, `qa`. These will fail with clear "command not found" errors if dependencies are missing — that's intentional, not a bug. (Skills in the private overlay have similar local-CLI dependencies.)
 
 If you want to use only the portable subset, you can symlink individual skill directories instead of the whole `skills/` folder.

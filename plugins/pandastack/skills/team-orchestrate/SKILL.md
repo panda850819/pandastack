@@ -12,7 +12,6 @@ reads:
   - repo: lib/persona-frame.md
   - repo: lib/skill-decision-tree.md
   - repo: lib/gate-contract.md
-  - cli: gbq
   - vault: knowledge/**
 writes:
   - vault: Inbox/team-orchestrate-*.md

@@ -28,16 +28,11 @@ private = []  # tier=personal skills (bird / brief-morning / evening-distill) lo
 
 [memory]
 namespace    = "personal/writer"
-firewall_from = ["work/yei/*", "work/sommet/*"]
+firewall_from = ["work/yei/*"]
 
 [sources]
 vault = "personal-vault"
 # google_account: configure once via `gog config set default_account` — skills don't override per-call
-
-[gbrain]
-allow      = ["panda-vault"]
-forbid     = []
-write_mode = "read-only"
 
 [mcp]
 # Layer 5 firewall: tool-name glob patterns blocked at PreToolUse hook time.

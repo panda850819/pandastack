@@ -5,7 +5,6 @@ description: Produce a one-page morning briefing and prepend it to today's daily
 reads:
   - vault: Blog/_daily/*.md
   - cli: date
-  - cli: gbq
   - cli: gog
 writes:
   - vault: Blog/_daily/*.md
@@ -41,8 +40,7 @@ Produce a one-page morning briefing for Panda and prepend it to today's daily no
 1. Yesterday's daily note: read `Blog/_daily/$(date -v-1d +%Y-%m-%d).md`; within `## Action Items`, extract unchecked `- [ ]` lines.
 2. Calendar: `gog calendar events --today --max 5 --plain`; format the first 3 events as start time, title, attendee count, and prep needed.
 3. Gmail: `gog gmail search 'is:unread newer_than:12h' --max 10 --plain`; keep the top 3 personal-priority or urgent threads.
-4. Vault focus seed: `gbq "yesterday distill OR open todos OR P0"`, use the top relevant hit.
-5. Writing seeds: reuse the strongest 3 note candidates from yesterday's distill / queue-worthy items in the vault.
+4. Writing seeds: scan the last 3 days of `Blog/_daily/*.md` for queue-worthy items or unfinished thoughts; pick 1-3 candidates worth picking up today.
 
 ## Template
 

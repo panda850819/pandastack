@@ -78,7 +78,7 @@ Create file if missing. curate-feeds reads this on next run.
 Scan and report:
 
 - **Citation count**: `rg -l "\[\[$(basename "$NOTE" .md)\]\]" knowledge/ Blog/ | wc -l`
-- **Solved a work problem?**: check `used_in` for keywords `work`, `yei`, `sommet`, `abyss`, or note tags
+- **Solved a work problem?**: check `used_in` for keywords `work`, `yei`, or note tags
 - **Repeat source domain**: count notes sharing this `source:` domain
 
 ### 1.5 Show & Confirm (gate)
@@ -169,7 +169,7 @@ retro-week / retro-month read this for "knowledge ship rate".
 
 | 症狀 | 處理 |
 |---|---|
-| Note path doesn't exist | Abort, suggest `gbq` to find it |
+| Note path doesn't exist | Abort, suggest `rg -l "<keywords>" knowledge/` to find it |
 | Already verified within 30 days | Ask "重新 ship 嗎？" |
 | `source-quality.json` malformed | Backup to `.bak`, recreate |
 | `_index.md` missing for domain | Create skeleton |

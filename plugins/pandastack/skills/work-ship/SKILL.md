@@ -65,7 +65,7 @@ Ask user:
 
 - **Decision / outcome** (one paragraph)
 - **Date resolved** (default today)
-- **Scope domain**: `yei` / `sommet` / `abyss` / other
+- **Scope domain**: `yei` / other
 - **External references**: Notion page URL, Jira/Linear ticket keys (paste-in, optional)
 
 ### 1.3 Write decision log to work-vault
@@ -75,7 +75,7 @@ Create `<work-vault>/decisions/<YYYY-MM-DD>-<topic-slug>.md`:
 ```markdown
 ---
 date: YYYY-MM-DD
-domain: yei | sommet | abyss
+domain: yei | other
 topic: <short title>
 notion_page: <url or null>
 related_tickets: [<jira/linear keys>]
@@ -102,7 +102,7 @@ Create `Inbox/ship-proposals/<YYYY-MM-DD>-<topic-slug>.md`:
 ---
 status: pending-manual-push
 topic: <topic>
-domain: yei | sommet | abyss
+domain: yei | other
 decision_log: ../../../../work-vault/decisions/<file>.md
 created: <YYYY-MM-DD>
 ---

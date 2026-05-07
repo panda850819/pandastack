@@ -4,7 +4,7 @@ Personal context-aware AI operator OS — one substrate, four runtimes, no vendo
 
 I built pandastack to run my own work across multiple AI CLIs without dotdir sprawl. Skills are version-controlled markdown. Personas are replaceable. Context recipes ship as TOML. Same content runs across Claude Code, Codex CLI, Gemini CLI, and Hermes; per-CLI shims handle syntax differences. No data-layer vendor lock-in.
 
-The stack is 39 skills covering dev, knowledge, writing, work, research, retro, and decision lifecycles, tiered into 27 core (markdown-only, fresh-clone runnable), 5 ext (publicly installable CLI), and 7 personal (private overlay required). Anchored on a personal Obsidian vault as SSOT.
+The stack is 38 skills covering dev, knowledge, writing, work, research, retro, and decision lifecycles, tiered into 27 core (markdown-only, fresh-clone runnable), 5 ext (publicly installable CLI), and 6 personal (private overlay required). Anchored on a personal Obsidian vault as SSOT.
 
 **Stability scope (read this first):**
 
@@ -18,7 +18,7 @@ What this means for you:
 
 **Who this is for:**
 - **Multi-CLI users** who want the same skills across Claude Code, Codex CLI, and Hermes
-- **Vault-centric operators** building on Obsidian (Tier=personal skills additionally need private CLIs: gbq, pdctx, gog, bird)
+- **Vault-centric operators** building on Obsidian (Tier=personal skills additionally need private CLIs: gog, bird, pdctx)
 - **Personal-OS builders** who want substrate-first architecture instead of dotdir sprawl
 - **v1 dogfood reality**: 1 user (the author). Verification window for v1.3.0+ structural fix opens now.
 
@@ -43,7 +43,7 @@ After install:
 4. `/ship knowledge <path>` on a finished note in your vault
 5. Stop there. You'll know if pandastack fits how you work.
 
-> **Tier model (v1.3)**: Skills are tiered in `plugins/pandastack/manifest.toml`. Core = markdown-only, runs on a fresh clone. Ext = needs a public CLI install. Personal = needs the private overlay (gbq, gbrain, gog, bird, pdctx, ...). `capability-probe` only ABORTs when substrate is missing, not when ext / personal CLIs are absent.
+> **Tier model (v1.3)**: Skills are tiered in `plugins/pandastack/manifest.toml`. Core = markdown-only, runs on a fresh clone. Ext = needs a public CLI install. Personal = needs the private overlay (gog, bird, pdctx, ...). `capability-probe` only ABORTs when substrate is missing, not when ext / personal CLIs are absent.
 
 ## How skills connect
 
@@ -55,7 +55,7 @@ After install:
 You:    我想做一個 RSS curation 工具，每天整理 AI 圈新聞，但範圍我沒想清楚
 You:    /office-hours
 
-Claude: [load context] gbq RSS / digest / curation — 3 條相關 vault note 帶上來
+Claude: [load context] rg "RSS\|digest\|curation" knowledge/ — 3 條相關 vault note 帶上來
         [grill] 6 forcing questions: 痛是「資訊過載」還是「漏掉重要的」?
                                      現在怎麼讀? 「重要」誰定義?
 
@@ -70,7 +70,7 @@ Claude: [premise challenge] 你說「整理 digest」，但描述的是「curati
         [write brief] docs/briefs/2026-05-05-feed-curator.md
 
 You:    /sprint docs/briefs/2026-05-05-feed-curator.md
-Claude: [dojo] 讀 brief, gbq 過往 RSS / curation note
+Claude: [dojo] 讀 brief, scan 過往 RSS / curation note (rg / find)
         [grill-lite] 一題: MVP 先做哪 3 個 source?
 You:    HN + Lenny + 自己 X 收藏
 Claude: [execute] ~400 lines across 4 files. bun test 12/12 passed.
@@ -122,7 +122,7 @@ flowchart TB
         agents[AGENTS.md · identity / voice / routing]
         skills[pandastack · skills / flows / contexts]
         knowledge[knowledge vault · SSOT]
-        cli[personal CLI tools · gbq · pdctx · ...]
+        cli[personal CLI tools · gog · bird · pdctx · ...]
     end
 
     User --> T3
@@ -186,14 +186,13 @@ Re-run `bash scripts/bootstrap.sh` any time to verify substrate.
 
 ## Optional: private overlay (`pandastack-private`)
 
-Tier=personal skills (`brief-morning`, `evening-distill`, `deep-research`, `curate-feeds`, `bird`, `slack`, `notion`) plus `pdctx` context routing live in a private overlay that is not currently published. The public install runs without them — `bootstrap.sh` reports them as hidden. If you have access to `pandastack-private`:
+Tier=personal skills (`brief-morning`, `evening-distill`, `curate-feeds`, `bird`, `slack`, `notion`) plus `pdctx` context routing live in a private overlay that is not currently published. The public install runs without them — `bootstrap.sh` reports them as hidden. If you have access to `pandastack-private`:
 
 | Command | Outcome |
 |---|---|
 | `pdctx status` | Shows active context, recent calls, in-flight dispatches |
 | `pdctx use personal:writer` | Switches to writer context; injects persona + skill subset |
 | `pdctx call personal:developer "summarize today's note"` | Dispatches subagent with full context injected |
-| `gbq "<question>"` | Vault hybrid search (requires gbrain) |
 | `/brief-morning` | Invokes the morning briefing skill manually (alias `/morning-briefing` valid until 2026-08-04) |
 
 ## Local development loop, author workflow
@@ -219,7 +218,7 @@ For Codex, the equivalent loop is `git pull` or local edits on the cloned repo p
 
 ## Contexts
 
-Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds a flow, persona, skill subset, memory namespace, and gbrain source list to a specific identity.
+Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds a flow, persona, skill subset, and memory namespace to a specific identity.
 
 | Context | Purpose |
 |---|---|
@@ -227,11 +226,11 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 | `personal:writer` | Personal writing — writing + knowledge flows |
 | `personal:knowledge-manager` | Vault maintenance, wiki lint, knowledge lifecycle |
 | `personal:trader` | Market research, on-chain analysis, trading flows |
-| *(4 work contexts)* | Org-specific roles — defined in a private overlay |
+| *(3 work contexts)* | Org-specific roles — defined in a private overlay |
 
 ## Skills
 
-39 skills grouped by lifecycle (27 core / 5 ext / 7 personal — see `plugins/pandastack/manifest.toml`). Persona names follow the gstack convention — each skill is "your specialist" for that step.
+38 skills grouped by lifecycle (27 core / 5 ext / 6 personal — see `plugins/pandastack/manifest.toml`). Persona names follow the gstack convention — each skill is "your specialist" for that step.
 
 ### Think / intake
 
@@ -239,7 +238,7 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 |---|---|---|
 | `/office-hours` | The Interrogator | Bring a fuzzy idea, walk out with a written brief. 5-stage flow: load context, adversarial grill, premise challenge, alternatives, write brief. |
 | `/grill` | The Adversary | Atomic 5-10 min adversarial discovery. One question at a time, hunting for hidden requirements and unknown unknowns. |
-| `/dojo` | The Sensei | Pre-action context prep. gbq past similar cases, surface gotchas before the work session starts. |
+| `/dojo` | The Sensei | Pre-action context prep. Scan past similar cases via rg / find on session notes, surface gotchas before the work session starts. |
 
 ### Plan / decide
 
@@ -279,7 +278,6 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 
 | Skill | Your specialist | What they do |
 |---|---|---|
-| `/deep-research` | The Researcher | Two-layer autonomous: planner finds vault gaps, researcher executes deep exploration. |
 | `/scout` | The Scout | Reconnoiter public ecosystem (GitHub, public SKILL.md / AGENTS.md) for harness patterns. |
 | `/gatekeeper` | The Gatekeeper | Pre-adoption trust check (skills, MCPs, repos, on-chain addresses). |
 
@@ -287,12 +285,12 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 
 | Skill | Your specialist | What they do |
 |---|---|---|
-| `/retro-week` | Weekly Retro | Three-phase weekly retro. Phase 1 calls gbq directly to fetch retro inputs. |
+| `/retro-week` | Weekly Retro | Three-phase weekly retro. Phase 1 scans `Blog/_daily/` + `Inbox/ship-log/` directly via rg / find. |
 | `/retro-month` | Monthly Retro | Strategic monthly review with project memory updates. |
 | `/inbox-triage` | Inbox Triage | Weekly Inbox/ hygiene. Bucket stale .md by category. |
 | `/curate-feeds` | Feed Fetcher | Fetch raw feed items to Inbox/feeds/raw/ with dedupe and noise filter. |
 
-Vault hygiene (orphans / stale / superseded) is now a `gbq` query, not a dedicated skill.
+Vault hygiene (orphans / stale / superseded) is now a direct `rg` / `find` scan, not a dedicated skill.
 
 ### Session
 
@@ -355,7 +353,7 @@ Without pdctx, no telemetry runs at all — pandastack public surface emits no e
 | Morning Briefing | `0 8 * * *` (daily 8 AM) | `/brief-morning` |
 | Evening Distill | `0 22 * * *` (daily 10 PM) | `/evening-distill` |
 
-`retro-prep-week` was retired in v2.0.0 — `/retro-week` Phase 1 now calls gbq directly, no separate cron needed.
+`retro-prep-week` was retired in v2.0.0 — `/retro-week` Phase 1 now scans vault files directly (rg / find on `Blog/_daily/` + `Inbox/ship-log/`), no separate cron needed.
 
 ## Updating
 

@@ -21,19 +21,14 @@ public = [
   "pandastack:retro-month",
   "pandastack:done",
 ]
-private = []  # extended by private overlay (deep-research, bird — both tier=personal — load via pandastack-private/contexts/personal-trader.overlay.toml)
+private = []  # extended by private overlay (bird — tier=personal — load via pandastack-private/contexts/personal-trader.overlay.toml)
 
 [memory]
 namespace    = "personal/trader"
-firewall_from = ["work/yei/*", "work/sommet/*", "personal/developer", "personal/writer"]
+firewall_from = ["work/yei/*", "personal/developer", "personal/writer"]
 
 [sources]
 vault = "personal-vault"
-
-[gbrain]
-allow      = ["panda-vault"]
-forbid     = []
-write_mode = "read-only"
 
 [mcp]
 deny = [
@@ -45,4 +40,3 @@ deny = [
 # Public base: research + framing skills only. On-chain chip-structure analysis (chain-scout)
 # is sensitive position-adjacent logic and is added via overlay in pandastack-private.
 # Firewall is wider than other personal contexts: trader memory must not bleed into developer or writer sessions either.
-# deep-research quality gate must be set before overnight runs to avoid accumulating stale research without distillation.

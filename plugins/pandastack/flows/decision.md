@@ -6,7 +6,7 @@ type: lifecycle-flow
 
 # Decision Flow
 
-> Triggered when `Inbox/cron-reports/` has accumulated pending items from background cron agents. The cron agents (private overlay: harness-audit, yei-alert-triage; retro auto-scan via retro-week) produce structured reports with ticked `[ ]` proposal items — they never mutate systems directly. This flow is the human review + execution layer: Panda reads the reports, marks `[x]` on items to act on, then walks the `[x]` items manually using whichever skill matches each item. Vault hygiene checks (orphans / stale / dead redirects) are now gbq queries against the brain index, not a separate cron. The design principle is cron proposes, Panda decides, Panda executes. Nothing in this flow is automatic past the cron-report stage.
+> Triggered when `Inbox/cron-reports/` has accumulated pending items from background cron agents. The cron agents (private overlay: harness-audit, yei-alert-triage; retro auto-scan via retro-week) produce structured reports with ticked `[ ]` proposal items — they never mutate systems directly. This flow is the human review + execution layer: Panda reads the reports, marks `[x]` on items to act on, then walks the `[x]` items manually using whichever skill matches each item. Vault hygiene checks (orphans / stale / dead redirects) run on demand via direct file scans, not a separate cron. The design principle is cron proposes, Panda decides, Panda executes. Nothing in this flow is automatic past the cron-report stage.
 
 ## Trigger
 
@@ -20,7 +20,7 @@ type: lifecycle-flow
 ### Phase 1 — Accumulate (cron writes reports)
 
 - **What happens**: Background cron agents run on their schedules and write structured reports to `Inbox/cron-reports/<agent>-<YYYY-MM-DD>.md`. Each report contains `[ ]` checkbox items representing proposed actions. This phase is fully automated — no human action required.
-- **Skills used**: `pandastack:retro-week` auto-scan mode (pre-retro raw data); `pandastack:<harness-slim>` (private overlay, optional — harness audit proposals); `pandastack:<your-alert-triage>` (private overlay, optional — protocol risk proposals). Vault hygiene queries (orphan / stale / dead redirect) are now gbq queries run on demand, not a cron.
+- **Skills used**: `pandastack:retro-week` auto-scan mode (pre-retro raw data); `pandastack:<harness-slim>` (private overlay, optional — harness audit proposals); `pandastack:<your-alert-triage>` (private overlay, optional — protocol risk proposals). Vault hygiene queries (orphan / stale / dead redirect) run on demand via `rg` / `find`, not a cron.
 - **Output**: `Inbox/cron-reports/<agent>-<date>.md` files with unchecked `[ ]` proposal items. Each file is self-contained: agent name, run date, what it scanned, what it found, what it proposes.
 
 ### Phase 2 — Panda review (triage the reports)

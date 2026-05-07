@@ -4,7 +4,6 @@ description: End-of-day personal handoff that writes an evening briefing block t
 reads:
   - vault: Blog/_daily/*.md
   - cli: date
-  - cli: gbq
   - cli: gog
 writes:
   - vault: Blog/_daily/*.md
@@ -39,8 +38,7 @@ Write an end-of-day personal handoff for Panda and append it to today's daily no
 1. Today's daily note: read `Blog/_daily/$(date +%Y-%m-%d).md`; count closed `^- \[x\]` and open `^- \[ \]` items; extract the top completed item with the biggest payoff signal.
 2. Tomorrow's calendar: `gog calendar events --tomorrow --max 5 --plain`; format the first 3 events as start time, title, attendee count, and prep needed.
 3. Gmail carry-over: `gog gmail search 'is:unread newer_than:24h' --max 10 --plain`; keep the top 3 threads likely to matter tomorrow.
-4. Vault focus seed: `gbq "today OR open todos OR P0 OR tomorrow"`, use the top relevant hit for tomorrow's first focus.
-5. Writing seeds: reuse the strongest 3 note or writing candidates surfaced in today's daily note and recent vault hits.
+4. Writing seeds: reuse the strongest 3 note or writing candidates surfaced in today's daily note.
 
 ## Template
 

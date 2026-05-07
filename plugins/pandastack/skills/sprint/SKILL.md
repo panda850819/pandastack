@@ -17,7 +17,6 @@ reads:
   - repo: skills/review/SKILL.md
   - repo: skills/ship/SKILL.md
   - repo: skills/design-lead/SKILL.md
-  - cli: gbq
   - vault: knowledge/**
   - vault: docs/learnings/**
 writes:
@@ -30,7 +29,6 @@ classification: lifecycle-flow
 capability_required:
   - agents.md
   - vault
-  - gbq          # optional — degrade to rg
   - lib/capability-probe.md
   - lib/escape-hatch.md
   - lib/stop-rule.md

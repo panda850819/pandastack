@@ -64,26 +64,7 @@ Skip if session was purely mechanical.]
 2. **Dev tasks** → suggest `gh issue create` — only create if user confirms
 3. **Everything else** → drop it. If it's not P0/P1, it won't get done. Don't write it down.
 
-After saving inside the Obsidian vault: run targeted no-embed imports **in the foreground** for the files this skill normally writes:
-
-```bash
-timeout 30 gbrain import "<personal-vault>/docs/sessions" --no-embed
-timeout 30 gbrain import "<personal-vault>/Blog/_daily" --no-embed
-```
-
-**Discipline (learned 2026-05-03 — see `Inbox/proposal-pandastack-done-skill-sync-discipline-2026-05-03.md`):**
-
-- **Never background gbrain commands from `/done`.** PGLite is single-writer; backgrounding causes Step 3 gbq calls to time out on lock contention.
-- **Never SIGKILL a running gbrain command.** SIGKILL mid-write corrupts `~/.gbrain/brain.pglite/` such that PGLite refuses to reopen it (manifests as misleading `Aborted()` error pointing at macOS WASM bug #223). Recovery requires restoring from `~/.gbrain/brain.pglite.bak-*`. If a gbrain command genuinely hangs, send SIGTERM and wait at least 30s for graceful exit before any escalation.
-- **Do not run broad `gbrain sync` from `/done`.** `gbrain sync` may require a configured repo path, may run `git pull --ff-only`, and may trigger full import + embedding backfill when the source anchor is missing or chunker version drifted. `/done` only needs today's session and daily note queryable, so targeted no-embed import is the correct surface.
-
-**If targeted `gbrain import --no-embed` fails**, run `gbrain doctor --fast --json` to surface the specific check. Common causes:
-
-- brain.pglite locked by another process — close other gbrain commands, retry once
-- stale `gbrain-sync` row left by an interrupted sync — surface as P0 follow-up
-- PGLite throws `Aborted()` on load — likely dataDir corruption from prior SIGKILL. Run `ls -la ~/.gbrain/*.bak*` to check for backups; if backups exist, surface as P0 follow-up with the recovery command (`mv ~/.gbrain/brain.pglite ~/.gbrain/brain.pglite.broken-$(date +%Y%m%d) && cp -R ~/.gbrain/<latest-bak> ~/.gbrain/brain.pglite`). Do NOT auto-recover — let the user pick which backup.
-
-If recovery cannot proceed, surface as a P0 follow-up in the daily note (`gbrain broken: <error code>`) and continue with Step 3 sub-checks that don't depend on gbrain.
+If you maintain a separate vault search index (gbrain or other), this is the natural point to refresh it for today's session and daily note. That refresh is your concern, not this skill's — `done` writes vault files and stops there.
 
 ### Sync to daily note
 
@@ -152,7 +133,7 @@ This is the cross-session pattern surfacing layer. **Cheap-first ladder** — su
 2. **If 3a surfaces ≥1 item OR session > 10 substantive turns**: run 3b + 3c + 3d in parallel
 3. **Else**: skip 3b/3c/3d, exit silent
 
-Rationale: 3a is the cheap signal. The gbq + feedback-log read in 3b–3d only fire when 3a surfaces something worth following up on, or when the session is large enough to warrant the spend. Aligns with `~/.agents/AGENTS.md` Behavioral Default "Cheap-first internal lookup".
+Rationale: 3a is the cheap signal. The vault scans + feedback-log read in 3b–3d only fire when 3a surfaces something worth following up on, or when the session is large enough to warrant the spend. Aligns with `~/.agents/AGENTS.md` Behavioral Default "Cheap-first internal lookup".
 
 ### 3a. Surprises & validated assumptions
 
@@ -186,19 +167,17 @@ Apply `~/.claude/rules/skill-emergence.md`:
 - Did this session execute a 3+ step repeatable workflow?
 - Has a similar workflow been done before?
   ```bash
-  gbq "<one-line description of the workflow>" --limit 3
+  rg -l "<keywords from workflow>" docs/sessions/ | head -3
   ```
 - If you find a prior session doing the same thing, surface: `## Skill candidate: <name>` with the concrete pattern (where it ran before, where it ran today).
 - Do NOT auto-create the skill. Show the pattern, let user confirm.
 
 ### 3c. Past-pattern check (cross-session memory)
 
-Run `gbq` against the brain with the topic of this session:
+Scan recent session notes for the topic:
 ```bash
-gbq "<2-5 keywords from this session's topic>" --limit 5 2>/dev/null
+rg -l "<2-5 keywords from this session's topic>" docs/sessions/ | head -5
 ```
-
-(gbq slug-prefix filters its result implicitly via score; no log noise to grep out.)
 
 If results include sessions from > 7 days ago that look directly relevant:
 - Surface as `## Past relevant sessions` with 1-line context per hit

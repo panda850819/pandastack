@@ -6,9 +6,9 @@
 
 ## Why this file exists
 
-pandastack v2 ships 39 skills, 5 personas, 7 lifecycle flows, and 8 context recipes. That's a lot of surface area. RESOLVER.md is the disambiguation layer — when two things look similar but serve different purposes, you read this file to learn the boundary.
+pandastack v2 ships 38 skills, 5 personas, 7 lifecycle flows, and 7 context recipes. That's a lot of surface area. RESOLVER.md is the disambiguation layer — when two things look similar but serve different purposes, you read this file to learn the boundary.
 
-This is the pattern used by gstack, gbrain, and alirezarezvani: monorepo + RESOLVER.md beats multi-repo split, because the categorization lives next to the content.
+This is the pattern used by gstack and alirezarezvani: monorepo + RESOLVER.md beats multi-repo split, because the categorization lives next to the content.
 
 ---
 
@@ -18,13 +18,12 @@ This is the pattern used by gstack, gbrain, and alirezarezvani: monorepo + RESOL
 
 | Skill | Purpose | Trigger |
 |---|---|---|
-| `pandastack:deep-research` | Two-layer planner+researcher with quality gates | overnight research, deep explore |
 | `pandastack:curate-feeds` | Process Inbox feeds, route by source quality | weekly cron, feed pipeline |
 | `pandastack:ship knowledge <path>` | Close + Extract + Backflow on a knowledge note (was: `knowledge-ship`) | ship this note |
 | `pandastack:scout` | Recon public ecosystem for skill / harness patterns | survey other harnesses |
 | `pandastack:summarize` | Summarize URL / podcast / file | summarize, TL;DR |
 
-Vault hygiene (orphans / stale / superseded / dead redirects) is now a `gbq` query against the brain index, not a dedicated skill. v1.x had `wiki-lint` for this; cut in v2.0.0.
+Vault hygiene (orphans / stale / superseded / dead redirects) is now a direct file scan (`rg` / `find`), not a dedicated skill. v1.x had `wiki-lint` for this; cut in v2.0.0. v2.1.0 cut `deep-research` (gbrain-core skill) since pandastack no longer assumes a brain index.
 
 ### Writing
 
@@ -69,12 +68,12 @@ For greenfield design (DB schema / service topology / ADRs), use `eng-lead` pers
 
 | Skill | Purpose | Trigger |
 |---|---|---|
-| `pandastack:retro-week` | Three-phase weekly retro (Auto-scan → Interview → Write). Phase 1 calls gbq directly to fetch retro inputs. | weekly retro |
+| `pandastack:retro-week` | Three-phase weekly retro (Auto-scan → Interview → Write). Phase 1 scans vault files directly (rg / find on `Blog/_daily/` + `Inbox/ship-log/`) to fetch retro inputs. | weekly retro |
 | `pandastack:retro-month` | Three-phase monthly retro (with weekly retros referenced) | monthly retro |
 | `pandastack:done` | Save session context, persist memory | session done, /done |
 | `pandastack:inbox-triage` | Weekly Inbox/ hygiene, bucket stale .md by category | clean inbox, scheduled weekly |
 
-v1.x had a separate `retro-prep-week` cron that pre-fetched retro inputs; cut in v2.0.0 and folded into retro-week Phase 1 (gbq is fast enough that a separate cron earned no time savings).
+v1.x had a separate `retro-prep-week` cron that pre-fetched retro inputs; cut in v2.0.0 and folded into retro-week Phase 1 (direct vault scan is fast enough that a separate cron earned no time savings).
 
 ### Tool wrappers (1:1 with CLIs)
 
@@ -218,17 +217,24 @@ Each `.toml` file in `contexts/` binds a flow + persona + skill subset to a spec
 | `work-yei-ops` | Yei Ops Manager | yes |
 | `work-yei-hr` | Yei HR | yes |
 | `work-yei-finance` | Yei Finance | yes |
-| `work-sommet-abyss-po` | Sommet Abyss product owner | yes |
 
 Private contexts (in the private overlay) may reference additional skills beyond this index. Public contexts only reference skills listed above.
 
 ---
 
+## v2.1.0 cut summary
+
+| Action | Items | Reason |
+|---|---|---|
+| Cut skill | `deep-research` | gbrain-core: required `gbrain` CLI + brain index; pandastack v2.1.0 stops assuming a brain index |
+| Cut context | `work-sommet-abyss-po` | Sommet Abyss inactive; will land in a separate plugin if revived |
+| Cut substrate dependencies | `gbq` / `gbrain` calls across `brief-morning`, `evening-distill`, `dojo`, `done`, `retro-week`, all `flows/*.md` | substrate-agnostic: vault scan via `rg` / `find` works on any clone, no brain prerequisite |
+
 ## v2.0.0 cut summary
 
 | Action | Skills | Reason |
 |---|---|---|
-| Cut (orphan / overlap / replaced) | `atomize`, `architect`, `execute-plan`, `team-orchestrate` (kept), `think-like-karpathy`, `process-decisions`, `wiki-lint`, `retro-prep-week` | atoms.jsonl pattern died; greenfield rare → fold into eng-lead; sequential subagent overlapped sprint Phase 3; Karpathy frame referenced not used; cron-reports sparse → manual walk; vault lint → gbq query; retro pre-fetch → fold into retro-week Phase 1 |
+| Cut (orphan / overlap / replaced) | `atomize`, `architect`, `execute-plan`, `think-like-karpathy`, `process-decisions`, `wiki-lint`, `retro-prep-week` | atoms.jsonl pattern died; greenfield rare → fold into eng-lead; sequential subagent overlapped sprint Phase 3; Karpathy frame referenced not used; cron-reports sparse → manual walk; vault lint → file scan; retro pre-fetch → fold into retro-week Phase 1 |
 | Merged into `/ship` | `knowledge-ship`, `write-ship` → `/ship knowledge`, `/ship write` | one verb, one mental model |
 | Renamed in v1.4.0 (still aliased) | `tool-pdf`→`pdf` (then deleted v1.4.1), `tool-bird`→`bird`, `tool-slack`→`slack`, `tool-notion`→`notion`, `tool-deepwiki`→`deepwiki`, `tool-summarize`→`summarize`, `tool-browser`→`agent-browser` | drop tool- prefix, names already disambiguate via `pandastack:` namespace |
 
@@ -237,7 +243,7 @@ Private contexts (in the private overlay) may reference additional skills beyond
 | Origin | Skills |
 |---|---|
 | Built in v0.16 | careful, checkpoint, freeze, init, qa, review, ship |
-| Added in v1 from `~/.claude/skills/` (local) | deep-research, curate-feeds, grill, knowledge-ship (v2: merged into ship), work-ship, write-ship (v2: merged into ship), retro-week, retro-month, gatekeeper, bird, notion, summarize, deepwiki, agent-browser, slack |
+| Added in v1 from `~/.claude/skills/` (local) | deep-research (v2.1.0: cut), curate-feeds, grill, knowledge-ship (v2: merged into ship), work-ship, write-ship (v2: merged into ship), retro-week, retro-month, gatekeeper, bird, notion, summarize, deepwiki, agent-browser, slack |
 | Added in v1 (Hermes cron lifecycle) | brief-morning, evening-distill |
 | Two-strike promoted in v1 | scout |
 | Persona skills | ceo, eng-lead, design-lead, ops-lead, product-lead |
@@ -249,7 +255,7 @@ Private contexts (in the private overlay) may reference additional skills beyond
 
 ## Version
 
-This RESOLVER.md is for pandastack v2.0.0. Update when adding / removing / renaming skills.
+This RESOLVER.md is for pandastack v2.1.0. Update when adding / removing / renaming skills.
 
 ---
 

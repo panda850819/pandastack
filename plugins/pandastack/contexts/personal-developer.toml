@@ -27,19 +27,14 @@ public = [
   "pandastack:retro-month",
   "pandastack:done",
 ]
-private = []  # tier=personal skills (deep-research / bird / notion) load via private overlay only
+private = []  # tier=personal skills (bird / notion) load via private overlay only
 
 [memory]
 namespace    = "personal/developer"
-firewall_from = ["work/yei/*", "work/sommet/*"]
+firewall_from = ["work/yei/*"]
 
 [sources]
 vault = "personal-vault"
-
-[gbrain]
-allow      = ["panda-vault"]
-forbid     = []
-write_mode = "read-only"
 
 [mcp]
 deny = [
