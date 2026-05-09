@@ -92,7 +92,79 @@ DAILY NOTE HIGHLIGHTS ($SINCE_DATE → today)
 ===
 ```
 
-Then say: **"掃完了。要開始 interview 嗎？"** — wait for user.
+Then say: **"掃完了。要開始 brain synthesis 嗎？"** — wait for user.
+
+---
+
+## Phase 1.5: Brain Synthesis (auto-generated, awaiting user validation)
+
+Skip entirely if `gbrain` CLI is not on PATH. Print `(brain synthesis unavailable: gbrain not installed)` and proceed to Phase 2.
+
+This is the brain looking at itself across 7 days. It is **auto-generated** — Phase 2 interview is where the user accepts / rejects each finding. Never auto-write recommendations from this section.
+
+### 1e. Pull synthesis inputs from gbrain
+
+```bash
+SINCE_7D=$(date -v-7d +%Y-%m-%d)
+
+# Salient pages updated this week — input for THESIS
+gbrain query "salient pages updated since $SINCE_7D" --limit 30
+
+# Anomalies / contradictions across recent + older pages — input for CONTRADICTIONS
+gbrain find_anomalies --window 30d
+
+# Topic distribution this week vs prior baseline — input for KNOWLEDGE GAPS
+gbrain get_stats --topic-histogram --window 7d
+gbrain get_stats --topic-histogram --window 90d --exclude-recent 7d
+
+# High-salience pages with low typed-link count — input for ONE ACTION
+gbrain find_orphans --min-salience 0.7 --window 30d
+```
+
+### 1f. Generate 4-block synthesis
+
+Print as:
+
+```
+=== BRAIN SYNTHESIS: $YEAR-W$WEEK_NUM (auto · awaiting validation) ===
+
+EMERGING THESIS
+你這週在 build 但還沒明講的觀點是: <one sentence — extract from the salient-pages cluster>
+證據:
+- [[slug-1]] — "<verbatim quote that hints at the thesis>"
+- [[slug-2]] — "<verbatim quote that hints at the thesis>"
+- [[slug-3]] — "<verbatim quote that hints at the thesis>"
+
+CONTRADICTIONS
+<for each anomaly returned by find_anomalies, format as:>
+- 新: [[slug-new, $DATE]] — "<quote>"
+  舊: [[slug-old, $OLDER_DATE]] — "<quote>"
+  衝突點: <one sentence>
+  狀態: 待 user 在 Phase 2 決定 (重新想 / retire 舊的 / 兩者各管一段 context)
+
+(If no anomalies surfaced, print: "沒有 surface 矛盾。可能 brain 還在累積、可能你這週都在同一條軌道上。")
+
+KNOWLEDGE GAPS
+本週 obsess 的 topic distribution: <topic-A: N pages, topic-B: M pages, ...>
+但你 brain 完全沒有: <missing perspective inferred from gap analysis>
+建議下週讀方向 (具體，不是書名): <direction>
+
+(Discipline: do not invent specific books/articles. Just direction.)
+
+ONE ACTION
+這週最高槓桿一件事 (從 brain 推，不是憑空):
+<concrete action grounded in find_orphans + salience output>
+槓桿來源: <which slugs / which pattern made this the highest-leverage>
+
+===
+```
+
+Then say: **"synthesis 出來了。要繼續看 prep brief 還是直接進 interview？"** — wait for user.
+
+User has 3 options:
+- "進 interview" → go to Phase 2 with synthesis as starting questions
+- "重來" → re-run Phase 1.5 with different gbrain queries (user can specify focus)
+- "skip synthesis" → drop the synthesis block, run plain Phase 2 from raw scan only
 
 ---
 
