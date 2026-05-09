@@ -21,7 +21,10 @@ Four steps. Goal: **finish in 1-2 minutes for routine sessions, 3-4 minutes when
 
 ```bash
 BRANCH=$(git branch --show-current 2>/dev/null || echo "no-git")
-if git rev-parse --show-toplevel &>/dev/null; then
+# Override priority: PANDASTACK_SESSION_DIR env var → git toplevel → personal-vault
+if [ -n "$PANDASTACK_SESSION_DIR" ]; then
+  SESSION_DIR="$PANDASTACK_SESSION_DIR"
+elif git rev-parse --show-toplevel &>/dev/null; then
   SESSION_DIR="$(git rev-parse --show-toplevel)/docs/sessions"
 else
   SESSION_DIR="<personal-vault>/docs/sessions"
@@ -53,6 +56,9 @@ Skip if session was purely mechanical.]
 
 ## Current state
 [Where things stopped. Be specific.]
+
+## Captured during this session
+[Back-links to vault/brain pages written or updated during this session, populated by the Capture survey sub-step. Only present when `PANDASTACK_CAPTURE_DIRS` is configured AND the survey returned non-empty results — otherwise omit the section entirely.]
 
 ## Follow-ups
 [Only if P0/P1 actionable items exist. Most sessions have none — omit the section entirely.]
@@ -113,6 +119,36 @@ tags: [daily]
 
 Both n8n's `Telegram Daily Collector` workflow (Merge Content node, post-2026-05-03) and `/done` create with this exact shape, so independent creates produce structurally identical files that git auto-merges. Do NOT modify the n8n-owned sections (`想法` / `連結收集` / `轉發`) or `message_count` — those belong to the n8n write path.
 
+### Capture survey (overlay-driven, opt-in)
+
+Some users keep a **thinking layer** separate from the work narrative — a vault / second-brain repo with directories like raw thinking, learnings, atomic concepts. Mid-session writes there are worth back-linking from the session doc so future cross-session lookups can see "during this session you also captured X".
+
+This sub-step is **opt-in** — runs only when overlay env vars are set. Default behavior: skip silently.
+
+```bash
+# PANDASTACK_CAPTURE_DIRS — comma-list of dirs (relative to the capture repo) to scan.
+# PANDASTACK_CAPTURE_REPO — path to the repo containing those dirs.
+#                          Defaults to the current git toplevel if unset.
+
+if [ -n "$PANDASTACK_CAPTURE_DIRS" ]; then
+  REPO="${PANDASTACK_CAPTURE_REPO:-$(git rev-parse --show-toplevel 2>/dev/null)}"
+  if [ -n "$REPO" ]; then
+    REGEX="^($(echo "$PANDASTACK_CAPTURE_DIRS" | tr ',' '|'))/"
+    # Recent commits (autocommit-aware) + uncommitted writes
+    {
+      git -C "$REPO" log --since="4 hours ago" --name-only --pretty=format: 2>/dev/null
+      git -C "$REPO" status --short 2>/dev/null | awk '{print $NF}'
+    } | grep -E "$REGEX" | sort -u
+  fi
+fi
+```
+
+If the list is non-empty, render under `## Captured during this session` in the session doc, grouped by directory, one markdown link per file. **If empty (or vars unset), omit the section entirely** — silence > empty placeholder.
+
+The 4-hour window is a heuristic; if sessions genuinely run longer, widen the `--since` argument via overlay. False positives (captures unrelated to this session) are acceptable cost — back-links are cheap, missing them is the failure mode.
+
+**Panda's binding (example):** `PANDASTACK_CAPTURE_REPO=~/site/knowledge/brain`, `PANDASTACK_CAPTURE_DIRS=originals,learnings,concepts,ideas,personal`. Other users configure their own dirs; vanilla pandastack ships with neither set, so this sub-step is invisible by default.
+
 ---
 
 ## Step 2: Memory Routing (most sessions skip)
@@ -167,7 +203,8 @@ Apply `~/.claude/rules/skill-emergence.md`:
 - Did this session execute a 3+ step repeatable workflow?
 - Has a similar workflow been done before?
   ```bash
-  rg -l "<keywords from workflow>" docs/sessions/ | head -3
+  # During pbrain transition: search both new + legacy locations
+  rg -l "<keywords from workflow>" "${PANDASTACK_SESSION_DIR:-docs/sessions/}" docs/sessions/ 2>/dev/null | head -3
   ```
 - If you find a prior session doing the same thing, surface: `## Skill candidate: <name>` with the concrete pattern (where it ran before, where it ran today).
 - Do NOT auto-create the skill. Show the pattern, let user confirm.
@@ -176,7 +213,8 @@ Apply `~/.claude/rules/skill-emergence.md`:
 
 Scan recent session notes for the topic:
 ```bash
-rg -l "<2-5 keywords from this session's topic>" docs/sessions/ | head -5
+# During pbrain transition: search both new + legacy locations
+rg -l "<2-5 keywords from this session's topic>" "${PANDASTACK_SESSION_DIR:-docs/sessions/}" docs/sessions/ 2>/dev/null | head -5
 ```
 
 If results include sessions from > 7 days ago that look directly relevant:
