@@ -159,7 +159,6 @@ docs/
   OPENCLAW.md
 plugins/pandastack/
   skills/
-  flows/
   agents/
   contexts/
   .claude-plugin/

@@ -67,8 +67,10 @@ Optionally delete the clone: `rm -rf ~/.codex/pandastack`.
 
 Pandastack is designed Claude-Code-first but the lifecycle skills are CLI-agnostic. Compatibility breakdown:
 
-- **Fully portable** (no CLI-specific tools): `careful`, `ship` (all modes: git / knowledge / write), `work-ship`, `review`, `checkpoint`, `think-like-naval`, `think-like-alan-chan`, `write`, `grill`, `init`, `freeze`, `done`, `inbox-triage`
+- **Fully portable** (no CLI-specific tools): `careful`, `ship` (all modes: git / knowledge incl. decision-note variant / write), `review`, `checkpoint`, `write`, `grill`, `init`, `freeze`, `done`, `office-hours`, `dojo`, `sprint`, `boardroom`, `gatekeeper`, plus the 5 personas (`ceo`, `eng-lead`, `design-lead`, `ops-lead`, `product-lead`)
 - **Needs Codex tool mapping** (uses `Skill` / `Agent` / subagent dispatch): see `skills/using-pandastack/references/codex-tools.md`
-- **Local-environment-bound** (depends on Panda's local CLIs like `bird`, `notion-cli`, `slack`, `gog`): `bird`, `notion`, `slack`, `curate-feeds`, `agent-browser`, `qa`. These will fail with clear "command not found" errors if dependencies are missing — that's intentional, not a bug. (Skills in the private overlay have similar local-CLI dependencies.)
+- **Local-environment-bound** (depends on Panda's local CLIs): `agent-browser`, `qa` (npm `agent-browser`), `deepwiki` (curl + jq). These will fail with clear "command not found" errors if dependencies are missing — that's intentional, not a bug.
+
+Personal-tier skills (`bird`, `brief-morning`, `evening-distill`, `curate-feeds`) and Notion / Slack ops moved to the `pandastack-private` overlay or to Claude.ai MCP servers in v2.2.0 — see `RESOLVER.md` § "v2.2.0 cut summary".
 
 If you want to use only the portable subset, you can symlink individual skill directories instead of the whole `skills/` folder.

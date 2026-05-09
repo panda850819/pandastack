@@ -82,10 +82,8 @@ ext_check() {
   fi
 }
 
-ext_check "scout"          "gh"            "brew install gh"
 ext_check "agent-browser"  "agent-browser" "npm install -g agent-browser"
 ext_check "deepwiki"       "curl"          "(curl + jq, usually preinstalled)"
-ext_check "summarize"      "summarize"     "brew install steipete/tap/summarize"
 ext_check "qa"             "agent-browser" "npm install -g agent-browser"
 
 echo
@@ -96,14 +94,16 @@ echo
 echo "[4/4] Personal skills (private overlay)"
 if [ -d "$HOME/site/skills/pandastack-private" ] || [ -n "${PANDASTACK_PRIVATE:-}" ]; then
   ok "private overlay detected at $HOME/site/skills/pandastack-private"
-  echo "      Unlocks: brief-morning, evening-distill, curate-feeds,"
-  echo "               bird, slack, notion"
+  echo "      Unlocks: brief-morning, evening-distill, curate-feeds, bird,"
+  echo "               chain-scout, misalignment, yei-alert-triage"
 else
-  warn "no private overlay (6 skills hidden)"
-  echo "      brief-morning, evening-distill, curate-feeds,"
-  echo "      bird, slack, notion"
-  echo "      These need private CLIs (gog / bird / pdctx / ..)."
+  warn "no private overlay (personal-tier skills hidden)"
+  echo "      brief-morning, evening-distill, curate-feeds, bird (need gog / feed-server / bird CLIs)"
+  echo "      chain-scout, misalignment, yei-alert-triage (work-specific)"
   echo "      pandastack-private is not currently published."
+  echo
+  echo "      For Notion / Slack ops: use Claude.ai Notion / Slack MCP via OAuth"
+  echo "      (the public /notion and /slack skills were deleted in v2.2.0)."
 fi
 
 echo

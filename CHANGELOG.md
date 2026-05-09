@@ -1,5 +1,66 @@
 # Changelog
 
+## v2.2.0 — 2026-05-09
+
+> **Scope tightening**. Public package shrinks 38 → 26 skills, 7 → 0 lifecycle flow specs. The personal tier moves out of this manifest entirely (lives in `pandastack-private` overlay). Notion / Slack ops migrate to MCP. Philosophy shifts from "personal AI operator OS that manages your retro / research / work / decisions" to "**skill library that ships verbs; the brain keeps state; lifecycle discipline is your job, not the package's**".
+
+### Removed (8 skills archived to `_archive/`)
+
+- **`think-like-naval`, `think-like-alan-chan`** — replicating someone else's thinking pattern is mimicry, not insight. The 5 role personas (ceo / product-lead / eng-lead / design-lead / ops-lead) cover the cognitive-lens use case at the right abstraction.
+- **`inbox-triage`** — a pre-brain-era vault hygiene skill. With `gbrain` connected, `mcp__gbrain__find_orphans` + `find_anomalies` + a 5-minute manual Inbox/ glance covers the same ground.
+- **`scout`** — ad-hoc `gh repo view` + `WebFetch` is sufficient. Skills should earn their existence; reconnaissance over public repos is something Claude does fluently without a Skill wrapper.
+- **`summarize`** — gbrain ingest paths (`voice-note-ingest`, `media-ingest`, `idea-ingest`) replace standalone summarization. If you want raw transcript without ingest, use the underlying CLI directly.
+- **`work-ship`** — folded into `/ship knowledge` as the **decision-note variant** (triggered when path matches `decisions/`). A decision page IS a knowledge note about a decision; the shape (frontmatter + body + cross-link) is identical, only the Extract questions and one Stage 1 side-effect (writing `Inbox/ship-proposals/` for manual external push) differ. Deprecated alias `work-ship` resolves until 2026-08-07.
+
+### Removed (2 skills hard-deleted; use MCP instead)
+
+- **`notion`, `slack`** — Claude.ai Notion / Slack MCP via OAuth replaces the local-CLI-with-keychain-token model. Token doesn't sit on disk. Use `mcp__claude_ai_Notion__*` / `mcp__claude_ai_Slack__*` directly.
+
+### Moved to `pandastack-private` overlay (4 skills)
+
+- **`bird`, `brief-morning`, `evening-distill`, `curate-feeds`** — all require private CLIs (bird, gog, feed-server) that cannot ship in a public package. The overlay is now their canonical home. Public users see `bootstrap.sh` reporting nothing missing; private overlay users get them by installing `pandastack-private`.
+
+### Removed (lifecycle flow specs)
+
+- **`plugins/pandastack/flows/`** entire directory deleted (7 `.md` files: dev / writing / knowledge / research / work / retro / decision). Lifecycle docs collapse into:
+  - **Per-skill SKILL.md**: `/sprint` covers dev; `/ship knowledge` covers knowledge close (incl. decision-note variant); `/ship write` covers writing close; `/retro-week` and `/retro-month` cover retro cadence.
+  - **README "Lifecycle map" section**: 30-second visual + cross-flow router for the 3 first-class compositions (dev / writing / knowledge).
+  - **Demoted because not real flows**: `research` (knowledge variant), `work` (dev variant + decision-note variant of ship knowledge), `decision` (autonomy contract → `~/.agents/AGENTS.md` rule).
+
+### Added
+
+- **`/ship knowledge` decision-note variant** — when path matches `decisions/`, the skill writes both the decision note frontmatter AND an `Inbox/ship-proposals/<date>-<slug>.md` markdown file with `[ ]` checkboxes for manual Notion / Jira / Linear / Slack push. Stage 2 questions become decision-specific (decision/cycle/counterfactual/scope) instead of knowledge-specific. Replaces v2.1 `/work-ship`.
+- **Common Rationalizations tables** in 4 critical skills (`/sprint`, `/careful`, `/review`, `/ship`) — 2-column "rationalization | reality" tables with 5-7 entries each, voiced for Panda's actual failure modes (patch-and-pray, skip careful on prod, ship without review on hotfix). Format adapted from addyosmani/agent-skills.
+
+### Manifest
+
+- Tier model simplified: `core` (23) + `ext` (3). Personal tier removed from public manifest. Anything that needed `private:*` requirements moved to `pandastack-private`.
+- `version = "2.2.0"`, `updated = "2026-05-09"`.
+
+### Why
+
+Three signals over the v2.1 cycle convinced this was right:
+
+1. **Brain co-evolution**: as `gbrain` matured (timeline, salience, recent-transcripts, find_orphans), several pandastack skills became wrappers around brain-equivalent operations. Better to remove the wrapper than keep two paths to the same outcome.
+2. **Public-vs-private ambiguity**: 6 personal-tier skills lived in the public manifest but couldn't run for public users (private CLIs). This was a wart — public package now self-contained.
+3. **Flow spec drift**: 7 flow specs in `flows/*.md` plus `/sprint` SKILL.md plus README "How skills connect" plus the briefly-added `FLOWS.md` meant 4-5 places describing the dev lifecycle. One source of truth (per-skill SKILL.md + README map) is enough.
+
+The mental model shift: **pandastack ≠ "personal AI operator OS that manages your life". pandastack = "skill library you compose ad-hoc."** Lifecycle discipline (retro / research / work / decision) belongs to your individual cron jobs, brain queries, and AGENTS.md rules — not to a one-size-fits-all flow spec.
+
+### Not changed
+
+- 5 role personas (ceo / product-lead / eng-lead / design-lead / ops-lead) stay as cognitive lenses
+- `/sprint`, `/office-hours`, `/grill`, `/dojo`, `/careful`, `/freeze`, `/review`, `/qa`, `/checkpoint`, `/done`, `/init`, `/boardroom`, `/team-orchestrate`, `/gatekeeper`, `/write` all unchanged in shape
+- `/ship` git mode + write mode unchanged; only knowledge mode added the decision-note variant
+- `retro-week`, `retro-month` stay (per Panda's call: cadence/interview value still belongs in pandastack at this point)
+
+### Migration
+
+- **`/work-ship` users**: now run `/ship knowledge <decisions/path>`. Alias `work-ship` resolves until 2026-08-07.
+- **`/notion`, `/slack` users**: switch to Claude.ai Notion / Slack MCP. The MCP equivalents (`mcp__claude_ai_Notion__*`, `mcp__claude_ai_Slack__*`) cover read + write + search ops with OAuth (no local token).
+- **Cron jobs referencing `/brief-morning`, `/evening-distill`, `/curate-feeds`, `/bird`**: install `pandastack-private` to keep them. The skills moved, not changed shape.
+- **References to `flows/<name>.md`**: gone. Look in the corresponding skill's SKILL.md or README "Lifecycle map" instead.
+
 ## v2.1.1 — 2026-05-07
 
 > Small decoupling pass. Three loose ends from the v2.1.0 audit: `gog` hard-fail, Hermes-specific scheduler wording, and CLAUDE.md / AGENTS.md asymmetry.

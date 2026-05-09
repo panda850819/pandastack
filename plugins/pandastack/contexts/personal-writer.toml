@@ -17,14 +17,11 @@ public = [
   "pandastack:write",            # voice + slop detection (was: content-write, v1.1 rename)
   "pandastack:ship",             # /ship write <draft> — Close + Extract + Backflow for published pieces
   "pandastack:grill",            # adversarial mode to stress-test thesis before committing
-  "pandastack:summarize",        # summarize source material
-  "pandastack:think-like-naval", # framing / mental models check
-  "pandastack:think-like-alan-chan", # product / builder narrative lens
   "pandastack:retro-week",
   "pandastack:retro-month",
   "pandastack:done",
 ]
-private = []  # tier=personal skills (bird / brief-morning / evening-distill) load via private overlay only
+private = []  # tier=personal skills (bird / brief-morning / evening-distill / curate-feeds) load via private overlay only
 
 [memory]
 namespace    = "personal/writer"

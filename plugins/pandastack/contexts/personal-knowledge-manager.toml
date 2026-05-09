@@ -9,20 +9,20 @@ agent         = ""   # no persona
 voice_override = ""
 
 [flow]
+# v2.2: research is no longer a first-class flow — it's a knowledge variant.
 main = "knowledge"
-side = ["research", "retro"]
+side = ["retro"]
 
 [skills]
 public = [
   "pandastack:ship",             # /ship knowledge <note> — Close + Extract + Backflow on knowledge/ note
-  "pandastack:summarize",        # summarize long-form content
   "pandastack:deepwiki",         # GitHub repo docs for technical deep-dives
   "pandastack:grill",            # adversarial mode to scope research questions
   "pandastack:retro-week",
   "pandastack:retro-month",
   "pandastack:done",
 ]
-private = []  # tier=personal skills (curate-feeds / bird) load via private overlay only
+private = []  # tier=personal skills (curate-feeds / bird / brief-morning / evening-distill) load via private overlay only
 
 [memory]
 namespace    = "personal/knowledge"

@@ -4,16 +4,18 @@ Personal context-aware AI operator OS — one substrate, four runtimes, no vendo
 
 I built pandastack to run my own work across multiple AI CLIs without dotdir sprawl. Skills are version-controlled markdown. Personas are replaceable. Context recipes ship as TOML. Same content runs across Claude Code, Codex CLI, Gemini CLI, and Hermes; per-CLI shims handle syntax differences. No data-layer vendor lock-in.
 
-The stack is 38 skills covering dev, knowledge, writing, work, research, retro, and decision lifecycles, tiered into 27 core (markdown-only, fresh-clone runnable), 5 ext (publicly installable CLI), and 6 personal (private overlay required). Anchored on a personal Obsidian vault as SSOT.
+The stack is **26 skills** focused on dev, writing, and knowledge workflows, tiered into 23 core (markdown-only, fresh-clone runnable) and 3 ext (publicly installable CLI). Anchored on a personal Obsidian vault as SSOT.
+
+**v2.2 philosophy**: pandastack ships verbs. The brain (gbrain or your own knowledge store) keeps state. Lifecycle discipline is your job, not the package's. v2.2 dropped the `flows/` directory (7 spec files) and moved all personal-tier cadence skills (brief-morning, evening-distill, bird, curate-feeds) to the `pandastack-private` overlay. The public package is now self-contained: clone + install gives you everything in the manifest.
 
 **Stability scope (read this first):**
 
-v1 is **personal-substrate stable**: API, schema, and skill content are stable for the author's daily use; substrate dogfooded across 4 of 7 lifecycle flows. v1.3.0 + v1.4.0 (2026-05-07) ship the structural fix that previous v1 versions documented as v2 work — tier model, bootstrap script, decoupled hardcoded data, dropped `tool-` prefix. Fresh-clone Core install now works without author hand-holding; verified-user-install count is still 0 because the v1.3.0+ surface has not been validated by external A-class users yet.
+v2 is **personal-substrate stable**: API, schema, and skill content are stable for the author's daily use. v2.2.0 (2026-05-09) is a scope-tightening release — 38 → 26 skills, 7 → 0 flows. Fresh-clone Core install runs without author hand-holding; verified-user-install count is still 0 because the v2.2 surface has not been validated by external A-class users yet.
 
 What this means for you:
 
-- If you are the author or a fork-and-learn power user, v1 is stable for daily use.
-- If you are a fresh A-class user (Obsidian + Coding Agent power user willing to bring your own vault and CLIs), `bash scripts/bootstrap.sh` reports what runs now and what install steps remain. Core (27 skills) should run on a clean clone.
+- If you are the author or a fork-and-learn power user, v2.2 is stable for daily use.
+- If you are a fresh A-class user (Obsidian + Coding Agent power user willing to bring your own vault and CLIs), `bash scripts/bootstrap.sh` reports what runs now and what install steps remain. Core (23 skills) should run on a clean clone.
 - If you use Logseq / Roam / Notion instead of Obsidian, skills will reference Panda's vault conventions (`Blog/_daily/`, `Inbox/ship-log/`, etc.) — these are prompt defaults, not hard-coded interfaces. You'd adapt them per session or by editing skill text. There's no built-in adapter layer; whether that matters depends on your tolerance for hand-tuning conventions.
 
 **Who this is for:**
@@ -31,9 +33,9 @@ bash pandastack/scripts/bootstrap.sh --claude    # or --codex
 
 `bootstrap.sh` reports:
 - substrate state (`~/.agents/AGENTS.md` only)
-- 27 core skills runnable on this clone with no external CLI
-- 5 extension skills with the exact `brew install` / `npm install -g` to enable each
-- 6 personal skills hidden behind the `pandastack-private` overlay
+- 23 core skills runnable on this clone with no external CLI
+- 3 extension skills with the exact `brew install` / `npm install -g` to enable each
+- Personal-tier skills are no longer in this manifest — they live in the `pandastack-private` overlay (private CLIs: gog, bird, feed-server)
 
 After install:
 
@@ -43,11 +45,53 @@ After install:
 4. `/ship knowledge <path>` on a finished note in your vault
 5. Stop there. You'll know if pandastack fits how you work.
 
-> **Tier model (v1.3)**: Skills are tiered in `plugins/pandastack/manifest.toml`. Core = markdown-only, runs on a fresh clone. Ext = needs a public CLI install. Personal = needs the private overlay (gog, bird, pdctx, ...). `capability-probe` only ABORTs when substrate is missing, not when ext / personal CLIs are absent.
+> **Tier model (v2.2)**: Skills are tiered in `plugins/pandastack/manifest.toml`. Core = markdown-only, runs on a fresh clone. Ext = needs a public CLI install. Personal-tier skills (private CLI dependencies) live in the `pandastack-private` overlay, not in this manifest. `capability-probe` only ABORTs when substrate is missing, not when ext CLIs are absent.
+
+## Lifecycle map
+
+> Which skill do I run when? This is the 30-second answer. pandastack v2.2 has 3 documented compositions; everything else is ad-hoc skill chaining you decide on.
+
+```
+                  pandastack lifecycles (v2.2)
+                  ────────────────────────────
+
+  dev        DEFINE ──▶ PLAN ──▶ GATE ──▶ BUILD ──▶ VERIFY ──▶ REVIEW ──▶ SHIP
+             office-h   /plan   careful  build     qa         review     ship
+             or grill                                          (codex
+                                                              cross-check)
+
+             Express path: /sprint chains DEFINE → SHIP internally (1-2h cap).
+
+  writing    CAPTURE ──▶ STRUCTURE ──▶ DRAFT ──▶ SHIP
+             direct      write          write     ship write
+                         (slop check)             (Close + Extract + Backflow)
+
+  knowledge  CAPTURE ──▶ DEDUP ──▶ DISTILL ──▶ VERIFY ──▶ SHIP
+             direct      rg/grep   write       human       ship knowledge
+             (or brain   knowledge/            readback    (decisions/ path
+              ingest)                                       triggers decision-
+                                                            note variant,
+                                                            replaces v2.1
+                                                            /work-ship)
+```
+
+Cross-flow router (start here when you're not sure which composition applies):
+
+| If you're about to… | Open with | Composition |
+|---|---|---|
+| Build / fix / refactor code | `/office-hours` then `/sprint` | dev |
+| Turn a draft into a published post | `/write` then `/ship write` | writing |
+| Make a raw note durable | `/ship knowledge <path>` | knowledge |
+| Close out a work topic / decision | `/ship knowledge <decisions/path>` | knowledge (decision-note variant) |
+| End a session / week / month | `/done` · `/retro-week` · `/retro-month` | (independent skills, no flow) |
+
+**Express path for dev work**: `/sprint` chains DEFINE → SHIP internally for 1-2h focused tasks. Use sprint when one skill should drive the whole arc; use the manual phase-by-phase progression when stages need user gates between them (e.g. `/careful` for prod) or when the work spans multiple sessions.
+
+**What's NOT a flow** (cut in v2.2.0): `research` is a knowledge-flow variant (`/grill` then `/scout`-like recon then `/ship knowledge`); `work` is a dev-flow variant + decision-note variant of `/ship knowledge`; `decision` is the cron-autonomy contract ("cron proposes, Panda decides, Panda executes") which lives as a rule in `~/.agents/AGENTS.md`, not as a flow; `retro` is a cadence served by `/retro-week` and `/retro-month` skills directly. None of these earn a separate spec.
 
 ## How skills connect
 
-`/office-hours` writes a brief. `/sprint` reads the brief and executes. `/sprint` ends in SHIPPED, then `/ship knowledge <path>` or `/work-ship` reads the session note and runs Close + Extract + Backflow. Each step writes an artifact the next step picks up. You decide when to fire each step; the brief, session note, and decision log are the contracts between phases.
+`/office-hours` writes a brief. `/sprint` reads the brief and executes. `/sprint` ends in SHIPPED, then `/ship knowledge <path>` reads the session note and runs Close + Extract + Backflow. Each step writes an artifact the next step picks up. You decide when to fire each step; the brief, session note, and decision log are the contracts between phases.
 
 ## See it work
 
@@ -178,22 +222,29 @@ After install, run `/pandastack:init` once inside your project.
 `~/.agents/AGENTS.md` is the only required substrate. No env vars needed as of v2.0.1:
 
 - **Vault path**: skills run from vault root (`cd <your-vault> && /<skill>`). Cron entries `cd` first.
-- **Google account** (for `brief-morning`, `evening-distill`): configure once via `gog config set default_account <you@example.com>`.
 - **Plugin path**: resolved via host plugin-resolver (Claude Code / Codex SDK) or relative path from the calling skill.
-- **Work vault**: `cd <work-vault> && /work-ship` — same pattern.
+- **Work-vault decision-note close**: `cd <work-vault> && /ship knowledge decisions/<file>.md` — runs the decision-note variant which also writes `Inbox/ship-proposals/` for manual external push (replaces v2.1 `/work-ship`).
 
 Re-run `bash scripts/bootstrap.sh` any time to verify substrate.
 
 ## Optional: private overlay (`pandastack-private`)
 
-Tier=personal skills (`brief-morning`, `evening-distill`, `curate-feeds`, `bird`, `slack`, `notion`) plus `pdctx` context routing live in a private overlay that is not currently published. The public install runs without them — `bootstrap.sh` reports them as hidden. If you have access to `pandastack-private`:
+Personal-tier skills — those requiring private CLIs — live in a separate `pandastack-private` overlay repo. v2.2.0 moved the following from this manifest into the overlay:
+
+- `brief-morning`, `evening-distill` (require `gog`)
+- `curate-feeds` (requires `feed-server`)
+- `bird` (requires private `bird` CLI for X/Twitter)
+
+Plus the overlay's own skills (chain-scout, misalignment, yei-alert-triage). The public install runs without any of these — `bootstrap.sh` reports nothing missing. Notion / Slack ops moved to **Claude.ai Notion / Slack MCP** (OAuth-based, token doesn't sit on disk) — the public `/notion` and `/slack` skills were deleted in v2.2.0.
+
+If you have access to `pandastack-private`:
 
 | Command | Outcome |
 |---|---|
 | `pdctx status` | Shows active context, recent calls, in-flight dispatches |
 | `pdctx use personal:writer` | Switches to writer context; injects persona + skill subset |
 | `pdctx call personal:developer "summarize today's note"` | Dispatches subagent with full context injected |
-| `/brief-morning` | Invokes the morning briefing skill manually (alias `/morning-briefing` valid until 2026-08-04) |
+| `/brief-morning` | Invokes the morning briefing skill manually (now requires private overlay; alias `/morning-briefing` valid until 2026-08-04) |
 
 ## Local development loop, author workflow
 
@@ -230,7 +281,7 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 
 ## Skills
 
-38 skills grouped by lifecycle (27 core / 5 ext / 6 personal — see `plugins/pandastack/manifest.toml`). Persona names follow the gstack convention — each skill is "your specialist" for that step.
+26 skills grouped by lifecycle (23 core / 3 ext — see `plugins/pandastack/manifest.toml`). Persona names follow the gstack convention — each skill is "your specialist" for that step.
 
 ### Think / intake
 
@@ -271,26 +322,22 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 
 | Skill | Your specialist | What they do |
 |---|---|---|
-| `/ship` | Release Engineer | Multi-mode close. `/ship` (no args) = test + commit + push + PR. `/ship knowledge <path>` = Close + Extract + Backflow on a knowledge note. `/ship write <draft>` = Close + Extract + Backflow on a Blog draft. |
-| `/work-ship` | Work Closer | Close a work topic. Vault-only writes; external system updates ship as proposals to Inbox/. |
+| `/ship` | Release Engineer | Multi-mode close. `/ship` (no args) = test + commit + push + PR. `/ship knowledge <path>` = Close + Extract + Backflow on a knowledge note (decision-note variant when path matches `decisions/`, replaces v2.1 `/work-ship`). `/ship write <draft>` = Close + Extract + Backflow on a Blog draft. |
 
-### Research
+### Trust
 
 | Skill | Your specialist | What they do |
 |---|---|---|
-| `/scout` | The Scout | Reconnoiter public ecosystem (GitHub, public SKILL.md / AGENTS.md) for harness patterns. |
 | `/gatekeeper` | The Gatekeeper | Pre-adoption trust check (skills, MCPs, repos, on-chain addresses). |
 
-### Reflect / hygiene
+### Reflect / cadence
 
 | Skill | Your specialist | What they do |
 |---|---|---|
 | `/retro-week` | Weekly Retro | Three-phase weekly retro. Phase 1 scans `Blog/_daily/` + `Inbox/ship-log/` directly via rg / find. |
 | `/retro-month` | Monthly Retro | Strategic monthly review with project memory updates. |
-| `/inbox-triage` | Inbox Triage | Weekly Inbox/ hygiene. Bucket stale .md by category. |
-| `/curate-feeds` | Feed Fetcher | Fetch raw feed items to Inbox/feeds/raw/ with dedupe and noise filter. |
 
-Vault hygiene (orphans / stale / superseded) is now a direct `rg` / `find` scan, not a dedicated skill.
+Vault hygiene (orphans / stale / superseded) is a direct `rg` / `find` scan or — when `gbrain` is connected — a brain query (`mcp__gbrain__find_orphans`). v2.2.0 cut `/inbox-triage`.
 
 ### Session
 
@@ -300,7 +347,20 @@ Vault hygiene (orphans / stale / superseded) is now a direct `rg` / `find` scan,
 | `/done` | Session Closer | Save context, summarize work, persist memory at session end. |
 | `/checkpoint` | The Bookmarker | Save / resume working state snapshots. |
 
-Tool wrappers (`bird`, `slack`, `notion`, `summarize`, `agent-browser`, `deepwiki`) and thinking lenses (`think-like-naval`, `think-like-alan-chan`) round out the lineup — see [`plugins/pandastack/manifest.toml`](plugins/pandastack/manifest.toml) for the full tier-tagged list.
+### Writing
+
+| Skill | Your specialist | What they do |
+|---|---|---|
+| `/write` | The Editor | Voice-aware drafting + slop detection. Used inside the writing composition before `/ship write`. |
+
+### Tool wrappers (public CLI)
+
+| Skill | Wraps |
+|---|---|
+| `/agent-browser` | Browser automation (npm `agent-browser`) |
+| `/deepwiki` | DeepWiki repo docs + Mermaid diagrams |
+
+Other CLI wrappers (`bird` for X/Twitter) live in the `pandastack-private` overlay because their CLIs aren't open-source. `summarize`, `notion`, `slack`, `scout`, `inbox-triage`, `work-ship`, `think-like-*` were cut in v2.2.0 — see `RESOLVER.md` § "v2.2.0 cut summary".
 
 ## Personas
 
@@ -314,19 +374,19 @@ Tool wrappers (`bird`, `slack`, `notion`, `summarize`, `agent-browser`, `deepwik
 | `ops` | COO — systems that run without you, process design |
 | `product` | VP Product — requirements, scope, metrics |
 
-## Lifecycle Flows
+## Lifecycle compositions
 
-7 flow specs in `plugins/pandastack/flows/` define the phase progression each lifecycle follows:
+v2.2.0 cut the `flows/` directory. There are no longer separate flow spec files — what used to live in `plugins/pandastack/flows/*.md` is now either:
 
-| Flow | Lifecycle |
-|---|---|
-| `dev` | brief → build → review → qa → ship → extract |
-| `knowledge` | capture → distill → verify → ship → lint |
-| `writing` | capture → structure → draft → ship → distribute |
-| `work` | triage → context → execute → ship → push (vault-only) |
-| `research` | scope → fetch → dive → distill → ship |
-| `retro` | daily / weekly / monthly cadence with auto-scan |
-| `decision` | cron-driven decision triage |
+1. **Inline in the relevant skill**: `/sprint` for dev, `/ship knowledge` (incl. decision-note variant) for knowledge close, `/ship write` for writing close.
+2. **Documented in the "Lifecycle map" section above**: the 3 first-class compositions (dev / writing / knowledge).
+3. **Demoted because it wasn't really a flow**:
+   - `research` → knowledge variant (Phase 1-3 vary, Phase 4-6 = knowledge ship)
+   - `work` → dev variant + decision-note variant of `/ship knowledge`
+   - `decision` → autonomy contract ("cron proposes, Panda decides, Panda executes") in `~/.agents/AGENTS.md`
+   - `retro` → cadence served by `/retro-week` and `/retro-month` directly
+
+This shrinks the documentation surface and makes "which skill do I run" answerable in 30 seconds from the Lifecycle map alone.
 
 ## Telemetry opt-out (pdctx, optional)
 
@@ -346,16 +406,16 @@ See [`plugins/pandastack/docs/telemetry.md`](plugins/pandastack/docs/telemetry.m
 
 Without pdctx, no telemetry runs at all — pandastack public surface emits no events.
 
-## Cron jobs (current)
+## Cron jobs
 
-Schedule with whichever Tier 3 scheduler you prefer (launchd plist, system crontab, Hermes, Claude CronCreate). The skills don't depend on a specific scheduler.
+The public package no longer ships cron-driven skills — `/brief-morning` and `/evening-distill` moved to the `pandastack-private` overlay in v2.2.0 (they require the private `gog` CLI). If you have the overlay installed, schedule them with whichever Tier 3 scheduler you prefer (launchd plist, system crontab, Hermes, Claude CronCreate):
 
-| Job | Schedule | Skill |
+| Job | Schedule | Skill (private overlay) |
 |---|---|---|
 | Morning Briefing | `0 8 * * *` (daily 8 AM local) | `/brief-morning` |
 | Evening Distill | `0 22 * * *` (daily 10 PM local) | `/evening-distill` |
 
-`retro-prep-week` was retired in v2.0.0 — `/retro-week` Phase 1 now scans vault files directly (rg / find on `Blog/_daily/` + `Inbox/ship-log/`), no separate cron needed.
+`retro-prep-week` was retired in v2.0.0 — `/retro-week` Phase 1 scans vault files directly (rg / find on `Blog/_daily/` + `Inbox/ship-log/`), no separate cron needed.
 
 ## Updating
 

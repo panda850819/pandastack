@@ -5,15 +5,17 @@
 #   - lib/capability-probe.md (decides degraded-mode messaging)
 #   - your own /pandastack:init flow (sets up config env vars)
 #
-# Tier semantics:
+# Tier semantics (v2.2):
 #   core      — markdown-only. No external CLI required. Runs on a fresh clone after
-#               `git clone && /plugin install`. Personas, lifecycle skills, vault hygiene,
-#               session management.
+#               `git clone && /plugin install`. Personas, lifecycle skills, session
+#               management.
 #   ext       — needs a publicly installable CLI (brew / npm / pipx / curl / gh release).
 #               bootstrap.sh prints the install command; user opts in.
-#   personal  — needs a private CLI Panda has not published (gog, bird, pdctx,
-#               notion-cli, slack-cli, feed-server). Install pandastack-private
-#               overlay to unlock these. On a public install the skill is hidden.
+#
+# v2.2 dropped the personal tier from this manifest. Personal-tier skills (those
+# requiring private CLIs like gog / bird / feed-server) live exclusively in the
+# `pandastack-private` overlay repo. The public package is now self-contained:
+# clone + install gives you everything in this manifest.
 #
 # Requires syntax:
 #   cli:<name>          — generic command must be on PATH
@@ -21,18 +23,33 @@
 #   brew-tap:<tap/name> — brew install from a tap
 #   npm:<pkg>           — npm install -g <pkg>
 #   pipx:<pkg>          — pipx install <pkg>
-#   private:<name>      — private CLI from pandastack-private overlay
 #
-# Skills derive vault path from cwd (run from vault root) and auth from CLI defaults
-# (e.g. `gog config set default_account`). No env vars required as of v2.0.1.
+# Skills derive vault path from cwd (run from vault root) and auth from CLI defaults.
+# No env vars required as of v2.0.1.
 #
 # This file is hand-curated. When you add or rename a skill, update here.
 
 [manifest]
-version = "2.1.1"
+version = "2.2.0"
 schema  = "skill-tier-v1"
-updated = "2026-05-07"
+updated = "2026-05-09"
 
+# v2.2.0 (2026-05-09): scope tightening. Public package shrinks 38 → 26 skills.
+#   - Archived (true cuts): think-like-naval, think-like-alan-chan (mimicry not
+#     insight), inbox-triage (brain `find_orphans` replaces), scout (ad-hoc gh +
+#     WebFetch suffices), summarize (gbrain ingest paths replace), work-ship
+#     (folded into /ship knowledge as decision-note variant).
+#   - Deleted (use MCP): notion, slack — Claude.ai Notion/Slack MCP via OAuth
+#     replaces local-CLI-with-keychain-token model.
+#   - Moved to pandastack-private overlay: bird, brief-morning, evening-distill,
+#     curate-feeds — all required private CLIs that cannot ship in a public
+#     package; the overlay is now their canonical home.
+#   - Deleted: plugins/pandastack/flows/ (7 .md specs). Lifecycle docs collapse
+#     into README "Lifecycle map" section covering 3 flows: dev / writing /
+#     knowledge. Other "flows" (research / work / decision / retro) demoted: not
+#     first-class flows, just compositions documented per-skill.
+#   - PHILOSOPHY shift: "pandastack ships verbs. The brain keeps state.
+#     Lifecycle discipline is your job, not the package's."
 # v2.1.1: small decoupling pass. brief-morning + evening-distill degrade
 # gracefully when `gog` is missing instead of hard-aborting. Hermes-specific
 # triggers in skill descriptions + RESOLVER changed to scheduler-agnostic
@@ -51,7 +68,7 @@ updated = "2026-05-07"
 # etc. 90-day alias grace via SKILL.md frontmatter `aliases:`.
 
 # ============================================================================
-# CORE (27) — markdown-only, fresh-clone runnable
+# CORE (23) — markdown-only, fresh-clone runnable
 # ============================================================================
 
 [skill.boardroom]
@@ -98,10 +115,6 @@ description = "Pre-adoption trust check for external skills / MCPs / repos."
 tier = "core"
 description = "Atomic adversarial requirement discovery."
 
-[skill.inbox-triage]
-tier = "core"
-description = "Weekly Inbox/ hygiene, bucket stale .md by category. Run from vault root."
-
 [skill.init]
 tier = "core"
 description = "One-time pandastack init per project."
@@ -134,7 +147,7 @@ description = "Parallel 3-pass review (correctness, security, architecture)."
 [skill.ship]
 tier = "core"
 requires = ["cli:git", "cli:gh"]
-description = "Multi-mode ship verb: git (default), knowledge, write. Knowledge / write modes run from vault root. Aliases: knowledge-ship, write-ship."
+description = "Multi-mode ship verb: git (default), knowledge (incl. decision-note variant for work-topic close, replaces v2.1 /work-ship), write. Knowledge / write modes run from vault root."
 
 [skill.sprint]
 tier = "core"
@@ -145,39 +158,22 @@ tier = "core"
 requires = ["cli:git"]
 description = "N independent branches in parallel git worktrees."
 
-[skill.think-like-alan-chan]
-tier = "core"
-description = "Apply Alan Chan framing: 0->1 product / focus / learning."
-
-[skill.think-like-naval]
-tier = "core"
-description = "Apply Naval framing: leverage / specific knowledge / long-horizon."
-
 [skill.using-pandastack]
 tier = "core"
 description = "Cognitive contract loaded at session start."
-
-[skill.work-ship]
-tier = "core"
-description = "Close + Extract + Backflow on a work topic. Run from work-vault root. Vault-only."
 
 [skill.write]
 tier = "core"
 description = "Voice-aware drafting + slop detection."
 
 # ============================================================================
-# EXT (5) — public CLI dependencies
+# EXT (3) — public CLI dependencies
 # ============================================================================
 
 [skill.qa]
 tier = "ext"
 requires = ["npm:agent-browser"]
 description = "Browser-based UI QA, real pages, real flows."
-
-[skill.scout]
-tier = "ext"
-requires = ["cli:gh"]
-description = "Recon public ecosystem for skill / harness patterns."
 
 [skill.agent-browser]
 tier = "ext"
@@ -189,55 +185,19 @@ tier = "ext"
 requires = ["cli:curl", "cli:jq"]
 description = "GitHub repo docs + Mermaid diagrams via deepwiki."
 
-[skill.summarize]
-tier = "ext"
-requires = ["brew-tap:steipete/tap/summarize"]
-description = "Summarize URL / YouTube / podcast / PDF."
-
-# ============================================================================
-# PERSONAL (6) — private CLI / private overlay required
-# ============================================================================
-
-[skill.brief-morning]
-tier = "personal"
-requires = ["private:gog"]
-description = "Daily 8am morning briefing into daily note. Run from vault root; gog uses its default account."
-
-[skill.curate-feeds]
-tier = "personal"
-requires = ["private:feed-server", "cli:defuddle"]
-description = "Pull feed items to Inbox/feeds/raw/ via private feed-server. Run from vault root."
-
-[skill.evening-distill]
-tier = "personal"
-requires = ["private:gog"]
-description = "Daily 10pm end-of-day distill into daily note. Run from vault root; gog uses its default account."
-
-[skill.bird]
-tier = "personal"
-requires = ["private:bird"]
-description = "X/Twitter read/write via private bird CLI."
-
-[skill.notion]
-tier = "personal"
-requires = ["private:notion-cli"]
-description = "Notion pages/DBs via private notion-cli."
-
-[skill.slack]
-tier = "personal"
-requires = ["private:slack-cli"]
-description = "Slack search/send/read via private slack-cli."
-
 # ============================================================================
 # Notes
 # ============================================================================
 #
-# Skills referenced in flows/ but living in pandastack-private overlay (not in
-# this manifest because they are not in this repo):
-#   - misalignment             (private overlay; flows/work.md Phase 3)
-#   - yei-alert-triage         (private overlay; flows/work.md Phase 1, flows/decision.md)
-#   - chain-scout              (private overlay; on-chain analysis)
-#   - harness-slim             (private overlay; flows/decision.md)
+# Personal-tier skills (private CLI dependencies) are NOT listed here. They
+# live exclusively in the `pandastack-private` overlay repo:
+#   - bird                     (private:bird) — X/Twitter read/write
+#   - brief-morning            (private:gog)  — daily 8am briefing
+#   - evening-distill          (private:gog)  — daily 10pm distill
+#   - curate-feeds             (private:feed-server) — feed pipeline
+#   - chain-scout              — on-chain analysis
+#   - misalignment             — Slack misalignment scan
+#   - yei-alert-triage         — Hypernative + on-chain risk triage
 #
 # Substrate dependencies (assumed by the harness, not by individual skills):
 #   - ~/.agents/AGENTS.md      identity / voice / routing — capability-probe ABORTs without it
@@ -248,3 +208,9 @@ description = "Slack search/send/read via private slack-cli."
 #   2. Add a [skill.<name>] entry here with tier + requires + config
 #   3. If tier=ext, add the install command in scripts/bootstrap.sh ext-install table
 #   4. Update RESOLVER.md skill catalog
+#
+# Skills cut in v2.2.0 (archived under skills/_archive/<name>-<date>/):
+#   - think-like-naval, think-like-alan-chan
+#   - inbox-triage
+#   - scout, summarize
+#   - work-ship (folded into /ship knowledge decision-note variant)

@@ -242,6 +242,18 @@ tags: [sprint, {state-lowercase}]
 
 Save to `Inbox/sprint-{slug}-{date}.md` regardless of terminal state.
 
+## Common Rationalizations
+
+| Rationalization | Reality |
+|---|---|
+| "I already know this codebase, skip dojo" | The past-you who knew it was a different model context. Cold scans surface the half-built attempt you forgot about. |
+| "Topic is clear, skip grill" | If it were clear, you'd be in execute mode, not opening `/sprint`. The 3-question cap costs 2 minutes; ambiguity costs a re-do. |
+| "Small change, skip review" | Small changes are where regressions hide because nobody looks. P0 review still runs in 90 seconds on a small diff. |
+| "One more iteration will fix it" (iter ≥ 3) | 3-strike rule is empirical: at iteration 4 the diagnosis itself is the bug. State=FAILED, manual intervention. |
+| "It's partly UI, partly backend, just mix personas" | Mixed personas dilute the cognitive lens and produce inconsistent output. Split into two sequential sprints. |
+| "Sprint within a sprint for the sub-task" | Flatten. Either the sub-task is a Stage 3 step in the current sprint, or it's a separate sprint that fires after this one ends. |
+| "Review found P1 but ship anyway" | Terminal state contract is load-bearing. P1 unaddressed = state ≠ SHIPPED. Mark PAUSED with the open finding logged, or fix and re-review. |
+
 ## Anti-patterns
 
 - ❌ Calling sprint with no clear topic ("let's sprint on stuff") — sprint requires a single topic

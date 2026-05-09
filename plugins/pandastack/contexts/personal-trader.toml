@@ -9,19 +9,20 @@ agent         = ""   # no persona
 voice_override = ""
 
 [flow]
-main = "research"
+# v2.2: research is no longer a first-class flow — it's a knowledge variant.
+# Trader work composes /grill (scope lock) + ad-hoc fetch (gh / WebFetch / brain query) + /ship knowledge.
+main = "knowledge"
 side = ["retro"]
 
 [skills]
 public = [
-  "pandastack:think-like-naval",  # first-principles framing on market structure
-  "pandastack:summarize",         # summarize research PDFs / threads
   "pandastack:grill",             # adversarial scope lock before research dive
+  "pandastack:ship",              # /ship knowledge <path> for verified research notes
   "pandastack:retro-week",
   "pandastack:retro-month",
   "pandastack:done",
 ]
-private = []  # extended by private overlay (bird — tier=personal — load via pandastack-private/contexts/personal-trader.overlay.toml)
+private = []  # extended by private overlay (bird, chain-scout — tier=personal — load via pandastack-private/contexts/personal-trader.overlay.toml)
 
 [memory]
 namespace    = "personal/trader"

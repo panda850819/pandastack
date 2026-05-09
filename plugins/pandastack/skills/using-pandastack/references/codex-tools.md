@@ -73,12 +73,12 @@ Many pandastack skills (especially `tool-*`) invoke Panda's local CLI tools. The
 | Tool | Pandastack skills that depend on it | What it needs |
 |---|---|---|
 | `rg` / `find` | ship knowledge, vault search, vault hygiene scans | local vault on disk |
-| `bird` | bird | X/Twitter cookie auth |
-| `notion-cli` | notion, work-ship (notion proposals) | Notion API token in env |
-| `defuddle` | url-routing rule (Defuddle command reference) | Bun + defuddle binary |
-| `gog` | (Google Workspace skills) | Google OAuth config |
-| `slack` (slack-cli) | tool-slack, misalignment | Slack token in Keychain |
 | `agent-browser` | agent-browser, qa | Headless Chrome session |
+| `curl` + `jq` | deepwiki | preinstalled on most systems |
+
+Notion / Slack ops moved to **Claude.ai Notion / Slack MCP** in v2.2.0 (OAuth, no local token). The decision-note variant of `/ship knowledge` writes proposals to `Inbox/ship-proposals/` as markdown — the user walks the `[ ]` items manually via MCP.
+
+Personal-tier CLI dependencies (`bird`, `gog`, `notion-cli`, `slack-cli`, `feed-server`, `defuddle`) are required only by skills in the `pandastack-private` overlay — see that repo's RESOLVER.md.
 
 If a pandastack skill calls one of these and the binary is not installed, the skill will fail with a clear "command not found" error. These skills are intentionally local-environment-bound — there is no graceful cross-CLI fallback.
 

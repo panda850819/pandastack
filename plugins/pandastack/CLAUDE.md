@@ -36,7 +36,7 @@ Lifecycle skills (knowledge / writing / work / retro / decision / research) list
 
 Stored at the path configured in the project's `CLAUDE.md` or `AGENTS.md` under `## pandastack > learnings`. Default: `docs/learnings/`. Format: see `lib/learning-format.md`.
 
-Compound logic (extract a debugging pattern / pitfall / architecture decision) is part of `/ship knowledge <path>` and `/work-ship` Stage 3 Backflow — it routes to `docs/learnings/<category>/<slug>.md` after Panda confirms.
+Compound logic (extract a debugging pattern / pitfall / architecture decision) is part of `/ship knowledge <path>` Stage 3 Backflow — it routes to `docs/learnings/<category>/<slug>.md` after Panda confirms. The decision-note variant of `/ship knowledge` (when path matches `decisions/`) replaces the v2.1 `/work-ship`.
 
 ## Goal mapping
 

@@ -1,6 +1,6 @@
 # Ship — knowledge mode
 
-Close a `knowledge/<note>.md` lifecycle. Triggered by `/ship knowledge <path>` or `/ship <path>` where `<path>` is under `knowledge/`.
+Close a knowledge or decision note's lifecycle. Triggered by `/ship knowledge <path>` or `/ship <path>` where `<path>` is under `knowledge/` or any `decisions/` directory (work-topic close, replaces v2.1 `/work-ship`).
 
 Run from vault root. Pass the note path as `$ARGUMENTS`. If empty, ask.
 
@@ -11,19 +11,20 @@ NOTE="$ARGUMENTS"
 [ -z "$NOTE" ] && echo "需要 note path" && exit 1
 [ ! -f "$NOTE" ] && echo "note 不存在: $NOTE" && exit 1
 case "$NOTE" in
-  knowledge/*) ;;
-  */knowledge/*) ;;
+  knowledge/*|*/knowledge/*) VARIANT=knowledge ;;
+  decisions/*|*/decisions/*) VARIANT=decision ;;
   *)
-    echo "錯誤：knowledge mode 只處理 knowledge/ 內 note"
+    echo "錯誤：knowledge mode 只處理 knowledge/ 或 decisions/ 內 note"
     echo "  - Blog/_daily/ → 用 /ship write"
-    echo "  - work-vault/ → 用 /ship work (yei-stack 後)"
-    echo "  - Inbox/legacy-knowledge/ → 用 /knowledge promote 先升等"
+    echo "  - Inbox/legacy-knowledge/ → 先 promote 到 knowledge/"
     exit 1
     ;;
 esac
 ```
 
-Reject paths under `Inbox/`, `Blog/`, `_archive/`, `docs/`. Substance authorship discipline: only Panda-authored knowledge notes earn ship lifecycle.
+Reject paths under `Inbox/`, `Blog/`, `_archive/`, `docs/`. Substance authorship discipline: only Panda-authored knowledge or decision notes earn ship lifecycle.
+
+**Variant routing**: if path matches `decisions/`, the skill runs the **decision-note variant** (Stage 1 also writes an `Inbox/ship-proposals/` file for manual external push; Stage 2 questions ask decision/cycle/counterfactual/scope instead of problem/type/principle). See `## Decision-note variant` section below for the full delta.
 
 ## Scope: vault-only
 
@@ -174,3 +175,83 @@ retro-week / retro-month read this for "knowledge ship rate".
 | `source-quality.json` malformed | Backup to `.bak`, recreate |
 | `_index.md` missing for domain | Create skeleton |
 | User aborts mid-Stage-3 | Stage 1 mutations stay; Stage 3 proposals discarded |
+
+---
+
+## Decision-note variant (work-topic close)
+
+Triggered when `$NOTE` matches `decisions/`. Replaces the v2.1 `/work-ship` skill.
+
+The skill **never writes to Notion / Jira / Linear / Slack / X / GitHub**. External-system updates are drafted as markdown proposals to `Inbox/ship-proposals/<YYYY-MM-DD>-<slug>.md` for the user to walk manually. This is intentional: external mutations on team-visible systems should never be silent — see `~/.agents/AGENTS.md` rule "external-mutation-is-proposal".
+
+### Stage 1 — Close (decision-specific)
+
+In addition to base Stage 1 (frontmatter update + source-quality signal):
+
+1. **Read decision frontmatter**: `date`, `domain` (yei / other), `topic`, `notion_page`, `related_tickets`, `status`. If missing, ask user to fill.
+2. **Write ship proposal** at `Inbox/ship-proposals/<YYYY-MM-DD>-<topic-slug>.md` with `[ ]` checkboxes per external system:
+
+   ```markdown
+   ---
+   status: pending-manual-push
+   topic: <topic>
+   domain: <domain>
+   decision_log: <decision note path>
+   created: <YYYY-MM-DD>
+   ---
+
+   ## Notion update (manual)
+   - [ ] Set Status: Resolved
+   - [ ] Append Resolution section: <draft 2-3 paragraphs>
+   - [ ] Tag: resolved-YYYY-MM
+
+   ## Jira / Linear tickets to close (manual)
+   - [ ] <ticket>: transition to Done. Comment: > Resolved via <decision log>.
+
+   ## Slack notification (manual, optional)
+   Channel: <#guess based on domain>
+   - [ ] Draft message: > <one-line summary + link>
+   ```
+
+3. **Show & Confirm gate**: print decision log + ship-proposal in full so user reviews before any external push.
+
+### Stage 2 — Extract (decision-specific questions)
+
+Replace the 3 knowledge questions with 4 decision questions:
+
+1. **最終決策 + rationale 一段話？** (對自己誠實的版本，可能比 1.2 對外版本更直白)
+2. **跑了幾個 cycle 才收斂？哪些是浪費？** (浪費 = 重複討論 / 等待 / 重做)
+3. **反事實：如果重來一次最快路徑是什麼？** (這個是真正的 learning gold)
+4. **Work-specific 還是 generalizable？** (work-specific → 只進 work-vault；generalizable → 還要進 personal knowledge，de-sensitive 後)
+
+Backfill answers into the decision note's "Cycle" section.
+
+### Stage 3 — Backflow (decision-specific routing)
+
+Add these rows to the base routing table:
+
+| 條件 | 動作 | 落點 |
+|---|---|---|
+| Q4 = work-specific AND topic has reusable workflow | Draft SOP from Q3 (反事實最快路徑) | `<work-vault>/sop/<slug>.md` |
+| Q4 = generalizable AND principle survives de-sensitive | Draft personal knowledge from Q3 | `knowledge/<domain>/<slug>.md` |
+| Q3 names a recurring failure mode | Draft pitfall entry | `docs/learnings/pitfalls/<slug>.md` |
+| Topic surfaced 3rd+ similar work problem in 90 days | Draft skill candidate proposal | `Inbox/skill-candidates/<slug>.md` |
+
+### Output (ship-log entry)
+
+Append to `Inbox/ship-log/YYYY-MM-DD.md` with `type: decision` (instead of `knowledge`):
+
+```markdown
+## /ship knowledge <decision-path> @ HH:MM
+- type: decision
+- domain: <domain>
+- Close: ✓ (decision log + ship-proposal)
+- Ship proposal: <path> (pending manual push)
+- Extract: <empty | 4 answers summary>
+- Backflow:
+  - <action> → <落點>
+```
+
+### Why this lives in `/ship knowledge` not its own skill
+
+A decision page IS a knowledge note about a decision. The shape (frontmatter + body + cross-link) is identical; only the Extract questions and one Stage 1 side-effect (ship-proposal generation) differ. v2.1 `/work-ship` was a separate skill; v2.2 folds it in as a variant to reduce surface area.
