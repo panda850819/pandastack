@@ -231,7 +231,7 @@ recurring pattern across 3+ files     → propose new skill
 
 For each line in `RECENT_CONTINUE_EVENTS`:
 
-1. Parse out the **question text** and **reason** (last `|`-delimited field: `external-dep` / `preference` / `judgment-call` / `unknown`)
+1. Parse out the **question text** and **reason** (last `|`-delimited field: `external-dep` / `preference` / `judgment-call` / `unknown`). **Strip surrounding quotes** before grouping — the `careful` writer wraps the question in `"..."`, so apply `gsub(/^[ ]*"|"[ ]*$/, "", question)` (or equivalent) so that `"commit?"` and `commit?` collapse to the same pattern even if writer drift produces unquoted entries.
 2. **Group by question pattern** — collapse near-duplicate questions ("commit?" / "ship?" / "push now?") into a single pattern
 3. Classify by reason:
 
