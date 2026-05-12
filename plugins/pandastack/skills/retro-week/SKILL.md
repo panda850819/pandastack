@@ -190,6 +190,19 @@ RECENT_FEEDBACK=$(find "$HOME/.claude/projects" -mindepth 3 -maxdepth 3 \
 
 ALL_FEEDBACK=$(find "$HOME/.claude/projects" -mindepth 3 -maxdepth 3 \
   -path "*/memory/feedback_*.md" 2>/dev/null)
+
+# Continue-failure logs (per careful skill "Stopping discipline" — each line
+# is one event where the agent had to ask the user instead of resolving via
+# tool calls. Format: DATE TIME | session | "question" | reason).
+CONTINUE_LOGS=$(find "$HOME/.claude/projects" -mindepth 3 -maxdepth 3 \
+  -path "*/memory/log_continue-failures.md" 2>/dev/null)
+
+# Past-7d log entries across all logs, with file path prefix preserved.
+RECENT_CONTINUE_EVENTS=$(SINCE=$(date -v-7d +%Y-%m-%d); \
+  for log in $CONTINUE_LOGS; do \
+    awk -v since="$SINCE" -v src="$log" \
+      '$1 >= since { print src ":" $0 }' "$log" 2>/dev/null; \
+  done)
 ```
 
 ### 1h. Build GC proposal table
@@ -214,7 +227,27 @@ recurring pattern across 3+ files     → propose new skill
 
 4. **Cross-check MEMORY.md** — if the feedback is already indexed, mark `indexed:yes` (passive). If body has a `[[wikilink]]` to an existing skill, mark `linked:<skill>` (already partially mechanized).
 
-### 1i. Print GC block
+### 1h-2. Process continue-failure events
+
+For each line in `RECENT_CONTINUE_EVENTS`:
+
+1. Parse out the **question text** and **reason** (last `|`-delimited field: `external-dep` / `preference` / `judgment-call` / `unknown`)
+2. **Group by question pattern** — collapse near-duplicate questions ("commit?" / "ship?" / "push now?") into a single pattern
+3. Classify by reason:
+
+```
+reason             → propose
+─────────────────────────────────────────────────────────
+external-dep       → leave (real external dependency, can't auto)
+preference         → if same pattern 3+ times → CLAUDE.md default
+                     (e.g., "always X unless told otherwise")
+judgment-call      → if same pattern 3+ times → skill rule or
+                     anti-pattern entry in relevant skill
+unknown            → flag as Lopopolo failure mode — skill-gap
+                     candidate, propose investigation in interview
+```
+
+Output rows for the GC table use this column shape: `[continue-log] | <question pattern> (<count>x) | <propose>`.
 
 Format:
 
@@ -222,12 +255,15 @@ Format:
 === GC SWEEP: $YEAR-W$WEEK_NUM (auto · awaiting Phase 2) ===
 
 RECENT CORRECTIONS (past 7d): N files
+CONTINUE-FAILURES (past 7d):  N events across N projects
 
-| feedback file                          | trigger                | propose                                  |
+| source                                 | trigger                | propose                                  |
 |----------------------------------------|------------------------|------------------------------------------|
 | feedback_no-wikilinks-in-h1            | brain page H1 with [[]]| lint: PreToolUse:Write `^# .*\[\[`       |
 | feedback_voice-rules                   | voice/phrasing slop    | CLAUDE.md §voice line addition           |
 | feedback_xxx                           | ...                    | leave-alone (already linked to [[skill]])|
+| continue-log                           | "commit now?" (5x)     | CLAUDE.md default: auto-commit unless flag |
+| continue-log                           | <unknown reason 3x>    | investigate — Lopopolo failure mode      |
 
 PATTERN ACROSS FILES
 - N feedback files this week mention "<keyword>" → candidate new skill: <name>
@@ -245,11 +281,14 @@ Empty-week handling:
 === GC SWEEP: $YEAR-W$WEEK_NUM ===
 
 RECENT CORRECTIONS (past 7d): 0 files
+CONTINUE-FAILURES (past 7d):  0 events
 
-System stable this week — no new corrections fed back. Either:
+System stable this week — no new corrections fed back, agent didn't have
+to ask for nudges. Either:
   - Forcing functions are working
   - You weren't pushing edge cases
   - You weren't writing down corrections (check: did /done run this week?)
+  - The agent isn't logging continue-failures (check careful skill is active)
 
 (skipping proposal table)
 
