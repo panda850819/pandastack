@@ -10,9 +10,11 @@ source: manual
 
 # /retro-week — Interactive Weekly Retro
 
-Two-phase flow:
+Multi-phase flow:
 - **Phase 1 (Auto-scan)** — run git log, learnings health, daily note highlights; produce a raw scan block
-- **Phase 2 (Interview)** — show raw scan to user, conduct interview ONE question at a time
+- **Phase 1.5 (Brain synthesis)** — auto-generated thesis / contradictions / gaps from gbrain (skipped if gbrain absent)
+- **Phase 1.6 (GC sweep)** — scan past 7d `memory/feedback_*.md` across all `~/.claude/projects/*/memory/`, propose categorical fixes (lint / hook / skill / CLAUDE.md rule). Inspired by Lopopolo OpenAI Garbage Collection Day — convert observed slop into mechanism so it can't recur.
+- **Phase 2 (Interview)** — show raw scan + synthesis + GC proposals to user, conduct interview ONE question at a time
 - **Phase 3 (Write)** — write final retro to docs/retros/
 
 Run AFTER the cron-driven `personal-weekly-retro` skill has produced a prep brief, OR run standalone (Phase 1 will generate the raw data itself).
@@ -168,6 +170,103 @@ User has 3 options:
 
 ---
 
+## Phase 1.6: Garbage Collection Sweep (skill-gap detection)
+
+> Origin: [[brain/media/videos/lopopolo-harness-engineering-talk-personalized|Lopopolo, OpenAI 2026-05]] — "Take every bit of slop we had observed over the course of the week that was making a PR difficult to merge and figure out ways to **categorically eliminate** it from ever happening." Solo-operator translation: every `memory/feedback_*.md` file is evidence that a forcing function did NOT fire. GC mode proposes converting recurring corrections into mechanism (lint / hook / skill / CLAUDE.md rule) so the same correction is not needed again.
+
+**Discipline (load-bearing):** Phase 1.6 only **proposes**. Never auto-write a lint / hook / skill change. Each proposal becomes a discussion item in Phase 2 interview; user decides yes / no / defer.
+
+### 1g. Pull GC inputs
+
+```bash
+# Single find walks all ~/.claude/projects/*/memory/ dirs in one pass.
+# Use -mtime -7 (BSD-compat). Do NOT use `-newer <(date ...)` because
+# process-sub temp files have mtime = NOW, so the test never matches.
+# Do NOT capture into a var and re-loop with `for d in $VAR` — zsh and bash
+# word-split that expression differently and zsh treats it as one token.
+
+RECENT_FEEDBACK=$(find "$HOME/.claude/projects" -mindepth 3 -maxdepth 3 \
+  -path "*/memory/feedback_*.md" -mtime -7 2>/dev/null)
+
+ALL_FEEDBACK=$(find "$HOME/.claude/projects" -mindepth 3 -maxdepth 3 \
+  -path "*/memory/feedback_*.md" 2>/dev/null)
+```
+
+### 1h. Build GC proposal table
+
+For each file in `RECENT_FEEDBACK`:
+
+1. **Extract `name:` and `description:`** from frontmatter — the rule headline
+2. **Extract `Why:` line and `How to apply:` line** from body (per CLAUDE.md feedback memory schema) — the trigger context
+3. **Classify trigger surface** by keyword heuristic:
+
+```
+filename / body keyword               → propose mechanism
+─────────────────────────────────────────────────────────
+"file format", "frontmatter", "yaml" → lint (PreToolUse:Write hook)
+"voice", "language", "phrasing"      → CLAUDE.md rule line
+"workflow", "before X", "after X"    → hook (settings.json)
+"never X", "always X" + content       → skill update (anti-pattern table)
+"second time", "Nth time"             → already covered by skill-gap rule, leave
+                                        (do NOT propose — flag as already-mechanized)
+recurring pattern across 3+ files     → propose new skill
+```
+
+4. **Cross-check MEMORY.md** — if the feedback is already indexed, mark `indexed:yes` (passive). If body has a `[[wikilink]]` to an existing skill, mark `linked:<skill>` (already partially mechanized).
+
+### 1i. Print GC block
+
+Format:
+
+```
+=== GC SWEEP: $YEAR-W$WEEK_NUM (auto · awaiting Phase 2) ===
+
+RECENT CORRECTIONS (past 7d): N files
+
+| feedback file                          | trigger                | propose                                  |
+|----------------------------------------|------------------------|------------------------------------------|
+| feedback_no-wikilinks-in-h1            | brain page H1 with [[]]| lint: PreToolUse:Write `^# .*\[\[`       |
+| feedback_voice-rules                   | voice/phrasing slop    | CLAUDE.md §voice line addition           |
+| feedback_xxx                           | ...                    | leave-alone (already linked to [[skill]])|
+
+PATTERN ACROSS FILES
+- N feedback files this week mention "<keyword>" → candidate new skill: <name>
+  (or: no cross-file pattern detected)
+
+ALREADY-MECHANIZED (no proposal needed)
+- <list of files matching "second time" / "Nth time" rule — already covered>
+
+===
+```
+
+Empty-week handling:
+
+```
+=== GC SWEEP: $YEAR-W$WEEK_NUM ===
+
+RECENT CORRECTIONS (past 7d): 0 files
+
+System stable this week — no new corrections fed back. Either:
+  - Forcing functions are working
+  - You weren't pushing edge cases
+  - You weren't writing down corrections (check: did /done run this week?)
+
+(skipping proposal table)
+
+===
+```
+
+Then say: **"GC sweep 完了。Phase 2 會把每個 proposal 變成 yes/no/defer 問題。準備好聊嗎？"** — wait for user.
+
+### 1j. Discipline — what NOT to do here
+
+- ❌ Do NOT write any lint / hook / skill file in Phase 1.6 — proposals only
+- ❌ Do NOT propose mechanisms for one-off corrections (single occurrence, no pattern signal) — those stay as memory feedback
+- ❌ Do NOT propose duplicating an already-linked mechanism — check `linked:<skill>` first
+- ❌ Do NOT silently skip the table when 7d window is empty — print empty-week block so user sees the discipline ran
+
+---
+
 ## Phase 2: Interview (conversation, not template)
 
 ### Step 2a: Locate the prep brief
@@ -212,6 +311,19 @@ For feedback patterns from feedback-log.md:
 - "feedback-log 裡有 [pattern] 從 [date]，這週你覺得有再出現嗎？"
 - If yes: increment counter in feedback-log.md
 - If user thinks pattern resolved: ask if status should change to `resolved`
+
+### GC proposal review (one pass through Phase 1.6 table)
+
+For each row in the GC sweep proposal table (Phase 1.6):
+
+- Cite: "GC sweep 提了 [feedback file] → propose [mechanism]. 要 action 嗎？"
+- Three options: **yes** / **no** / **defer**
+  - **yes**: capture as TODO in retro output (Phase 3 GC Decisions section). Do NOT auto-write the lint / hook / skill in this skill — user runs `/sprint` separately for each approved mechanism
+  - **no**: capture decision + reason ("這條 feedback 留在 memory 就好，不值得升級成 lint")
+  - **defer**: re-surface next week
+- If user wants to discuss the underlying feedback (not just yes/no on mechanism), follow them — the slop story matters more than the proposal
+
+If 7d window was empty (no proposals): skip this section entirely, do not invent.
 
 ### Obsolete-yourself check (one question, always ask)
 
@@ -269,6 +381,11 @@ scan_data: true
 
 ## Obsolete-yourself Candidate
 > The manual work user named that should be a skill/agent/cron. Verbatim. Empty if none this week.
+
+## GC Decisions (Garbage Collection Sweep)
+> One row per Phase 1.6 proposal that user approved or rejected.
+> Format: `[feedback file] → [mechanism] | decision: yes/no/defer | next: [/sprint topic if yes, reason if no, re-surface date if defer]`
+> Empty if 7d window had no recent corrections.
 ```
 
 Ensure `docs/retros/weekly/` directory exists before writing:
