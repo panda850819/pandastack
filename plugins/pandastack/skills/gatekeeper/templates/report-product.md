@@ -19,24 +19,24 @@ Use this template when reporting the results of a product-service.md review.
     Model:       [User-held / Local agent / Custodial / Remote]
     Storage:     [Hardware wallet / Encrypted / Plaintext .env / Memory]
     Rotation:    [Supported / Not supported]
-  
+
   Human-in-the-Loop:
     Write ops:   [Requires CONFIRM / Automatic]
     Large ops:   [Additional warning / No protection]
     Limits:      [Local / Remote / None]
-  
+
   Data Flow:
     Data stays:  [Local only / Sent to service / Sent to third party]
     Encryption:  [TLS + at-rest / TLS only / None]
     Retention:   [Policy description]
-  
+
   Update Mechanism:
     Type:        [Manual / Notify + confirm / Auto-download / Silent]
     Signed:      [Yes / No]
 ╠══════════════════════════════════════════════════╣
   PERMISSIONS REQUIRED
   [Detailed list of required permissions and their justification]
-  
+
   Worst-case if compromised:
   [What happens if credentials for this service are leaked?]
 ╠══════════════════════════════════════════════════╣
