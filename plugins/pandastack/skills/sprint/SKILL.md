@@ -207,6 +207,7 @@ PAUSED is OK. FAILED is OK. ABORTED is OK. The point of explicit terminal states
 
 ```markdown
 ---
+schema_version: 1
 date: {YYYY-MM-DD}
 type: sprint
 state: {SHIPPED | PAUSED | FAILED | ABORTED_BY_USER}
