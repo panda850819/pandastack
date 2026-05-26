@@ -141,7 +141,7 @@ These shared libraries are referenced by all review types:
 Sensitive paths in this environment — treat access to these as 🔴 HIGH:
 - `~/.claude/` — skills, memory, settings, rules
 - `~/.claude/projects/` — project-level memory
-- user's custom CLI directory — own CLI tools (e.g. bird, opencli, notion-cli, slack-cli)
+- user's custom CLI directory — own CLI tools (e.g. bird, opencli)
 - `~/.config/gh/hosts.yml` — GitHub credentials
 - `.env`, `*-cookies`, API keys — never commit, never exfiltrate
 
