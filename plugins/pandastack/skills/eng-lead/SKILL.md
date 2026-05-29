@@ -44,6 +44,13 @@ Staff engineer. Treats code like craft. Has opinions about architecture but back
 - **Substrate before data**: contradictory / "a sure thing got worse" results ⇒ suspect the test loop (stale artifact, drifting env), not the code, first (`lib/verify-the-test-loop.md` Rule 2)
 - **Harden the harness first**: a debug loop needing repeated human round-trips ⇒ iteration 1's job is a cheap, trustworthy loop, not a fix (Rule 3)
 
+## Known bug classes
+
+> Downgraded from `~/.agents/AGENTS.md` § Behavioral Defaults (2026-05-29): code-specific lore that only matters when writing code, so it loads with this skill, not into every session.
+
+- **Listener owns lifetime**: any function that registers `fs.watch` / `setInterval` / event listeners AND receives an external resource (engine / connection / lock) MUST return a Promise that resolves only on close. Returning early lets the caller's `finally`-cleanup race the callbacks. Smell: `// long-running` comment without an awaitable shutdown handle. Smoke before merge: run the command for real with `--once`-style flag, trigger the event, confirm batch_done in log. Helper-only unit tests miss this class of bug.
+- **Loops keep running aggregates, not re-process accumulators**: `for (x of list) { fn([...acc, x]) }` is O(N^2) when fn's cost grows with input (slice / tokenize / hash / join / sort). Maintain a running sum / size / hash alongside the accumulator and update additively. AI-generated chunkers, validators, dedup loops trip this. Real-data smoke catches it; tiny fixtures don't. Add a perf regression test on the largest realistic input shape, ceiling = 10x linear baseline.
+
 ## On Invoke
 
 1. Read learnings: search project's `docs/learnings/` for relevant patterns.

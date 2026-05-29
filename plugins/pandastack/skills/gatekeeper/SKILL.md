@@ -2,7 +2,8 @@
 name: gatekeeper
 aliases: [slowmist-agent-security]
 version: 0.3.0
-description: Pre-adoption trust check for external artifacts before they touch your system. Covers skill/MCP installation, GitHub repos, URLs/documents, on-chain addresses, DeFi protocol governance/admin risk, products/services, and social shares. Triggers on /gatekeeper, /slowmist-agent-security (alias), "is this safe to install", "check this repo", "vet this MCP", "trust check", "看這個協議的中央化風險". Adapted from SlowMist agent-security framework, with STRIDE classification at Step 0 and pandastack lib refs.
+description: |
+  Pre-adoption trust check for external artifacts before they touch your system: skill/MCP installs, GitHub repos, URLs/documents, on-chain addresses, DeFi protocol governance/admin risk, products/services, social shares. Triggers on /gatekeeper, /slowmist-agent-security (alias), "is this safe to install", "check this repo", "vet this MCP", "trust check", "看這個協議的中央化風險".
 license: MIT
 upstream: https://github.com/slowmist/slowmist-agent-security
 ---

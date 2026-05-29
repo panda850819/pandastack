@@ -3,9 +3,7 @@ name: dojo
 aliases: [prep]
 mode: skill
 description: |
-  Pre-action prep — runs before any sprint / office-hours / boardroom or standalone before a non-trivial work session. Scan past similar cases via filename + grep, load relevant lib/ refs, surface gotchas before user starts work. Outputs a brief prep section the user reads before diving in.
-  Triggers on /dojo, /prep (alias), "before I start", "let me prep first", auto-invoked by /sprint and /office-hours at Stage 0.
-  Skill metaphor: dojo = practice space before stepping into the ring. Don't go in cold.
+  Pre-action prep before a sprint / office-hours / boardroom or any non-trivial work session. Scans past similar cases (filename + grep), loads relevant lib/ refs, surfaces gotchas. Triggers on /dojo, /prep (alias), "before I start", "let me prep first", auto-invoked by /sprint and /office-hours at Stage 0.
 reads:
   - repo: lib/capability-probe.md
   - repo: lib/escape-hatch.md

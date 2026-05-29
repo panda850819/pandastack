@@ -1,12 +1,7 @@
 ---
 name: team-orchestrate
 description: |
-  Conductor-driven parallel execution. Dispatches N independent branches to subagents
-  in a single message, each in its own git worktree, gates each branch as it returns.
-  Use after a plan is approved AND its branches are genuinely independent (no shared
-  files, no inter-branch dependencies). Triggers on /team-orchestrate, "run these in
-  parallel", "fan out", "N branches independent". Skip for sequential work (run N
-  sequential sprints) or single-track iterative work (use sprint).
+  Conductor-driven parallel execution: dispatches N independent branches to subagents in one message, each in its own git worktree, gates each as it returns. Use after a plan is approved AND branches are genuinely independent (no shared files, no inter-branch deps). Triggers on /team-orchestrate, "run these in parallel", "fan out", "N branches independent". Skip for sequential or single-track iterative work (use sprint).
 reads:
   - repo: lib/capability-probe.md
   - repo: lib/persona-frame.md

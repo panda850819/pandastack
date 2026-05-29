@@ -2,9 +2,7 @@
 name: office-hours
 mode: skill
 description: |
-  Bring a fuzzy idea to office hours. Model challenges, drills, surfaces unknowns, ends with a written brief. 5-stage internal flow: load context → adversarial grill → premise challenge → alternatives → write brief. Default 30 min, --quick mode (10-15 min) skips Stage 1 when context is pre-loaded.
-  Triggers on /office-hours, "I have an idea", "let me think out loud", "stress test this", "office hours", "draft a brief", "structured intake". Replaces deprecated `commands/brainstorm.md` and absorbs the structured-brief role formerly under `grill --mode structured`.
-  Skill metaphor: walk into a professor's office hours with a half-formed thought. Walk out with a brief.
+  Bring a fuzzy idea to office hours: model challenges, drills, surfaces unknowns, ends with a written brief. Default 30 min; --quick mode skips context-load when already loaded. Triggers on /office-hours, "I have an idea", "let me think out loud", "stress test this", "office hours", "draft a brief", "structured intake".
 reads:
   - repo: lib/capability-probe.md
   - repo: lib/push-once.md

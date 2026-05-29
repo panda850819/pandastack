@@ -1,11 +1,7 @@
 ---
 name: skill-creator
 description: |
-  Create new pandastack skills. MECE-checks against existing 26 skills via
-  RESOLVER.md. Enforces the hot/cold dispatch rule (skills that read >5K
-  tokens of data must dispatch a sub-agent rather than consume inline).
-  Triggers: "create a skill", "new pandastack skill", "improve this skill",
-  "扩 skill".
+  Create new pandastack skills. MECE-checks against existing skills via RESOLVER.md. Enforces the hot/cold dispatch rule (skills reading >5K tokens dispatch a sub-agent). Triggers: "create a skill", "new pandastack skill", "improve this skill", "扩 skill".
 version: 1.0.0
 user-invocable: true
 type: skill

@@ -2,9 +2,7 @@
 name: sprint
 mode: skill
 description: |
-  Focused execution session — 1-2 hours from "I want to do X" to "X is shipped or explicitly paused/failed/aborted". Internal flow: dojo (prep) → grill (lite) → execute → review → ship. Terminal states are explicit (SHIPPED / PAUSED / FAILED / ABORTED_BY_USER), only SHIPPED triggers backflow.
-  Triggers on /sprint, "sprint on this", "let's ship X", "focused session". Replaces `commands/sprint.md` (deprecated). Auto-routes to design-lead skill on UI scope detection.
-  Skill metaphor: a real sprint with a starting whistle and a finish line, not a vague "let's work on it".
+  Focused execution session: from "I want to do X" to shipped or explicitly paused/failed/aborted. Internal flow: dojo, grill (lite), execute, review, ship; only SHIPPED triggers backflow. Triggers on /sprint, "sprint on this", "let's ship X", "focused session". Auto-routes to design-lead on UI scope.
 reads:
   - repo: lib/capability-probe.md
   - repo: lib/escape-hatch.md

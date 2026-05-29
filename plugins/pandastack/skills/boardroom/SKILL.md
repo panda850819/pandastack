@@ -2,9 +2,7 @@
 name: boardroom
 mode: skill
 description: |
-  Multi-voice plan critique — single skill internally chains 4 voices (CEO → product → design → eng) sequentially. Each voice critiques the plan in its own posture. User gets per-finding `Apply? [Y/N/edit]` gate; rejected findings route to OPEN_QUESTIONS.
-  Replaces deleted `pandastack:persona-pipeline` (was agent chain). Triggers on /boardroom, "review this plan", "leadership review", "4-voice critique".
-  Skill metaphor: boardroom = 4 leads around a table reviewing the proposal. Single skill swaps voices internally via lib/persona-frame. pandastack is skill-only — no agent dispatch.
+  Multi-voice plan critique: one skill chains 4 voices (CEO, product, design, eng) sequentially, per-finding Apply? [Y/N/edit] gate, rejected findings route to OPEN_QUESTIONS. Triggers on /boardroom, "review this plan", "leadership review", "4-voice critique".
 reads:
   - repo: lib/persona-frame.md
   - repo: lib/outside-voice-rule.md
