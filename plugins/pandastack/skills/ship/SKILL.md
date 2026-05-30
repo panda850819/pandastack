@@ -151,6 +151,8 @@ If the ship process itself revealed something useful (a test that caught a subtl
 
 Write a learning to `{learnings_dir}/pitfalls/` or `{learnings_dir}/patterns/`.
 
+**Quote gate (no phantom quotes)**: any verbatim quote (「...」 / "...") or `[Source: <file>]` in the learning MUST be verified greppable in its cited source (`grep -F "<distinctive substring>" <source>`) before writing. No match → paraphrase without quotation marks or drop the attribution. Never reconstruct a quote from memory.
+
 ## Common Rationalizations
 
 | Rationalization | Reality |
