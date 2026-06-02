@@ -909,3 +909,60 @@ composition eval, not load-vs-not A/B. The actionable output of this whole eval
 is the 6 guard-bug fixes (committed) + the 2 hurt skills (review, office-hours)
 patched, NOT deletions. Nisi's "delete 95%" does not transfer when the skills
 are a composed system rather than 34 independent doc-generated skills.
+
+
+---
+
+# Non-A/B axis re-test (run wf_c42456c4-c46) — the 11 "noise/na" skills
+
+The cut analysis said A/B measured these on the wrong axis. Re-tested on composition / state-assertion / orchestration / side-effect. Result inverts the A/B picture:
+
+| verdict | count | skills |
+|---|---|---|
+| earns-keep (capability confirmed) | 9 | ceo eng-lead design-lead ops-lead boardroom sprint freeze checkpoint init |
+| needs-integration (paper cannot test) | 2 | qa agent-browser |
+| redundant (genuinely cuttable) | **0** | — |
+
+# Pandastack 11-Skill Re-Test: Composition / State / Orchestration / Side-Effect Axis
+
+The A/B harness graded these on single-output correctness, where 8 of 11 looked like noise. Re-tested on their real axis, the picture inverts: 9 confirm capability on paper, 2 confirm nothing on paper because their value is a live side-effect that no paper test can reach.
+
+## Per-Skill Verdicts
+
+| Skill | Axis | Pass | Verdict | Capability shown (or not) |
+|---|---|---|---|---|
+| **ceo** | composition | 11/11 | earns-keep | Multi-framework *tension* with a named disagreement point + committed GO/KILL verdict + reversibility-by-door-type + scope-change refusal that routes re-scope back instead of auto-expanding. |
+| **eng-lead** | composition | 9/9 | earns-keep | Substrate-before-data on contradictory results, 3-strike anti-spiral with same-shape-variant detection, named O(N²) bug class, minimal-diff rejection of drive-by refactor. |
+| **design-lead** | composition | 9/9 | earns-keep | Named-slop rejection rooted in cited Iron Laws, real empty-state design, contrast/colorblind accessibility, self-maps its lane vs product/eng instead of collapsing to generic review. |
+| **ops-lead** | composition | 9/9 | earns-keep | Twice-failed→process law, owner+deadline decision shape, templates-over-training, and a contrarian *refusal* of a proposed approval gate (kill-process judgment). |
+| **boardroom** | composition | 12/12 | earns-keep | 4 scope-rooted voices fire without bleeding into each other + preserved inter-voice conflict (CEO rejects auto-send as one-way-door while eng treats it as buildable) + per-finding gate / OPEN_QUESTIONS routing. |
+| **sprint** | orchestration | 12/12 | earns-keep | Terminal-state gating (reject + open P1 → PAUSED, ship/backflow suppressed, resumable checkpoint) + dual routing (task-shape → single persona, iteration≥3 → FAILED not 4th loop). |
+| **freeze** | state-assertion | 9/9 | earns-keep | In-scope edit passes, out-of-scope edit *refused* with exact FROZEN string, /unfreeze tears down the lock (proven by post-unfreeze edit allowed). |
+| **checkpoint** | state-assertion | 11/11 | earns-keep | Branch-keyed file snapshot with faithful decision extraction + Save→Resume round-trip that reconstructs blocker/remaining/decision from disk alone, then consumes the file. |
+| **init** | state-assertion | 11/11 | earns-keep | Project-type test-command extraction with no-fabrication discipline (refuses to guess `cargo test`) + runtime-aware routing (CLAUDE.md vs AGENTS.md) + scaffold creation. |
+| **qa** | side-effect | 0 (n/a) | needs-integration | Value is a live browser run (navigate, interact, DOM/a11y assert, failure screenshot to `.context/`). No self-contained text to grade; not testable on paper. |
+| **agent-browser** | side-effect | 0 (n/a) | needs-integration | Discovery stub routing to a live Rust browser CLI (CDP launch, click, screenshot). Contributes no lens, writes no assertable state, sequences no skills. Only manifests when a browser runs. |
+
+## Final Call
+
+**Genuinely cuttable (redundant): none.** Zero of the 11 came back redundant. The A/B "noise" verdict on 8 of them was a measurement error, not a skill defect: single-output correctness is blind to composition, gating, and state side-effects by construction.
+
+**Earn their place on a non-A/B axis (9):** `ceo`, `eng-lead`, `design-lead`, `ops-lead`, `boardroom`, `sprint`, `freeze`, `checkpoint`, `init`. Six pass on *composition/orchestration* (they contribute a distinct scope-rooted voice, preserve inter-voice conflict, or route/gate/sequence other skills — none of which a single artifact can exhibit). Three pass on *state-assertion* (their product is a file/lock/scaffold whose fields are inspectable, and the chat prose the A/B graded was never the deliverable). All 9 hit pass_rate 1.0 on their real axis.
+
+**Still need real-environment integration tests (2):** `qa` and `agent-browser`. These are correctly *unconfirmed*, not failed. Their entire payoff is a side effect against a running target (browser navigation, DOM/a11y assertion, screenshot capture), which is unreachable on paper by definition. They need a harness with a live/local page, a real diff or URL to act on, and post-run inspection of the actual screenshot / DOM snapshot. Until that exists, "needs-integration" is the honest verdict — keep them, but gate any keep/cut decision on a real browser run, never on an A/B score.
+
+**One structural takeaway:** the axis is the experiment. Picking single-output correctness for skills whose value is composition, state, or side-effect guarantees false-negative "redundant" verdicts. Match the axis to the skill's value-type *before* running the eval, or the eval lies.
+
+Skill contracts cross-checked against the live sources: `/Users/panda/site/skills/pandastack/plugins/pandastack/skills/ops-lead/SKILL.md`, `/Users/panda/.claude/plugins/cache/pandastack/pandastack/2.1.1/skills/checkpoint/SKILL.md`, and the freeze/sprint SKILL.md under the pandastack plugin tree.
+
+---
+
+# FINAL VERDICT (whole eval, both axes)
+
+**Skills to cut: 0 of 26.** A/B found 11 help, but its 8 "noise" + 3 "na" were a measurement artifact — on the correct axis all 9 paper-testable ones confirm capability at pass 1.0, and the 2 browser skills need integration tests, not deletion.
+
+The actionable output of this entire eval is NOT deletions. It is:
+1. 6 guard-bug fixes (careful/retro-week/gatekeeper/deepwiki/office-hours/review), 5 verified holding, deepwiki backed by a code-lint.
+2. The methodology itself: match the eval axis to the skill value-type, and burn-in before trusting any delta in the noise band.
+
+Nisi deleted 95% because his skills were 10k lines of independent doc-generated coverage. pandastack is a composed system — its skills route, compose, gate, and hold state for each other. The same measure-dont-assume discipline applied here says: change 0, fix 6, and never trust a single-axis single-run number.
