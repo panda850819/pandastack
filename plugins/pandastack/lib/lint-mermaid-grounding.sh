@@ -23,25 +23,24 @@ EDGES=$(grep -nE '(-->|-\.->|==>|[]A-Za-z0-9_)] *-> *[[A-Za-z0-9_(])' "$F" || tr
 
 [ -z "$EDGES" ] && { echo "GROUNDING OK: no directional edges in '$F'."; exit 0; }
 
-# Smuggle-back-in pattern: a "canonical/conventional/likely/typical/standard layout"
-# claim is never grounding — flag it regardless.
+# Grounding evidence: a CONCRETE source citation — path/file.ext:line or
+# "Source: path.ext". Prose like "I read the source" does NOT count (trivially
+# writable smuggle). Require a real file token.
+GROUND=$(grep -nE '([A-Za-z0-9_./-]+\.[A-Za-z]{1,4}:[0-9]+)|([Ss]ource:[[:space:]]*[A-Za-z0-9_./-]+\.[A-Za-z]{1,4})' "$F" || true)
+
+# Grounded → pass, even if the prose happens to say "canonical" descriptively.
+# The smuggle check only matters when there is NO citation (the deepwiki leak).
+if [ -n "$GROUND" ]; then
+  echo "GROUNDING OK: '$F' has directional edges AND source citations."
+  exit 0
+fi
+
 SMUGGLE=$(grep -nEi '(canonical|conventional|typical|likely|standard)[ -]+(go |rust |node |python )?(layout|flow|pipeline|order|structure)' "$F" || true)
-
-# Grounding evidence: a concrete source citation — path/file.ext:line, or an explicit
-# Source:/read-from marker pointing at a real file.
-GROUND=$(grep -nE '([A-Za-z0-9_./-]+\.[A-Za-z]{1,4}:[0-9]+)|([Ss]ource:[^A-Za-z]*[A-Za-z0-9_./-]+\.[A-Za-z]{1,4})|read (from )?(the )?source' "$F" || true)
-
 if [ -n "$SMUGGLE" ]; then
-  echo "GROUNDING FAIL: '$F' restates edges via a canonical/likely-layout block (the smuggle pattern). Bar it — directional edges on unread source ship anyway." >&2
+  echo "GROUNDING FAIL: '$F' restates edges via a canonical/likely-layout block with NO source citation (the smuggle pattern)." >&2
   echo "$SMUGGLE" >&2
   exit 2
 fi
-
-if [ -z "$GROUND" ]; then
-  echo "GROUNDING FAIL: '$F' draws directional edges with NO source citation (no path:line, no 'Source:' marker). Either cite the read import/call, or use an edgeless inventory." >&2
-  echo "$EDGES" | head -8 >&2
-  exit 2
-fi
-
-echo "GROUNDING OK: '$F' has directional edges AND source citations."
-exit 0
+echo "GROUNDING FAIL: '$F' draws directional edges with NO source citation (no path:line, no 'Source:' marker). Cite the read import/call, or use an edgeless inventory." >&2
+echo "$EDGES" | head -8 >&2
+exit 2

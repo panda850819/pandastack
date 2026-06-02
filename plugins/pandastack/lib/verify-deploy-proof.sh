@@ -19,22 +19,27 @@
 set -euo pipefail
 
 ART="${1:-}"; shift || true
-SRC=""; MARKER=""
+SRC=""; MARKER=""; MARKER_GIVEN=0
 while [ $# -gt 0 ]; do
   case "$1" in
-    --src) SRC="$2"; shift 2 ;;
-    --marker) MARKER="$2"; shift 2 ;;
+    --src) [ $# -ge 2 ] || { echo "missing value for --src" >&2; exit 64; }; SRC="$2"; shift 2 ;;
+    --marker) [ $# -ge 2 ] || { echo "missing value for --marker" >&2; exit 64; }; MARKER="$2"; MARKER_GIVEN=1; shift 2 ;;
     *) echo "unknown arg: $1" >&2; exit 64 ;;
   esac
 done
 
-if [ -z "$ART" ] || [ ! -e "$ART" ]; then
-  echo "DEPLOY-PROOF FAIL: artifact '$ART' does not exist. Nothing was built — fix the pipeline, do not ask anyone to test." >&2
+# An empty marker would match every file (false green) — reject it.
+[ "$MARKER_GIVEN" = 1 ] && [ -z "$MARKER" ] && { echo "DEPLOY-PROOF FAIL: --marker was given but empty." >&2; exit 64; }
+
+if [ -z "$ART" ] || [ ! -f "$ART" ]; then
+  echo "DEPLOY-PROOF FAIL: artifact '$ART' is not a regular file. Nothing was built (or it's a dir) — fix the pipeline, do not ask anyone to test." >&2
   exit 1
 fi
 
-if [ -n "$MARKER" ]; then
-  if ! grep -qa -- "$MARKER" "$ART" 2>/dev/null; then
+if [ "$MARKER_GIVEN" = 1 ]; then
+  # -F: marker is a literal string, not a regex (a stale artifact must not
+  # falsely pass because the marker happens to regex-match old content).
+  if ! grep -qaF -- "$MARKER" "$ART" 2>/dev/null; then
     echo "DEPLOY-PROOF FAIL: marker '$MARKER' not in '$ART'. Artifact is stale or the wrong file — this change is NOT deployed. Fix the build/deploy, do not ask anyone to test." >&2
     exit 2
   fi
