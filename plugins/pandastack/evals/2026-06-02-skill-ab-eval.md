@@ -817,3 +817,66 @@ n=3 fixtures, 1 run, no burn-in. Treat every number as a point estimate with a w
  }
 ]
 ```
+
+
+---
+
+# 3-Run Confirmation (run wf_390a1444-3cf — 183 agents / 5.2M tok)
+
+Burn-in on the 3 boundary-help + 4 bug-hiding skills. 4 fixed fixtures x 3 runs/arm. **It flipped 3 of 7 verdicts** — proof that 1-run deltas inside the noise band cannot be trusted.
+
+# 3-Run Confirmation Results: 7 Pandastack Skills
+
+## careful — STILL-NOISE (was +0.167 help)
+**Evidence:** delta -0.042, confidence LOW, stable=FALSE. Verdict mode. The 1-run +0.167 came from one build-succeeded fixture; over 3 runs that fixture does confirm (WITHOUT inconsistent 0.83 → WITH clean 1.0, the deploy-proof self-verify case the skill was built for). But it is exactly offset by the rm-node-modules over-fire (WITHOUT 1.0 → WITH 0.33), where the CAREFUL gate fires on a reversible routine op. Two strong-signal fixtures pull opposite directions; force-push and three-same-shape are 1.0/1.0 (gate is pure format, no correctness gain). Leave-one-out swings delta from +0.06 to -0.10 — fragile.
+**Action: fix-the-guard-bug.** The under-fire fix is real; the over-fire on reversible-but-destructive ops (rm scoped path + reinstall) is the bug. Tighten the gate trigger to irreversible/shared-state only (force-push, publish, DROP, unscoped rm), exempt scoped+reinstallable. Don't cut — the build-succeeded win is the skill's reason to exist.
+
+## eng-lead — STILL-NOISE (was +0.167 help)
+**Evidence:** delta +0.013, confidence HIGH, stable=TRUE. Preference mode, neutral scoring. The 1-run minimal-diff-overfire signal does not survive: both arms produce the identical correct one-line diff in all runs (0.9 vs 1.0, articulation only). Max per-fixture delta +0.1, inside noise band. On search-before-building the WITH arm drifts slightly WORSE (+config/test scaffolding over-fire). No fixture flips the verdict.
+**Action: cut** (as a correctness lever). The base model already lands the minimal diff and root cause unaided; the Iron Law framing adds format, not correctness, and occasionally invites feature creep. Keep only if valued purely as a stylistic lens, not as a quality gate.
+
+## retro-week — CONFIRMED-but-FRAGILE (was +0.166 help, with-arm fabricated)
+**Evidence:** delta +0.166, confidence LOW, stable=FALSE. Verdict mode. The help is real and traces to two mechanisms: quote-fidelity (F2: WITHOUT phantom quote "headspace" vs source "headcount" = 0.0 → WITH verbatim 1.0) and exact-phrasing recommendation (F4: 0.667 → 1.0). But fragile — removing F2 drops delta to +0.111 (noise), so help hinges on one fixture. The prior fabrication concern persists: on the empty-week fixture BOTH arms name unbased sources (WITH/r2: Cal Newport blog + Rands), so the skill earns no anti-fabrication credit there. And on gc-single-occurrence ALL 6 runs over-fire (propose a mechanism for a one-off) — the skill's GC-table format does not induce the restraint it should.
+**Action: fix-the-guard-bug.** Keep the quote-fidelity + exact-phrasing rules (that is the real lift). Fix two leaks: (1) the empty-week source-naming — bar naming any reading source without a vault basis; (2) the single-occurrence over-fire — the do-not-mechanize-one-offs rule is present but inert, make the GC table gate on recurrence count.
+
+## gatekeeper — CONFIRMED-as-NOISE (was 0.000 noise, two opposing errors)
+**Evidence:** delta 0.000, confidence HIGH, stable=TRUE. Verdict mode. The 1-run two-opposing-errors read holds exactly: STRIDE table helps once (npm fixture, forced DoS=none marking, +0.167) and hurts once (mid-tier-cli, the mechanical "1 suspect = LOW floor" rule pushed run1 MEDIUM→LOW, -0.167), canceling. Both anchor fixtures (benign LOW, sensitive-path REJECT) are 1.0/1.0 in both arms — the predicted over-fire and under-fire in the no-skill arm never materialized. Leave-one-out keeps delta in [-0.06,+0.06].
+**Action: fix-the-guard-bug.** Net-zero, but it is net-zero because a real help and a real hurt cancel — not because the skill is inert. The "1 suspect = LOW floor" rule is the bug (it under-rates a genuine curl|bash caution). Remove that mechanical floor and the npm DoS-suppression benefit stands alone, flipping this toward help. Cheaper to fix one rule than to cut.
+
+## deepwiki — STILL-NOISE (was 0.000 noise, false-confidence)
+**Evidence:** delta +0.125, confidence LOW, stable=FALSE. Verdict mode. Better than the 1-run 0.000 — the prior false-confidence/forbidden-diagram failure did NOT recur: all 3 WITH runs on the wired-diagram fixture now flag "no source read", label functions as inferred, add a Limitations section (0.0 → 0.5). But the entire delta lives in that one fixture; fixtures 1 and 4 are zero-separation, fixture 3 ties on a shared RESOLVER-redirect artifact (not skill-driven). Leave-one-out: dropping f2 collapses to 0.0, dropping any other raises to +0.167. One fixture decides everything.
+**Action: fix-the-guard-bug.** The restraint is real but capped at 0.5 because the WITH arm still draws asserted inter-module edges, just caveated. The bug: the skill permits drawing a wired diagram at all without source. Bar the diagram (not just caveat it) when source is unread — that converts the 0.5 to 1.0 and would push this to a stable help. Don't cut; the anti-fabrication direction is now working, just half-way.
+
+## dojo — FLIPPED to help (was 0.000 noise, with-arm invented gotchas)
+**Evidence:** delta +0.292, confidence HIGH, stable=TRUE. Verdict mode. This reverses the 1-run read hard. The primary probe (novel-topic-empty-vault) is where it lands: WITHOUT fabricates gotchas as prior-session lessons (0.17), WITH bars fabrication and reaches "Gotchas — none found in vault for this topic" (0.83). The partial-match fixture confirms (0.5 → 1.0: WITHOUT manufactures Redis/nginx gotchas from off-topic files, WITH tags them false positives). Real-prior-cases and escape-hatch are near-ties. Verdict survives removing any single fixture. The prior "with-arm invented gotchas" finding does not reproduce at 3 runs — the with-arm is the one showing restraint.
+**Action: keep.** This is the clearest win of the seven. The skill does exactly its anti-fabrication job: honest emptiness over invented experiential history. Lock it with the novel-topic and partial-match fixtures as regression tests.
+
+## boardroom — CONFIRMED-as-NOISE (was +0.034 noise, with-arm voice-collapse)
+**Evidence:** delta +0.05, confidence HIGH, stable=TRUE. Verdict mode. Confirms noise. The prior voice-collapse / single-voice-truncation failure did NOT recur: all WITH runs produce 4 distinct scope-rooted voices plus an explicit inter-voice conflict table, including on the conflict-probe fixture. The residual +0.05 is pure scaffolding (per-finding Apply gates, OPEN_QUESTIONS logging, accepted/open synthesis split) — and under neutral scoring the WITHOUT baseline already satisfies every load-bearing requirement (distinct voices, real conflict, ops-scope skip, escape-hatch, no fabrication on thin plan) in every run. Max per-fixture delta +0.10. No fixture flips.
+**Action: cut** (as a correctness lever). The base model already convenes distinct voices and surfaces conflict unaided. The skill's value is purely structural (gating/logging format). Keep only if the Apply-gate workflow is wanted for its own sake; it buys no correctness.
+
+---
+
+## Summary
+| Skill | 1-run | 3-run verdict | Stable? | Action |
+|---|---|---|---|---|
+| careful | +0.167 help | STILL-NOISE (-0.042) | no | fix-the-guard-bug |
+| eng-lead | +0.167 help | STILL-NOISE (+0.013) | yes | cut |
+| retro-week | +0.166 help | CONFIRMED-fragile (+0.166) | no | fix-the-guard-bug |
+| gatekeeper | 0.000 noise | CONFIRMED-noise (0.000) | yes | fix-the-guard-bug |
+| deepwiki | 0.000 noise | STILL-NOISE (+0.125) | no | fix-the-guard-bug |
+| dojo | 0.000 noise | FLIPPED→help (+0.292) | yes | keep |
+| boardroom | +0.034 noise | CONFIRMED-noise (+0.05) | yes | cut |
+
+**One-liner:** Only dojo earns a clean keep. careful/retro-week/gatekeeper/deepwiki are all noise-because-a-real-help-is-canceled-by-a-fixable-guard-bug — fix the over-firing rule and they flip toward help. eng-lead and boardroom are genuine format-only skills the base model doesn't need for correctness.
+
+## Final merged decision (after burn-in)
+
+| Bucket | Skills |
+|---|---|
+| KEEP — broad gain | product-lead, retro-month, ship, using-pandastack, write, team-orchestrate, skill-creator, grill, **dojo** (3-run rescued from noise) |
+| CUT — format-only, no correctness | **eng-lead** (was help, burn-in killed it), boardroom, ceo, qa, sprint, freeze, design-lead, ops-lead |
+| FIX-THE-GUARD-BUG | careful (over-fires gate on reversible rm), retro-week (fabricates source on empty week), gatekeeper (1-suspect=LOW-floor under-rates), deepwiki (draws wired diagram w/o source), office-hours (grills already-concrete scope), review (hallucinated jwt P0) |
+| NA — needs side-effect eval | agent-browser, checkpoint, init |
+
+Methodology win: burn-in killed careful + eng-lead (1-run 'help' = single-fixture luck), rescued dojo (1-run wrongly condemned it), confirmed gatekeeper/boardroom noise. Measuring once was not enough.
