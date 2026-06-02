@@ -39,9 +39,11 @@ Before executing any of the following, pause and ask the user for explicit confi
 - Any push to main/master
 
 ### Filesystem
-- `rm -rf` on any directory
+- `rm -rf` on an **unscoped / non-reinstallable** path: anything outside the current project, a path with a glob/variable that could expand wrong, or removal of source / data / config that isn't trivially regenerable
 - Deleting more than 3 files at once
 - Overwriting files outside the current project
+
+**Exemption (does NOT trigger the gate, regardless of where the path lives):** removal of a directory whose **basename** names a trivially-reinstallable artifact — `node_modules`, `.next`, `dist`, `build`, `target`, `.cache`, `.turbo`, `__pycache__`, or a lockfile-regenerable deps dir. Key off the artifact NAME, not project membership: `rm -rf /anywhere/node_modules` is exempt because reinstall restores it. Do NOT use "is this the current project?" as the test — you often cannot resolve the cwd vs the target path, and an absolute foreign-looking path must not re-trigger the gate. The only conditions are: (1) basename is a regenerable artifact above, and (2) the path is explicit, no glob/variable that could expand wrong. **Multi-path:** if the command removes more than one path, EVERY path must independently satisfy (1) and (2) — a single foreign or non-artifact path (e.g. `rm -rf node_modules ../../prod-data`) re-arms the gate for the whole command. The gate is for irreversible / shared-state damage, not routine cleanup.
 
 ### External
 - Any API call that mutates external state (POST/PUT/DELETE to production)

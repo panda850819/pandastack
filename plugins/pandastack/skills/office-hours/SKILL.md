@@ -75,6 +75,8 @@ Then:
 
 ### Stage 2: Premise challenge (adversarial)
 
+**Skip guard (check BEFORE drilling)** — mirrors `/grill`'s "Skip for tasks where scope is already concrete". If the scope is already concrete (named deliverable, already tested, reversible / two-way door, no genuine unknowns), DECLINE to grill. Don't reframe settled scope as if it were changing. **Before skipping, print the concrete evidence for each of the four conditions** (deliverable = what exactly; tested = which artifact/run; reversible = why; unknowns = why none). If you cannot name the test artifact and the deliverable, the scope is NOT concrete — do NOT skip. The "no unknowns" judgment is self-confirming; the evidence print is what exposes a fuzzy scope. Only when all four are evidenced, print `Stage 2 skipped — scope already concrete. Routing to ship.` and jump to Stage 5 brief (or recommend `/sprint` / `/ship`). 只在真有未知時才 drill。
+
 The point is to surface **unknown unknowns** by interrogating one angle at a time. Inspired by gstack `/office-hours` rehearsed-answer pattern.
 
 Drill across these axes (search space, not checklist):
