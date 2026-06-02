@@ -223,6 +223,8 @@ pnpm dev
 
 **Source-grounding guard (hard rule)**: A wired diagram with directional edges between modules (`A --> B`, `A -->|calls| B`) asserts relationships. Those edges MUST be grounded in source you actually read (imports/calls), never inferred from file names or READMEs. If you have NOT read/verified the source (per the Phase 2 Source Reading Rule), do NOT draw any wired diagram with directional edges. A caveat is not enough — caveating a fabricated structure still asserts unverified relationships. In that case, allowed options are: (a) prose-only description of the components, or (b) an explicit "insufficient source to diagram architecture" note in place of the diagram.
 
+**A directory tree, file listing, or set of folder/file names is NOT source** — it grounds edges no more than a clone failure does. If all you have is names/structure (no actually-read import/call statements), you are in the unread case: no edged diagram, caveated or not, and no second "likely flow" / "canonical pipeline order" block that smuggles the same arrows back in. Inferring `ingest --> transform --> sink` from folder names is exactly the forbidden move.
+
 Generate appropriate diagrams based on project type:
 
 ### Module Relationship Diagram (all projects)

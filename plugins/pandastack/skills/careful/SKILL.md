@@ -43,7 +43,7 @@ Before executing any of the following, pause and ask the user for explicit confi
 - Deleting more than 3 files at once
 - Overwriting files outside the current project
 
-**Exemption (does NOT trigger the gate):** scoped-path removal of trivially-reinstallable build artifacts — `node_modules`, `build/` / `dist/` / `target/` / `.next/` output dirs, caches, and lockfile-regenerable deps — under the current project. These are reversible by re-running install/build, so just do it. (The gate is for irreversible / shared-state damage, not routine cleanup.)
+**Exemption (does NOT trigger the gate, regardless of where the path lives):** removal of a directory whose **basename** names a trivially-reinstallable artifact — `node_modules`, `.next`, `dist`, `build`, `target`, `.cache`, `.turbo`, `__pycache__`, or a lockfile-regenerable deps dir. Key off the artifact NAME, not project membership: `rm -rf /anywhere/node_modules` is exempt because reinstall restores it. Do NOT use "is this the current project?" as the test — you often cannot resolve the cwd vs the target path, and an absolute foreign-looking path must not re-trigger the gate. The only conditions are: (1) basename is a regenerable artifact above, and (2) the path is explicit, no glob/variable that could expand wrong. The gate is for irreversible / shared-state damage, not routine cleanup.
 
 ### External
 - Any API call that mutates external state (POST/PUT/DELETE to production)
