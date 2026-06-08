@@ -18,6 +18,7 @@ reads:
   - repo: lib/verify-the-test-loop.md
   - vault: knowledge/**
   - vault: docs/learnings/**
+  - vault: docs/plans/**
 writes:
   - vault: Inbox/sprint-*.md
   - vault: docs/sessions/*.md
@@ -60,6 +61,8 @@ capability_required:
 - Default: full sprint (dojo → grill lite → execute → review → ship)
 - `--quick`: skip dojo + grill, go execute → review → ship
 - `--design`: auto-invoke design-lead skill at execute stage (replaces `commands/design.md`)
+- `--plan {path|slug}`: execute against a durable plan at `docs/plans/{slug}.md` (the artifact `/office-hours` Stage 5b emits). Sprint reads it READ-ONLY and derives per-task progress from git — see Stage 3 plan-driven execution. Auto-detects `docs/plans/{slug}.md` when a plan for the topic exists.
+- `--continue {slug}`: resume a PAUSED sprint. Skips dojo + grill; loads the PAUSED checkpoint + `docs/plans/{slug}.md`, recomputes which U-IDs are already done (git + acceptance), and resumes at the first non-done task.
 
 ## Stages
 
@@ -84,6 +87,15 @@ Run `skills/grill/SKILL.md` in default (adversarial) mode with **3-question cap*
 @../../lib/push-once.md applies. @../../lib/escape-hatch.md applies. If user signals stop, log and skip to Stage 3.
 
 ### Stage 3: Execute
+
+**Plan-driven execution (when `--plan {slug}` or `--continue {slug}`, or `docs/plans/{slug}.md` auto-detected):** If a durable plan exists, read it READ-ONLY. It is a decision artifact, NOT a worklog:
+
+- Do NOT edit the plan body during the sprint. Per-task `status:` is DERIVED, never hand-written. The only writes go to code + git. (This guards the two-runtime drift AGENTS.md warns about — a fresh Claude session or a Codex handoff must re-derive state from git + the plan, never from a mutable progress field.)
+- Before executing each `{slug}-T0N` task, run an idempotency check: (1) does the task's `acceptance:` check already pass (grep / run it)? (2) is its scope already present in the git diff/tree? If yes → mark that U-ID done and SKIP it, no silent reimplementation. Respect `depends-on:` ordering.
+- For `--continue`: load `Inbox/sprint-{slug}-*.md` (PAUSED checkpoint) + the plan, run the idempotency check across all U-IDs, resume at the first non-done task. Skip Stage 1 (dojo) and Stage 2 (grill).
+- If a task has no checkable `acceptance:`, fall back to the `iteration` counter for that task and flag it in the narrate line.
+
+When no plan file is present, execute conversationally as before (this block is a no-op).
 
 @../../lib/skill-decision-tree.md applies — read the persona routing table.
 
@@ -179,7 +191,8 @@ Print computed state to user. User can override (e.g. "actually let's pause this
 #### SHIPPED
 1. Invoke `skills/ship/SKILL.md` — runs commit + push + PR if applicable
 2. Trigger Extract + Backflow (writes to docs/sessions/, docs/learnings/, possibly Inbox/ship-log/)
-3. Output sprint summary: `Stage 1-6 complete, SHIPPED. {commit-hash}, {PR-url if any}, {extract summary}.`
+3. Route deferred work: append any deferred follow-ups / OPEN_QUESTIONS to the repo's canonical next-work tracker (`ROADMAP.md` or `TODOS.md`) with a date + source PR. Do NOT park deferred work in a CLI's private memory (it is per-runtime — Codex / Gemini / Claude diverge — and drifts), and do NOT leave it only in the dated session note (not discoverable as "what's next"). If the repo has no tracker, say so in the summary rather than defaulting to memory.
+4. Output sprint summary: `Stage 1-6 complete, SHIPPED. {commit-hash}, {PR-url if any}, {extract summary}.`
 
 #### PAUSED
 1. Write `Inbox/sprint-{slug}-{date}.md` checkpoint:
@@ -187,6 +200,7 @@ Print computed state to user. User can override (e.g. "actually let's pause this
    state: PAUSED
    stages_completed: [0, 1, 2, 3]
    stage_3_progress: {what's done, what's pending}
+   plan: docs/plans/{slug}.md   # if one exists; --continue re-derives done/todo from it + git
    resume_with: /sprint --continue {slug}
    ```
 2. Do NOT run ship. Do NOT run backflow. Do NOT modify docs/learnings.
