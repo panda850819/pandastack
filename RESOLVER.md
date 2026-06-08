@@ -6,7 +6,7 @@
 
 ## Why this file exists
 
-pandastack v2.2 ships **26 skills** (23 core + 3 ext), 5 personas, and 7 context recipes. **Lifecycle flows are no longer first-class constructs** — what used to live in `plugins/pandastack/flows/*.md` is now either documented inline in the relevant skill (sprint covers dev, ship knowledge covers knowledge close, ship write covers writing close) or has been demoted because it wasn't really a flow (decision was an autonomy contract, research was a knowledge variant, work was a dev variant + work-ship).
+pandastack v2.2 ships **27 skills** (24 core + 3 ext), 5 personas, and 7 context recipes. **Lifecycle flows are no longer first-class constructs** — what used to live in `plugins/pandastack/flows/*.md` is now either documented inline in the relevant skill (sprint covers dev, ship knowledge covers knowledge close, ship write covers writing close) or has been demoted because it wasn't really a flow (decision was an autonomy contract, research was a knowledge variant, work was a dev variant + work-ship).
 
 This is the pattern used by gstack and alirezarezvani: monorepo + RESOLVER.md beats multi-repo split, because the categorization lives next to the content.
 
@@ -42,8 +42,9 @@ Vault hygiene (orphans / stale / superseded / dead redirects) is a direct file s
 | `pandastack:freeze` | Lock editing scope to specific paths | scope discipline |
 | `pandastack:qa` | Browser-based UI QA | test this UI |
 | `pandastack:review` | Parallel 3-pass review + Codex cross-check | review PR |
-| `pandastack:ship` | Test + commit + PR (git mode is default) | code done, ship it |
-| `pandastack:sprint` | Single-track 1-2h focused execution: dojo → grill-lite → execute → review → ship. Replaces the v2.1 `dev` flow spec. | small focused task |
+| `pandastack:ship` | Test + commit + PR (git mode is default). CLOSES finished work — to hand UNFINISHED work to Codex use `handover`. | code done, ship it |
+| `pandastack:handover` | Hand unfinished work to Codex to DO: sync (spawn `codex exec` now) or `--async` (write payload for Hermes). Not `ship` — ship closes, handover delegates. | hand this to codex, let codex finish, 丟給 codex |
+| `pandastack:sprint` | Single-track 1-2h focused execution: dojo → grill-lite → execute → review → ship. Replaces the v2.1 `dev` flow spec. `--delegate codex` delegates a ≥3-unit batch via `handover`. | small focused task |
 | `pandastack:dojo` | Pre-action prep, surfaces gotchas | before a work session |
 | `pandastack:team-orchestrate` | Conductor-driven parallel execution across N independent worktree branches | fan out, run these in parallel |
 

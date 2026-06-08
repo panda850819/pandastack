@@ -64,7 +64,7 @@ capability_required:
 - `--design`: auto-invoke design-lead skill at execute stage (replaces `commands/design.md`)
 - `--plan {path|slug}`: execute against a durable plan at `docs/plans/{slug}.md` (the artifact `/office-hours` Stage 5b emits). Sprint reads it READ-ONLY and derives per-task progress from git — see Stage 3 plan-driven execution. Auto-detect rule: slugify the topic the same way office-hours does and check for `docs/plans/{that-slug}.md` (exact slug, no fuzzy match); if the sprint began from an office-hours brief, use the plan path office-hours printed. If none found, run conversationally.
 - `--continue {slug}`: resume a PAUSED sprint. Skips dojo + grill; loads the PAUSED checkpoint + `docs/plans/{slug}.md`, recomputes which U-IDs are already done (git + acceptance), and resumes at the first non-done task.
-- `--delegate codex`: in Stage 3, hand a batch of ≥5 mechanical units to Codex via `codex exec` (synchronous, in-loop). Default OFF — sprint uses free Claude subagents unless this flag is set or the batch clears the crossover. Requires a plan file. See `references/codex-delegation.md`. For ASYNC handover that frees this session, use `/ship codex`.
+- `--delegate codex`: in Stage 3, hand a batch of mechanical units to Codex (synchronous, in-loop) via the `/handover` invocation. OFF unless you pass this flag — sprint defaults to free Claude subagents and never auto-delegates. A batch of ≥3 mechanical units is the advisory threshold worth surfacing the flag at, NOT an auto-trigger. Requires a plan file. See `references/codex-delegation.md` for the batch loop; the single-invocation mechanics live in `skills/handover/references/codex-invocation.md`. For ASYNC handover that frees this session, use `/handover --async`.
 
 ## Stages
 
@@ -101,7 +101,7 @@ Run `skills/grill/SKILL.md` in default (adversarial) mode with **3-question cap*
 
 When no plan file is present, execute conversationally as before (this block is a no-op).
 
-**Codex delegation (when `--delegate codex`, or a plan batch ≥5 mechanical units):** instead of executing the batch with Claude, hand it to Codex via `codex exec`, keeping planning / review / git on Claude. Default OFF. Read `references/codex-delegation.md` for the gate, pre-checks, the verified invocation, the 5-row result classification, and the circuit breaker. This is SYNCHRONOUS (occupies this turn polling); for ASYNC fire-and-forget that frees the session, use `/ship codex` instead.
+**Codex delegation (only when `--delegate codex` is passed):** instead of executing the batch with Claude, hand it to Codex via the `/handover` invocation, keeping planning / review / git on Claude. OFF by default, never auto-triggered. A batch of ≥3 mechanical units is the threshold at which it's worth *surfacing* the flag to the user, but the switch is always explicit. Read `references/codex-delegation.md` for the gate, batching, and the circuit breaker; it delegates each batch via `skills/handover/references/codex-invocation.md`. This is SYNCHRONOUS (occupies this turn polling); for ASYNC fire-and-forget that frees the session, use `/handover --async` instead.
 
 @../../lib/skill-decision-tree.md applies — read the persona routing table.
 

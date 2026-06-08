@@ -1,66 +1,40 @@
-# Sprint — Codex delegation (sync, in-loop)
+# Sprint — Codex delegation (the batch loop)
 
-> Hand a batch of mechanical build units to Codex via `codex exec` from inside the sprint, collect the structured result, keep planning + review + git on Claude. SYNCHRONOUS: it occupies the Claude turn polling for the result. For ASYNC fire-and-forget, use `/ship codex` instead. Ported from EveryInc Compound Engineering `ce-work-beta`; the invocation is verified against codex-cli 0.130.0 on this machine.
+> Hand a sprint's mechanical build units to Codex, batch by batch, keeping planning + review + git on Claude. SYNCHRONOUS: it occupies the Claude turn polling for each result. This file owns the BATCHING LOOP + circuit breaker; the single-invocation mechanics (XML payload, verified `codex exec`, sandbox gate, result classification) live in `skills/handover/references/codex-invocation.md` — this loop calls that per batch. For a one-shot or ASYNC handover, use `/handover` directly. Ported from EveryInc Compound Engineering `ce-work-beta`.
 
-## Gate — default OFF
+## Gate — explicit opt-in only
 
-Default: execute with FREE Claude subagents (per the prefer-cc-subagents rule). Turn delegation ON only when BOTH hold:
+Default: execute with FREE Claude subagents. Delegation is **never auto-triggered** — it turns on only when BOTH hold:
 
-1. The batch is **≥5 mechanical units** (CE crossover is 5-7; below it the per-batch orchestration overhead ~4-5k tokens + 1.7-2.2x wall-clock dominate), OR the user passed `--delegate codex` explicitly.
+1. The user passed `--delegate codex` explicitly. Delegation has side effects (spends ChatGPT quota, runs Codex in a sandbox, the orchestrator owns the git collection), so it is opt-in, not inferred. **≥3 mechanical units is an advisory threshold, not a trigger:** below 3 the per-batch orchestration overhead ~4-5k tokens isn't worth it, so don't even suggest the flag; at 3+ it is worth *surfacing* "this batch is delegation-sized — pass `--delegate codex` if you want Codex to take it." The switch is always the explicit flag.
 2. The input is a **plan file** (`docs/plans/{slug}.md`). NO plan → NO delegation: "Codex delegation needs a plan file — using standard mode." The plan's U-IDs + acceptance ARE the delegation payload.
 
-Cost note: codex runs on the ChatGPT subscription here (`~/.codex/auth.json`, no API key), so delegation is ~free at the margin. The reason to use it is conserving the Claude session and batch economics, NOT cost.
+Cost note: codex runs on the ChatGPT subscription here (`~/.codex/auth.json`, no API key), so delegation is ~free at the margin. It is NOT the metered-API path the `prefer-cc-subagents` rule warns against. The reason to use it is conserving the Claude session + batch economics.
 
 ## Pre-delegation checks (run once, before the first batch)
 
-0. **Platform gate** — only when the orchestrator is Claude Code. Under Codex / Gemini / other, disable and run standard mode.
-1. **Env guard** — `[ -n "$CODEX_SANDBOX" ] || [ -n "$CODEX_SESSION_ID" ]` → already inside a sandbox, disable (delegation would recurse).
-2. **Availability** — `command -v codex` must print an absolute path, else disable: "Codex CLI not found — standard mode."
-3. **Repo-root precondition** — run from `git rev-parse --show-toplevel`. `codex exec` refuses non-git dirs; if the work dir is not a git repo, pass `--skip-git-repo-check` or disable.
+Run the `/handover` gate (platform / env-guard / availability / repo-root — see `skills/handover/SKILL.md`), plus:
+
+- **Clean-baseline preflight** before the first batch: `git diff --quiet HEAD`. This makes the scoped rollback in `codex-invocation.md` sufficient.
 
 ## Batching
 
-Delegate all units in one batch. If >5, split at the plan's phase boundaries or groups of ~5 — never split U-IDs that share files. Skip delegation entirely if every unit is trivial.
+Delegate units in batches of ~3-5. If the plan has more, split at phase boundaries or groups — never split U-IDs that share files. Skip delegation entirely if every unit is trivial.
 
-## Invocation (verified on codex 0.130.0)
+## Per-batch loop
 
-Per batch: write the XML prompt + the result schema into a `mktemp -d` scratch dir (capture its absolute path), then:
+For each batch, invoke Codex per `skills/handover/references/codex-invocation.md`:
 
-```bash
-SD="$(mktemp -d -t sprint-codex-XXXXXX)"   # use the echoed absolute path everywhere below
-codex exec \
-  -s workspace-write \
-  --output-schema "$SD/result-schema.json" \
-  -o "$SD/result-batch-N.json" \
-  - < "$SD/prompt-batch-N.md"
-```
+1. Build the XML payload + result schema for the batch's non-done U-IDs into a `mktemp -d` scratch dir.
+2. Spawn `codex exec` (background Bash to clear the 2-min ceiling).
+3. Poll + classify the one result, then act per the status→action table in `codex-invocation.md` (the SSOT). On `completed`: `git add {scope} && git commit`, reset `consecutive_failures = 0`. On `partial`: KEEP the diff, finish the batch's remaining units locally, `consecutive_failures++`. On `failed` / CLI-failure: scoped rollback, `consecutive_failures++`.
 
-- Launch as a Bash tool call with `run_in_background: true` (the tool PARAMETER, not a shell `&`) to clear the 2-minute timeout ceiling.
-- Risky batch (auth / payments / migrations): insert `-c 'model_reasoning_effort="high"'` before `-s`. Default defers to `~/.codex/config.toml`.
-- Needs network / dep install: `-s workspace-write` blocks network by default. Escalating to `--dangerously-bypass-approvals-and-sandbox` (full host access; 0.130.0 has no `--yolo` alias) is **NEVER auto-selected from plan/task content** — it requires an explicit one-time confirmation from Panda this session (print `batch N needs full host access (network/dep-install) — run Codex with --dangerously-bypass-approvals-and-sandbox? [y/N]` and proceed only on yes). Default stays `-s workspace-write`; if unconfirmed, run sandboxed and let the batch report (via the result `issues`) what it could not do. This blocks a plan/brief whose content (e.g. an ingested article) could otherwise smuggle a sandbox escape.
-
-Prompt XML sections: `<task>` (U-ID goals), `<files>` (combined scope), `<constraints>` (Codex must NOT git commit/push — the orchestrator owns git; stay in repo root; keep scoped), `<verify>` (the U-IDs' acceptance as ONE combined test command; "do not report completed unless tests pass"), `<output_contract>` (fill the schema).
-
-Result schema: `{status: completed|partial|failed, files_modified[], issues[], summary, verification_summary}` — all required, `additionalProperties: false`.
-
-## Collect + classify
-
-Poll for the result file in SEPARATE foreground Bash calls (keeps the turn active so the working tree isn't touched mid-run). Classify each batch:
-
-| Signal | Classification | Action |
-|---|---|---|
-| exit ≠ 0 | CLI failure | rollback, fall back to standard mode for ALL remaining work |
-| exit 0, result JSON missing/malformed | task failure | rollback, `consecutive_failures++` |
-| exit 0, status `failed` | task failure | rollback, `consecutive_failures++` |
-| exit 0, status `partial` | partial | keep diff, finish remaining locally, `consecutive_failures++` |
-| exit 0, status `completed` | success | `git add {scope} && git commit`, reset `consecutive_failures = 0` |
-
-Rollback = `git checkout -- {scope paths} && git clean -fd -- {scope paths}` (scope-limited on BOTH halves — never `git checkout -- .`, which would wipe the orchestrator's unrelated in-flight edits; the clean-baseline preflight makes the scoped revert sufficient; never bare `git clean -fd`). Codex runs + fixes its own tests; the orchestrator does NOT re-run them per batch (doubles cost). Safety net = the self-reported result + the circuit breaker + Stage 4 review on the whole diff.
+The orchestrator does NOT re-run tests per batch (Codex runs + fixes its own inside the payload; doubles cost otherwise). Safety net = the self-reported result + the circuit breaker + Stage 4 review on the whole diff.
 
 ## Circuit breaker
 
-After 3 consecutive failures: set delegation off, finish remaining units in standard Claude mode. "Codex delegation disabled after 3 consecutive failures."
+After 3 consecutive failed batches: set delegation off, finish remaining units in standard Claude mode. "Codex delegation disabled after 3 consecutive failures."
 
 ## Git ownership
 
-Codex never commits/pushes (enforced in `<constraints>`). Clean-baseline preflight before the first batch: `git diff --quiet HEAD`. All git stays with the Claude orchestrator; Stage 4 review and Stage 5 ship always run on Claude, never delegated.
+Codex never commits/pushes (enforced in the payload `<constraints>`). All git stays with the Claude orchestrator. Stage 4 review and Stage 5 ship always run on Claude, never delegated.

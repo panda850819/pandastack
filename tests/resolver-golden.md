@@ -36,6 +36,8 @@ T08  /office-hours --quick points system        pdctx: -                   → o
 T09  /review                                    pdctx: personal:developer  → review
 T10  /ship                                      pdctx: personal:writer     → write-ship (route by context)
 T11  /ship                                      pdctx: personal:developer  → ship (route by context)
+T11b /handover auth-refactor                    pdctx: personal:developer  → handover (sync)
+T11c 把剩下的丟給 codex 做                        pdctx: personal:developer  → handover
 T12  /retro week                                pdctx: -                   → retro-week
 ```
 

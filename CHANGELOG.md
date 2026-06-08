@@ -4,9 +4,13 @@
 
 ### Added
 
+- `handover` skill — hand UNFINISHED work to Codex to DO. `/handover [slug]` (sync) spawns `codex exec` now and collects the structured result; `/handover --async [slug]` writes a payload to `docs/handoffs/` for Hermes / offline. Splits cleanly from `/ship`: ship CLOSES finished work, handover DELEGATES unfinished work. Owns the single Codex-invocation SSOT (`references/codex-invocation.md`): XML payload, verified `codex exec`, sandbox-escape gate, result classification.
 - `lib/trigger-first-skill-evolution.md` — shared rule for skill evolution: trigger clarity first, inline checklist / rubric before extraction, no lens / persona / rubric registry until repeated evidence exists.
 
 ### Changed
+
+- `ship` no longer carries a `codex` mode — moved to the new `/handover` skill (handover ≠ ship). `/ship codex` is removed; use `/handover --async`.
+- `sprint --delegate codex` is now explicit-opt-in only (never auto-triggered); the mechanical-unit threshold dropped from 5 to 3 but is **advisory** — at ≥3 it's worth surfacing the flag, the switch stays the explicit `--delegate codex`. Delegation now runs each batch via `handover`'s invocation SSOT; `sprint/references/codex-delegation.md` keeps only the batch loop + circuit breaker. Rationale: Codex runs on ChatGPT-subscription quota (separate from Claude), so it is NOT the metered-API path `prefer-cc-subagents` guards against — but delegating to a second runtime has side effects, so it stays opt-in rather than inferred from unit count.
 
 - `skill-creator` now loads the trigger-first rule before creating, splitting, merging, or extracting skills.
 - `skill-creator` verification now reflects the repo's real check surface: `git diff --check`, SKILL frontmatter scan, and manual `tests/resolver-golden.md` cases when routing changes. It no longer points at absent Bun tests.

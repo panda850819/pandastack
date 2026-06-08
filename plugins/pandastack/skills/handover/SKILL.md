@@ -1,0 +1,81 @@
+---
+name: handover
+description: |
+  Hand a unit of work to Codex to DO it. This is a handover, not a /ship — /ship CLOSES finished work to its destination; /handover gives unfinished work to Codex to execute.
+  - /handover [slug]          → sync: Claude spawns `codex exec` now, collects the structured result, keeps planning + review + git on Claude
+  - /handover --async [slug]  → write a self-contained payload to docs/handoffs/ for Hermes / offline; does NOT spawn codex, does NOT touch git
+  Use when a batch of mechanical build units should run on Codex (ChatGPT-subscription quota) to conserve the Claude session. Triggers on /handover, "hand this to codex", "let codex finish this", "delegate to codex", "丟給 codex". NOT for closing finished work (/ship), NOT for the in-sprint batch loop (that is /sprint --delegate codex, which calls this skill's invocation per batch).
+reads:
+  - repo: docs/plans/**
+  - repo: skills/handover/references/codex-invocation.md
+  - cli: git
+  - cli: codex
+writes:
+  - repo: docs/handoffs/**
+  - cli: codex exec
+  - cli: git commit
+  - cli: stdout
+forbids:
+  - cli: git push
+  - cli: git push --force
+  - cli: git push origin main
+domain: shared
+classification: exec
+---
+
+# Handover
+
+`/handover` gives a unit of work to **Codex** to execute. The distinction from `/ship`: ship *closes* work that is already done (commit, PR, file a note); handover *delegates* work that is not done yet to a second runtime.
+
+Codex runs on the ChatGPT subscription (`~/.codex/auth.json`, no API key) — a **separate quota** from Claude. This is the key economics: delegating a batch to Codex conserves the Claude session, it does not double-pay. The `prefer-cc-subagents` rule targets gbrain skills that spin up a *metered Anthropic API* runtime; Codex is not that, so it is a legitimate opt-in here. The default for ordinary single-track work is still Claude — handover is the deliberate verb for batches.
+
+## When to use
+
+- A plan has **≥3 mechanical build units** (rote, well-specified, file-scoped) and you would rather spend Codex quota than the Claude session on them.
+- You planned + partially built and want the rest done by Codex while you review / move on.
+
+Skip when: the work needs judgment, is a single trivial edit, or is exploratory. Those stay on Claude.
+
+## Mode dispatch
+
+| Invocation | Mode | Session | Git |
+|---|---|---|---|
+| `/handover [slug]` (default) | sync — spawn codex now, poll, collect | occupies this turn | Claude commits the completed diff |
+| `/handover --async [slug]` | async — write payload for Hermes / offline | frees this session | nobody touches git until the human runs it |
+
+The async-vs-sync axis is **session occupancy**, not cost (codex runs on the same subscription either way): sync keeps this turn busy polling; async drops an artifact and lets Hermes run it on subscription quota while you do something else.
+
+## Gate (both modes)
+
+1. **Platform** — orchestrator must be Claude Code. Under Codex / Gemini, this skill is a no-op (delegation would recurse).
+2. **Env guard** — `[ -n "$CODEX_SANDBOX" ] || [ -n "$CODEX_SESSION_ID" ]` → already inside a sandbox, stop ("already inside Codex").
+3. **Availability** — `command -v codex` must print an absolute path. Missing → stop ("Codex CLI not found").
+4. **Repo-root** — run from `git rev-parse --show-toplevel`. A git repo is required: sync mode commits the result, and both modes resolve the plan + write handoffs under the repo's `docs/`. Not a git repo → stop ("handover needs a git repo").
+5. **Plan precondition** — resolve the slug (arg, else current branch, else latest `docs/plans/*.md`). The plan's U-IDs + acceptance criteria ARE the payload. No plan → stop ("handover needs a plan file — its U-IDs/acceptance are the payload").
+
+## Sync mode (default)
+
+Claude spawns Codex, waits for the structured result, keeps git + review. Read `references/codex-invocation.md` for the verified `codex exec` invocation, the `<task>/<files>/<constraints>/<verify>/<output_contract>` XML payload, the result schema, the sandbox-escape gate, and the single-result classification table.
+
+Flow:
+
+1. Derive remaining work: for each U-ID in the plan, run its `acceptance:` check and include ONLY the U-IDs that do NOT already pass (do not trust the plan's `status:` field — it is always `todo`; state is derived from git). Fall back to all U-IDs if acceptance can't be run here.
+2. Build the XML payload + result schema into a `mktemp -d` scratch dir.
+3. Spawn `codex exec` per `references/codex-invocation.md` (background Bash to clear the 2-min ceiling).
+4. Poll for the result file in separate foreground Bash calls, then classify + act per the status→action table in `references/codex-invocation.md` (the SSOT — do not restate divergent actions here): `completed` → `git add {scope} && git commit`; `partial` → KEEP the diff, finish the remaining units locally; `failed` / CLI-failure → scoped rollback, finish locally.
+5. Git, review (`/review`), and ship stay on Claude — never delegated.
+
+## Async mode (`--async`)
+
+Write ONE self-contained handoff to `docs/handoffs/{YYYY-MM-DD}-{slug}-codex.md` using the same XML contract (so the same payload drives either path — they differ only in async-vs-sync). Then print:
+
+- the handoff path;
+- the dispatch one-liner — **Hermes (default):** hand the file to Hermes, it runs on `provider: openai-codex` (`~/.hermes/config.yaml`); **direct headless:** `codex exec -s workspace-write - < docs/handoffs/{...}-codex.md` (must run at repo root).
+
+Async mode NEVER spawns codex and NEVER touches git — it only emits the artifact (vault-only, like ship's knowledge/write modes).
+
+## Boundaries
+
+- `docs/plans/{slug}.md` stays the source of truth for WHAT. The handoff is a derived snapshot — do not copy the brief's rationale into it.
+- Codex never commits / pushes / opens PRs — the Claude orchestrator owns git (enforced in the payload's `<constraints>`). In sync mode Claude commits on a completed batch; in async mode the human owns git entirely.
+- Escalating Codex past `-s workspace-write` (e.g. `--dangerously-bypass-approvals-and-sandbox` for network / dep-install) is NEVER auto-selected from plan/task content — it needs an explicit one-time confirmation from Panda this session. See `references/codex-invocation.md`.

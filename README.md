@@ -4,7 +4,7 @@ Personal context-aware AI operator OS — one substrate, four runtimes, no vendo
 
 I built pandastack to run my own work across multiple AI CLIs without dotdir sprawl. Skills are version-controlled markdown. Personas are replaceable. Context recipes ship as TOML. Same content runs across Claude Code, Codex CLI, Gemini CLI, and Hermes; per-CLI shims handle syntax differences. No data-layer vendor lock-in.
 
-The stack is **26 skills** focused on dev, writing, and knowledge workflows, tiered into 23 core (markdown-only, fresh-clone runnable) and 3 ext (publicly installable CLI). Anchored on a personal Obsidian vault as SSOT.
+The stack is **27 skills** focused on dev, writing, and knowledge workflows, tiered into 24 core (markdown-only, fresh-clone runnable) and 3 ext (publicly installable CLI). Anchored on a personal Obsidian vault as SSOT.
 
 **v2.2 philosophy**: pandastack ships verbs. The brain (gbrain or your own knowledge store) keeps state. Lifecycle discipline is your job, not the package's. v2.2 dropped the `flows/` directory (7 spec files) and moved all personal-tier cadence skills (brief-morning, evening-distill, bird, curate-feeds) to the `pandastack-private` overlay. The public package is now self-contained: clone + install gives you everything in the manifest.
 
@@ -281,7 +281,7 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 
 ## Skills
 
-26 skills grouped by lifecycle (23 core / 3 ext — see `plugins/pandastack/manifest.toml`). Persona names follow the gstack convention — each skill is "your specialist" for that step.
+27 skills grouped by lifecycle (24 core / 3 ext — see `plugins/pandastack/manifest.toml`). Persona names follow the gstack convention — each skill is "your specialist" for that step.
 
 ### Think / intake
 
@@ -323,6 +323,7 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 | Skill | Your specialist | What they do |
 |---|---|---|
 | `/ship` | Release Engineer | Multi-mode close. `/ship` (no args) = test + commit + push + PR. `/ship knowledge <path>` = Close + Extract + Backflow on a knowledge note (decision-note variant when path matches `decisions/`, replaces v2.1 `/work-ship`). `/ship write <draft>` = Close + Extract + Backflow on a Blog draft. |
+| `/handover` | Codex Handover | Hand UNFINISHED work to Codex to DO (ship closes, handover delegates). `/handover [slug]` = sync, Claude spawns `codex exec` now + collects the result. `/handover --async [slug]` = write a payload to `docs/handoffs/` for Hermes / offline. Codex runs on ChatGPT-subscription quota, conserving the Claude session. |
 
 ### Trust
 
