@@ -42,7 +42,7 @@ Pick mode from first arg:
 | First arg | Mode | Branch |
 |---|---|---|
 | `knowledge` | knowledge mode | @./modes/knowledge.md |
-| `write` | write mode | @./modes/write.md |
+| `write` | write mode | @./references/modes/write-mode.md |
 | (none, or a path/flag for git) | git mode | continue below |
 
 If first arg is a path (no explicit mode word), sniff:
@@ -153,6 +153,16 @@ Write a learning to `{learnings_dir}/pitfalls/` or `{learnings_dir}/patterns/`.
 
 **Quote gate (no phantom quotes)**: any verbatim quote (「...」 / "...") or `[Source: <file>]` in the learning MUST be verified greppable in its cited source (`grep -F "<distinctive substring>" <source>`) before writing. No match → paraphrase without quotation marks or drop the attribution. Never reconstruct a quote from memory.
 
+### Step 11: Project state (if project work)
+
+If this work maps to a brain project page (`{brain}/projects/{slug}.md` exists), record the EVL datapoint — do NOT hand-edit the page's table:
+
+```bash
+project-state append {slug} --done {N} --open {N} --blocked {N} --next "{one-line next}"
+```
+
+`project-state` (at `~/.local/bin/project-state`) does the markdown surgery deterministically: refresh the STATE baton + append one dated METRICS row, idempotent per day. It auto-skips the METRICS row for repo-backed projects (page declares its repo as the state SSOT) and only refreshes `next`. Derive done/open/blocked from the project's own tracker (its `## Status` / `## Open`, or the repo if repo-backed). Best-effort: if `project-state` or the page is absent, skip silently — never fail the ship over it.
+
 ## Common Rationalizations
 
 | Rationalization | Reality |
@@ -175,4 +185,4 @@ Write a learning to `{learnings_dir}/pitfalls/` or `{learnings_dir}/patterns/`.
 
 ## Write mode
 
-@./modes/write.md
+@./references/modes/write-mode.md
