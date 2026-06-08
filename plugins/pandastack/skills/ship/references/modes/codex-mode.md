@@ -15,8 +15,8 @@ The async-vs-sync axis is session occupancy, not cost (codex runs on your ChatGP
 2. Gather the handover payload:
    - the executable plan `docs/plans/{slug}.md` (the WHAT — U-IDs + acceptance criteria)
    - the current diff: `git diff {base}...HEAD` plus any uncommitted `git diff`
-   - the remaining work: U-IDs whose `status:` is not `done`, plus OPEN_QUESTIONS
-3. Write ONE self-contained handoff to `docs/handoffs/{YYYY-MM-DD}-{slug}-codex.md` using the XML contract Codex acts on (mirrors the `/sprint --delegate codex` prompt shape so either path is interchangeable):
+   - the remaining work: derive it the way `/sprint --plan` does — for each U-ID, run its `acceptance:` check and include ONLY the U-IDs that do NOT already pass. Do NOT trust the plan's `status:` field (it is always `todo` in the file — state is derived from git, never written back). Fall back to including all U-IDs if acceptance checks can't be run here. Plus any OPEN_QUESTIONS.
+3. Write ONE self-contained handoff to `docs/handoffs/{YYYY-MM-DD}-{slug}-codex.md` using the XML contract Codex acts on (the payload format is compatible with the `/sprint --delegate codex` prompt, so the same plan drives either execution path — they differ only in async-vs-sync, not in payload):
 
 ```xml
 <task>
@@ -35,7 +35,9 @@ The async-vs-sync axis is session occupancy, not cost (codex runs on your ChatGP
 Run all tests together in one process; do not report done unless they pass.
 </verify>
 <output_contract>
-Report status (completed | partial | failed), files_modified[], issues[], summary.
+Report status (completed | partial | failed), files_modified[], issues[], summary,
+verification_summary (what you ran to verify + outcome). This is the same 5-field
+schema as `/sprint --delegate codex`, so either path validates the result identically.
 </output_contract>
 ```
 

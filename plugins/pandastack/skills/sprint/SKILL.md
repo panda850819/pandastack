@@ -62,7 +62,7 @@ capability_required:
 - Default: full sprint (dojo → grill lite → execute → review → ship)
 - `--quick`: skip dojo + grill, go execute → review → ship
 - `--design`: auto-invoke design-lead skill at execute stage (replaces `commands/design.md`)
-- `--plan {path|slug}`: execute against a durable plan at `docs/plans/{slug}.md` (the artifact `/office-hours` Stage 5b emits). Sprint reads it READ-ONLY and derives per-task progress from git — see Stage 3 plan-driven execution. Auto-detects `docs/plans/{slug}.md` when a plan for the topic exists.
+- `--plan {path|slug}`: execute against a durable plan at `docs/plans/{slug}.md` (the artifact `/office-hours` Stage 5b emits). Sprint reads it READ-ONLY and derives per-task progress from git — see Stage 3 plan-driven execution. Auto-detect rule: slugify the topic the same way office-hours does and check for `docs/plans/{that-slug}.md` (exact slug, no fuzzy match); if the sprint began from an office-hours brief, use the plan path office-hours printed. If none found, run conversationally.
 - `--continue {slug}`: resume a PAUSED sprint. Skips dojo + grill; loads the PAUSED checkpoint + `docs/plans/{slug}.md`, recomputes which U-IDs are already done (git + acceptance), and resumes at the first non-done task.
 - `--delegate codex`: in Stage 3, hand a batch of ≥5 mechanical units to Codex via `codex exec` (synchronous, in-loop). Default OFF — sprint uses free Claude subagents unless this flag is set or the batch clears the crossover. Requires a plan file. See `references/codex-delegation.md`. For ASYNC handover that frees this session, use `/ship codex`.
 
