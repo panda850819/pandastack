@@ -1,12 +1,21 @@
 ---
 name: write
 aliases: [content-write]
-description: "Writing assistant with voice-aware editing, structure coaching, slop detection, viral postmortem (line-pointing review), and idea-gate routing (originals/ → brief → /write spar). Trigger on /write, /content-write (alias through 2026-08-04), 'help me write', 'review my draft', 'structure this article', 'check for slop', 'postmortem this draft', 'why would this land', 'should I write about this', 'idea-gate this'."
+description: "Canonical Panda writing assistant for personal voice writing: sparring, structure coaching, draft review, slop detection, postmortem, and idea-gate routing (originals/ → brief → /write spar). Trigger on /write, /content-write (legacy alias through 2026-08-04), help-me-write, draft review, structure this article, check for slop, postmortem, why would this land, should I write about this, idea-gate. NOT for generic de-AI cleanup when the only goal is humanization (use humanizer), nor investment/IC memo final-pass cleanup (use avoid-ai-writing)."
 version: "1.3.0"
 user-invocable: true
 ---
 
 # Write
+
+## Routing Boundary
+
+Use this skill as the canonical Panda writing assistant when the task is about shaping Panda's own writing: sparring from an idea, structuring notes or drafts, reviewing a draft, editing with voice/slop checks, postmortem line review, English practice, reference-pattern extraction, distilling writing materials, or idea-gate routing.
+
+Do not use it for:
+- A pure de-AI / de-slop / un-ChatGPT cleanup request where the user only wants already-written text to sound human — use `humanizer`.
+- Final investment or IC memo voice cleanup where the memo must lead with call, sizing, target/stop, source discipline, and analyst-disagreement preservation — use `avoid-ai-writing`.
+- Legacy `/content-write` references as a standalone workflow — load this `write` skill through the alias shim.
 
 Personal writing assistant that preserves Panda's voice while improving structure and depth.
 

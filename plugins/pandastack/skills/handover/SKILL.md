@@ -1,10 +1,10 @@
 ---
 name: handover
 description: |
-  Hand a unit of work to Codex to DO it. This is a handover, not a /ship — /ship CLOSES finished work to its destination; /handover gives unfinished work to Codex to execute.
-  - /handover [slug]          → sync: Claude spawns `codex exec` now, collects the structured result, keeps planning + review + git on Claude
-  - /handover --async [slug]  → write a self-contained payload to docs/handoffs/ for Hermes / offline; does NOT spawn codex, does NOT touch git
-  Use when a batch of mechanical build units should run on Codex (ChatGPT-subscription quota) to conserve the Claude session. Triggers on /handover, "hand this to codex", "let codex finish this", "delegate to codex", "丟給 codex". NOT for closing finished work (/ship), NOT for the in-sprint batch loop (that is /sprint --delegate codex, which calls this skill's invocation per batch).
+  Explicit Codex handover workflow for unfinished mechanical build units from an existing plan. This is not /ship: /ship closes finished work; /handover delegates unfinished work to Codex while the orchestrator keeps planning, review, and git ownership.
+  - /handover [slug]: sync handoff, spawn `codex exec`, poll, collect structured result.
+  - /handover --async [slug]: write a self-contained payload to docs/handoffs/ only; does not spawn Codex or touch git.
+  Use when a plan has several rote, file-scoped build units and Panda deliberately wants Codex subscription quota used. NOT for plan writing, generic engine invocation, subagent-driven-development loops, closing finished work, PR/ship flow, or exploratory judgment-heavy work.
 reads:
   - repo: docs/plans/**
   - repo: skills/handover/references/codex-invocation.md
@@ -24,6 +24,18 @@ classification: exec
 ---
 
 # Handover
+
+## Routing Boundary
+
+Use this skill only for explicit Panda Stack `/handover`: unfinished mechanical build units from an existing plan are delegated to Codex, while the orchestrator keeps planning, review, and git ownership.
+
+Do not use it for:
+- Writing plans — use `plan` or `writing-plans`.
+- General Hermes subagent execution — use `subagent-driven-development`.
+- Direct Codex CLI usage outside the handover protocol — use `codex`.
+- Claude Code or OpenCode engine usage — use `claude-code` or `opencode`.
+- Closing finished work, PR creation, publishing, or shipping.
+- Exploratory or judgment-heavy work where Codex should not be the executor.
 
 `/handover` gives a unit of work to **Codex** to execute. The distinction from `/ship`: ship *closes* work that is already done (commit, PR, file a note); handover *delegates* work that is not done yet to a second runtime.
 
