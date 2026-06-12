@@ -63,8 +63,8 @@ After install:
              Express path: /sprint chains DEFINE → SHIP internally (1-2h cap).
 
   writing    CAPTURE ──▶ STRUCTURE ──▶ DRAFT ──▶ SHIP
-             direct      write          write     ship write
-                         (slop check)             (Close + Extract + Backflow)
+             direct      write          write     manual publish
+                         (slop check)             (ship write retired 2026-06-12)
 
   knowledge  CAPTURE ──▶ DEDUP ──▶ DISTILL ──▶ VERIFY ──▶ SHIP
              direct      rg/grep   write       human       ship knowledge
@@ -80,7 +80,7 @@ Cross-flow router (start here when you're not sure which composition applies):
 | If you're about to… | Open with | Composition |
 |---|---|---|
 | Build / fix / refactor code | `/office-hours` then `/sprint` | dev |
-| Turn a draft into a published post | `/write` then `/ship write` | writing |
+| Turn a draft into a published post | `/write` then manual publish | writing |
 | Make a raw note durable | `/ship knowledge <path>` | knowledge |
 | Close out a work topic / decision | `/ship knowledge <decisions/path>` | knowledge (decision-note variant) |
 | End a session / week / month | `/done` · `/retro-week` · `/retro-month` | (independent skills, no flow) |
@@ -322,7 +322,7 @@ Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds 
 
 | Skill | Your specialist | What they do |
 |---|---|---|
-| `/ship` | Release Engineer | Multi-mode close. `/ship` (no args) = test + commit + push + PR. `/ship knowledge <path>` = Close + Extract + Backflow on a knowledge note (decision-note variant when path matches `decisions/`, replaces v2.1 `/work-ship`). `/ship write <draft>` = Close + Extract + Backflow on a Blog draft. |
+| `/ship` | Release Engineer | Multi-mode close. `/ship` (no args) = test + commit + push + PR. `/ship knowledge <path>` = Close + Extract + Backflow on a knowledge note (decision-note variant when path matches `decisions/`, replaces v2.1 `/work-ship`). |
 | `/handover` | Codex Handover | Hand UNFINISHED work to Codex to DO (ship closes, handover delegates). `/handover [slug]` = sync, Claude spawns `codex exec` now + collects the result. `/handover --async [slug]` = write a payload to `docs/handoffs/` for Hermes / offline. Codex runs on ChatGPT-subscription quota, conserving the Claude session. |
 
 ### Trust
@@ -352,7 +352,7 @@ Vault hygiene (orphans / stale / superseded) is a direct `rg` / `find` scan or �
 
 | Skill | Your specialist | What they do |
 |---|---|---|
-| `/write` | The Editor | Voice-aware drafting + slop detection. Used inside the writing composition before `/ship write`. |
+| `/write` | The Editor | Voice-aware drafting + slop detection. Used inside the writing composition. |
 
 ### Tool wrappers (public CLI)
 
@@ -379,7 +379,7 @@ Other CLI wrappers (`bird` for X/Twitter) live in the `pandastack-private` overl
 
 v2.2.0 cut the `flows/` directory. There are no longer separate flow spec files — what used to live in `plugins/pandastack/flows/*.md` is now either:
 
-1. **Inline in the relevant skill**: `/sprint` for dev, `/ship knowledge` (incl. decision-note variant) for knowledge close, `/ship write` for writing close.
+1. **Inline in the relevant skill**: `/sprint` for dev, `/ship knowledge` (incl. decision-note variant) for knowledge close.
 2. **Documented in the "Lifecycle map" section above**: the 3 first-class compositions (dev / writing / knowledge).
 3. **Demoted because it wasn't really a flow**:
    - `research` → knowledge variant (Phase 1-3 vary, Phase 4-6 = knowledge ship)
