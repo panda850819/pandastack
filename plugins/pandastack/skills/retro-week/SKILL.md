@@ -75,23 +75,29 @@ Skip entirely if `gbrain` CLI is not on PATH. Print `(brain synthesis unavailabl
 
 This is the brain looking at itself across 7 days. It is **auto-generated** — Phase 2 interview is where the user accepts / rejects each finding. Never auto-write recommendations from this section.
 
-### 1e. Pull synthesis inputs from gbrain
+### 1e. Pull synthesis inputs (git-derived hotspots + real gbrain query)
+
+Only `gbrain query` / `search` / `list` exist; salience, anomalies, and topic stats are DERIVED, not fetched.
 
 ```bash
 SINCE_7D=$(date -v-7d +%Y-%m-%d)
 
-# Salient pages updated this week — input for THESIS
-gbrain query "salient pages updated since $SINCE_7D" --limit 30
+# Hotspot pages this week (commit frequency = salience proxy) — input for THESIS
+git -C ~/site/knowledge/brain log --since="$SINCE_7D" --name-only --pretty=format: \
+  | grep '\.md$' | sort | uniq -c | sort -rn | head -20
 
-# Anomalies / contradictions across recent + older pages — input for CONTRADICTIONS
-gbrain find_anomalies --window 30d
+# Per top-3 hotspot TOPIC, pull older brain context — input for CONTRADICTIONS
+# (compare returned older pages against this week's framing; a conflict you can
+# quote from both sides = a contradiction candidate)
+gbrain query "<hotspot topic>"
 
-# Topic distribution this week vs prior baseline — input for KNOWLEDGE GAPS
-gbrain get_stats --topic-histogram --window 7d
-gbrain get_stats --topic-histogram --window 90d --exclude-recent 7d
+# Topic distribution — input for KNOWLEDGE GAPS
+# derive from the hotspot list's directory prefixes (concepts/ vs projects/ vs
+# people/ vs learnings/ ...); no dedicated command, count by prefix
 
-# High-salience pages with low typed-link count — input for ONE ACTION
-gbrain find_orphans --min-salience 0.7 --window 30d
+# Under-linked hotspots — input for ONE ACTION
+# a page hot in git but thin in `gbrain query "<its topic>"` results is
+# under-connected; that gap is the action candidate
 ```
 
 ### 1f. Generate 4-block synthesis
@@ -109,7 +115,7 @@ EMERGING THESIS
 - [[slug-3]] — "<verbatim quote that hints at the thesis>"
 
 CONTRADICTIONS
-<for each anomaly returned by find_anomalies, format as:>
+<for each contradiction candidate from the 1e query comparison, format as:>
 - 新: [[slug-new, $DATE]] — "<quote>"
   舊: [[slug-old, $OLDER_DATE]] — "<quote>"
   衝突點: <one sentence>
@@ -131,7 +137,7 @@ output). No basis → name a direction only, never a source.)
 
 ONE ACTION
 這週最高槓桿一件事 (從 brain 推，不是憑空):
-<concrete action grounded in find_orphans + salience output>
+<concrete action grounded in the 1e under-linked-hotspot gap>
 槓桿來源: <which slugs / which pattern made this the highest-leverage>
 
 ===

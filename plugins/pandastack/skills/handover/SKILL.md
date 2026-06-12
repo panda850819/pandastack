@@ -84,7 +84,7 @@ Write ONE self-contained handoff to `docs/handoffs/{YYYY-MM-DD}-{slug}-codex.md`
 - the handoff path;
 - the dispatch one-liner — **Hermes (default):** hand the file to Hermes, it runs on `provider: openai-codex` (`~/.hermes/config.yaml`); **direct headless:** `codex exec -s workspace-write - < docs/handoffs/{...}-codex.md` (must run at repo root).
 
-Async mode NEVER spawns codex and NEVER touches git — it only emits the artifact (vault-only, like ship's knowledge/write modes).
+Async mode NEVER spawns codex and NEVER touches git — it only emits the artifact (vault-only, like ship's knowledge mode).
 
 ## Boundaries
 

@@ -37,7 +37,6 @@ When the current task matches one of these signals, the corresponding skill must
 | Bug fix / feature / refactor (3+ files OR new abstraction) | `pandastack:grill` or `/plan` first, NOT direct edits |
 | About to commit | `pandastack:review` first, THEN `pandastack:ship` |
 | Finished a knowledge note (`knowledge/<domain>/<note>.md` style) | `pandastack:ship knowledge <path>` to Close + Extract + Backflow |
-| Finished a draft ready to publish (Obsidian `Blog/_daily/` or equivalent) | `pandastack:ship write <draft>` |
 | Finished a work topic with a decision to log | `pandastack:ship knowledge <decisions/path>` (decision-note variant; replaces v2.1 `/work-ship`) |
 | Researching an unfamiliar concept | `pandastack:grill` (adversarial scope lock) → ad-hoc fetch (`gh`/`WebFetch`/brain query) → `pandastack:ship knowledge` |
 | Weekly / monthly retrospective time | `pandastack:retro-week` / `pandastack:retro-month` |

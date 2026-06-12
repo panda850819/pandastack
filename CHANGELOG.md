@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Removed
+
+- `ship` write mode retired (`references/modes/write-mode.md` deleted, `write-ship` alias dropped). The mode's entire input tree (obsidian-vault `Blog/_daily` / `Blog/Drafts` / `Blog/Published`) no longer exists after the 2026-06 machine rebuild, and brain owns daily content — the mode pointed at a dead path. Writing composition is now `/write` → manual publish; README lifecycle map + RESOLVER updated. Companion W24-retro GC in the same sprint scrubbed the remaining `Blog/_daily` references from `ship` SKILL.md / knowledge mode / `using-pandastack`.
+
 ### Added
 
 - `handover` skill — hand UNFINISHED work to Codex to DO. `/handover [slug]` (sync) spawns `codex exec` now and collects the structured result; `/handover --async [slug]` writes a payload to `docs/handoffs/` for Hermes / offline. Splits cleanly from `/ship`: ship CLOSES finished work, handover DELEGATES unfinished work. Owns the single Codex-invocation SSOT (`references/codex-invocation.md`): XML payload, verified `codex exec`, sandbox-escape gate, result classification.

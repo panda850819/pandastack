@@ -6,7 +6,7 @@
 
 ## Why this file exists
 
-pandastack v2.2 ships **27 skills** (24 core + 3 ext), 5 personas, and 7 context recipes. **Lifecycle flows are no longer first-class constructs** — what used to live in `plugins/pandastack/flows/*.md` is now either documented inline in the relevant skill (sprint covers dev, ship knowledge covers knowledge close, ship write covers writing close) or has been demoted because it wasn't really a flow (decision was an autonomy contract, research was a knowledge variant, work was a dev variant + work-ship).
+pandastack v2.2 ships **27 skills** (24 core + 3 ext), 5 personas, and 7 context recipes. **Lifecycle flows are no longer first-class constructs** — what used to live in `plugins/pandastack/flows/*.md` is now either documented inline in the relevant skill (sprint covers dev, ship knowledge covers knowledge close) or has been demoted because it wasn't really a flow (decision was an autonomy contract, research was a knowledge variant, work was a dev variant + work-ship).
 
 This is the pattern used by gstack and alirezarezvani: monorepo + RESOLVER.md beats multi-repo split, because the categorization lives next to the content.
 
@@ -27,7 +27,6 @@ Vault hygiene (orphans / stale / superseded / dead redirects) is a direct file s
 | Skill | Purpose | Trigger |
 |---|---|---|
 | `pandastack:write` | Voice-aware drafting + slop detection | help me write |
-| `pandastack:ship write <draft>` | Close + Extract + Backflow on a Blog draft | ship this draft, publish this post |
 
 `brief-morning` and `evening-distill` (daily cadence) moved to `pandastack-private` overlay in v2.2.0 — they require private CLIs (gog) and are personal-tier.
 
@@ -145,7 +144,6 @@ If you're reviewing your own PR → `pandastack:review`. If you're deciding whet
 |---|---|---|
 | git (default) | `/ship` (no args) or `/ship <branch-flag>` | test + commit + push + PR |
 | knowledge | `/ship knowledge <path>` or `/ship knowledge/...` or `/ship decisions/...` | Close + Extract + Backflow on a knowledge note. Decision-note variant (path matches `decisions/`) handles work-topic close — also writes `Inbox/ship-proposals/` markdown for manual external push. Replaces v2.1 `work-ship`. |
-| write | `/ship write <draft>` or `/ship Blog/_daily/...` | Close + Extract + Backflow on a Blog draft |
 
 ---
 
@@ -172,7 +170,7 @@ All 5 are READ-ONLY persona skills. They recommend; user decides.
 | Composition | Driver / chain | Where the lifecycle is documented |
 |---|---|---|
 | dev | `/sprint` (1-2h) or manual `/office-hours` → `/careful` → build → `/qa` → `/review` → `/ship` | `skills/sprint/SKILL.md` + README "Lifecycle map" |
-| writing | `/write` → `/ship write <draft>` | `skills/write/SKILL.md` + `skills/ship/modes/write.md` + README "Lifecycle map" |
+| writing | `/write` → manual publish (`ship write` retired 2026-06-12, no Blog tree) | `skills/write/SKILL.md` + README "Lifecycle map" |
 | knowledge | direct write to vault → `/ship knowledge <path>` | `skills/ship/modes/knowledge.md` + README "Lifecycle map" |
 
 What used to be `flows/<name>.md` is gone. Reasons:
@@ -261,7 +259,7 @@ The following skill names were renamed/merged across versions. Old names still r
 |---|---|---|---|
 | `work-ship` | `ship knowledge <decisions/path>` | v2.2.0 (2026-05-09) | 2026-08-07 |
 | `knowledge-ship` | `ship knowledge` | v2.0.0 (2026-05-07) | 2026-08-05 |
-| `write-ship` | `ship write` | v2.0.0 (2026-05-07) | 2026-08-05 |
+| `write-ship` | n/a (`ship write` mode retired 2026-06-12 — Blog tree gone post-rebuild) | v2.0.0 (2026-05-07) | retired 2026-06-12 |
 | `tool-bird` | `bird` (now in private overlay) | v1.4.0 | 2026-08-05 |
 | `tool-deepwiki` | `deepwiki` | v1.4.0 | 2026-08-05 |
 | `tool-browser` | `agent-browser` | v1.4.0 | 2026-08-05 |

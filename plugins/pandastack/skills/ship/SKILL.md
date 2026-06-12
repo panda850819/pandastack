@@ -1,13 +1,12 @@
 ---
 name: ship
-aliases: [knowledge-ship, write-ship]
+aliases: [knowledge-ship]
 description: |
   Multi-mode ship verb. Closes work to its proper destination.
   - /ship                    → git mode: test, commit, push, PR
   - /ship knowledge <path>   → vault: Close + Extract + Backflow on a knowledge/ note
-  - /ship write <draft>      → vault: Close + Extract + Backflow on a Blog/_daily draft
   Vault modes never write to external systems. To hand unfinished work to Codex, use /handover (that is a handover, not a ship).
-  Use when asked to "ship", "create PR", "ship this note", "publish this draft".
+  Use when asked to "ship", "create PR", "ship this note".
 reads:
   - repo: "**"
   - repo: CLAUDE.md
@@ -42,16 +41,14 @@ Pick mode from first arg:
 | First arg | Mode | Branch |
 |---|---|---|
 | `knowledge` | knowledge mode | @./modes/knowledge.md |
-| `write` | write mode | @./references/modes/write-mode.md |
 | (none, or a path/flag for git) | git mode | continue below |
 
 If first arg is a path (no explicit mode word), sniff:
 
 - Path matches `knowledge/**` → knowledge mode
-- Path matches `Blog/_daily/**` or `Blog/Drafts/**` → write mode
 - Otherwise → git mode (treat as filename for staged commit)
 
-Aliases `/knowledge-ship` and `/write-ship` route here automatically.
+Alias `/knowledge-ship` routes here automatically.
 
 ---
 
@@ -182,9 +179,3 @@ project-state append {slug} --done {N} --open {N} --blocked {N} --next "{one-lin
 ## Knowledge mode
 
 @./modes/knowledge.md
-
----
-
-## Write mode
-
-@./references/modes/write-mode.md

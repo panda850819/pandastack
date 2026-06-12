@@ -15,7 +15,6 @@ case "$NOTE" in
   decisions/*|*/decisions/*) VARIANT=decision ;;
   *)
     echo "錯誤：knowledge mode 只處理 knowledge/ 或 decisions/ 內 note"
-    echo "  - Blog/_daily/ → 用 /ship write"
     echo "  - Inbox/legacy-knowledge/ → 先 promote 到 knowledge/"
     exit 1
     ;;
