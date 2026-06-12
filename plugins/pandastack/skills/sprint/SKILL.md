@@ -209,15 +209,9 @@ Print computed state to user. User can override (e.g. "actually let's pause this
 
 #### SHIPPED
 1. Invoke `skills/ship/SKILL.md` — runs commit + push + PR if applicable
-2. Trigger Extract + Backflow (writes to docs/sessions/, docs/learnings/, possibly Inbox/ship-log/)
-2b. **Brain backflow (when a brain runtime is present):** write the synthesized
-   session page to `{brain}/sessions/` (what happened / decisions / reusable
-   learning / entities touched), run `gbrain sync`, announce the path. This is
-   part of SHIPPED, not an on-request extra — the repo note is the local
-   record, the brain page is what every future runtime retrieves. No brain
-   runtime → skip silently (Zero-Dependencies baseline). Raw transcript
-   ingest pipelines are a backstop, not a substitute: they sediment text,
-   not the decision synthesis.
+2. Trigger Extract + Backflow (writes to docs/sessions/, docs/learnings/,
+   `{brain}/sessions/` + `gbrain sync` + announce path when a brain runtime
+   is present — skip silently when not, possibly Inbox/ship-log/)
 3. Route deferred work: append any deferred follow-ups / OPEN_QUESTIONS to the repo's canonical next-work tracker (`ROADMAP.md` or `TODOS.md`) with a date + source PR. Do NOT park deferred work in a CLI's private memory (it is per-runtime — Codex / Gemini / Claude diverge — and drifts), and do NOT leave it only in the dated session note (not discoverable as "what's next"). If the repo has no tracker, say so in the summary rather than defaulting to memory.
 4. Output sprint summary: `Stage 1-6 complete, SHIPPED. {commit-hash}, {PR-url if any}, {extract summary}.`
 
