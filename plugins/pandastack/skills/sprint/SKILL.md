@@ -104,7 +104,7 @@ When no plan file is present, execute conversationally as before (this block is 
 **Execution mode (default: architect + subagent build — Panda directive 2026-06-12):** the main session is the ARCHITECT, not the typist. For each non-trivial build unit:
 
 1. Main session writes a tight spec: files in scope, seams/interfaces, hard constraints, style anchor (which existing file to imitate), and a checkable acceptance condition per unit.
-2. Dispatch the unit to a runtime-native subagent (Claude Code: `Agent` tool; one unit = one agent; parallel dispatch ONLY when units are file-disjoint). The subagent gets the spec, not the persona file. Model division: implementation subagents default ONE TIER BELOW the architect (Agent tool `model: opus`; Codex delegation targets Codex 5.5) — the architect tier is reserved for spec, review, and integration.
+2. Dispatch the unit to a runtime-native subagent (Claude Code: `Agent` tool; one unit = one agent; parallel dispatch ONLY when units are file-disjoint). The subagent gets the spec, not the persona file. The architect judges which model/agent fits each unit by its nature — a deep-reasoning seam vs a mechanical edit — and passes `model:` accordingly. Decide per task at dispatch time; do not hardcode a fixed tier mapping. Codex delegation still targets the Codex runtime.
 3. Main session reviews the returned diff against the spec, re-verifies acceptance itself (build/test — subagent-reported green is never trusted), fixes integration seams, and owns all git operations.
 
 Carve-outs:
@@ -206,6 +206,22 @@ elif user_signals_abort ("stop" / "abort" / "cancel"):
 Print computed state to user. User can override (e.g. "actually let's pause this even though review is clean").
 
 ### Stage 6: Terminal state handling
+
+**State emission (loop-in-agent).** At each terminal state, append one event to
+the machine-readable lifecycle store so a scheduler can see where this item
+landed (schema: `plugins/pandastack/docs/state-schema.md`). Best-effort: if the
+binary is absent or the runtime can't reach it, skip silently — the log is
+gap-tolerant. `slug` = repo basename, `item` = sprint slug.
+
+```
+scripts/pandastack-state append --slug {repo} --item {slug} \
+  --event {shipped|paused|failed|aborted} --phase {last phase} \
+  --skill sprint --runtime {claude-code|codex} [--ref {session-note}]
+```
+
+Emit AFTER the per-state handling below (so `--ref` can point at the written
+checkpoint / session note). SHIPPED emits `shipped`; PAUSED emits `paused` with
+the phase it parked in; FAILED/ABORTED emit `failed`/`aborted`.
 
 #### SHIPPED
 1. Invoke `skills/ship/SKILL.md` — runs commit + push + PR if applicable
