@@ -1,1 +1,8 @@
 .DS_Store
+
+# secrets — never commit. Real secrets live outside the repo
+# (~/.config/pandastack/secrets.env); these patterns guard against anything
+# being dropped into the repo by mistake.
+*.env
+secrets.env
+.env.local
