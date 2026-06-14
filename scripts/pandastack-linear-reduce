@@ -89,6 +89,27 @@ def load_linear(project_id=None):
     key = os.environ.get("LINEAR_API_KEY")
     if not key:
         sys.exit("error: LINEAR_API_KEY not set (source ~/.config/pandastack/secrets.env)")
+
+    def post(query):
+        req = urllib.request.Request(
+            "https://api.linear.app/graphql",
+            data=json.dumps({"query": query}).encode("utf-8"),
+            headers={"Authorization": key, "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                payload = json.loads(r.read().decode("utf-8"))
+        except Exception as e:
+            sys.exit(f"Linear API request failed: {e}")
+        if "errors" in payload:
+            sys.exit("Linear API error: " + json.dumps(payload["errors"], ensure_ascii=False))
+        return payload["data"]
+
+    # guard: resolve the project id before filtering on it. A typo'd / deleted id
+    # would otherwise pass through and return an empty set that reads as "nothing
+    # urgent today" — a silent mis-config in an unattended loop. Fail loud instead.
+    if project_id and not post('{ project(id: "%s") { id } }' % project_id).get("project"):
+        sys.exit(f"error: Linear project {project_id} not found")
+
     # pull non-terminal issues; blocked_by derived from inverse "blocks" relations.
     flt = '{state: {type: {nin: ["completed","canceled"]}}}'
     if project_id:
@@ -99,19 +120,8 @@ def load_linear(project_id=None):
              'labels { nodes { name } } '
              'inverseRelations { nodes { type issue { identifier } } } '
              '} } }') % flt
-    req = urllib.request.Request(
-        "https://api.linear.app/graphql",
-        data=json.dumps({"query": query}).encode("utf-8"),
-        headers={"Authorization": key, "Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            payload = json.loads(r.read().decode("utf-8"))
-    except Exception as e:
-        sys.exit(f"Linear API request failed: {e}")
-    if "errors" in payload:
-        sys.exit("Linear API error: " + json.dumps(payload["errors"], ensure_ascii=False))
     out = []
-    for n in payload["data"]["issues"]["nodes"]:
+    for n in post(query)["issues"]["nodes"]:
         blocked_by = [rel["issue"]["identifier"]
                       for rel in n.get("inverseRelations", {}).get("nodes", [])
                       if rel.get("type") == "blocks" and rel.get("issue")]
