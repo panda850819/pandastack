@@ -1,0 +1,119 @@
+#!/usr/bin/env python3
+"""pandastack-drive — the scheduler's daily driver (executor).
+
+Reduces EVERY project's pandastack-state to its active work-items, decides the
+next step, and classifies it:
+
+  AUTO  — next phase is reversible analysis (PLAN / VERIFY / REVIEW). Safe to run
+          unattended; produces plans/reports, no commits/pushes.
+  GATE  — next phase needs a human: GATE (a decision), BUILD (writes code), or
+          SHIP (publishes). Surfaced, never auto-run.
+  PAUSED— item is frozen/parked. Skipped.
+
+This encodes Panda's rule directly: reversible -> auto-advance, irreversible /
+decision -> human gate. The driver NEVER auto-runs a mutating or publishing phase.
+
+  pandastack-drive                 # surface today's queue (default; read-only)
+  pandastack-drive --json
+  pandastack-drive --run           # Stage 2: spawn the AUTO skills. Currently DRY
+                                   # (prints the command it would run) until Panda
+                                   # sets the autonomy envelope + headless wiring.
+"""
+import argparse
+import glob
+import json
+import os
+import subprocess
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+STATE = os.path.join(HERE, "pandastack-state")
+PROJECTS_DIR = os.path.expanduser("~/.pandastack/projects")
+
+NEXT_PHASE = {"DEFINE": "PLAN", "PLAN": "GATE", "GATE": "BUILD", "BUILD": "VERIFY",
+              "VERIFY": "REVIEW", "REVIEW": "SHIP", "SHIP": "(done)"}
+# next phase -> the skill that performs it (DISPATCH.md is the human-facing source;
+# this is the machine map the driver uses to pick what to run).
+PHASE_SKILL = {"PLAN": "grill", "GATE": "(human decision)", "BUILD": "sprint",
+               "VERIFY": "verify", "REVIEW": "review", "SHIP": "ship"}
+AUTO_PHASES = {"PLAN", "VERIFY", "REVIEW"}   # reversible — driver may run these
+GATE_PHASES = {"GATE", "BUILD", "SHIP"}      # decision / mutation / publish — human
+# why a GATE item needs Panda (the standard, docs/driver-autonomy.md)
+GATE_REASON = {"GATE": "決策(kill/pivot/scope/approach)",
+               "BUILD": "改碼 — 會 land",
+               "SHIP": "發佈 / push"}
+
+
+def slugs():
+    return sorted(os.path.basename(os.path.dirname(p))
+                  for p in glob.glob(os.path.join(PROJECTS_DIR, "*", "")))
+
+
+def active_items(slug):
+    out = subprocess.run([sys.executable, STATE, "reduce", "--slug", slug, "--json"],
+                         capture_output=True, text=True)
+    if out.returncode != 0:
+        return []
+    items = json.loads(out.stdout or "[]")
+    return [i for i in items if i.get("status") not in ("shipped", "aborted")]
+
+
+def classify(item):
+    if item.get("status") == "paused":
+        return "PAUSED", None, None, "凍結"
+    nxt = NEXT_PHASE.get(item.get("phase"), "?")
+    if nxt in AUTO_PHASES:
+        return "AUTO", nxt, PHASE_SKILL.get(nxt, "?"), None
+    if nxt in GATE_PHASES:
+        return "GATE", nxt, PHASE_SKILL.get(nxt, "?"), GATE_REASON.get(nxt, "需 Panda")
+    return "DONE", nxt, None, None
+
+
+def build_queue():
+    q = {"AUTO": [], "GATE": [], "PAUSED": [], "DONE": []}
+    for slug in slugs():
+        for item in active_items(slug):
+            kind, nxt, skill, reason = classify(item)
+            q[kind].append({"slug": slug, "item": item["item"], "phase": item.get("phase"),
+                            "next": nxt, "skill": skill, "reason": reason,
+                            "note": item.get("note")})
+    return q
+
+
+def main():
+    ap = argparse.ArgumentParser(prog="pandastack-drive")
+    ap.add_argument("--json", action="store_true")
+    ap.add_argument("--run", action="store_true",
+                    help="Stage 2: run the AUTO skills (currently DRY — prints commands)")
+    args = ap.parse_args()
+    q = build_queue()
+
+    if args.json:
+        print(json.dumps(q, ensure_ascii=False, indent=2))
+        return 0
+
+    def line(x):
+        return f"  {x['slug']}/{x['item']:<24} {str(x['phase']):<7}→{str(x['next']):<7} {x['skill'] or ''}"
+
+    print("TODAY'S QUEUE — pandastack-drive\n")
+    print(f"▶ AUTO (reversible, driver may run):  {len(q['AUTO'])}")
+    for x in q["AUTO"]:
+        print(line(x))
+    print(f"\n⏸ GATE (needs you — decision/mutation/publish):  {len(q['GATE'])}")
+    for x in q["GATE"]:
+        print(line(x) + f"   ← {x['reason']}")
+    if q["PAUSED"]:
+        print(f"\n🧊 PAUSED:  {len(q['PAUSED'])}")
+        for x in q["PAUSED"]:
+            print(f"  {x['slug']}/{x['item']}")
+
+    if args.run:
+        print("\n--run (DRY — Stage 2 autonomy not yet enabled):")
+        for x in q["AUTO"]:
+            print(f"  would run: {x['skill']} on {x['slug']}/{x['item']}  (next: {x['next']})")
+        print("  GATE items are never auto-run; they wait for you.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
