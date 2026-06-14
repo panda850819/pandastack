@@ -13,6 +13,7 @@ Before responding to any task-shaped message, match it against this table. On ma
 | Knowledge note or decision closed | `ship knowledge <path>` |
 | External artifact before install / adopt | `gatekeeper` |
 | Weekly / monthly retro | `retro-week` / `retro-month` |
+| Run a bounded coding loop (test/build/CI until green) | hardened kickoff in `docs/loop-kickoffs.md` |
 | Non-trivial but no row matches | read pandastack `RESOLVER.md`, pick closest |
 
 Miss log: 事後發現該用而沒用 → append `date | runtime | signal | skill` to `~/.agents/memory/dispatch-miss.log`. Reviewed at `retro-week`.
