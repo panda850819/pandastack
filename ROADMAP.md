@@ -51,6 +51,27 @@ These are not yet decided. Each affects v2 priority but does not block v1 cut.
 
 Substrate-agnostic cut. Removed `gbq` / `gbrain` assumption from all skills (was personal-CLI dependency that fresh installs couldn't satisfy without separate brain index). Vault scans now use `rg` / `find` directly. Cut `deep-research` skill (gbrain-core) and `work-sommet-abyss-po` context. Net: 39 → 38 skills, 8 → 7 contexts. See `CHANGELOG.md` v2.1.0.
 
+## Scheduler / driver autonomy — loop-in-agent (active, 2026-06)
+
+A workstream separate from the v1/v2 public-readiness arc. WBS = Linear; scheduler = `scripts/pandastack-drive` (symphony pattern, pandastack skills as executor); autonomy contract = `plugins/pandastack/docs/driver-autonomy.md`; Linear mapping = `plugins/pandastack/docs/linear-contract.md`; design lineage + alternatives = `docs/briefs/2026-06-13-scheduler-wbs-linear.md`. Live now: launchd every 4h, read-only, proposes advances (never writes Linear). The build-out below moves classification from the current phase-type proxy to the full auto-loop eligibility predicate (safe **and** ready). Feature gaps benchmarked against `openai/symphony` SPEC.md.
+
+High priority (next):
+
+- [ ] **Readiness checks in `pandastack-linear-reduce`** — per-phase inputs-present gate; generalize the acceptance rule (`linear-contract.md`) from VERIFY to every phase. An under-specified issue surfaces for Panda instead of auto-running a plausible-but-empty plan. This is the core eligibility question — what is allowed into the auto-loop. Gate: `reduce` re-classifies a not-ready dispatchable issue as gated.
+- [ ] **Per-issue workspace isolation** — port symphony's sanitized-key + reuse-across-runs + path-containment model. Today AUTO steps run in the live repo dir (`codex exec -C <repo>`); isolation is the prerequisite for auto-BUILD and for any `--max > 1`. Gate: a run cannot touch the project's working tree.
+- [ ] **Retry + exponential backoff** — port symphony's `RetryEntry` + `delay = min(10000 * 2^(attempt-1), cap)`. Today a flaky Codex run fails with no re-attempt (single `subprocess timeout(1200)`). Gate: a transient FAIL re-queues with backoff; a persistent one stops after N.
+
+Medium (after the high tier):
+
+- [ ] **BUILD autonomy (opt-in, default OFF)** — the 5-condition gate in `driver-autonomy.md` (plan approved + prompt-ified work-order + machine-checkable acceptance + isolated workspace + stops at SHIP). Depends on readiness + workspace above. Enable per-project via `--only` first, never globally.
+- [ ] **Stall detection / turn timeout** — replace the blunt `subprocess timeout(1200)` with symphony-style `stall_timeout` (kill unresponsive worker, schedule retry) + a turn cap.
+- [ ] **Bounded concurrency (global + per-state)** — symphony's `max_concurrent_agents` + per-state override; needed before any fan-out past `--max 1`.
+- [ ] **Read-only status surface** — a `/api/v1/state` analogue over `drive-log.jsonl` + `state.jsonl`: what is the loop doing now, token spend, last verdicts.
+
+Later (logged, not scheduled): hot-reloadable `WORKFLOW.md`-style config, token accounting, Liquid prompt templating with full work-order injection, a `linear_graphql` tool for the executor, SSH remote workers. All from the symphony feature-map A-zone; none blocks the high/medium tiers.
+
+What is deliberately NOT adopted from symphony (conflicts with the co-pilot design): auto-approve / "must not stall" defaults, agents that land code or write the tracker, the Codex-only hardwired executor, and the Todo-only blocker gate (pandastack blocks on any open blocker, any state). See `driver-autonomy.md`.
+
 ## Decision rationale
 
 Full reasoning, alternatives considered, and gate log live in the office-hours brief at `docs/briefs/2026-05-06-pandastack-v1-stable-cut.md` (vault-side, author-only). CHANGELOG v1.2.2 entry summarizes the public-facing version. This file lives at repo root for version control and visibility from `/plugin install`.
