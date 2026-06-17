@@ -63,6 +63,17 @@ Rules:
   the issue's VERIFY phase is automatically a `needs-human` gate — the scheduler
   will not claim it as auto-verifiable.
 
+## append-only linkback ledger
+
+Issue descriptions remain work orders. Loop/build/review/ship updates go into Linear
+comments as an append-only audit log.
+
+- Use `scripts/pandastack-linear-comment` for Linear ledger comments.
+- Use `scripts/pandastack-pr-review-comment` to post PandaStack review output as
+  a GitHub PR comment artifact.
+- Link the PR URL and the GitHub review/comment URL back to Linear.
+- Full protocol: `plugins/pandastack/docs/linear-linkback.md`.
+
 ## active-terminal-states
 
 For the reduce pipeline (symphony §8.2 analogue):
