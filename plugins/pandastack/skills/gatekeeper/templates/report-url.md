@@ -17,7 +17,7 @@ Use this template when reporting the results of a url-document.md review.
   PROMPT INJECTION SCAN
   Code blocks found:     [n]
   Attack vectors found:  [n] / 17 categories
-  
+
   Detected vectors:
   [None]
   — or —

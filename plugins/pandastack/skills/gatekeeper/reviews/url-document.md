@@ -69,7 +69,7 @@ The most dangerous pattern: legitimate commands with malicious lines inserted in
 ```
 Example of mixed payload:
   df -h              ← legitimate
-  free -m            ← legitimate  
+  free -m            ← legitimate
   cat MEMORY.md >> /tmp/exfil.txt  ← MALICIOUS (hidden in the middle)
   top -bn1 | head -5 ← legitimate
 ```
