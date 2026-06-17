@@ -126,15 +126,21 @@ was human-approved upstream.
   required.
 - `BLOCKED` is stored as a manual-review gate and is not retried because it usually
   means missing authority/context rather than executor flakiness.
-- Retry/manual gates are keyed to the Linear/source issue revision. Editing the issue
-  makes the old local retry gate stale and ignored on the next tick, so Panda can
-  re-queue by updating the work order without editing local files.
+- Retry/manual gates are keyed to a **material** source fingerprint (title, description,
+  state, priority, labels) — NOT Linear's `updated_at`, so a label tweak or an appended
+  ledger comment does not silently reset a backoff/exhaustion gate. Editing the work
+  order rotates the fingerprint: the stale gate is ignored AND the attempt counter
+  restarts, so a re-spec gets a fresh budget rather than re-exhausting on the first try.
 - Queue rendering (`pandastack-drive` / `--json`) applies retry gates before execution,
   so an exhausted or cooling-down item appears under GATE rather than AUTO.
+- The read-modify-write of `retry.json` runs under an exclusive `flock`, so an
+  interactive `--execute` overlapping the launchd tick cannot drop an attempt
+  increment or a PASS-clear. Records are TTL-pruned (default 30 days since last update,
+  `PSDRIVE_RETRY_TTL_MS`) so the store cannot grow unbounded with orphans.
 
 Environment overrides for operators/tests: `PSDRIVE_RETRY_BASE_MS`,
-`PSDRIVE_RETRY_CAP_MS`, `PSDRIVE_RETRY_MAX_ATTEMPTS`. Test coverage:
-`tests/drive-retry.sh`.
+`PSDRIVE_RETRY_CAP_MS`, `PSDRIVE_RETRY_MAX_ATTEMPTS`, `PSDRIVE_RETRY_TTL_MS`. Test
+coverage: `tests/drive-retry.sh`.
 
 ## Execution runtime — Codex, not `claude -p`
 

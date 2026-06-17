@@ -21,6 +21,8 @@ propose; decision / mutation / publish -> human gate (docs/driver-autonomy.md).
   pandastack-drive --execute       # run AUTO skills on Codex (read-only), propose advance
 """
 import argparse
+import contextlib
+import fcntl
 import hashlib
 import json
 import os
@@ -102,12 +104,19 @@ def positive_int_env(name, default):
 RETRY_BASE_MS = positive_int_env("PSDRIVE_RETRY_BASE_MS", 10000)
 RETRY_CAP_MS = max(RETRY_BASE_MS, positive_int_env("PSDRIVE_RETRY_CAP_MS", 300000))
 RETRY_MAX_ATTEMPTS = positive_int_env("PSDRIVE_RETRY_MAX_ATTEMPTS", 3)
+# Drop a retry record this long after its last update so the store cannot grow
+# unbounded with orphans from advanced / edited / abandoned issues (30 days).
+RETRY_TTL_MS = positive_int_env("PSDRIVE_RETRY_TTL_MS", 30 * 24 * 60 * 60 * 1000)
 
 
 def source_fingerprint(issue):
-    """Material source revision for clearing stale retry gates after issue edits."""
-    if issue.get("updated_at"):
-        return "linear:" + str(issue.get("updated_at"))
+    """Material source revision for clearing stale retry gates after issue edits.
+
+    Fingerprints only the work-order-material fields, NOT Linear's updated_at: a
+    label tweak, sub-issue, or (once the linkback loop is wired) an appended ledger
+    comment bumps updated_at without changing the work order, and must NOT silently
+    reset a backoff/exhaustion gate. A real edit to title/description/state/priority/
+    labels still rotates the fingerprint and re-queues the item."""
     material = {k: issue.get(k) for k in ("title", "description", "state", "priority", "labels")}
     raw = json.dumps(material, ensure_ascii=False, sort_keys=True)
     return "sha256:" + hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
@@ -132,6 +141,22 @@ def now_ms():
     return int(time.time() * 1000)
 
 
+@contextlib.contextmanager
+def retry_lock():
+    """Serialize the retry-state read-modify-write so an interactive --execute that
+    overlaps the launchd tick cannot drop an attempt increment or a PASS-clear (the
+    per-file os.replace is atomic, but the load->mutate->save sequence is not)."""
+    p = retry_state_path()
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    f = open(p + ".lock", "w")
+    try:
+        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+        yield
+    finally:
+        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+        f.close()
+
+
 def iso_ms(ms):
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(ms / 1000))
 
@@ -153,6 +178,9 @@ def load_retry_state():
 
 
 def save_retry_state(state):
+    cutoff = now_ms() - RETRY_TTL_MS
+    state = {k: v for k, v in state.items()
+             if isinstance(v, dict) and int(v.get("updated_ms") or 0) >= cutoff}
     p = retry_state_path()
     os.makedirs(os.path.dirname(p), exist_ok=True)
     fd, tmp = tempfile.mkstemp(prefix="retry-", suffix=".json", dir=os.path.dirname(p))
@@ -193,10 +221,22 @@ def record_retry(x, result):
 
     PASS clears the item's retry record. FAIL/ERROR/UNKNOWN schedule exponential
     backoff until RETRY_MAX_ATTEMPTS, then stop. BLOCKED becomes a durable
-    manual-review gate until the Linear/source issue changes.
+    manual-review gate until the Linear/source issue changes. The whole
+    read-modify-write runs under retry_lock so an overlapping tick cannot race.
     """
+    with retry_lock():
+        return _record_retry_locked(x, result)
+
+
+def _record_retry_locked(x, result):
     key = retry_key(x)
     state = load_retry_state()
+    # An edited issue rotates source_rev: retry_gate already ignores the stale gate,
+    # so the attempt counter must restart here too — otherwise the first post-edit
+    # failure inherits the old (possibly exhausted) count and re-exhausts at once.
+    existing = state.get(key)
+    if existing and existing.get("source_rev") != (x.get("source_rev") or ""):
+        state.pop(key, None)
     verdict = result.get("verdict")
     if result.get("ok"):
         if key in state:

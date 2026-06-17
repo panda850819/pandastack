@@ -9,10 +9,15 @@ import argparse
 import json
 import os
 import pathlib
+import re
 import subprocess
 import sys
 import urllib.error
 import urllib.request
+
+# owner/repo is interpolated into the GitHub API URL; reject anything that could
+# rewrite the request path (extra slashes, '..', '?', '#') before it is used.
+REPO_RE = re.compile(r"^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$")
 
 
 def read_body(path):
@@ -79,6 +84,8 @@ def main():
     ap.add_argument("--json", action="store_true", help="emit machine-readable result")
     args = ap.parse_args()
 
+    if not REPO_RE.match(args.repo):
+        sys.exit(f"error: bad --repo {args.repo!r} (expected owner/repo)")
     body = read_body(args.body_file)
     if args.dry_run:
         result = {"dry_run": True, "repo": args.repo, "pr": args.pr, "url": None, "body": body}

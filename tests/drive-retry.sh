@@ -173,5 +173,27 @@ PY
 } )"
 check "worktree add failure is retryable ERROR" "r['result']['ran'] and r['result']['verdict']=='ERROR' and 'retry scheduled' in r['note']" "$wt_fail"
 
+# editing the issue (source_rev rotates) must restart the attempt counter, not just
+# unblock the gate — otherwise the first post-edit failure inherits the old count.
+reset_fail() { # reset_fail <source_rev>
+  PSDRIVE_TEST=1 PSDRIVE_RETRY_STATE="$tmp/reset.json" \
+  PSDRIVE_RETRY_BASE_MS=10000 PSDRIVE_RETRY_CAP_MS=60000 PSDRIVE_RETRY_MAX_ATTEMPTS=3 \
+  PSDRIVE_NOW_MS=0 python3 - "$D" "$1" <<'PY'
+import importlib.util, json, sys
+from importlib.machinery import SourceFileLoader
+loader = SourceFileLoader("psdrive_reset", sys.argv[1])
+spec = importlib.util.spec_from_loader("psdrive_reset", loader)
+m = importlib.util.module_from_spec(spec); loader.exec_module(m)
+x = {"id":"PRO-99", "project":"p", "next":"BUILD", "source_rev": sys.argv[2]}
+print(json.dumps({"note": m.record_retry(x, {"ok": False, "verdict": "FAIL", "summary": "f"})}))
+PY
+}
+reset_fail A >/dev/null   # attempt 1, rev A
+reset_fail A >/dev/null   # attempt 2, rev A
+ex="$(reset_fail A)"      # attempt 3, rev A -> exhausted
+check "rev A exhausts after 3 attempts" "'exhausted after 3 attempts' in r['note']" "$ex"
+edited="$(reset_fail B)"  # first failure after edit (rev B) -> fresh counter
+check "source_rev change restarts attempt counter" "'attempt 2/3' in r['note'] and 'exhausted' not in r['note']" "$edited"
+
 [ "$fail" -eq 0 ] && echo "OK: drive-retry all green" || echo "FAILURES present"
 exit "$fail"

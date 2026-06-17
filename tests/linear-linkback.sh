@@ -43,5 +43,12 @@ check_contains "PR review dry-run names target" "$review_out" "panda850819/panda
 check_contains "PR review dry-run includes body" "$review_out" "## PandaStack PR Review"
 check_contains "PR review dry-run includes verdict" "$review_out" "ready for human review"
 
+# a malformed --repo must be rejected before it can rewrite the GitHub API URL path
+if "$PC" --repo "owner/repo/../../x" --pr 1 --body-file "$body_file" --dry-run >/dev/null 2>&1; then
+  echo "FAIL: PR review rejects malformed --repo"; fail=1
+else
+  echo "PASS: PR review rejects malformed --repo"
+fi
+
 [ "$fail" -eq 0 ] && echo "OK: linear-linkback all green" || echo "FAILURES present"
 exit "$fail"
