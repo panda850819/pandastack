@@ -69,10 +69,13 @@ now gates a VERIFY-phase issue with no machine-checkable `acceptance` block as
 `tests/linear-reduce.sh`. Still pending: PLAN (Goal+Context) and REVIEW (diff/artifact)
 readiness, and BUILD autonomy below.
 
-## BUILD autonomy (proposed — default OFF)
+## BUILD autonomy (wired 2026-06-17 — default OFF)
 
-Today BUILD always gates (Gate #2): it mutates and lands code. That is the shipped
-default; keep it until the conditions below are built and verified.
+BUILD gates by default (Gate #2): it mutates and lands code. The bounded opt-in
+below is now implemented (`--build-auto --only <project>`, fork A: a build-ready
+`Building` issue auto-builds in an isolated worktree and proposes `Verifying`), but
+stays OFF unless explicitly enabled per-project. Conditions 1-3 are classification
+(2a); 4-5 are the isolated executor (2b). Both covered by `tests/drive-build.sh`.
 
 A bounded opt-in lets the loop carry a *fully-readied* issue into development without
 a per-step human kick — the safe form of "let the planned, prompt-ified work go
@@ -85,8 +88,10 @@ straight to dev." BUILD may auto-run for an issue ONLY when ALL hold:
    straight into the executor prompt; no missing field.
 3. **Machine-checkable acceptance** — a runnable `acceptance` block the build
    self-verifies against before proposing REVIEW.
-4. **Isolated workspace** — runs in a per-issue workspace, not the live repo, so a
-   bad run cannot corrupt working state. <!-- upgrade: port symphony workspace isolation + backoff -->
+4. **Isolated workspace** — built: each build runs in a per-issue `git worktree`
+   (branch `psdrive/<ISSUE>`), never the live working tree; codex is sandboxed to
+   `-s workspace-write`, so network (push / merge / publish) is impossible. PASS
+   keeps the branch for a human PR; FAIL discards it. <!-- upgrade: backoff + retry caps -->
 5. **Stops at SHIP** — produces a branch / PR proposal; never auto-merges, pushes to
    main, or publishes. SHIP stays a hard gate (Gate #3).
 
