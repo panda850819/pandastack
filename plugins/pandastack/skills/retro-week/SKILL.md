@@ -192,6 +192,14 @@ RECENT_CONTINUE_EVENTS=$(SINCE=$(date -v-7d +%Y-%m-%d); \
     awk -v since="$SINCE" -v src="$log" \
       '$1 >= since { print src ":" $0 }' "$log" 2>/dev/null; \
   done)
+
+# Driver ledger distillation (PRO-40): the autonomous half's GC input. An id
+# re-verified PASS every tick but never advanced, or re-gated every tick, is the
+# same "a forcing function did not fire" signal — turned into auto-advance /
+# open-an-issue candidates for the proposal table below.
+DRIVE_LOG="$HOME/site/knowledge/brain/_automation/portfolio-status/drive-log.jsonl"
+DRIVE_DISTILL=$([ -f "$DRIVE_LOG" ] && \
+  "$HOME/site/skills/pandastack/scripts/drive-log-distill" "$DRIVE_LOG" 2>/dev/null)
 ```
 
 ### 1h. Build GC proposal table
