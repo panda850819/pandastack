@@ -1,53 +1,116 @@
 ---
 slug: coding-agent-autonomy-rungs
 date: 2026-06-19
+updated: 2026-06-20
 type: plan
 source: office-hours
 brief: docs/briefs/2026-06-19-coding-agent-autonomy-rungs.md
 execution: code
-status: todo
+status: in-progress
 ---
 
 # Coding-agent 自主 loop — executable plan
 
-> WHAT only. WHY 在 brief。閘的搬移、autonomy 分級的理由都在 brief，這裡只列可驗的 task。
-> 依賴鏈：真 verify (T01) → PRD 分解出 blast/acceptance (T02) → router (T03) → 證據包 (T04) → reversibility kit (T05)。T06 defer。
+> WHAT only. WHY 在 brief。閘的搬移、autonomy 分級的理由在 brief。
+> 2026-06-20 reshaped:ladder review(30 agents)+ human-in-loop boundary 決議(brain `decisions/2026-06-20-pandastack-human-in-loop-boundary.md`)後重排。原線性鏈 T01→T05 被低估了 sequencing 與 T03 scope。
+>
+> **重排後依賴鏈**：
+> ```
+> T01✓ ─ T02✓
+>   ├─ KS  kill-switch          (只依賴 T01,先於任何 auto-merge)
+>   ├─ VH  verify 兩洞加固        (T03 硬前置)
+>   ├─ LG  結構化 ledger          (success-signal 量測底座)
+>   ├─ CC  並發鎖                 (auto-merge 前必須)
+>   ├─ T03 router + integration merge   ── 平行 ── T04 證據包
+>   └─ T05a 手動 promote + reset → T05b auto-promote + rollback(棘輪後)
+> T06 defer
+> ```
+> **啟用閘**:auto-merge(T03)/ promote(T05b)出廠 gated OFF;連 20 筆乾淨(host-verified + 零 fake-green + 零事後 revert)棘輪解鎖(boundary #1/#3)。build 維持 `--build-auto --only` opt-in(boundary #2)。
 
-## Tasks
+## Phase 0 — done
 
 ### coding-agent-autonomy-rungs-T01 — 真 VERIFY backend（取代 model 自我回報）
-- scope: scripts/pandastack-drive (VERIFY phase), plugins/pandastack/docs/driver-autonomy.md, 新增 tests/drive-verify.sh
-- acceptance: `bash tests/drive-verify.sh` 綠；測試含「一個故意失敗的 change 在 VERIFY 被攔下、不進 REVIEW」的 case；driver 呼叫一個 per-project verify 契約（verify cmd from work-order/repo），grep `pandastack-drive` 不再有「VERIFY = 模型自報即過」的 path
+- scope: scripts/pandastack-drive (VERIFY phase), plugins/pandastack/docs/driver-autonomy.md, tests/drive-verify.sh
+- acceptance: `bash tests/drive-verify.sh` 綠；故意失敗的 change 在 VERIFY 被攔下、不進 REVIEW；driver 呼叫 per-project verify 契約
 - depends-on: none
-- status: todo
+- status: **done** — PR #16 (merged 2026-06-20, @8395956)
+- carry-forward: read-only AUTO-VERIFY 仍信 model RESULT line(F-M);標 advisory-only,T03 router merge 只 key host-verify.ok
 
 ### coding-agent-autonomy-rungs-T02 — PRD → work-order 分解，每張卡帶機器 check 或指名 artifact
 - scope: scripts/pandastack-linear-reduce, scripts/pslib.py, plugins/pandastack/docs/linear-contract.md, tests/linear-reduce.sh
-- acceptance: tests/linear-reduce.sh 新增 case「無機器 check 且無指名證據 artifact 的卡 → gated needs-spec」綠；一個 fixture PRD 分解產出 N 張卡，每張 acceptance 為 greppable check（→ auto lane）或**指名**的證據 artifact（截圖/數字/before-after，→ human lane），皆非模糊散文。blast_radius **不逐張手標** —— 由 high-blast path policy 檔（T03）在 merge 時對真實 diff 評估；AI 可在此預估標註供預覽，但非綁定
+- acceptance: tests/linear-reduce.sh「無機器 check 且無指名證據 artifact → gated needs-spec」綠；machine lane / evidence lane / gated 三態
 - depends-on: none
-- status: todo
+- status: **done** — PR #16 (merged 2026-06-20, @8395956)
 
-### coding-agent-autonomy-rungs-T03 — blast×可驗性 router + integration-branch 自主 merge（低-blast 子集）
-- scope: scripts/pandastack-drive (SHIP/merge path), 新增 high-blast path policy 檔（config/high-blast-paths）, 新增 tests/drive-merge-router.sh
-- acceptance: tests/drive-merge-router.sh 綠；router 決策 = `low_blast(真實 diff vs path policy) AND 機器可驗 acceptance AND verify 綠` → 自主 merge 進 integration branch（非 main）；high-blast（DB-touch fixture 命中 policy）或 人眼-artifact acceptance → 只開 PR；grep 證明無任何 path 自動 push/merge main；blast 決策綁 deterministic diff-match（拿真實 diff 非 predicted scope）
-- depends-on: coding-agent-autonomy-rungs-T01, coding-agent-autonomy-rungs-T02
-- status: todo
+## Phase 1 — 安全前置（任何 auto-merge 上線之前，缺一不可）
 
-### coding-agent-autonomy-rungs-T04 — 證據包進 PR（verify 輸出 + 截圖/數據 hook）
-- scope: scripts/pandastack-pr-review-comment 或 PR-open path, tests/linear-linkback.sh
-- acceptance: dry-run 測試證明 PR body 含 verify 指令輸出 + acceptance 對照 + artifact（截圖/數據）連結欄位；既有 linear-linkback.sh 仍綠
+### coding-agent-autonomy-rungs-KS — kill-switch（driver pre-dispatch flag gate）
+- 來源: boundary #12 + review F-E / F-J。從原 T05 拆出、提前。
+- scope: scripts/drive-cron.py (main() 頂 + build_queue() pre-dispatch flag check), plugins/pandastack/docs/driver-autonomy.md, 新增 tests/drive-killswitch.sh
+- acceptance: tests/drive-killswitch.sh 綠 — flag 存在 → 下一 launchd tick 在 dispatch 前零 dispatch + drive-log 留 `suppressed:true` + exit 0;flag 不存在 → 正常。check UNCONDITIONAL,兩處(讓直接 `--execute` 也認)。drive-build.sh 仍綠
+- depends-on: coding-agent-autonomy-rungs-T01
+- status: todo — Linear PRO-36
+
+### coding-agent-autonomy-rungs-VH — verify gate 兩洞加固（T03 硬前置）
+- 來源: review F-A / F-B。不補=auto-merge 即 fake-green。
+- scope: scripts/pandastack-drive (verify.sh materialize), scripts/agent-worker (run_verify), tests/drive-verify.sh
+- acceptance: tests/drive-verify.sh 新增兩條負向 case 綠 —（F-A）tautological acceptance(`true`/`exit 0`/`echo`/`[ 1 == 1 ]`)被 anti-tautology sentinel 攔下(對 pre-build HEAD 先跑,build 前就綠 → demote);（F-B）多行 acceptance 首行真失敗 + 尾行 echo,因 `set -euo pipefail` prelude 整體 demote FAIL。既有 good case 仍綠
 - depends-on: coding-agent-autonomy-rungs-T01
 - status: todo
 
-### coding-agent-autonomy-rungs-T05 — reversibility kit（kill-switch + integration→main promote/rollback）
-- scope: scripts/pandastack-drive (per-iteration kill-switch check), scripts/drive-cron.py, 新增 integration→main promote 機制, 新增 docs + tests/drive-killswitch.sh + tests/drive-promote.sh
-- acceptance: tests/drive-killswitch.sh 綠（kill-switch flag 存在時 loop 下一圈自停不 dispatch）；tests/drive-promote.sh 綠（promote 預設**手動**；auto 模式 N=5 merge OR 24h 先到先觸發；promote 後 main CI 紅 → 自動 rollback 該次 promote）；docs 記載 integration-branch reset 復原步驟；bounded `--max` 與 worktree 隔離仍生效（既有 drive-build.sh 綠）
+### coding-agent-autonomy-rungs-LG — 結構化 ledger（success-signal 量測底座）
+- 來源: review F-K / F-L。「零 fake-green」要可 git-grep。
+- scope: scripts/pandastack-drive (emit per-item JSON), scripts/drive-cron.py (逐字 append 取代 stdout regex)
+- acceptance: drive-log.jsonl 每筆帶 `verify_ran` / `verify_ok` / `verify_cmd` + 短 verify_tail;fake-green 反例 = 一行 grep `verdict==PASS AND advance!=null AND verify_ran==false` 計數可得;test 斷言欄位存在
+- depends-on: coding-agent-autonomy-rungs-T01
+- status: todo
+
+### coding-agent-autonomy-rungs-CC — 並發鎖（drive 級 flock）
+- 來源: review C1。互動 `--execute` 與 launchd tick 同時對同一 issue 跑 `git worktree add` 會 race,威脅 never-half-merged。
+- scope: scripts/pandastack-drive (whole-loop flock), scripts/drive-cron.py
+- acceptance: 新 test 證明兩個並發 driver 對同一 issue 不會雙開 worktree;branch-exists guard 不再是唯一(check-then-act race)防線
+- depends-on: none
+- status: todo
+
+## Phase 2 — 自駕機構（可平行）
+
+### coding-agent-autonomy-rungs-T03 — blast×可驗性 router + integration 自主 merge（重 scope）
+- 來源: review F-D / F-H / F-C；boundary #1。**注意:drive 今天無 SHIP/merge path(SHIP 在 GATE_PHASES 從不進 executor)。T03 是改 exec_build 成功路徑,不是加一個檔。**
+- scope: scripts/pandastack-drive (exec_build PASS+committed 路徑加 router-gated MERGE step + 三態 branch model + branch-exists guard 改 + integration-from-main refresh), 新增 config/high-blast-paths, 新增 tests/drive-merge-router.sh
+- acceptance: tests/drive-merge-router.sh 綠 — 雙分支斷言:`low_blast(真實 diff vs policy) AND machine-lane AND host-verify 綠` → merge 進 **integration**(非 main);`high-blast OR evidence-lane` → 只開 PR。matcher default-deny + 每條 changed path(含 rename 新舊、deletion)以 `**/X/**` 比對;classify-fail/empty-diff/read-error → high-blast。三 fixture:nested-migration / rename-out-of-auth / deletion。read-only AUTO-VERIFY 永不當 merge gate(F-M assert)。非乾淨 merge → `git merge --abort` + 轉 GATE,絕不半 merge。grep 證明無 path 自動 push/merge main。**auto-merge 出廠 gated OFF,棘輪解鎖。**
+- depends-on: T01, T02, KS, VH, LG, CC
+- status: todo
+
+### coding-agent-autonomy-rungs-T04 — 證據包進 PR（與 T03 平行）
+- 來源: review F-G。brief 指人工 30 秒蓋章是 rung-0 operating mode,不排在 T03 後。
+- scope: scripts/pandastack-pr-review-comment 或 PR-open path, tests/linear-linkback.sh
+- acceptance: dry-run 證明 PR body 含 verify 指令輸出 + acceptance 對照 + artifact 連結欄位;既有 linear-linkback.sh 仍綠
+- depends-on: coding-agent-autonomy-rungs-T01  （**∥ T03**,皆吃 exec_build result dict,互不依賴）
+- status: todo
+
+## Phase 3 — 上真路（棘輪畢業後）
+
+### coding-agent-autonomy-rungs-T05a — 手動 promote + integration reset（local，無遠端寫）
+- scope: scripts/pandastack-drive, 新增 integration→main 手動 promote 路徑 + reset docs, tests/drive-promote.sh
+- acceptance: tests/drive-promote.sh 綠 — promote 預設**手動**;docs 記載 integration-branch reset 復原步驟;bounded `--max` 與 worktree 隔離仍生效(drive-build.sh 綠)
 - depends-on: coding-agent-autonomy-rungs-T03
 - status: todo
 
-### coding-agent-autonomy-rungs-T06 — [DEFER] Claude worker backend + multi-backend failover
-- scope: scripts/agent-worker (新增 claude backend), pandastack.toml (backends 加 claude)
-- acceptance: agent-worker 對 backend=claude 不再 raise「unsupported backend」；failover policy 在 Codex quota 耗盡時切 Claude；保留 Codex/Claude quota 隔離說明
-- depends-on: coding-agent-autonomy-rungs-T03
+### coding-agent-autonomy-rungs-T05b — auto-promote + CI-read + auto-rollback（remote，棘輪後）
+- 來源: review F-I;boundary #3。**系統第一次 push 遠端 default branch,破 driver-never-pushes 不變式。careful-mode,非 auto-resolve。**
+- scope: scripts/pandastack-drive (promote push), 新增 CI commit-status/checks reader, drive-cron.py, tests/drive-promote.sh
+- acceptance: auto 模式限速 N=5 merge OR 24h;promote 後 main CI 紅 → 自動 revert 該次 promote;**閘 = 連 20 筆乾淨 auto-merge 棘輪 + careful-mode**,未畢業前 human-gated
+- depends-on: coding-agent-autonomy-rungs-T05a
 - status: todo
-- note: rung-C 之後、高量全自主才需要；屆時加在現有 agent-worker 抽象內，勿另開平行 cron。低量階段 Codex 用不完，不做。
+
+### coding-agent-autonomy-rungs-T06 — [DEFER] Claude worker backend + multi-backend failover
+- scope: scripts/agent-worker (claude backend), pandastack.toml
+- acceptance: agent-worker 對 backend=claude 不再 raise;failover 在 Codex quota 耗盡切 Claude
+- depends-on: coding-agent-autonomy-rungs-T03
+- status: defer — 高量全自主才需要,低量階段 Codex 用不完,勿另開平行 cron
+
+## 橫貫 infra（slot in，別事後追）
+
+- **C4 notify**：gate fire → 立刻 ping Panda + daily digest;隊列不變則安靜。通知可靠性 gate 了表上每個人門是真是戲。
+- **C5 secrets**：build 轉 auto 時,commit 前 block 含 .env/key 的暫存(AGENTS.md 硬禁,該 auto-enforce 非肉眼)。
+- **C6 capability fence 演化**：編 SAFE_SKILLS / 為新 project 開 `--build-auto` = harness 編輯,human-gate。
