@@ -30,6 +30,8 @@ source: observed | inferred | user-stated
 skill: review | compound | ship
 files:
   - path/to/relevant/file.ts
+first_seen: YYYY-MM-DD   # first time this learning was hit (= created on day one)
+recurrence: N            # times this same key recurred; starts at 1, +1 on each match
 created: YYYY-MM-DD
 last_seen: YYYY-MM-DD
 ---
@@ -69,7 +71,7 @@ How to catch this earlier next time.
 
 - Only log genuine discoveries that would save time in a future session.
 - Check for existing learnings with the same key before creating a new file.
-- If a match exists, update the existing file (bump `last_seen`, add context).
+- If a match exists, update the existing file: bump `last_seen`, **increment `recurrence`**, add context. Never open a second file for the same key — that is how the corpus turns into write-only sediment instead of a ratchet.
 - Don't log obvious things or routine fixes.
 
 ## Reading Rules
@@ -77,4 +79,5 @@ How to catch this earlier next time.
 - Calculate effective confidence: `max(0, confidence - floor(days_since_created / 30))`
 - `user-stated` sources never decay.
 - Skip learnings with effective confidence < 3.
-- When a learning matches the current work, display: "Prior learning: [key] (confidence N/10, from [date])"
+- A high `recurrence` (>= 2) marks a repeat offender — surface it even at lower effective confidence; a learning that keeps recurring has earned its place.
+- When a learning matches the current work, display: "Prior learning: [key] (confidence N/10, recurrence M, from [date])"
