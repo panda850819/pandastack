@@ -148,5 +148,24 @@ PY
 [ "$(git -C "$rE" show psdrive/integration:seed.txt)" = "integ" ] && ok "integration not half-merged (aborted clean)" || bad "integration left in a half-merged state"
 [ "$(git -C "$rE" worktree list | wc -l | tr -d ' ')" = "1" ] && ok "conflict path leaves no stray worktree" || bad "stray worktree after abort"
 
+# ---------- 8. self-heal: an orphaned integration worktree (crashed tick) doesn't wedge merges ----------
+rF="$(fresh_repo)"
+baseF="$(git -C "$rF" rev-parse HEAD)"
+git -C "$rF" checkout -q -b psdrive/FEAT; echo feat > "$rF/feat.txt"; git -C "$rF" add -A; git -C "$rF" commit -qm feat >/dev/null
+git -C "$rF" checkout -q "$baseF"
+orph="$(mktemp -u)"                                   # a crashed tick: register integration to a dir, then lose it
+git -C "$rF" worktree add -q "$orph" -b psdrive/integration "$baseF" >/dev/null 2>&1
+rm -rf "$orph"                                        # dir gone, stale registration remains → naive add would fail
+o="$(PSDRIVE_TEST=1 python3 - "$D" "$rF" "$baseF" <<'PY'
+import sys, json, importlib.util
+from importlib.machinery import SourceFileLoader
+loader = SourceFileLoader("psdrive", sys.argv[1])
+m = importlib.util.module_from_spec(importlib.util.spec_from_loader("psdrive", loader)); loader.exec_module(m)
+print(json.dumps(m.merge_to_integration(sys.argv[2], "psdrive/FEAT", sys.argv[3])))
+PY
+)"
+[ "$(jget "$o" merged)" = "True" ] && ok "orphaned integration worktree pruned → merge self-heals" || bad "crashed-tick orphan wedged the merge: $o"
+git -C "$rF" cat-file -e psdrive/integration:feat.txt 2>/dev/null && ok "self-healed merge carried the change" || bad "self-healed merge missing change"
+
 [ "$fail" -eq 0 ] && echo "OK: drive-merge-router all green" || echo "FAILURES present"
 exit "$fail"

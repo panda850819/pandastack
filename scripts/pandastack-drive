@@ -450,6 +450,11 @@ def merge_to_integration(rd, branch, base):
     integ = "psdrive/integration"
     itmp = tempfile.mkdtemp(prefix="psdrive-integ-")
     try:
+        # prune BEFORE the add: a tick SIGKILLed between worktree-add and the finally
+        # leaves psdrive/integration registered to a now-gone dir, and every later add
+        # then fails — silently wedging ALL future auto-merges until a human prunes by
+        # hand. Pruning first makes the unattended loop self-heal from a crashed tick.
+        subprocess.run(["git", "-C", rd, "worktree", "prune"], capture_output=True, text=True, env=git_env())
         exists = subprocess.run(["git", "-C", rd, "rev-parse", "--verify", "--quiet", integ],
                                 capture_output=True, text=True).returncode == 0
         add = (["git", "-C", rd, "worktree", "add", itmp, integ] if exists
