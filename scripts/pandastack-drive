@@ -358,6 +358,130 @@ def safe_git(worktree, git_dir, args):
                           capture_output=True, text=True, env=git_env())
 
 
+# --- T03 blast×verifiability router + integration auto-merge (boundary #1) -----------
+# auto-merge ships gated OFF; it only runs under --merge-auto (which requires
+# --build-auto --only), and only for a low-blast, machine-lane, host-verified-green
+# build. main is NEVER pushed or merged here — the loop owns integration; integration→
+# main stays a human promote (T05a). The whole step is ratchet-unlocked, not day-1.
+
+def blast_policy_path():
+    if TEST_MODE and os.environ.get("PSDRIVE_BLAST_POLICY"):
+        return os.environ["PSDRIVE_BLAST_POLICY"]
+    return os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "config", "high-blast-paths")
+
+
+def load_blast_policy():
+    """High-blast glob patterns, or None if the policy file is unreadable (→ caller
+    treats every change as high-blast: default-deny)."""
+    try:
+        pats = []
+        for ln in open(blast_policy_path(), encoding="utf-8"):
+            ln = ln.strip()
+            if ln and not ln.startswith("#"):
+                pats.append(ln)
+        return pats
+    except OSError:
+        return None
+
+
+def _glob_to_re(pat):
+    """Translate a path glob to an anchored regex: ** spans '/', * stays within a
+    segment, ? is one non-separator char."""
+    out, i = [], 0
+    while i < len(pat):
+        if pat[i] == "*":
+            if pat[i:i + 2] == "**":
+                out.append(".*"); i += 2; continue
+            out.append("[^/]*"); i += 1; continue
+        if pat[i] == "?":
+            out.append("[^/]"); i += 1; continue
+        out.append(re.escape(pat[i])); i += 1
+    return re.compile("^" + "".join(out) + "$")
+
+
+def path_is_high_blast(path, patterns):
+    for pat in patterns:
+        rx = _glob_to_re(pat)
+        # also try a leading-slash variant so `**/X/**` catches a top-level X/ too
+        if rx.match(path) or rx.match("/" + path):
+            return True
+    return False
+
+
+def classify_blast(changed_paths, patterns):
+    """Default-deny: 'high' unless the diff is readable, non-empty, and NO changed path
+    matches any high-blast glob. Returns (blast, reason)."""
+    if patterns is None:
+        return "high", "blast policy unreadable (default-deny)"
+    if not changed_paths:
+        return "high", "empty or unreadable diff (default-deny)"
+    for p in changed_paths:
+        if path_is_high_blast(p, patterns):
+            return "high", f"changed path matches high-blast policy: {p}"
+    return "low", "all changed paths outside high-blast policy"
+
+
+def git_diff_paths(rd, base, branch):
+    """Every path the branch changes vs base from the REAL git diff (not the model's
+    self-report): rename OLD and NEW both, deletions included. Empty on any git error
+    → classify_blast denies (high-blast)."""
+    cp = subprocess.run(["git", "-C", rd, "diff", "--name-status", "-M",
+                         f"{base}...{branch}"], capture_output=True, text=True, env=git_env())
+    if cp.returncode != 0:
+        return []
+    paths = []
+    for ln in cp.stdout.splitlines():
+        parts = ln.split("\t")
+        if not parts or not parts[0]:
+            continue
+        if parts[0].startswith("R") and len(parts) >= 3:
+            paths.extend([parts[1], parts[2]])      # rename: old AND new
+        elif len(parts) >= 2:
+            paths.append(parts[1])                  # add / modify / delete
+    return paths
+
+
+def merge_to_integration(rd, branch, base):
+    """Merge `branch` into the integration branch in an ISOLATED worktree so the live
+    tree is untouched and main is never checked out. Create integration from `base` if
+    absent. A non-clean merge is aborted (never a half-merge) and surfaced as a gate.
+    Nothing is ever pushed. Returns {merged: bool, ...}."""
+    integ = "psdrive/integration"
+    itmp = tempfile.mkdtemp(prefix="psdrive-integ-")
+    try:
+        exists = subprocess.run(["git", "-C", rd, "rev-parse", "--verify", "--quiet", integ],
+                                capture_output=True, text=True).returncode == 0
+        add = (["git", "-C", rd, "worktree", "add", itmp, integ] if exists
+               else ["git", "-C", rd, "worktree", "add", "-b", integ, itmp, base])
+        a = subprocess.run(add, capture_output=True, text=True, env=git_env())
+        if a.returncode != 0:
+            return {"merged": False, "gate": True,
+                    "reason": "integration worktree add failed: " + (a.stderr or "").strip()[:140]}
+        cur = subprocess.run(["git", "-C", itmp, "rev-parse", "--abbrev-ref", "HEAD"],
+                             capture_output=True, text=True, env=git_env()).stdout.strip()
+        if cur != integ:                            # never-main guard: refuse anything but integration
+            return {"merged": False, "gate": True,
+                    "reason": f"refusing merge: integration worktree on '{cur}', not {integ}"}
+        mg = subprocess.run(["git", "-C", itmp, "-c", "core.hooksPath=/dev/null",
+                             "merge", "--no-ff", "--no-edit", branch],
+                            capture_output=True, text=True, env=git_env())
+        if mg.returncode != 0:
+            subprocess.run(["git", "-C", itmp, "merge", "--abort"],
+                           capture_output=True, text=True, env=git_env())
+            return {"merged": False, "gate": True,
+                    "reason": "merge not clean — aborted, no half-merge: "
+                              + (mg.stdout or mg.stderr or "").strip()[:140]}
+        sha = subprocess.run(["git", "-C", itmp, "rev-parse", "HEAD"],
+                             capture_output=True, text=True, env=git_env()).stdout.strip()
+        return {"merged": True, "integration": integ, "sha": sha}
+    finally:
+        subprocess.run(["git", "-C", rd, "worktree", "remove", "--force", itmp],
+                       capture_output=True, text=True, env=git_env())
+        subprocess.run(["git", "-C", rd, "worktree", "prune"], capture_output=True, text=True, env=git_env())
+        shutil.rmtree(itmp, ignore_errors=True)
+
+
 def linear_reduce():
     """The WBS read: pandastack-linear-reduce over the whole workspace (single source)."""
     fixture = os.environ.get("PSDRIVE_FIXTURE") if TEST_MODE else None  # test seam (guarded)
@@ -554,7 +678,7 @@ def exec_item(x):
     return r
 
 
-def exec_build(x):
+def exec_build(x, merge_auto=False):
     """Run the BUILD skill in an ISOLATED git worktree, sandboxed to `workspace-write`
     with network pinned OFF (codex physically cannot push, regardless of ~/.codex
     config). The live working tree is never touched. The model only writes files; the
@@ -573,6 +697,9 @@ def exec_build(x):
     if subprocess.run(["git", "-C", rd, "rev-parse", "--verify", "--quiet", branch],
                       capture_output=True, text=True).returncode == 0:
         return {"ran": False, "why": f"branch {branch} 已存在(已 build,待 review/advance)"}
+    # the commit the branch forks from = the real diff base for blast classification (T03).
+    base_sha = subprocess.run(["git", "-C", rd, "rev-parse", "HEAD"],
+                              capture_output=True, text=True).stdout.strip()
     wt = tempfile.mkdtemp(prefix=f"psdrive-wt-{x['id']}-")
     made_wt = False
     keep_branch = False
@@ -623,7 +750,10 @@ def exec_build(x):
             backend = "test"
             test_options = {"test_status": stub.upper(), "test_summary": "stubbed"}
             if stub.upper() == "PASS":
-                test_options.update({"write_file": ".psdrive-stub",
+                # test seam: let a blast-router test make the stubbed build touch a
+                # policy-matching path (e.g. migrations/x.sql) to exercise high-blast.
+                stub_file = os.environ.get("PSDRIVE_BUILD_STUB_FILE") or ".psdrive-stub"
+                test_options.update({"write_file": stub_file,
                                      "write_text": "stub build artifact\n"})
         spec = "# pandastack BUILD worker job\n\n" \
                f"Issue: {x['id']}\nProject: {x.get('project')}\nBranch: {branch}\nWorktree: {wt}\n"
@@ -648,13 +778,39 @@ def exec_build(x):
             committed = cm.returncode == 0
         if passed and committed:
             keep_branch = True
-            return {"ran": True, "ok": True, "verdict": "PASS", "summary": summary,
-                    "branch": branch, "staged": staged, "verification": wr.get("verification") or {},
-                    "worker": wr,
-                    "artifacts": wr.get("artifacts") or {},
-                    "verify_cmd": (verify_script or "").strip()[:200] or None,
-                    "pr_hint": f"review local branch {branch} and open a PR (driver never pushes)",
-                    "advance": f'pandastack-linear-advance --issue {x["id"]} --to "{x.get("to_state", "Verifying")}"'}
+            verify = wr.get("verification") or {}
+            result = {"ran": True, "ok": True, "verdict": "PASS", "summary": summary,
+                      "branch": branch, "staged": staged, "verification": verify,
+                      "worker": wr,
+                      "artifacts": wr.get("artifacts") or {},
+                      "verify_cmd": (verify_script or "").strip()[:200] or None,
+                      "pr_hint": f"review local branch {branch} and open a PR (driver never pushes)",
+                      "advance": f'pandastack-linear-advance --issue {x["id"]} --to "{x.get("to_state", "Verifying")}"'}
+            # T03 router (gated OFF unless --merge-auto). Auto-merge ONLY a low-blast,
+            # machine-lane (host-verify actually ran), host-verified-green build — and
+            # only into integration, never main. Everything else keeps the branch for a
+            # human PR (unchanged rung-0 behavior). read-only AUTO-VERIFY never reaches
+            # here, so a model PASS without a real host-verify (verify.ran False) can never
+            # auto-merge (F-M).
+            blast, why = classify_blast(git_diff_paths(rd, base_sha, branch), load_blast_policy())
+            result["blast"] = blast
+            machine_green = bool(verify.get("ran")) and verify.get("ok") is True
+            if merge_auto and blast == "low" and machine_green:
+                m = merge_to_integration(rd, branch, base_sha)
+                if m.get("merged"):
+                    result["merged"] = m["integration"]
+                    result["pr_hint"] = (f"auto-merged {branch} → {m['integration']} "
+                                         f"(low-blast, host-verified). integration→main stays a human promote.")
+                else:
+                    # non-clean / refused → never half-merged; surface as a gate, keep branch.
+                    result["gate"] = True
+                    result["advance"] = None
+                    result["pr_hint"] = "integration merge not clean — aborted (no half-merge), gated: " + (m.get("reason") or "")
+            elif merge_auto:
+                result["merge_skip"] = (why if blast == "high"
+                                        else "host-verify not green (machine-lane gate, F-M)")
+                result["pr_hint"] = f"not auto-merged ({result['merge_skip']}) — review {branch} and open a PR."
+            return result
         if passed and not committed:
             return {"ran": True, "ok": False, "verdict": "FAIL",
                     "summary": "acceptance passed but no changes to commit: " + (cm.stderr or cm.stdout or "").strip()[:120],
@@ -706,6 +862,11 @@ def ledger_record(x, r):
         # back to the materialized script path the worker actually executed.
         "verify_cmd": r.get("verify_cmd") or v.get("command"),
         "verify_tail": ((v.get("stdout_tail") or v.get("stderr_tail") or "").strip()[-400:]) or None,
+        # T03: blast class + the integration branch this merged into (None = PR-only).
+        # A merge event must be host-verified, so the merge-scoped fake-green grep is
+        # `verdict==PASS AND merged AND verify_required AND NOT verify_ran` → must be 0.
+        "blast": r.get("blast"),
+        "merged": (r.get("merged") or None),
     }
 
 
@@ -718,9 +879,13 @@ def main():
     ap.add_argument("--only", help="restrict --execute to one Linear project")
     ap.add_argument("--build-auto", action="store_true",
                     help="(default OFF) route a build-ready Building issue to auto-build in an isolated worktree; requires --only")
+    ap.add_argument("--merge-auto", action="store_true",
+                    help="(default OFF, ratchet-gated) auto-merge a low-blast host-verified build into the integration branch (never main); requires --build-auto --only")
     args = ap.parse_args()
     if args.build_auto and not args.only:
         ap.error("--build-auto requires --only <project> (never global)")
+    if args.merge_auto and not (args.build_auto and args.only):
+        ap.error("--merge-auto requires --build-auto --only (never global; integration auto-merge is ratchet-gated)")
     # Kill-switch: only DISPATCH is suppressed; read-only queue views stay visible
     # so you can still see what is parked while stopped (PRO-36, boundary #12).
     if args.execute and pslib.drive_suppressed():
@@ -772,13 +937,15 @@ def main():
                 print(f"  ▶ {x['id']} ({x.get('project')}) → skipped: {gate}")
                 continue                      # backoff/exhausted skips do not consume --max
             print(f"  ▶ {x['id']} ({x.get('project')}) → codex {x['skill']} …")
-            r = exec_build(x) if x.get("build") else exec_item(x)
+            r = exec_build(x, merge_auto=args.merge_auto) if x.get("build") else exec_item(x)
             if not r["ran"]:
                 print(f"    skipped: {r['why']}")
                 continue                      # a skip does not consume a --max slot (finding N)
             n += 1
             ledger.append(ledger_record(x, r))
             print(f"    {r['verdict']}: {r['summary']}")
+            if r.get("merged"):
+                print(f"    → auto-merged into {r['merged']} (blast={r.get('blast')})")
             retry_note = record_retry(x, r)
             if retry_note:
                 print(f"    → {retry_note}")
