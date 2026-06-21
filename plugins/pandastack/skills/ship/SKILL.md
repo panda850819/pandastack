@@ -152,6 +152,8 @@ Write a learning to `{learnings_dir}/pitfalls/` or `{learnings_dir}/patterns/`.
 
 **Quote gate (no phantom quotes)**: any verbatim quote (「...」 / "...") or `[Source: <file>]` in the learning MUST be verified greppable in its cited source (`grep -F "<distinctive substring>" <source>`) before writing. No match → paraphrase without quotation marks or drop the attribution. Never reconstruct a quote from memory.
 
+**Route the flaw back (propose-only).** If a flaw surfaced during ship maps to an existing pandastack skill — matched against that skill's anti-pattern / checklist table, not just its trigger keywords — emit one `skill-edit candidate: <skill> — <missing check>` line into the session-end brain-candidate audit (skip silently if absent). See `lib/trigger-first-skill-evolution.md`. Propose-only: never edit the target skill here, and never during an autonomous build — the human picks from the audit. This routes the catch back to strengthen the skill that let it through, instead of leaving only a passive pitfall.
+
 ### Step 11: Project state (if project work)
 
 If this work maps to a brain project page (`{brain}/projects/{slug}.md` exists), record the EVL datapoint — do NOT hand-edit the page's table:
