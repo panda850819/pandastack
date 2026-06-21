@@ -133,6 +133,28 @@ PY
 
 Do not use `bun test tests/` unless actual `.test` / `.spec` files have been added. If a check fails, read the error and fix the frontmatter / RESOLVER / body before merging.
 
+### 6.5. Near-neighbor route check (manual — deliberately NOT a CI gate)
+
+Whenever you add or edit a skill's trigger / description, manually confirm it did
+not start stealing a **near-neighbor's** traffic (route confusion). This is a
+~5-minute manual pass, not a runner + fixture + CI gate — at pandastack's N the
+infra would cost more than it saves and would rot in a solo repo.
+
+1. Pick ~6 **confusable pairs** whose trigger surfaces sit closest to the one you
+   touched. Sources for the candidates: `pandastack/RESOLVER.md` Disambiguation
+   section, `DISPATCH.md`, each SKILL.md's `Skip` / `NOT for` frontmatter, and
+   `lib/skill-decision-tree.md`. Standing examples: sprint vs team-orchestrate,
+   grill vs office-hours, the four review skills, ship vs handover.
+2. For each pair, write ~1 short prompt that *should* route to each side (≈6
+   prompts total). Read each prompt against the two descriptions and confirm it
+   routes to the intended skill — and that your edited skill does NOT now also
+   match the neighbor's prompt.
+3. If a prompt routes wrong or matches both, tighten the trigger/`Skip` wording
+   (smallest durable change) and re-check. Log nothing; the check is the gate.
+
+This is the cheap, solo-durable version of yao-meta-skill's route-confusion guard:
+steal the mechanism, refuse its harness shape.
+
 ## Output Format
 
 ```
