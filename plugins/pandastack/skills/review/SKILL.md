@@ -257,6 +257,18 @@ Use the format from `lib/learning-format.md`.
 
 If nothing worth recording: skip silently. Not every review produces learnings.
 
+## Step 7.5: Route caught flaws back to the skill (propose-only)
+
+A confirmed flaw is also a signal about the skill that *should have caught it*. After Step 7, check whether each confirmed flaw maps to an existing pandastack skill — match it against that skill's anti-pattern / checklist table, not just its trigger keywords. Keep the bar tight: the flaw must be the kind of thing that skill's checklist already claims to prevent, otherwise skip. See `lib/trigger-first-skill-evolution.md` — route the catch back to strengthen the skill instead of leaving only a passive pitfall.
+
+For each mapping, emit ONE line into the session-end brain-candidate audit (the candidate list surfaced at session 收尾; skip silently if your setup has no such audit surface):
+
+```
+skill-edit candidate: <skill> — <missing check its anti-pattern/checklist table should have had>
+```
+
+Propose-only. Do NOT edit the target skill here, and never during an autonomous build — the human picks from the audit. No mapping → skip silently.
+
 ## Step 8: Completion Summary
 
 Before exiting, print a single ASCII box so the user can see scope at a glance.
@@ -274,6 +286,7 @@ Before exiting, print a single ASCII box so the user can see scope at a glance.
 | Step 6.5 cdx | ran / unavailable — {N} CODEX-CATCH         |
 | Codex apply  | {N} approved, {N} deferred to OPEN_QUESTIONS|
 | Step 7 learn | {N} learnings written / skipped             |
+| Step 7.5 map | {N} skill-edit candidates / none            |
 +------------------------------------------------------------+
 | OPEN_QUESTIONS  | {N}                                       |
 | CRITICAL_GAPS   | {N}  (any P0 not approved counts)        |
