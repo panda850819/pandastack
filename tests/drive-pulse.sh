@@ -33,13 +33,13 @@ J "r['prior']['passes']==1"          && pass "prior window: 1 PASS (delta basis)
 J "r['current']['advances']==1"      && pass "current window: 1 advance"        || fl "advances wrong"
 J "r['current']['suppressed']==1"    && pass "current window: 1 suppressed tick" || fl "suppressed wrong"
 J "any(i=='A' and c==3 for i,c in r['current']['top_stuck_pass'])" && pass "vital: A is top stuck-PASS ×3" || fl "top_stuck_pass wrong"
-J "'no data' in r['no_data']['fake_green'] and 'no data' in r['no_data']['agreement_streak']" && pass "no-data rendered for un-instrumented signals" || fl "no-data missing"
+J "r['goal_signals']['fake_green']==0 and r['goal_signals']['trust_streak']==0 and r['goal_signals']['revert_checked']==False" && pass "goal signal computed (no merges yet → fake-green 0, streak 0, revert-check skipped)" || fl "goal_signals wrong"
 J "len(r['followups'])>0" && pass "followups wraps drive-log-distill output" || fl "followups empty"
 
-# text mode renders delta (+2 passes vs prior) and the no-data section
+# text mode renders delta (+2 passes vs prior) and the computed goal-signal section
 txt="$("$S" "$log" --now 2026-06-15 --days 7 2>&1)"
 grep -q "(+2)" <<<"$txt" && pass "text: PASS delta +2 rendered" || fl "delta not rendered"
-grep -q "NO DATA" <<<"$txt" && pass "text: NO DATA section present" || fl "no-data section missing"
+grep -q "GOAL SIGNAL" <<<"$txt" && pass "text: GOAL SIGNAL section present" || fl "goal-signal section missing"
 
 [ "$fail" -eq 0 ] && echo "OK: drive-pulse all green" || echo "FAILURES present"
 exit "$fail"
