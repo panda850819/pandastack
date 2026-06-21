@@ -23,6 +23,7 @@ import argparse
 import datetime
 import json
 import os
+import re
 import subprocess
 import sys
 from collections import Counter
@@ -57,10 +58,69 @@ def window_stats(rows):
             "top_gated": gate_count.most_common(3), "top_stuck_pass": pass_count.most_common(3)}
 
 
-NO_DATA = {
-    "fake_green": "no data — needs verify_ran in drive-log (harness F-K/F-L)",
-    "agreement_streak": "no data — needs auto-merge ticks (T03 / Gap-4)",
-}
+def executed_rows(rows):
+    for r in rows:
+        for e in r.get("executed", []):
+            yield e
+
+
+def fake_green_rows(rows):
+    """The goal's fake-green counter-example: a PASS that proposed a verify-required
+    advance/merge with no host-verify run. Healthy count is 0. Now computable because
+    LG records verify_ran/verify_required per item (F-K/F-L)."""
+    return [e for e in executed_rows(rows)
+            if e.get("verdict") == "PASS" and (e.get("advance") or e.get("merged"))
+            and e.get("verify_required") and not e.get("verify_ran")]
+
+
+def merge_events(rows):
+    """Auto-merge events in chronological (append) order."""
+    return [e for e in executed_rows(rows) if e.get("merged")]
+
+
+def reverts_on_branch(repo, branch):
+    """Shas a human reverted on `branch` — git revert writes 'This reverts commit <sha>'.
+    None = can't tell (no repo / git error), so the streak notes the revert-check was skipped.
+    Limitation: a rollback via reset rewrites history and is not detectable here."""
+    if not repo:
+        return None
+    cp = subprocess.run(["git", "-C", os.path.expanduser(repo), "log", branch, "--format=%b"],
+                        capture_output=True, text=True)
+    if cp.returncode != 0:
+        return None
+    return set(re.findall(r"[Tt]his reverts commit ([0-9a-f]{7,40})", cp.stdout))
+
+
+def trust_streak(events, reverted):
+    """Consecutive auto-merges with no human-revert; the first disconfirm resets to 0
+    (goal: 'agreement streak 連 20 筆無 revert；首次 disconfirm 歸零'). reverted=None means
+    no revert evidence was checked, so this counts raw consecutive merges."""
+    streak = 0
+    for e in events:
+        sha = e.get("merged_sha")
+        if reverted and sha and any(sha.startswith(rv) or rv.startswith(sha) for rv in reverted):
+            streak = 0
+        else:
+            streak += 1
+    return streak
+
+
+def goal_signals(cur_rows, all_rows, repo):
+    """Goal A's success signal, computed (no longer NO DATA): zero fake-green over the
+    window, and the trust streak (trailing clean auto-merges) across all history."""
+    fg = fake_green_rows(cur_rows)
+    evs = merge_events(all_rows)
+    integ = evs[-1]["merged"] if evs else "psdrive/integration"
+    reverted = reverts_on_branch(repo, integ)
+    return {
+        "fake_green": len(fg),
+        "fake_green_ids": [e.get("id") for e in fg],
+        "merges_total": len(evs),
+        "trust_streak": trust_streak(evs, reverted),
+        "streak_target": 20,
+        "revert_checked": reverted is not None,
+        "reverts_seen": (len(reverted) if reverted is not None else None),
+    }
 
 
 def main(argv):
@@ -68,6 +128,7 @@ def main(argv):
     ap.add_argument("log")
     ap.add_argument("--now", help="window anchor date YYYY-MM-DD (default today)")
     ap.add_argument("--days", type=int, default=7)
+    ap.add_argument("--repo", help="repo whose integration branch to check for human-reverts (trust streak)")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
 
@@ -78,6 +139,7 @@ def main(argv):
     cur = [r for r in rows if cur_start <= parse_date(r["ts"]) < now]
     prev = [r for r in rows if prev_start <= parse_date(r["ts"]) < cur_start]
     cs, ps = window_stats(cur), window_stats(prev)
+    signals = goal_signals(cur, rows, a.repo)
 
     followups = ""
     try:
@@ -88,7 +150,7 @@ def main(argv):
 
     if a.json:
         print(json.dumps({"now": now.isoformat(), "days": a.days, "current": cs, "prior": ps,
-                          "no_data": NO_DATA, "followups": followups}, ensure_ascii=False))
+                          "goal_signals": signals, "followups": followups}, ensure_ascii=False))
         return 0
 
     def sign(n):
@@ -100,9 +162,17 @@ def main(argv):
                      ("gates", "gate hits"), ("suppressed", "kill-switch suppressed ticks"),
                      ("errors", "executor errors")]:
         print(f"  {label:32} {cs[k]:>4}  ({sign(cs[k] - ps[k])})")
-    print("\nNO DATA (instrumentation deficit — rendered, not hidden):")
-    for k, v in NO_DATA.items():
-        print(f"  {k:20} {v}")
+    fg = signals["fake_green"]
+    fg_line = "0 ✓" if fg == 0 else f"{fg} ✗  {signals['fake_green_ids']}"
+    if signals["revert_checked"]:
+        streak_line = (f"{signals['trust_streak']}/{signals['streak_target']}"
+                       f"  ({signals['merges_total']} merges, {signals['reverts_seen']} reverts seen)")
+    else:
+        streak_line = (f"{signals['trust_streak']}/{signals['streak_target']} raw"
+                       f"  ({signals['merges_total']} merges; revert-check skipped — pass --repo)")
+    print("\nGOAL SIGNAL (Goal A success criteria):")
+    print(f"  fake-green (window)  {fg_line}")
+    print(f"  trust streak         {streak_line}")
     print("\nVITAL SIGNS:")
     print("  top gated:      " + (", ".join(f"{i}×{c}" for i, c in cs["top_gated"]) or "—"))
     print("  top stuck-PASS: " + (", ".join(f"{i}×{c}" for i, c in cs["top_stuck_pass"]) or "—"))

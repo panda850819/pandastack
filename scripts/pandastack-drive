@@ -799,6 +799,7 @@ def exec_build(x, merge_auto=False):
                 m = merge_to_integration(rd, branch, base_sha)
                 if m.get("merged"):
                     result["merged"] = m["integration"]
+                    result["merged_sha"] = m.get("sha")   # the merge commit, to correlate human-reverts (trust streak)
                     result["pr_hint"] = (f"auto-merged {branch} → {m['integration']} "
                                          f"(low-blast, host-verified). integration→main stays a human promote.")
                 else:
@@ -867,6 +868,7 @@ def ledger_record(x, r):
         # `verdict==PASS AND merged AND verify_required AND NOT verify_ran` → must be 0.
         "blast": r.get("blast"),
         "merged": (r.get("merged") or None),
+        "merged_sha": (r.get("merged_sha") or None),
     }
 
 

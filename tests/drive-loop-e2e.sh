@@ -29,14 +29,15 @@ echo seed > "$repo/seed.txt"; git -C "$repo" add -A; git -C "$repo" commit -qm s
 mref="$(git -C "$repo" symbolic-ref --short HEAD)"
 mbefore="$(git -C "$repo" rev-parse HEAD)"
 ledger="$(mktemp)"
+drivelog="$(mktemp)"
 
 # ---- drive N real low-blast build→verify→merge cycles, collect the real ledger ----
-PSDRIVE_TEST=1 PSDRIVE_BLAST_POLICY="$pol" python3 - "$D" "$repo" "$N" "$ledger" <<'PY'
+PSDRIVE_TEST=1 PSDRIVE_BLAST_POLICY="$pol" python3 - "$D" "$repo" "$N" "$ledger" "$drivelog" <<'PY'
 import sys, os, json, importlib.util
 from importlib.machinery import SourceFileLoader
 loader = SourceFileLoader("psdrive", sys.argv[1])
 m = importlib.util.module_from_spec(importlib.util.spec_from_loader("psdrive", loader)); loader.exec_module(m)
-repo, N, ledger_path = sys.argv[2], int(sys.argv[3]), sys.argv[4]
+repo, N, ledger_path, drivelog_path = sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5]
 os.environ["PSDRIVE_BUILD_STUB"] = "PASS"
 records = []
 for i in range(1, N + 1):
@@ -50,6 +51,11 @@ for i in range(1, N + 1):
 with open(ledger_path, "w") as f:
     for rec in records:
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+# also emit drive-log rows so drive-pulse (the dashboard reader) can read the streak
+with open(drivelog_path, "w") as f:
+    for i, rec in enumerate(records, 1):
+        f.write(json.dumps({"ts": f"2026-06-{(i % 28) + 1:02d}T00:00:00Z", "executed": [rec]},
+                           ensure_ascii=False) + "\n")
 print(f"drove {len(records)} build→verify→merge cycles")
 PY
 [ $? -eq 0 ] || { echo "FAIL: e2e driver loop errored"; exit 1; }
@@ -102,6 +108,17 @@ out="$(PSDRIVE_TEST=1 PSDRIVE_STOP_FLAG="$ks" PSDRIVE_FIXTURE="$fx" "$D" --execu
 echo "$out" | grep -q "kill-switch" && echo "PASS: kill-switch flag → zero dispatch (loop self-stops)" || { echo "FAIL: kill-switch not honored"; fail=1; }
 echo "$out" | grep -q "@@PSDRIVE_LEDGER@@" && { echo "FAIL: dispatched despite kill-switch"; fail=1; } || echo "PASS: no dispatch line emitted under kill-switch"
 [ "$(git -C "$repo" rev-list --count --merges psdrive/integration)" = "$N" ] && echo "PASS: integration unchanged while stopped" || { echo "FAIL: a merge slipped through the kill-switch"; fail=1; }
+
+# ---- drive-pulse (the dashboard reader) reports the goal signal off the real data ----
+pulse="$("$repo_root/scripts/drive-pulse" "$drivelog" --repo "$repo" --now 2026-07-01 --days 60 --json 2>&1)"
+echo "$pulse" | python3 -c "
+import json,sys
+r=json.load(sys.stdin)['goal_signals']
+assert r['fake_green']==0, r
+assert r['trust_streak']==$N and r['streak_target']==20, r
+assert r['revert_checked'] and r['reverts_seen']==0, r
+print(f\"PASS: drive-pulse reads streak {r['trust_streak']}/{r['streak_target']}, fake-green {r['fake_green']}, {r['reverts_seen']} reverts\")
+" || { echo "FAIL: drive-pulse goal-signal readout"; fail=1; }
 
 echo "--- real ledger (first 2 records) ---"; head -2 "$ledger"
 [ "$fail" -eq 0 ] && echo "OK: drive-loop-e2e all green ($N merges, 0 fake-green, streak $N, kill-switch honored)" || echo "FAILURES present"
