@@ -32,6 +32,9 @@ files:
   - path/to/relevant/file.ts
 first_seen: YYYY-MM-DD   # first time this learning was hit (= created on day one)
 recurrence: N            # times this same key recurred; starts at 1, +1 on each match
+status: active           # active | stale — learning-refresh proposes stale; retro/human sets it
+stale_reason: ...        # why it went stale (only when status: stale)
+stale_date: YYYY-MM-DD   # when it was marked stale
 created: YYYY-MM-DD
 last_seen: YYYY-MM-DD
 ---
@@ -79,5 +82,6 @@ How to catch this earlier next time.
 - Calculate effective confidence: `max(0, confidence - floor(days_since_created / 30))`
 - `user-stated` sources never decay.
 - Skip learnings with effective confidence < 3.
+- Skip `status: stale` learnings entirely (kept for provenance; `learning-refresh` flags them, retro/human sets them). Passive decay only *suppresses*; an explicit stale mark is the corpus correcting itself.
 - A high `recurrence` (>= 2) marks a repeat offender — surface it even at lower effective confidence; a learning that keeps recurring has earned its place.
 - When a learning matches the current work, display: "Prior learning: [key] (confidence N/10, recurrence M, from [date])"

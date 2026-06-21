@@ -207,6 +207,10 @@ DRIVE_DISTILL=$([ -f "$DRIVE_LOG" ] && \
 # pitfalls (recorded but not yet promoted to a rule / test / skill edit).
 DISPATCH_MISSES=$(tail -n 50 "$HOME/.agents/memory/dispatch-miss.log" 2>/dev/null)
 RECENT_PITFALLS=$(find "$HOME/site/knowledge/brain/learnings/pitfalls" -name "*.md" -mtime -7 2>/dev/null)
+# Corpus correction (PRO-45): learnings that decay has silently suppressed and recurrence
+# is not keeping alive — propose status:stale / archive (retro/human decides, never auto).
+STALE_LEARNINGS=$("$HOME/site/skills/pandastack/scripts/learning-refresh" \
+  "$HOME/site/knowledge/brain/learnings" 2>/dev/null)
 ```
 
 ### 1h. Build GC proposal table
