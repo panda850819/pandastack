@@ -739,6 +739,15 @@ def build_queue(build_auto=False, only=None):
     return q
 
 
+def dispatch_order(auto_items):
+    """PRO-69: dispatch BUILDS first. A build does real work and earns the graduation streak;
+    a read-only AUTO step only re-proposes an advance the human runs by hand, and is re-proposed
+    every tick until they do — so under --max 1 it would starve the build indefinitely. Stable
+    sort, so priority order is preserved within builds and within read-only items; inert when no
+    build is present (build_auto off → every item is read-only → original order)."""
+    return sorted(auto_items, key=lambda e: not e.get("build"))
+
+
 def exec_item(x):
     """Run the reversible step through agent-worker; propose the Linear advance."""
     if x["skill"] not in SAFE_SKILLS:
@@ -1125,7 +1134,7 @@ def main():
         print(f"\n--execute (Codex headless, sandboxed, max {args.max}):")
         n = 0
         ledger = []
-        for x in q["AUTO"]:
+        for x in dispatch_order(q["AUTO"]):       # PRO-69: builds first, so they don't starve
             if args.only and x.get("project") != args.only:
                 continue
             if n >= args.max:
