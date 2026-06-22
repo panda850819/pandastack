@@ -504,6 +504,27 @@ def retire_branch(rd, branch):
     subprocess.run(["git", "-C", rd, "branch", "-D", branch], capture_output=True, text=True)
 
 
+def stable_green(wt, verify_script, reruns=None):
+    """Re-run the acceptance in the build worktree to confirm a green is REPRODUCIBLE, not a
+    lucky tick (PRO-57). True only if every extra run is green. Fail-safe: any non-green,
+    timeout, or error (incl. a vanished worktree) → not stable → quarantined for a human PR,
+    never merged. Runs the hardened acceptance under worker_env() so the re-run reproduces
+    the same restricted environment the build's host-verify ran under, not the driver's."""
+    if not verify_script:
+        return False
+    n = positive_int_env("PSDRIVE_MERGE_RERUNS", 2) if reruns is None else reruns
+    for _ in range(n):
+        try:
+            p = subprocess.run(["bash", "-c", harden_verify(verify_script)],
+                               cwd=wt, capture_output=True, text=True, timeout=600,
+                               env=worker_env())
+        except (subprocess.TimeoutExpired, OSError):
+            return False
+        if p.returncode != 0:
+            return False
+    return True
+
+
 def linear_reduce():
     """The WBS read: pandastack-linear-reduce over the whole workspace (single source)."""
     fixture = os.environ.get("PSDRIVE_FIXTURE") if TEST_MODE else None  # test seam (guarded)
@@ -915,7 +936,14 @@ def exec_build(x, merge_auto=False):
             blast, why = classify_blast(git_diff_paths(rd, base_sha, branch), load_blast_policy())
             result["blast"] = blast
             machine_green = bool(verify.get("ran")) and verify.get("ok") is True
-            if merge_auto and blast == "low" and machine_green:
+            # PRO-57: a single green is not enough to auto-merge — re-run the acceptance in
+            # the build worktree and merge only if it stays green. A green that does not
+            # reproduce is a lucky/flaky tick: quarantine it (keep the branch for a human PR).
+            flaky = merge_auto and blast == "low" and machine_green and not stable_green(wt, verify_script)
+            if flaky:
+                result["merge_skip"] = "flaky host-verify (green not reproducible on re-run) — quarantined"
+                result["pr_hint"] = f"not auto-merged ({result['merge_skip']}) — review {branch} and open a PR."
+            elif merge_auto and blast == "low" and machine_green:
                 m = merge_to_integration(rd, branch, base_sha)
                 if m.get("merged"):
                     result["merged"] = m["integration"]
