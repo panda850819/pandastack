@@ -108,6 +108,11 @@ RETRY_MAX_ATTEMPTS = positive_int_env("PSDRIVE_RETRY_MAX_ATTEMPTS", 3)
 # Drop a retry record this long after its last update so the store cannot grow
 # unbounded with orphans from advanced / edited / abandoned issues (30 days).
 RETRY_TTL_MS = positive_int_env("PSDRIVE_RETRY_TTL_MS", 30 * 24 * 60 * 60 * 1000)
+# One verify budget for the whole acceptance lifecycle (PRO-60): the build's host-verify,
+# the F-A pre-build sentinel, and the PRO-57 stability re-runs all run the SAME acceptance,
+# so they must share the SAME timeout. A hardcoded-smaller pre-build/re-run cap falsely
+# demoted a slow-but-valid acceptance the build itself would have run to completion.
+VERIFY_TIMEOUT = positive_int_env("PSDRIVE_VERIFY_TIMEOUT", 1800)
 
 
 def source_fingerprint(issue):
@@ -516,7 +521,7 @@ def stable_green(wt, verify_script, reruns=None):
     for _ in range(n):
         try:
             p = subprocess.run(["bash", "-c", harden_verify(verify_script)],
-                               cwd=wt, capture_output=True, text=True, timeout=600,
+                               cwd=wt, capture_output=True, text=True, timeout=VERIFY_TIMEOUT,
                                env=worker_env())
         except (subprocess.TimeoutExpired, OSError):
             return False
@@ -850,7 +855,7 @@ def exec_build(x, merge_auto=False):
         acc = extract_acceptance(desc)
         verify_script = acceptance_block(desc)
         request = {"mode": "workspace-write", "network_access": False,
-                   "timeout_seconds": 1800}
+                   "timeout_seconds": VERIFY_TIMEOUT}
         discriminating = True   # no acceptance → not machine-lane; auto-merge never reaches here
         if verify_script:
             request["allow_host_verify"] = True
@@ -864,7 +869,7 @@ def exec_build(x, merge_auto=False):
             # a hang or error is treated as non-discriminating (demote, never auto-pass).
             try:
                 pre = subprocess.run(["bash", "-c", harden_verify(verify_script)],
-                                     cwd=wt, capture_output=True, text=True, timeout=600)
+                                     cwd=wt, capture_output=True, text=True, timeout=VERIFY_TIMEOUT)
                 discriminating = pre.returncode != 0
             except (subprocess.TimeoutExpired, OSError):
                 discriminating = False   # a hang or error on unchanged code is not discriminating
