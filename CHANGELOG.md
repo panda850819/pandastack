@@ -5,6 +5,7 @@
 ### Removed
 
 - `ship` write mode retired (`references/modes/write-mode.md` deleted, `write-ship` alias dropped). The mode's entire input tree (obsidian-vault `Blog/_daily` / `Blog/Drafts` / `Blog/Published`) no longer exists after the 2026-06 machine rebuild, and brain owns daily content — the mode pointed at a dead path. Writing composition is now `/write` → manual publish; README lifecycle map + RESOLVER updated. Companion W24-retro GC in the same sprint scrubbed the remaining `Blog/_daily` references from `ship` SKILL.md / knowledge mode / `using-pandastack`.
+- `pandastack-private` overlay and `pdctx` references stripped from user-facing docs: README collapsed to a single self-contained surface (no public/private tier split, no pdctx context-dispatch), `docs/telemetry.md` deleted (it documented the pdctx-only audit timeline), `docs/HERMES.md` rewritten to direct skill import. The v2.2.0 "moved to overlay" entry below is unchanged release history.
 
 ### Added
 
@@ -20,6 +21,8 @@
 - `skill-creator` verification now reflects the repo's real check surface: `git diff --check`, SKILL frontmatter scan, and manual `tests/resolver-golden.md` cases when routing changes. It no longer points at absent Bun tests.
 - `using-pandastack` now points harness edits at the trigger-first rule so skill-library changes evolve from observed use instead of upfront taxonomy.
 - `RESOLVER.md` skill-creator row now reflects the trigger-first abstraction gate.
+- `plugin.json` (Claude + Codex) aligned to the current manifest — 26 skills (24 core / 2 ext), no personal tier, no flow count — and bumped 2.1.2 → 2.2.0; dropped the stale `agents` keyword (pandastack is skill-only).
+- Hermes consumption documented as direct skill import into `~/.hermes/skills/` (Runtime support, Per-host install, Updating); the pdctx dispatch path is retired.
 
 ## v2.2.0 — 2026-05-09
 

@@ -1,7 +1,7 @@
 {
   "name": "pandastack",
-  "version": "2.1.2",
-  "description": "Personal AI operator OS: skill-only stack with 38 skills (tiered core/ext/personal via manifest.toml), 5 scenario flows (sprint / office-hours / boardroom / dojo / retro), 5 persona skills, 11 lib/ shared modules. Covers dev / knowledge / writing / work / research / retro / decision lifecycles with a learning loop.",
+  "version": "2.2.0",
+  "description": "Personal AI operator OS: skill-only stack with 26 skills (24 core / 2 ext via manifest.toml), 5 persona skills, 11 lib/ shared modules. Covers dev / writing / knowledge lifecycles with a learning loop.",
   "author": {
     "name": "Panda Zeng",
     "url": "https://github.com/panda850819"
@@ -11,7 +11,6 @@
   "license": "MIT",
   "keywords": [
     "skills",
-    "agents",
     "workflows",
     "lifecycle",
     "personal-os",
@@ -22,8 +21,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Pandastack",
-    "shortDescription": "Personal AI operator OS for lifecycle workflows: dev, knowledge, writing, work, research, retro, decision.",
-    "longDescription": "Use Pandastack to guide work through 7 lifecycle flows with skills for careful gates, review, ship, knowledge extraction, parallel research, retros, and a self-evolving learning loop.",
+    "shortDescription": "Personal AI operator OS for lifecycle workflows: dev, writing, knowledge.",
+    "longDescription": "Use Pandastack to guide work through dev, writing, and knowledge lifecycles with skills for careful gates, review, ship, knowledge extraction, parallel research, retros, and a self-evolving learning loop.",
     "developerName": "Panda Zeng",
     "category": "Personal OS",
     "capabilities": [
