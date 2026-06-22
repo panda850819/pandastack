@@ -80,8 +80,10 @@ check "good build emits advance proposal" "'pandastack-linear-advance --issue VR
 git -C "$tmprepo" rev-parse --verify -q psdrive/VRF-GOOD >/dev/null \
   && echo "PASS: passing verify branch kept" || { echo "FAIL: passing verify branch missing"; fail=1; }
 
-# F-A mutation sentinel (PRO-41): a tautological acceptance passes on the pre-build
-# tree, so a post-build PASS proves nothing -> BLOCKED, never trusted as green.
+# F-A mutation sentinel (PRO-41 + PRO-59): a tautological acceptance passes on the pre-build
+# tree, so a post-build PASS proves nothing. PRO-59 no longer BLOCKS the build (refactor /
+# maintenance work must flow) — it builds and keeps the branch for a human PR, but is marked
+# non-discriminating so the merge gate refuses to auto-merge it (asserted in drive-loosen-sentinel).
 taut_out="$(PSDRIVE_TEST=1 PSDRIVE_BUILD_STUB=PASS python3 - "$D" "$tmprepo" <<'PY'
 import importlib.util, json, sys
 from importlib.machinery import SourceFileLoader
@@ -93,12 +95,11 @@ x = {"id":"VRF-TAUT","project":"t","repo":sys.argv[2],"title":"taut","to_state":
 print(json.dumps(m.exec_build(x)))
 PY
 )"
-check "tautological acceptance (pre-build green) -> BLOCKED" "r['verdict']=='BLOCKED' and (not r['ok'])" "$taut_out"
-check "tautological acceptance emits no advance" "'advance' not in r" "$taut_out"
+check "tautological acceptance builds (no longer BLOCKED)" "r['verdict']=='PASS'" "$taut_out"
 if git -C "$tmprepo" rev-parse --verify -q psdrive/VRF-TAUT >/dev/null; then
-  echo "FAIL: tautological build should keep no branch"; fail=1
+  echo "PASS: tautological build kept the branch for a human PR"
 else
-  echo "PASS: tautological build kept no branch"
+  echo "FAIL: tautological build lost the branch"; fail=1
 fi
 
 [ "$(git -C "$tmprepo" worktree list | wc -l | tr -d ' ')" = "1" ] \

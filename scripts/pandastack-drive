@@ -851,28 +851,23 @@ def exec_build(x, merge_auto=False):
         verify_script = acceptance_block(desc)
         request = {"mode": "workspace-write", "network_access": False,
                    "timeout_seconds": 1800}
+        discriminating = True   # no acceptance → not machine-lane; auto-merge never reaches here
         if verify_script:
             request["allow_host_verify"] = True
-            # F-A mutation sentinel (PRO-41): a discriminating acceptance must FAIL on
-            # the pre-build tree — the change is not there yet. If it already passes on
-            # unchanged code it is tautological (true / exit 0 / echo) OR it targets an
-            # absolute path and tests the live repo, not this worktree. Either way a
-            # post-build PASS proves nothing, so refuse to auto-build and route to a human
-            # (BLOCKED). Fail-safe: only ever demotes, never auto-passes. Auto-build
-            # acceptances must therefore be worktree-relative. A refactor whose tests pass
-            # pre-build trips this too — accepted: it routes to a human, never a false green.
+            # F-A mutation sentinel (PRO-41): a discriminating acceptance must FAIL on the
+            # pre-build tree — the change is not there yet. An acceptance that already passes
+            # on unchanged code is NON-discriminating: tautological (true / exit 0 / echo), an
+            # absolute path that tests the live repo, OR a behaviour-preserving refactor.
+            # PRO-59: do NOT block the build for that — let refactor/test/maintenance work flow
+            # — but mark it non-discriminating so the merge gate refuses to AUTO-MERGE it (its
+            # post-build PASS proves nothing); it builds and opens a human PR instead. Fail-safe:
+            # a hang or error is treated as non-discriminating (demote, never auto-pass).
             try:
                 pre = subprocess.run(["bash", "-c", harden_verify(verify_script)],
                                      cwd=wt, capture_output=True, text=True, timeout=600)
-                pre_passed = pre.returncode == 0
-            except subprocess.TimeoutExpired:
-                pre_passed = True   # a hang on unchanged code is not a discriminating check
-            if pre_passed:
-                return {"ran": True, "ok": False, "verdict": "BLOCKED",
-                        "summary": "acceptance passed on pre-build HEAD — tautological, or it "
-                                   "targets an absolute path (tests the live repo, not this "
-                                   "change). Auto-build acceptances must be worktree-relative; "
-                                   "give a discriminating check or verify by hand."}
+                discriminating = pre.returncode != 0
+            except (subprocess.TimeoutExpired, OSError):
+                discriminating = False   # a hang or error on unchanged code is not discriminating
         stub = os.environ.get("PSDRIVE_BUILD_STUB") if TEST_MODE else None  # test seam (guarded)
         test_options = None
         if stub:
@@ -936,14 +931,15 @@ def exec_build(x, merge_auto=False):
             blast, why = classify_blast(git_diff_paths(rd, base_sha, branch), load_blast_policy())
             result["blast"] = blast
             machine_green = bool(verify.get("ran")) and verify.get("ok") is True
-            # PRO-57: a single green is not enough to auto-merge — re-run the acceptance in
-            # the build worktree and merge only if it stays green. A green that does not
-            # reproduce is a lucky/flaky tick: quarantine it (keep the branch for a human PR).
-            flaky = merge_auto and blast == "low" and machine_green and not stable_green(wt, verify_script)
-            if flaky:
+            # Auto-merge eligibility (boundary #1): low-blast, host-verified green, AND a
+            # DISCRIMINATING acceptance (PRO-59 — one that passed pre-build proves nothing).
+            # PRO-57: even then, re-run the acceptance; a green that doesn't reproduce is a
+            # lucky/flaky tick. Anything not eligible keeps the branch for a human PR.
+            auto_eligible = merge_auto and blast == "low" and machine_green and discriminating
+            if auto_eligible and not stable_green(wt, verify_script):
                 result["merge_skip"] = "flaky host-verify (green not reproducible on re-run) — quarantined"
                 result["pr_hint"] = f"not auto-merged ({result['merge_skip']}) — review {branch} and open a PR."
-            elif merge_auto and blast == "low" and machine_green:
+            elif auto_eligible:
                 m = merge_to_integration(rd, branch, base_sha)
                 if m.get("merged"):
                     result["merged"] = m["integration"]
@@ -957,6 +953,8 @@ def exec_build(x, merge_auto=False):
                     result["pr_hint"] = "integration merge not clean — aborted (no half-merge), gated: " + (m.get("reason") or "")
             elif merge_auto:
                 result["merge_skip"] = (why if blast == "high"
+                                        else "non-discriminating acceptance (passes pre-build) — PR only"
+                                        if machine_green and not discriminating
                                         else "host-verify not green (machine-lane gate, F-M)")
                 result["pr_hint"] = f"not auto-merged ({result['merge_skip']}) — review {branch} and open a PR."
             return result
