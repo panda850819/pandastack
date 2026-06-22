@@ -487,6 +487,23 @@ def merge_to_integration(rd, branch, base):
         shutil.rmtree(itmp, ignore_errors=True)
 
 
+def branch_build_rev(rd, branch):
+    """The work-order fingerprint a kept psdrive branch was built at, read from its build
+    commit trailer (the LAST occurrence — the trailer is the final `-m`, so a stray match
+    inside the evidence body can't spoof it). None for branches built before PRO-56 (no
+    trailer) — fingerprint-unknown, so such a branch is never rebuilt blind on rotation."""
+    body = subprocess.run(["git", "-C", rd, "log", "-1", "--format=%B", branch],
+                          capture_output=True, text=True).stdout
+    found = re.findall(r"(?m)^psdrive-source-rev:\s*(\S+)\s*$", body)
+    return found[-1] if found else None
+
+
+def retire_branch(rd, branch):
+    """Delete a kept psdrive branch. Used when it is stale vs a rotated work-order (its
+    replacement is about to be built); the commits it held were for the old work-order."""
+    subprocess.run(["git", "-C", rd, "branch", "-D", branch], capture_output=True, text=True)
+
+
 def linear_reduce():
     """The WBS read: pandastack-linear-reduce over the whole workspace (single source)."""
     fixture = os.environ.get("PSDRIVE_FIXTURE") if TEST_MODE else None  # test seam (guarded)
@@ -772,11 +789,22 @@ def exec_build(x, merge_auto=False):
         return {"ran": False, "why": f"{x['id']} ({x.get('project')}) 無對應 repo"}
     rd = os.path.expanduser(repo)
     branch = "psdrive/" + re.sub(r"[^A-Za-z0-9._-]", "-", str(x["id"]))
-    # a kept PASS branch means this issue was already built and is awaiting a human PR /
-    # advance — do NOT rebuild it every tick (review finding C). Surface, don't retry.
+    # a kept PASS branch is awaiting a human PR / advance — do NOT rebuild it every tick
+    # (review finding C: surface, don't retry). That kept branch is also the re-build LOCK:
+    # since the Linear advance is human-run, an auto-merged issue stays in BUILD, and the
+    # branch is what stops the next tick from rebuilding and re-merging the same work (streak
+    # inflation). PRO-56 reconcile: the ONE case that must override the lock is a work-order
+    # that has since rotated — retire the now-stale branch and rebuild fresh. (Orphan cleanup
+    # of a landed branch once its issue leaves BUILD is a queue-aware sweep, not this guard:
+    # retiring a still-Building issue's branch here would re-merge it every tick.)
     if subprocess.run(["git", "-C", rd, "rev-parse", "--verify", "--quiet", branch],
                       capture_output=True, text=True).returncode == 0:
-        return {"ran": False, "why": f"branch {branch} 已存在(已 build,待 review/advance)"}
+        built_rev = branch_build_rev(rd, branch)
+        x_rev = x.get("source_rev")
+        if built_rev and x_rev and built_rev != x_rev:
+            retire_branch(rd, branch)        # work-order rotated → stale branch; rebuild fresh below
+        else:
+            return {"ran": False, "why": f"branch {branch} 已存在(已 build,待 review/advance)"}
     # the commit the branch forks from = the real diff base for blast classification (T03).
     base_sha = subprocess.run(["git", "-C", rd, "rev-parse", "HEAD"],
                               capture_output=True, text=True).stdout.strip()
@@ -862,9 +890,11 @@ def exec_build(x, merge_auto=False):
                         "verification": wr.get("verification") or {}, "worker": wr,
                         "artifacts": wr.get("artifacts") or {}}
             safe_git(wt, git_dir, ["add", "-A"])
-            cm = safe_git(wt, git_dir, ["commit", "--no-verify",
-                                        "-m", f"feat({x['id']}): {x.get('title') or 'auto-build'}",
-                                        "-m", evidence_body(wr, acc, staged)])  # T04: inline verify evidence
+            msg = ["-m", f"feat({x['id']}): {x.get('title') or 'auto-build'}",
+                   "-m", evidence_body(wr, acc, staged)]              # T04: inline verify evidence
+            if x.get("source_rev"):
+                msg += ["-m", f"psdrive-source-rev: {x['source_rev']}"]  # PRO-56: branch provenance for reconcile
+            cm = safe_git(wt, git_dir, ["commit", "--no-verify", *msg])
             committed = cm.returncode == 0
         if passed and committed:
             keep_branch = True
