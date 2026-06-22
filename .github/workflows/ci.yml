@@ -1,0 +1,32 @@
+name: ci
+
+# Deterministic PR gate (PRO-34): run the pandastack test suite on every PR to
+# main in a CLEAN checkout so "green is real" is a structural invariant at the PR
+# boundary, not a by-hand step the agent might skip. No secrets, no LLM — the
+# suite is offline by design. AI review stays interactive (cross-modal-review),
+# deliberately NOT in CI (solo repo; see decisions/pandastack-operating-model).
+
+on:
+  pull_request:
+    branches: [main]
+
+# Newer push to the same PR cancels the in-flight run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    # macos-latest, NOT ubuntu: the suite uses BSD mktemp, /etc/hosts, and macOS
+    # bash idioms — portability to Linux is an untested assumption, not a default.
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tool versions
+        run: |
+          bash --version | head -1
+          python3 --version
+          git --version
+      - name: Run pandastack test suite
+        run: bash tests/run-all.sh
