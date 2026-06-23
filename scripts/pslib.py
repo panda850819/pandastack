@@ -154,6 +154,46 @@ def acceptance_lane(desc):
     return None
 
 
+# PRO-74: granularity-alignment (the loop's Nyquist criterion). A build whose task touches an
+# axis its verify can't sense ships a blind-loop bug aliased into "done". We derive the sensor
+# layers a card REQUIRES from unambiguous work-order signals and gate (needs-spec) when the
+# verify can neither declare (`layers:`) nor exercise them, naming the gap.
+_DELIVERABLE_RE = re.compile(r"(?is)deliverab\w*\b(.*)$")
+_SHIPS_EXECUTABLE = re.compile(r"(?i)\bbin/\S|\bexecutab\w+|\bexec[ -]?bit\b|\bchmod \+x")
+_RUNS_EXECUTABLE = re.compile(r"(?i)\bbin/\S|(?:^|\s)\./\S|\bchmod \+x|\btest -x\b")
+
+
+def required_layers(desc):
+    """Sensor layers a card's work order REQUIRES, from unambiguous signals (PRO-74).
+    Today: a Deliverable that ships an executable (`bin/foo`, exec bit, chmod +x) requires the
+    `runtime` layer — a verify that only typechecks would pass while the binary is broken or
+    non-executable (the PRO-22 class). Scoped to the Deliverable section so an acceptance that
+    merely RUNS a binary is not mistaken for the task PRODUCING one. Extensible."""
+    m = _DELIVERABLE_RE.search(desc or "")
+    return ["runtime"] if (m and _SHIPS_EXECUTABLE.search(m.group(1))) else []
+
+
+def _layer_covered(layer, desc):
+    """A required layer is covered when the card declares it in `layers:` (PRO-73) or the
+    acceptance body actually exercises it — for `runtime`, the acceptance runs the artifact."""
+    if layer in acceptance_layers(desc):
+        return True
+    if layer == "runtime":
+        return bool(_RUNS_EXECUTABLE.search(acceptance_body(desc)))
+    return False
+
+
+def sensor_gap(desc):
+    """Granularity-alignment gap (PRO-74): a layer the task requires that the verify can
+    neither declare (`layers:`) nor exercise. None when aligned. Non-None = the verify is
+    coarser than the task and would alias that class of bug into 'done'."""
+    missing = [l for l in required_layers(desc) if not _layer_covered(l, desc)]
+    if not missing:
+        return None
+    return ("sensor gap: " + ", ".join(missing) + " — the Deliverable requires it but the "
+            "verify neither declares it in `layers:` nor exercises it")
+
+
 def readiness_gap(state, desc):
     """Per-phase readiness keyed on the TO-RUN (next) phase — the input the driver
     actually consumes (review finding D). VERIFY (next, from Building) needs a runnable
@@ -163,12 +203,16 @@ def readiness_gap(state, desc):
     no machine readiness."""
     nxt = next_phase(state)
     desc = desc or ""
-    if nxt == "VERIFY" and not acceptance_lane(desc):
-        b = acceptance_block(desc)
-        if b and not acceptance_cwd_safe(b):
-            return ("next=VERIFY: acceptance anchors on $BASH_SOURCE/$0; rewrite "
-                    "cwd-relative (verify runs `bash verify.sh` with cwd=worktree)")
-        return "next=VERIFY: missing runnable acceptance or named evidence"
+    if nxt == "VERIFY":
+        if not acceptance_lane(desc):
+            b = acceptance_block(desc)
+            if b and not acceptance_cwd_safe(b):
+                return ("next=VERIFY: acceptance anchors on $BASH_SOURCE/$0; rewrite "
+                        "cwd-relative (verify runs `bash verify.sh` with cwd=worktree)")
+            return "next=VERIFY: missing runnable acceptance or named evidence"
+        gap = sensor_gap(desc)                                  # PRO-74: granularity alignment
+        if gap:
+            return "next=VERIFY: " + gap
     if nxt == "REVIEW" and not _ARTIFACT_RE.search(desc):
         return "next=REVIEW: missing diff/artifact"
     return None
