@@ -11,10 +11,13 @@ decides the next step and classifies it:
           (publishes); or the issue itself sits in the hard human-gate state.
   BLOCKED — waiting on a non-terminal blocker. Shown, never run.
 
-Linear is the single source of truth: the driver NEVER writes Linear/WBS state.
---execute may write bounded local executor retry metadata; on PASS it prints the
-one human-invoked Linear write (pandastack-linear-advance). reversible ->
-propose; decision / mutation / publish -> human gate (docs/driver-autonomy.md).
+Linear is the single source of truth. By default the driver writes NO Linear/WBS
+state: on PASS it only PRINTS the one human-invoked write (pandastack-linear-advance).
+The sole exception is --advance-auto (per-project, default OFF): the driver may write
+the reversible AUTO-phase transitions Verifying / In Review itself; every gate column
+(Needs Decision / Building / Done) stays a human keystroke. reversible -> propose (or
+advance-auto); decision / mutation / publish -> human gate (docs/driver-autonomy.md).
+--execute may also write bounded local executor retry metadata.
 
   pandastack-drive                 # surface today's queue (read-only)
   pandastack-drive --json
@@ -39,7 +42,16 @@ import pslib  # shared lifecycle / readiness (single source, review finding K)
 
 REDUCE = os.path.join(HERE, "pandastack-linear-reduce")
 AGENT_WORKER = os.path.join(HERE, "agent-worker")
+ADVANCE = os.path.join(HERE, "pandastack-linear-advance")
 SECRETS = os.path.expanduser("~/.config/pandastack/secrets.env")
+
+# --advance-auto (default OFF, per-project): the ONLY Linear workflow-state writes the
+# driver may make itself, and only for the reversible AUTO-phase columns the contract
+# already classes as "the loop's" (docs/driver-autonomy.md). Gate columns
+# (Needs Decision / Building / Done / Canceled) are NEVER auto-written — they stay a
+# human keystroke. Keyed on the *target* state, so a transition INTO a gate column can
+# never be auto-written regardless of where it came from.
+AUTO_WRITE_STATES = frozenset({"Verifying", "In Review"})
 
 # Driver-side phase maps (the lifecycle state<->phase + NEXT_PHASE live in pslib).
 PHASE_STATE = {"PLAN": "Planning", "GATE": "Needs Decision", "BUILD": "Building",
@@ -737,6 +749,31 @@ def dispatch_order(auto_items):
     return sorted(auto_items, key=lambda e: not e.get("build"))
 
 
+def do_advance(issue, to_state):
+    """Auto-write a reversible AUTO-phase Linear transition via pandastack-linear-advance.
+
+    Exactly equivalent to a human running the printed advance command: same script, same
+    args, no --force (so it still REFUSES a gated issue). Caller must have already checked
+    to_state ∈ AUTO_WRITE_STATES — this never widens that. Returns (ok, detail).
+    Test seam: PSDRIVE_ADVANCE_CMD overrides the script ONLY under PSDRIVE_TEST=1."""
+    cmd = ADVANCE
+    if TEST_MODE and os.environ.get("PSDRIVE_ADVANCE_CMD"):
+        cmd = os.environ["PSDRIVE_ADVANCE_CMD"]
+    try:
+        p = subprocess.run([cmd, "--issue", issue, "--to", to_state],
+                           capture_output=True, text=True, timeout=60)
+    except Exception as e:  # noqa: BLE001 — never let an advance failure crash the loop
+        return False, str(e)
+    return p.returncode == 0, (p.stdout + p.stderr).strip()[-300:]
+
+
+def should_auto_write(advance_auto, r):
+    """The --advance-auto gate (single source, so the test exercises the real predicate):
+    write a Linear transition iff the flag is on AND a step proposed an advance AND its
+    target is a reversible AUTO column. A gate column can never satisfy this."""
+    return bool(advance_auto and r.get("advance") and r.get("advance_to") in AUTO_WRITE_STATES)
+
+
 def exec_item(x):
     """Run the reversible step through agent-worker; propose the Linear advance."""
     if x["skill"] not in SAFE_SKILLS:
@@ -757,10 +794,12 @@ def exec_item(x):
                        metadata={"issue": x["id"], "project": x.get("project"),
                                  "phase": x["next"]})
     passed = r.get("verdict") == "PASS"
-    # Linear is the single truth; the driver NEVER writes it. On PASS, surface the
-    # one human-invoked advance (pandastack-linear-advance) — do not auto-write.
+    # On PASS, record the proposed advance + its target state. Writing it to Linear is
+    # NOT done here — the loop either prints it (default) or, under --advance-auto, writes
+    # it iff the target is a reversible AUTO column. exec_item itself never writes.
     if passed and x.get("to_state"):
         r["advance"] = f'pandastack-linear-advance --issue {x["id"]} --to "{x["to_state"]}"'
+        r["advance_to"] = x["to_state"]   # target state, so --advance-auto can gate on the allowlist
     return r
 
 
@@ -941,7 +980,8 @@ def exec_build(x, merge_auto=False):
                       "artifacts": wr.get("artifacts") or {},
                       "verify_cmd": (verify_script or "").strip()[:200] or None,
                       "pr_hint": f"review local branch {branch} and open a PR (driver never pushes)",
-                      "advance": f'pandastack-linear-advance --issue {x["id"]} --to "{x.get("to_state", "Verifying")}"'}
+                      "advance": f'pandastack-linear-advance --issue {x["id"]} --to "{x.get("to_state", "Verifying")}"',
+                      "advance_to": x.get("to_state", "Verifying")}
             # T03 router (gated OFF unless --merge-auto). Auto-merge ONLY a low-blast,
             # machine-lane (host-verify actually ran), host-verified-green build — and
             # only into integration, never main. Everything else keeps the branch for a
@@ -1009,9 +1049,13 @@ def main():
                     help="(default OFF) route a build-ready Building issue to auto-build in an isolated worktree; requires --only")
     ap.add_argument("--merge-auto", action="store_true",
                     help="(default OFF, ratchet-gated) auto-merge a low-blast host-verified build into the integration branch (never main); requires --build-auto --only")
+    ap.add_argument("--advance-auto", action="store_true",
+                    help="(default OFF, per-project) auto-write reversible AUTO-phase Linear transitions (Verifying/In Review) only; gate columns stay human; requires --only")
     args = ap.parse_args()
     if args.build_auto and not args.only:
         ap.error("--build-auto requires --only <project> (never global)")
+    if args.advance_auto and not args.only:
+        ap.error("--advance-auto requires --only <project> (per-project; never global)")
     if args.merge_auto and not (args.build_auto and args.only):
         ap.error("--merge-auto requires --build-auto --only (never global; integration auto-merge is ratchet-gated)")
     if args.merge_auto and args.max > 1:
@@ -1075,6 +1119,14 @@ def main():
                 print(f"    skipped: {r['why']}")
                 continue                      # a skip does not consume a --max slot (finding N)
             n += 1
+            # --advance-auto: write ONLY a reversible AUTO-phase transition (Verifying /
+            # In Review). Gate columns are skipped here and fall through to the human
+            # "ready to advance" line below. Done before ledger_record so the audit
+            # captures `advanced`. Keyed on the target state — never widened.
+            if should_auto_write(args.advance_auto, r):
+                ok, detail = do_advance(x["id"], r["advance_to"])
+                r["advanced"] = r["advance_to"] if ok else None
+                r["advance_error"] = None if ok else detail
             ledger.append(ledger_record(x, r))
             print(f"    {r['verdict']}: {r['summary']}")
             if r.get("merged"):
@@ -1087,7 +1139,13 @@ def main():
             if r.get("pr_hint"):
                 print(f"    → {r['pr_hint']}")
             if r.get("advance"):
-                print(f"    → ready to advance (run it yourself): {r['advance']}")
+                if r.get("advanced"):
+                    print(f"    → advanced: {x['id']} → {r['advanced']}  (--advance-auto, reversible AUTO column)")
+                elif should_auto_write(args.advance_auto, r):
+                    print(f"    → advance-auto FAILED ({r.get('advance_error')}); run by hand: {r['advance']}")
+                else:
+                    tag = "" if r.get("advance_to") in AUTO_WRITE_STATES else "  [gate column — human]"
+                    print(f"    → ready to advance (run it yourself): {r['advance']}{tag}")
         if n == 0:
             print("  (no AUTO items ran)")
         # PRO-67: queue-aware orphan sweep on the driven repo. An issue still anywhere in the

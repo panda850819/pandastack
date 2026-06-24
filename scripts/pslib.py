@@ -301,6 +301,9 @@ def ledger_record(x, r):
         "verdict": r.get("verdict"),
         "summary": (r.get("summary") or "")[:200],
         "advance": (r.get("advance") or None),
+        # --advance-auto: the AUTO-phase state the driver auto-wrote to Linear this tick
+        # (None = proposed-only / human keystroke). Makes auto vs manual advances greppable.
+        "advanced": (r.get("advanced") or None),
         # BUILD lands code → its advance must be host-verified; read-only AUTO is advisory.
         "verify_required": bool(x.get("build")),
         "verify_ran": ran,

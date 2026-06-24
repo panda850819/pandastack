@@ -59,6 +59,37 @@ The Linear board grouped by workflow state is the human-readable projection of t
 split: AUTO-phase columns (`Planning` / `Verifying` / `In Review`) are the loop's;
 gate-phase columns (`Needs Decision` / `Building` / `Done`) are Panda's.
 
+## Linear state write-back (`--advance-auto`, default OFF — added 2026-06-24, PRO-80)
+
+The driver's default is "never write Linear/WBS state": every column-move is a human
+keystroke via `pandastack-linear-advance` (the driver only *prints* the command). That
+gate is what made the WBS human-owned. `--advance-auto` relaxes it for the **reversible,
+post-verification AUTO-phase transitions only**, and only when explicitly enabled
+per-project in `~/.config/pandastack/drive-autonomy.json` (`advance_auto: true`) with
+`--only <project>`.
+
+When enabled, after an AUTO step or a `--build-auto` BUILD passes, the driver calls
+`pandastack-linear-advance` itself **iff the proposed target state is in the AUTO-write
+allowlist**:
+
+- **AUTO-write allowed:** `Verifying`, `In Review` — the two transitions that follow
+  machine-verifiable work (BUILD→`Verifying`, VERIFY→`In Review`).
+- **NEVER auto-written (stay human gates):** `Needs Decision` (GATE), `Building`
+  (plan-approval, the one-way door), `Done` (SHIP), `Canceled`, and — deliberately, in
+  v1 — `Planning`. `Planning` is a loop column, but the move *into* it (Backlog→Planning)
+  sits next to intake/scoping, so the conservative v1 keeps it a keystroke. For any
+  non-allowlisted target the driver prints the advance command as before, tagged
+  `[gate column — human]`.
+
+Keyed on the **target** state, so a transition into a gate column can never be auto-written
+regardless of where it came from. The call is exactly equivalent to a human running the
+printed command (same script, no `--force`), so it still REFUSES a gated / `needs-human`
+issue. The flag lives in `drive-autonomy.json`, outside any repo the driver builds, so the
+daemon cannot self-enable it (same capability-fence property as `--build-auto` /
+`--merge-auto`, §"Capability fence"). Each auto-write is recorded as `advanced: <state>` in
+the ledger (`drive-log.jsonl`) so auto vs manual advances stay one grep apart. Test:
+`tests/drive-advance-auto.sh`.
+
 ## Capability fence (C6) — widening what the daemon may touch is a human-gate
 
 What the daemon may do unattended is bounded by a small **capability fence**, and editing

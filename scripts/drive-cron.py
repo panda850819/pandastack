@@ -129,6 +129,8 @@ def build_invocations(cfg, max_):
         args = ["--execute", "--build-auto", "--only", proj]
         if merge:
             args.append("--merge-auto")
+        if opts.get("advance_auto"):
+            args.append("--advance-auto")
         args += ["--max", str(max_)]
         autonomy.append((proj, args))
     if not autonomy:
