@@ -1,12 +1,12 @@
 # RESOLVER.md
 
-> Map of every skill / persona / context in pandastack v2.2. Use this as the index when something looks like overlap or you can't tell which skill to invoke.
+> Map of every skill / persona in pandastack. Use this as the index when something looks like overlap or you can't tell which skill to invoke.
 >
 > Companion to PHILOSOPHY.md (the why) and the per-skill SKILL.md files (the how).
 
 ## Why this file exists
 
-pandastack v2.2 ships **26 skills** (24 core + 2 ext), 5 personas, and 7 context recipes. **Lifecycle flows are no longer first-class constructs** — what used to live in `plugins/pandastack/flows/*.md` is now either documented inline in the relevant skill (sprint covers dev, ship knowledge covers knowledge close) or has been demoted because it wasn't really a flow (decision was an autonomy contract, research was a knowledge variant, work was a dev variant + work-ship).
+pandastack ships **28 skills** (26 core + 2 ext) and 5 personas. **Lifecycle flows are no longer first-class constructs** — what used to live in `flows/*.md` is now either documented inline in the relevant skill (sprint covers dev, ship knowledge covers knowledge close) or has been demoted because it wasn't really a flow (decision was an autonomy contract, research was a knowledge variant, work was a dev variant + work-ship).
 
 This is the pattern used by gstack and alirezarezvani: monorepo + RESOLVER.md beats multi-repo split, because the categorization lives next to the content.
 
@@ -91,6 +91,10 @@ v2.2.0 cut `think-like-naval` and `think-like-alan-chan` — replicating someone
 | Skill | Purpose | Trigger |
 |---|---|---|
 | `pandastack:skill-creator` | Create new pandastack skills. MECE-checks RESOLVER, enforces hot/cold dispatch, and applies trigger-first skill evolution before creating/extracting abstractions. | "create a skill", "new pandastack skill", "improve this skill" |
+| `pandastack:writing-great-skills` | Reference + 8-axis scorecard for well-constructed skills. The construction-quality SSOT (scores the SKILL.md, not its artifact — that's `lib/quality-rubric.md`). `skill-creator` self-checks against it; `skill-eval` binds it. | "how do I write a skill", "what makes a skill good", consulted while authoring |
+| `pandastack:skill-eval` | Score an existing skill against the writing-great-skills scorecard and write a co-located `eval.md` verdict (hash-stamped; `lint-eval-fresh.sh` catches drift). Evaluator counterpart to skill-creator. | "eval this skill", "score this skill", "is this skill well-written" |
+
+> **skill-creator vs skill-eval vs writing-great-skills**: writing-great-skills is the criteria (read); skill-creator builds skills and self-checks against it; skill-eval judges existing skills against it and leaves the verdict. Same SSOT, generator/evaluator split — mirrors how `lib/quality-rubric.md` binds `write`/`design-lead` (generate) and `review` (evaluate).
 
 ---
 
@@ -150,7 +154,7 @@ If you're reviewing your own PR → `pandastack:review`. If you're deciding whet
 
 ## Persona skills (5)
 
-pandastack is **skill-only**. No agent dispatch. The 5 lead personas live as skills under `skills/{persona}/SKILL.md`, share the structure defined in `lib/persona-frame.md`, and are invoked in-session via `/persona` slash or chained from `boardroom`.
+pandastack is **skill-only**. No agent dispatch. The 5 lead personas live as skills under `skills/productivity/{persona}/SKILL.md`, share the structure defined in `lib/persona-frame.md`, and are invoked in-session via `/persona` slash or chained from `boardroom`.
 
 | Skill | When |
 |---|---|
@@ -170,9 +174,9 @@ All 5 are READ-ONLY persona skills. They recommend; user decides.
 
 | Composition | Driver / chain | Where the lifecycle is documented |
 |---|---|---|
-| dev | `/sprint` (1-2h) or manual `/office-hours` → `/careful` → build → `/qa` → `/review` → `/ship` | `skills/sprint/SKILL.md` + README "Lifecycle map" |
-| writing | `/write` → manual publish (`ship write` retired 2026-06-12, no Blog tree) | `skills/write/SKILL.md` + README "Lifecycle map" |
-| knowledge | direct write to vault → `/ship knowledge <path>` | `skills/ship/modes/knowledge.md` + README "Lifecycle map" |
+| dev | `/sprint` (1-2h) or manual `/office-hours` → `/careful` → build → `/qa` → `/review` → `/ship` | `skills/engineering/sprint/SKILL.md` + README "Lifecycle map" |
+| writing | `/write` → manual publish (`ship write` retired 2026-06-12, no Blog tree) | `skills/writing/write/SKILL.md` + README "Lifecycle map" |
+| knowledge | direct write to vault → `/ship knowledge <path>` | `skills/engineering/ship/modes/knowledge.md` + README "Lifecycle map" |
 
 What used to be `flows/<name>.md` is gone. Reasons:
 - **dev**: `/sprint` is the executable spec; the long-form `flows/dev.md` was duplicate.
@@ -181,24 +185,6 @@ What used to be `flows/<name>.md` is gone. Reasons:
 - **work**: not a real flow — it's a dev variant + decision-note variant of `/ship knowledge`. The Phase 0 triage and Phase 5 ext-push are now AGENTS.md rules ("external-mutation-is-proposal").
 - **decision**: not a flow — it's an async autonomy contract ("cron proposes, Panda decides, Panda executes"). Lives as a rule in `~/.agents/AGENTS.md`, not as a flow spec.
 - **retro**: `/retro-week` and `/retro-month` are the executable specs. The cadence (daily close → weekly → monthly) lives in their SKILL.md files.
-
----
-
-## Contexts (8 recipes)
-
-Each `.toml` file in `contexts/` binds a flow + persona + skill subset to a specific identity. Loaded via `lib/persona-frame.md`.
-
-| Context | Identity | Private |
-|---|---|---|
-| `personal-developer` | Personal dev work | no |
-| `personal-writer` | Personal writing | no |
-| `personal-knowledge-manager` | Personal knowledge work | no |
-| `personal-trader` | Personal trading | yes |
-| `work-yei-ops` | Yei Ops Manager | yes |
-| `work-yei-hr` | Yei HR | yes |
-| `work-yei-finance` | Yei Finance | yes |
-
-Private contexts (in the private overlay) may reference additional skills beyond this index. Public contexts only reference skills listed above.
 
 ---
 
@@ -235,20 +221,20 @@ Public package shrinks 38 → 26 skills. 7 lifecycle flow specs → 0 (collapsed
 
 ## Provenance: how skills came to live here
 
-| Origin | Skills (still in v2.2 public package) |
+| Origin | Skills (still in the current public package) |
 |---|---|
 | Built in v0.16 | careful, checkpoint, freeze, init, qa, review, ship |
 | Added in v1 from `~/.claude/skills/` (local) | grill, retro-week, retro-month, gatekeeper, deepwiki, agent-browser |
 | Persona skills | ceo, eng-lead, design-lead, ops-lead, product-lead |
 | Decision/sprint flow | sprint, dojo, office-hours, boardroom, team-orchestrate |
-| Meta | using-pandastack, init |
+| Meta | using-pandastack, init, skill-creator, writing-great-skills, skill-eval |
 | Writing | write |
 
 ---
 
 ## Version
 
-This RESOLVER.md is for pandastack v2.2.0. Update when adding / removing / renaming skills.
+This RESOLVER.md is for pandastack v3.1.0. Update when adding / removing / renaming skills.
 
 ---
 
@@ -273,4 +259,4 @@ The following skill names were renamed/merged across versions. Old names still r
 | `slowmist-agent-security` | `gatekeeper` | v1.1 | expired 2026-08-04 |
 | `weekly-retro-prep` | `retro-prep-week` (then deleted v2.0.0) | v1.1 → cut v2.0.0 | n/a |
 
-If you have hardcoded old names in cron jobs, launchd plists, Hermes manifests, or context recipes, update before the grace dates above.
+If you have hardcoded old names in cron jobs, launchd plists, or Hermes manifests, update before the grace dates above.

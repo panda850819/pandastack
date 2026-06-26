@@ -2,20 +2,20 @@
 
 Personal context-aware AI operator OS — one substrate, three runtimes, no vendor lock-in.
 
-I built pandastack to run my own work across multiple AI CLIs without dotdir sprawl. Skills are version-controlled markdown. Personas are replaceable. Context recipes ship as TOML. Same content runs across Claude Code, Codex CLI, and Hermes; per-CLI shims handle syntax differences. No data-layer vendor lock-in.
+I built pandastack to run my own work across multiple AI CLIs without dotdir sprawl. Skills are version-controlled markdown. Personas are replaceable. Same content runs across Claude Code, Codex CLI, and Hermes; per-CLI shims handle syntax differences. No data-layer vendor lock-in.
 
-The stack is **26 skills** focused on dev, writing, and knowledge workflows, tiered into 24 core (markdown-only, fresh-clone runnable) and 2 ext (publicly installable CLI). Anchored on a personal Obsidian vault as SSOT.
+The stack is **28 skills** focused on dev, writing, and knowledge workflows, tiered into 26 core (markdown-only, fresh-clone runnable) and 2 ext (publicly installable CLI). Anchored on a personal Obsidian vault as SSOT.
 
-**v2.2 philosophy**: pandastack ships verbs. The brain (gbrain or your own knowledge store) keeps state. Lifecycle discipline is your job, not the package's. v2.2 dropped the `flows/` directory (7 spec files) and tightened the manifest to 26 skills. The public package is self-contained: clone + install gives you everything in the manifest.
+**Philosophy**: pandastack ships verbs. The brain (gbrain or your own knowledge store) keeps state. Lifecycle discipline is your job, not the package's. v2.2 dropped the `flows/` directory (7 spec files); the public package is self-contained: clone + install gives you everything in the manifest.
 
 **Stability scope (read this first):**
 
-v2 is **personal-substrate stable**: API, schema, and skill content are stable for the author's daily use. v2.2.0 (2026-05-09) is a scope-tightening release — 38 → 26 skills, 7 → 0 flows. Fresh-clone Core install runs without author hand-holding; verified-user-install count is still 0 because the v2.2 surface has not been validated by external A-class users yet.
+v3 is **personal-substrate stable**: API, schema, and skill content are stable for the author's daily use. v2.2.0 (2026-05-09) was a scope-tightening release that cut 38 → 26 skills, 7 → 0 flows; the current surface is 28 skills. Fresh-clone Core install runs without author hand-holding; verified-user-install count is still 0 because the current surface has not been validated by external A-class users yet.
 
 What this means for you:
 
-- If you are the author or a fork-and-learn power user, v2.2 is stable for daily use.
-- If you are a fresh A-class user (Obsidian + Coding Agent power user willing to bring your own vault and CLIs), `bash scripts/bootstrap.sh` reports what runs now and what install steps remain. Core (24 skills) should run on a clean clone.
+- If you are the author or a fork-and-learn power user, the current cut is stable for daily use.
+- If you are a fresh A-class user (Obsidian + Coding Agent power user willing to bring your own vault and CLIs), `bash scripts/bootstrap.sh` reports what runs now and what install steps remain. Core (26 skills) should run on a clean clone.
 - If you use Logseq / Roam / Notion instead of Obsidian, skills will reference Panda's vault conventions (`Blog/_daily/`, `Inbox/ship-log/`, etc.) — these are prompt defaults, not hard-coded interfaces. You'd adapt them per session or by editing skill text. There's no built-in adapter layer; whether that matters depends on your tolerance for hand-tuning conventions.
 
 **Who this is for:**
@@ -35,10 +35,8 @@ bash scripts/bootstrap.sh --claude    # or --codex
 
 `bootstrap.sh` reports:
 - substrate state (`~/.agents/AGENTS.md` only)
-- 24 core skills runnable on this clone with no external CLI
+- 26 core skills runnable on this clone with no external CLI
 - 2 extension skills with the exact `brew install` / `npm install -g` to enable each
-
-For programmatic use, `scripts/pandastack doctor --capabilities-json` emits a stable JSON capability map (schema in `plugins/pandastack/docs/capabilities.md`).
 
 After install:
 
@@ -48,15 +46,15 @@ After install:
 4. `/ship knowledge <path>` on a finished note in your vault
 5. Stop there. You'll know if pandastack fits how you work.
 
-> **Tier model (v2.2)**: Skills are tiered in `plugins/pandastack/manifest.toml`. Core = markdown-only, runs on a fresh clone. Ext = needs a public CLI install. `capability-probe` only ABORTs when substrate is missing, not when ext CLIs are absent.
+> **Tier model**: Skills are tiered in `manifest.toml`. Core = markdown-only, runs on a fresh clone. Ext = needs a public CLI install. `capability-probe` only ABORTs when substrate is missing, not when ext CLIs are absent.
 
 ## Lifecycle map
 
-> Which skill do I run when? This is the 30-second answer. pandastack v2.2 has 3 documented compositions; everything else is ad-hoc skill chaining you decide on.
+> Which skill do I run when? This is the 30-second answer. pandastack has 3 documented compositions; everything else is ad-hoc skill chaining you decide on.
 
 ```
-                  pandastack lifecycles (v2.2)
-                  ────────────────────────────
+                  pandastack lifecycles
+                  ─────────────────────
 
   dev        DEFINE ──▶ PLAN ──▶ GATE ──▶ BUILD ──▶ VERIFY ──▶ REVIEW ──▶ SHIP
              office-h   /plan   careful  build     qa         review     ship
@@ -140,32 +138,17 @@ You said "RSS digest tool". The agent reframed it as "curation system" — liste
 
 ## Architecture
 
-pandastack is three tiers: a runtime-agnostic substrate, interchangeable runtimes, and an orchestration layer that drives them as black-box workers — never merging their internal loops.
+pandastack is a runtime-agnostic substrate consumed by interchangeable runtimes. The autonomous driver / scheduler that drove these runtimes as black-box workers has split out into a separate product; this repo ships the substrate and the skills, not the scheduler.
 
-The **Tier 1 substrate** is runtime-agnostic: identity, voice, skill content, knowledge vault, worktrees, and the job schema live on disk. All runtimes read the same `AGENTS.md` before acting. No vendor lock-in at the data layer.
+The **Tier 1 substrate** is runtime-agnostic: identity, voice, skill content, knowledge vault, and worktrees live on disk. All runtimes read the same `AGENTS.md` before acting. No vendor lock-in at the data layer.
 
-The **Tier 2 runtimes** (Claude Code, Codex CLI) are thin, interchangeable consumers of Tier 1. Each gets a slim shim in its dotdir (`~/.claude/`, `~/.codex/`); skills, flows, and context recipes are identical across runtimes, with a per-CLI tool-name mapping for syntax. The orchestrator runs each as a black-box worker behind a job contract (job dir + prompt + output + diff + verifier) — shared substrate, not shared behavior.
-
-The **Tier 3 orchestration** is two layers split by reliability, not feature:
-
-- **launchd** is the bedrock heartbeat — dumb, OS-level, zero-token, reboot-surviving. It fires the deterministic jobs and the watchdog that checks everything above it. The watchdog has to live here: one that depends on the system it watches can't catch a silent wedge.
-- **Hermes** is the conductor — the judgment and conversation a heartbeat can't carry. It reads a personal Linear workspace as the work-breakdown store, reduces it to "today's most urgent" (`pandastack-linear-reduce`), proposes over Telegram, and advances tickets (`pandastack-linear-advance`), with `Needs Decision` as a hard, machine-enforced human gate. Hermes inherits the Codex model. The unattended executor that polls a ready ticket and dispatches a worker is a separate Claude cron (planned), isolated so its failure never takes the conductor down.
-
-Linear is the bus: the conductor writes work in, the executor reads ready work out. Every layer shares the same Tier 1 substrate — no duplication, no drift.
+The **Tier 2 runtimes** (Claude Code, Codex CLI) are thin, interchangeable consumers of Tier 1. Each gets a slim shim in its dotdir (`~/.claude/`, `~/.codex/`); skills are identical across runtimes, with a per-CLI tool-name mapping for syntax. Every layer shares the same Tier 1 substrate — no duplication, no drift.
 
 ```mermaid
 flowchart TB
     User((User))
 
-    subgraph T3 [Tier 3 — Orchestration]
-        direction TB
-        launchd[launchd · bedrock heartbeat + watchdog]
-        hermes[Hermes · conductor · reduce then propose · Codex model]
-        exec[Claude cron · unattended executor · planned]
-        linear[(Linear · WBS bus · Needs Decision gate)]
-    end
-
-    subgraph T2 [Tier 2 — Runtimes · black-box workers]
+    subgraph T2 [Tier 2 — Runtimes]
         direction LR
         cc[Claude Code]
         cx[Codex CLI]
@@ -174,31 +157,23 @@ flowchart TB
     subgraph T1 [Tier 1 — Substrate]
         direction TB
         agents[AGENTS.md · identity / voice / routing]
-        skills[pandastack · skills / flows / contexts]
+        skills[pandastack · skills]
         knowledge[knowledge vault · SSOT]
-        job[worktrees · job schema]
+        job[worktrees]
         cli[personal CLI tools · gog · bird · ...]
     end
 
-    User --> hermes
-    launchd -. fires + watches .-> hermes
-    launchd -. fires + watches .-> exec
-    hermes -- writes work --> linear
-    exec -- reads ready --> linear
-    hermes -- job contract --> T2
-    exec -- job contract --> T2
+    User --> T2
     T2 --> T1
-
-    style exec stroke-dasharray: 5 5
 ```
 
 ## Multi-runtime arbitrage
 
-Claude Code (Opus) handles foreground reasoning. Codex CLI takes multi-file edits and batch tasks, spending OpenAI subscription quota instead of Claude tokens. The conductor picks a runtime per job — a deep-reasoning seam vs a mechanical batch — and dispatches it through the job contract against the same Tier 1 substrate.
+Claude Code (Opus) handles foreground reasoning. Codex CLI takes multi-file edits and batch tasks, spending OpenAI subscription quota instead of Claude tokens. `/handover` dispatches a mechanical batch to Codex against the same Tier 1 substrate.
 
 ## Runtime support
 
-pandastack is not a monolithic runtime. It is a stack package: shared skills, flows, personas, context recipes, and conventions that different hosts can consume.
+pandastack is not a monolithic runtime. It is a stack package: shared skills, personas, and conventions that different hosts can consume.
 
 Host design notes live in [`docs/ADDING_A_HOST.md`](docs/ADDING_A_HOST.md).
 
@@ -226,7 +201,7 @@ bash scripts/bootstrap.sh --codex     # also print Codex CLI install steps
 | Host | Install |
 |---|---|
 | Claude Code | `/plugin marketplace add /absolute/path/to/pandastack` then `/plugin install pandastack@pandastack` then `/reload-plugins` |
-| Codex CLI | `ln -sfn /absolute/path/to/pandastack/plugins/pandastack/skills ~/.codex/skills/pandastack` then restart Codex |
+| Codex CLI | `ln -sfn /absolute/path/to/pandastack/skills ~/.codex/skills/pandastack` then restart Codex |
 | Hermes | Import/symlink selected skills into `~/.hermes/skills/` (see `docs/HERMES.md`) |
 | OpenClaw | Skill package experimental, see `docs/OPENCLAW.md` |
 
@@ -263,20 +238,9 @@ Example:
 
 For Codex, the equivalent loop is `git pull` or local edits on the cloned repo plus a Codex restart. For Hermes direct-import setups, re-copy or re-symlink the changed skill files.
 
-## Contexts
-
-Context recipes live in `plugins/pandastack/contexts/*.toml`. Each recipe binds a flow, persona, skill subset, and memory namespace to a specific identity.
-
-| Context | Purpose |
-|---|---|
-| `personal:developer` | Personal dev work — eng persona, dev + knowledge flows |
-| `personal:writer` | Personal writing — writing + knowledge flows |
-| `personal:knowledge-manager` | Vault maintenance, wiki lint, knowledge lifecycle |
-| `personal:trader` | Market research, on-chain analysis, trading flows |
-
 ## Skills
 
-26 skills grouped by lifecycle (24 core / 2 ext — see `plugins/pandastack/manifest.toml`). Persona names follow the gstack convention — each skill is "your specialist" for that step.
+28 skills grouped by lifecycle (26 core / 2 ext — see `manifest.toml`). Persona names follow the gstack convention — each skill is "your specialist" for that step.
 
 ### Think / intake
 
@@ -362,7 +326,7 @@ Vault hygiene (orphans / stale / superseded) is a direct `rg` / `find` scan or �
 
 ## Personas
 
-5 persona skills under `plugins/pandastack/skills/{ceo,eng-lead,ops-lead,product-lead,design-lead}/`, sharing the frame in `lib/persona-frame.md`. pandastack is skill-only — no separate agent dispatch layer. Edit any persona SKILL.md; the change picks up after `/reload-plugins`.
+5 persona skills under `skills/productivity/{ceo,eng-lead,ops-lead,product-lead,design-lead}/`, sharing the frame in `lib/persona-frame.md`. pandastack is skill-only — no separate agent dispatch layer. Edit any persona SKILL.md; the change picks up after `/reload-plugins`.
 
 | Persona skill | Role |
 |---|---|
@@ -374,7 +338,7 @@ Vault hygiene (orphans / stale / superseded) is a direct `rg` / `find` scan or �
 
 ## Lifecycle compositions
 
-v2.2.0 cut the `flows/` directory. There are no longer separate flow spec files — what used to live in `plugins/pandastack/flows/*.md` is now either:
+v2.2.0 cut the `flows/` directory. There are no longer separate flow spec files — what used to live in `flows/*.md` is now either:
 
 1. **Inline in the relevant skill**: `/sprint` for dev, `/ship knowledge` (incl. decision-note variant) for knowledge close.
 2. **Documented in the "Lifecycle map" section above**: the 3 first-class compositions (dev / writing / knowledge).
@@ -388,7 +352,7 @@ This shrinks the documentation surface and makes "which skill do I run" answerab
 
 ## Cron jobs
 
-The public package ships no cron-driven skills. If you want scheduled cadence, wire your own skills with whichever Tier 3 orchestration mechanism you prefer (launchd plist, system crontab, or Hermes).
+The public package ships no cron-driven skills. If you want scheduled cadence, wire your own skills with whichever scheduler you prefer (launchd plist, system crontab, or Hermes).
 
 ## Updating
 
@@ -430,12 +394,12 @@ Re-copy or re-symlink the changed skill folders into `~/.hermes/skills/`.
 
 Recommended release loop:
 
-1. Update skill / flow / context content in the repo.
+1. Update skill content in the repo.
 2. Update user-facing docs, especially `README.md` and install notes.
 3. Bump visible version markers when behavior changed:
    - `CHANGELOG.md`
-   - `plugins/pandastack/.claude-plugin/plugin.json`
-   - `plugins/pandastack/.codex-plugin/plugin.json`
+   - `.claude-plugin/plugin.json`
+   - `.codex-plugin/plugin.json`
    - `.claude-plugin/marketplace.json`, if marketplace metadata changed
 4. Verify in the real hosts you claim to support:
    - Claude Code local marketplace install
@@ -447,15 +411,16 @@ Recommended release loop:
 
 ### Before opening a PR
 
-- Keep skill content in `plugins/pandastack/skills/<name>/SKILL.md`
+- Keep skill content in `skills/<bucket>/<name>/SKILL.md` (bucket = engineering | productivity | writing | meta); add the path to the `skills` array in `.claude-plugin/plugin.json`
 - Keep each skill concise; the current discipline is roughly under 80 lines unless the extra length clearly earns itself
+- Construction quality is scored against the 8-axis scorecard in `writing-great-skills` (the SSOT). `skill-eval` scores a skill and writes a co-located hash-stamped `eval.md`; every skill carries one. `scripts/lint-eval-fresh.sh` fails if a skill is edited without re-evaling, and `scripts/lint-refs-resolve.py` checks that every internal ref in a SKILL.md resolves.
 - Run validation:
 
 ```bash
 bash scripts/lint-manifest-sync.sh
 ```
 
-Frontmatter fields `reads`, `writes`, `domain`, and `classification` are optional advisory audit metadata — nothing reads or enforces them. The L1–L5 firewall they were specified for was implemented in the now-retired `pdctx` overlay; on the public surface the only active guard is `plugins/pandastack/hooks/pretooluse-destructive-guard.sh`, which hard-blocks high-blast Bash commands. See [SKILL-FRONTMATTER.md](SKILL-FRONTMATTER.md) for the schema.
+Frontmatter fields `reads`, `writes`, `domain`, and `classification` are optional advisory audit metadata — nothing reads or enforces them. The L1–L5 firewall they were specified for was implemented in the now-retired `pdctx` overlay; on the public surface the only active guard is `hooks/pretooluse-destructive-guard.sh`, which hard-blocks high-blast Bash commands. See [SKILL-FRONTMATTER.md](SKILL-FRONTMATTER.md) for the schema.
 
 ### How to open a PR
 

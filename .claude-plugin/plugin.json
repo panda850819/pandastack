@@ -1,0 +1,49 @@
+{
+  "name": "pandastack",
+  "description": "Personal AI operator OS for Claude Code. Skill-only (no agents, no commands), 28 skills organized into thinking / doing / writing / meta buckets under skills/, tiered via manifest.toml. 5 persona skills (ceo + 4 -lead). Covers dev / writing / knowledge lifecycles with a review-and-ship learning loop, plus a skill-construction quality loop (writing-great-skills + skill-eval).",
+  "version": "3.1.0",
+  "author": {
+    "name": "Panda Zeng"
+  },
+  "homepage": "https://github.com/panda850819/pandastack",
+  "repository": "https://github.com/panda850819/pandastack",
+  "keywords": [
+    "skills",
+    "workflows",
+    "lifecycle",
+    "personal-os",
+    "review",
+    "ship",
+    "learning-loop"
+  ],
+  "skills": [
+    "./skills/engineering/careful",
+    "./skills/engineering/checkpoint",
+    "./skills/engineering/deepwiki",
+    "./skills/engineering/eng-lead",
+    "./skills/engineering/freeze",
+    "./skills/engineering/handover",
+    "./skills/engineering/init",
+    "./skills/engineering/qa",
+    "./skills/engineering/review",
+    "./skills/engineering/ship",
+    "./skills/engineering/sprint",
+    "./skills/engineering/team-orchestrate",
+    "./skills/productivity/boardroom",
+    "./skills/productivity/ceo",
+    "./skills/productivity/design-lead",
+    "./skills/productivity/dojo",
+    "./skills/productivity/grill",
+    "./skills/productivity/office-hours",
+    "./skills/productivity/ops-lead",
+    "./skills/productivity/product-lead",
+    "./skills/productivity/retro-month",
+    "./skills/productivity/retro-week",
+    "./skills/writing/write",
+    "./skills/meta/gatekeeper",
+    "./skills/meta/skill-creator",
+    "./skills/meta/skill-eval",
+    "./skills/meta/using-pandastack",
+    "./skills/meta/writing-great-skills"
+  ]
+}
