@@ -13,7 +13,6 @@ _DEFAULT_MANIFEST = REPO_ROOT / "manifest.toml"
 MANIFEST_PATH = Path(os.environ.get("PANDASTACK_MANIFEST", str(_DEFAULT_MANIFEST)))
 DISPATCH_PATH = REPO_ROOT / "DISPATCH.md"
 SKILLS_DIR = REPO_ROOT / "skills"
-AGENT_WORKER_PATH = REPO_ROOT / "scripts/agent-worker"
 
 # Schema version for capabilities.json / runtimes.json. Mirrored in pandastack.toml
 # ([capabilities] schema_version) and the test suites; bump all sites together.
@@ -21,7 +20,7 @@ SCHEMA_VERSION = 1
 
 _DETECT_CMDS = [
     "claude", "codex", "git", "python3", "bash",
-    "agent-browser", "curl", "jq", "pdctx", "hermes", "launchctl",
+    "agent-browser", "curl", "jq", "hermes", "launchctl",
 ]
 
 
@@ -178,18 +177,15 @@ def detect_runtimes():
     return {cmd: shutil.which(cmd) is not None for cmd in _DETECT_CMDS}
 
 
-def _worker_status(agent_worker_present, codex_ready):
-    """Derive worker role status from agent-worker + codex backend presence."""
-    if agent_worker_present and codex_ready:
-        return "ready"
-    return "degraded" if agent_worker_present else "missing"
+def _worker_status(codex_ready):
+    """Derive worker role status for the pack-local worker surface."""
+    return "ready" if codex_ready else "degraded"
 
 
 def derive_roles(runtimes):
     """Return roles dict with host/worker/operator sub-dicts."""
-    agent_worker_present = AGENT_WORKER_PATH.exists()
     codex_ready = runtimes.get("codex", False)
-    pdctx_ready = runtimes.get("pdctx", False)
+    hermes_ready = runtimes.get("hermes", False)
 
     host = {
         "claude": {
@@ -209,12 +205,14 @@ def derive_roles(runtimes):
             ) if not codex_ready else None,
         },
         "hermes": {
-            "ready": pdctx_ready,
-            "status": "supported-as-scheduler" if pdctx_ready else "degraded",
+            "ready": hermes_ready,
+            "status": "direct-import-ready" if hermes_ready else "manual-import",
             "note": (
-                "pdctx present — Hermes supported as scheduler/operator"
-                if pdctx_ready
-                else "pdctx missing — Hermes support degraded (see docs/HERMES.md)"
+                "Hermes command found — import pandastack skills directly "
+                "via ~/.hermes/skills/ (see docs/HERMES.md)"
+                if hermes_ready
+                else "Hermes packaging is manual: copy or symlink selected "
+                "skills into ~/.hermes/skills/ (see docs/HERMES.md)"
             ),
         },
     }
@@ -225,15 +223,10 @@ def derive_roles(runtimes):
             "codex not found — production backend unavailable; "
             "test backend works for offline checks"
         )
-    if not agent_worker_present:
-        worker_warnings.append(
-            f"scripts/agent-worker not found at {AGENT_WORKER_PATH}"
-        )
 
-    worker_status = _worker_status(agent_worker_present, codex_ready)
+    worker_status = _worker_status(codex_ready)
 
     worker = {
-        "agent_worker_present": agent_worker_present,
         "codex_backend_ready": codex_ready,
         "test_backend_ready": True,
         "status": worker_status,
@@ -244,8 +237,8 @@ def derive_roles(runtimes):
     operator = {
         "shell_manual": True,
         "launchd": operator_launchd,
-        "hermes_cron": pdctx_ready,
-        "status": "scheduled" if (operator_launchd or pdctx_ready) else "shell-only",
+        "external_scheduler": "user-managed",
+        "status": "launchd-available" if operator_launchd else "shell-only",
     }
 
     return {"host": host, "worker": worker, "operator": operator}
@@ -451,10 +444,7 @@ def read_or_build_capabilities(runtimes, roles, manifest_check, recommendation):
             worker = dict(worker)
             worker["codex_backend_ready"] = updated_runtimes["codex"]
             if "status" in worker:
-                worker["status"] = _worker_status(
-                    worker.get("agent_worker_present", False),
-                    updated_runtimes["codex"],
-                )
+                worker["status"] = _worker_status(updated_runtimes["codex"])
             roles_out = dict(roles_out)
             roles_out["worker"] = worker
             cap["roles"] = roles_out
@@ -474,7 +464,6 @@ def derive_recommendation(runtimes):
     """Return recommendation dict with profile, operator_notes, next_actions."""
     claude = runtimes.get("claude", False)
     codex = runtimes.get("codex", False)
-    pdctx = runtimes.get("pdctx", False)
 
     if claude and codex:
         profile = "cross-runtime"
@@ -486,10 +475,6 @@ def derive_recommendation(runtimes):
         profile = "bootstrap-only"
 
     operator_notes = []
-    if pdctx:
-        operator_notes.append(
-            "pdctx detected — Hermes available as scheduler/operator"
-        )
 
     next_actions = []
 
@@ -667,9 +652,6 @@ def _print_doctor_text(out):
     print("Worker runtime")
     print("--------------")
     w = roles["worker"]
-    sym = "+" if w["agent_worker_present"] else "x"
-    print(f"  [{sym}] agent-worker: "
-          f"{'present' if w['agent_worker_present'] else 'missing'}")
     sym = "+" if w["codex_backend_ready"] else "~"
     print(f"  [{sym}] codex backend: "
           f"{'ready' if w['codex_backend_ready'] else 'not found'}")
@@ -685,9 +667,7 @@ def _print_doctor_text(out):
     sym = "+" if op["launchd"] else "~"
     print(f"  [{sym}] launchd: "
           f"{'detected (Darwin)' if op['launchd'] else 'not available'}")
-    sym = "+" if op["hermes_cron"] else "~"
-    print(f"  [{sym}] Hermes cron: "
-          f"{'pdctx present' if op['hermes_cron'] else 'informational (pdctx not found)'}")
+    print(f"  [~] external scheduler: {op['external_scheduler']}")
     print()
 
     rec = out["recommendation"]
@@ -766,15 +746,13 @@ def run_init(args):
         print()
         print("Restart Codex CLI to pick up skills.")
     elif host == "hermes":
-        if not shutil.which("pdctx"):
-            print("WARNING: pdctx not found — Hermes support degraded.")
-            print("  See docs/HERMES.md for the supported path with pdctx.")
-        else:
-            print("Hermes operator setup (via pdctx):")
-            print("  pdctx use personal:developer")
-            print("  # See docs/HERMES.md for full dispatch setup")
+        skills_target = REPO_ROOT / "skills"
+        print("Commands to import pandastack skills into Hermes:")
+        print("  mkdir -p $HOME/.hermes/skills")
+        print(f"  ln -sfn {skills_target} $HOME/.hermes/skills/pandastack")
         print()
-        print("Note: Hermes is supported as scheduler/operator.")
+        print("Or copy/symlink only the selected skill directories.")
+        print("See docs/HERMES.md for the direct-import support model.")
         print("No mutation of ~/.hermes will be performed by this command.")
     else:
         print(f"Unknown host: {host}. Use --host claude|codex|hermes",

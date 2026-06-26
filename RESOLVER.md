@@ -55,7 +55,7 @@ For greenfield design (DB schema / service topology / ADRs), use `eng-lead` pers
 
 | Skill | Purpose | Trigger |
 |---|---|---|
-| `pandastack:retro-week` | Three-phase weekly retro (Auto-scan → Interview → Write). Phase 1 scans vault files directly (rg / find on `Blog/_daily/` + `Inbox/ship-log/`) to fetch retro inputs. | weekly retro |
+| `pandastack:retro-week` | Three-phase weekly retro (Auto-scan → Interview → Write). Phase 1 scans git, brain reflection inputs, and feedback files directly (rg / find) to fetch retro inputs. | weekly retro |
 | `pandastack:retro-month` | Three-phase monthly retro (with weekly retros referenced) | monthly retro |
 
 ### Tool wrappers (1:1 with public CLIs)

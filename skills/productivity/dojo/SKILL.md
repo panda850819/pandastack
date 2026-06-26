@@ -53,7 +53,7 @@ Take the user's stated topic. Run filename + content scans against vault:
 
 ```
 ls docs/sessions/ docs/learnings/ knowledge/ | rg -i "<topic>"  # filename match
-rg -l "<topic>" docs/sessions/ docs/learnings/ knowledge/ Blog/_daily/ | head -10  # content match
+rg -l "<topic>" docs/sessions/ docs/learnings/ knowledge/ | head -10  # content match
 ```
 
 Take top 5 hits across both. De-dup. Read the matched file's first 200 chars to extract context.
