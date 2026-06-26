@@ -10,13 +10,13 @@ reads:
   - repo: lib/push-once.md
   - repo: lib/persona-frame.md
   - repo: lib/gate-contract.md
-  - repo: skills/dojo/SKILL.md
-  - repo: skills/grill/SKILL.md
-  - repo: skills/review/SKILL.md
-  - repo: skills/ship/SKILL.md
-  - repo: skills/design-lead/SKILL.md
+  - repo: skills/thinking/dojo/SKILL.md
+  - repo: skills/thinking/grill/SKILL.md
+  - repo: skills/doing/review/SKILL.md
+  - repo: skills/doing/ship/SKILL.md
+  - repo: skills/thinking/design-lead/SKILL.md
   - repo: lib/verify-the-test-loop.md
-  - repo: skills/sprint/references/codex-delegation.md
+  - repo: skills/doing/sprint/references/codex-delegation.md
   - vault: knowledge/**
   - vault: docs/learnings/**
   - vault: docs/plans/**
@@ -33,10 +33,10 @@ capability_required:
   - lib/capability-probe.md
   - lib/escape-hatch.md
   - lib/stop-rule.md
-  - skills/dojo
-  - skills/grill
-  - skills/review
-  - skills/ship
+  - skills/thinking/dojo
+  - skills/thinking/grill
+  - skills/doing/review
+  - skills/doing/ship
 ---
 
 # Sprint — focused 1-2 hour execution
@@ -64,7 +64,7 @@ capability_required:
 - `--design`: auto-invoke design-lead skill at execute stage (replaces `commands/design.md`)
 - `--plan {path|slug}`: execute against a durable plan at `docs/plans/{slug}.md` (the artifact `/office-hours` Stage 5b emits). Sprint reads it READ-ONLY and derives per-task progress from git — see Stage 3 plan-driven execution. Auto-detect rule: slugify the topic the same way office-hours does and check for `docs/plans/{that-slug}.md` (exact slug, no fuzzy match); if the sprint began from an office-hours brief, use the plan path office-hours printed. If none found, run conversationally.
 - `--continue {slug}`: resume a PAUSED sprint. Skips dojo + grill; loads the PAUSED checkpoint + `docs/plans/{slug}.md`, recomputes which U-IDs are already done (git + acceptance), and resumes at the first non-done task.
-- `--delegate codex`: in Stage 3, hand a batch of mechanical units to Codex (synchronous, in-loop) via the `/handover` invocation. OFF unless you pass this flag — sprint defaults to free Claude subagents and never auto-delegates. A batch of ≥3 mechanical units is the advisory threshold worth surfacing the flag at, NOT an auto-trigger. Requires a plan file. See `references/codex-delegation.md` for the batch loop; the single-invocation mechanics live in `skills/handover/references/codex-invocation.md`. For ASYNC handover that frees this session, use `/handover --async`.
+- `--delegate codex`: in Stage 3, hand a batch of mechanical units to Codex (synchronous, in-loop) via the `/handover` invocation. OFF unless you pass this flag — sprint defaults to free Claude subagents and never auto-delegates. A batch of ≥3 mechanical units is the advisory threshold worth surfacing the flag at, NOT an auto-trigger. Requires a plan file. See `references/codex-delegation.md` for the batch loop; the single-invocation mechanics live in `skills/doing/handover/references/codex-invocation.md`. For ASYNC handover that frees this session, use `/handover --async`.
 
 ## Stages
 
@@ -76,13 +76,13 @@ Abort or degrade per probe rules. Output probe block as opening.
 
 ### Stage 1: Dojo (skip if `--quick`)
 
-Invoke `skills/dojo/SKILL.md` for the topic. Output prep brief, print path. User reads, then continues.
+Invoke `skills/thinking/dojo/SKILL.md` for the topic. Output prep brief, print path. User reads, then continues.
 
 Best-effort: also surface `{brain}/learnings/` pages matching the topic (the auto-sedimented learnings from transcript-ingest) so plan-time context includes past lessons. Skip silently if `{brain}` is absent. (Semantic two-brain `gbrain query` is the private-overlay upgrade; this flat glob is the public, Zero-Dependencies-safe baseline that closes the write→read loop.)
 
 ### Stage 2: Grill (lite, skip if `--quick`)
 
-Run `skills/grill/SKILL.md` in default (adversarial) mode with **3-question cap** (not full 7). Cover:
+Run `skills/thinking/grill/SKILL.md` in default (adversarial) mode with **3-question cap** (not full 7). Cover:
 
 - Existence (does this exist already? half-built somewhere?)
 - Scope boundary (what's IN, what's OUT)
@@ -114,7 +114,7 @@ Carve-outs:
 
 Rationale: the architect's context window and judgment are the scarce resource; spend them on spec, review, and integration, not keystrokes. "Faster if I just write it myself" is the failure mode this default exists to prevent — it was true for the single unit and false for the sprint.
 
-**Codex delegation (only when `--delegate codex` is passed):** instead of dispatching units to free runtime subagents, hand a batch of mechanical units to Codex (burns Codex quota) via the `/handover` invocation, keeping planning / review / git on Claude. OFF by default, never auto-triggered. A batch of ≥3 mechanical units is the threshold at which it's worth *surfacing* the flag to the user, but the switch is always explicit. Read `references/codex-delegation.md` for the gate, batching, and the circuit breaker; it delegates each batch via `skills/handover/references/codex-invocation.md`. This is SYNCHRONOUS (occupies this turn polling); for ASYNC fire-and-forget that frees the session, use `/handover --async` instead.
+**Codex delegation (only when `--delegate codex` is passed):** instead of dispatching units to free runtime subagents, hand a batch of mechanical units to Codex (burns Codex quota) via the `/handover` invocation, keeping planning / review / git on Claude. OFF by default, never auto-triggered. A batch of ≥3 mechanical units is the threshold at which it's worth *surfacing* the flag to the user, but the switch is always explicit. Read `references/codex-delegation.md` for the gate, batching, and the circuit breaker; it delegates each batch via `skills/doing/handover/references/codex-invocation.md`. This is SYNCHRONOUS (occupies this turn polling); for ASYNC fire-and-forget that frees the session, use `/handover --async` instead.
 
 @../../../lib/skill-decision-tree.md applies — read the persona routing table.
 
@@ -124,11 +124,11 @@ Routing (read `lib/skill-decision-tree.md` § "Persona routing table"):
 
 | Task signal | Load skill |
 |---|---|
-| Code / refactor / debug / fix / feature impl / tech-stack 選型 / DB schema / API contract (default) | `skills/eng-lead/SKILL.md` |
-| UI / interaction / layout / visual hierarchy / accessibility | `skills/design-lead/SKILL.md` |
-| Multi-team coord / process design / SLA / runbook / on-call | `skills/ops-lead/SKILL.md` |
-| Feature scoping / metric / PMF / pricing / user research | `skills/product-lead/SKILL.md` |
-| Kill / pivot / scope cut / strategic frame | `skills/ceo/SKILL.md` |
+| Code / refactor / debug / fix / feature impl / tech-stack 選型 / DB schema / API contract (default) | `skills/thinking/eng-lead/SKILL.md` |
+| UI / interaction / layout / visual hierarchy / accessibility | `skills/thinking/design-lead/SKILL.md` |
+| Multi-team coord / process design / SLA / runbook / on-call | `skills/thinking/ops-lead/SKILL.md` |
+| Feature scoping / metric / PMF / pricing / user research | `skills/thinking/product-lead/SKILL.md` |
+| Kill / pivot / scope cut / strategic frame | `skills/thinking/ceo/SKILL.md` |
 
 Apply the loaded persona's Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns to all Stage 3 work in this same context. Persona is a lens, not a subagent — it rides the architect (spec + review), while implementation runs per the Execution mode block above.
 
@@ -152,7 +152,7 @@ Mirrors background-session protocol (`result:` / `needs input:` / `failed:`) but
 
 ### Stage 4: Review + verify gate (skip if `--quick`)
 
-Invoke `skills/review/SKILL.md`. Parse output for:
+Invoke `skills/doing/review/SKILL.md`. Parse output for:
 
 - P0 + P1 findings (excluding entries already AUTO-FIXED by review skill)
 - `COVERAGE GAP` entries
@@ -224,7 +224,7 @@ checkpoint / session note). SHIPPED emits `shipped`; PAUSED emits `paused` with
 the phase it parked in; FAILED/ABORTED emit `failed`/`aborted`.
 
 #### SHIPPED
-1. Invoke `skills/ship/SKILL.md` — runs commit + push + PR if applicable
+1. Invoke `skills/doing/ship/SKILL.md` — runs commit + push + PR if applicable
 2. Trigger Extract + Backflow (writes to docs/sessions/, docs/learnings/,
    `{brain}/sessions/` + `gbrain sync` + announce path when a brain runtime
    is present — skip silently when not, possibly Inbox/ship-log/)

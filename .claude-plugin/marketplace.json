@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "pandastack",
-      "description": "Personal AI operator OS for Claude Code. 26 skills in thinking / doing / writing / meta buckets, 5 personas, dev / writing / knowledge lifecycles with a learning loop.",
+      "description": "Personal AI operator OS for Claude Code. 28 skills in thinking / doing / writing / meta buckets, 5 personas, dev / writing / knowledge lifecycles with a learning loop, plus a skill-construction quality loop.",
       "source": ".",
       "category": "personal-os",
       "homepage": "https://github.com/panda850819/pandastack"

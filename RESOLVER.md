@@ -91,6 +91,10 @@ v2.2.0 cut `think-like-naval` and `think-like-alan-chan` — replicating someone
 | Skill | Purpose | Trigger |
 |---|---|---|
 | `pandastack:skill-creator` | Create new pandastack skills. MECE-checks RESOLVER, enforces hot/cold dispatch, and applies trigger-first skill evolution before creating/extracting abstractions. | "create a skill", "new pandastack skill", "improve this skill" |
+| `pandastack:writing-great-skills` | Reference + 8-axis scorecard for well-constructed skills. The construction-quality SSOT (scores the SKILL.md, not its artifact — that's `lib/quality-rubric.md`). `skill-creator` self-checks against it; `skill-eval` binds it. | "how do I write a skill", "what makes a skill good", consulted while authoring |
+| `pandastack:skill-eval` | Score an existing skill against the writing-great-skills scorecard and write a co-located `eval.md` verdict (hash-stamped; `lint-eval-fresh.sh` catches drift). Evaluator counterpart to skill-creator. | "eval this skill", "score this skill", "is this skill well-written" |
+
+> **skill-creator vs skill-eval vs writing-great-skills**: writing-great-skills is the criteria (read); skill-creator builds skills and self-checks against it; skill-eval judges existing skills against it and leaves the verdict. Same SSOT, generator/evaluator split — mirrors how `lib/quality-rubric.md` binds `write`/`design-lead` (generate) and `review` (evaluate).
 
 ---
 
@@ -170,9 +174,9 @@ All 5 are READ-ONLY persona skills. They recommend; user decides.
 
 | Composition | Driver / chain | Where the lifecycle is documented |
 |---|---|---|
-| dev | `/sprint` (1-2h) or manual `/office-hours` → `/careful` → build → `/qa` → `/review` → `/ship` | `skills/sprint/SKILL.md` + README "Lifecycle map" |
-| writing | `/write` → manual publish (`ship write` retired 2026-06-12, no Blog tree) | `skills/write/SKILL.md` + README "Lifecycle map" |
-| knowledge | direct write to vault → `/ship knowledge <path>` | `skills/ship/modes/knowledge.md` + README "Lifecycle map" |
+| dev | `/sprint` (1-2h) or manual `/office-hours` → `/careful` → build → `/qa` → `/review` → `/ship` | `skills/doing/sprint/SKILL.md` + README "Lifecycle map" |
+| writing | `/write` → manual publish (`ship write` retired 2026-06-12, no Blog tree) | `skills/writing/write/SKILL.md` + README "Lifecycle map" |
+| knowledge | direct write to vault → `/ship knowledge <path>` | `skills/doing/ship/modes/knowledge.md` + README "Lifecycle map" |
 
 What used to be `flows/<name>.md` is gone. Reasons:
 - **dev**: `/sprint` is the executable spec; the long-form `flows/dev.md` was duplicate.

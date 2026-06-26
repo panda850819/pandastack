@@ -82,7 +82,7 @@ User can override. Wait for confirmation.
 
 Build N dispatch prompts using inline-from-skill pattern (see `lib/persona-frame.md` § "Inline-from-skill dispatch pattern"):
 
-1. Read each persona's `skills/{persona}/SKILL.md`
+1. Read each persona's `skills/thinking/{persona}/SKILL.md`
 2. Extract 6 contract sections (Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns / BAD-GOOD)
 3. Inline persona block + hard rules + branch-specific brief at top of subagent prompt
 4. Dispatch ALL branches in **one message** with multiple `Agent` tool calls:

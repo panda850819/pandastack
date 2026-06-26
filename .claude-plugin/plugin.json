@@ -1,7 +1,7 @@
 {
   "name": "pandastack",
-  "description": "Personal AI operator OS for Claude Code. Skill-only (no agents, no commands), 26 skills organized into thinking / doing / writing / meta buckets under skills/, tiered via manifest.toml. 5 persona skills (ceo + 4 -lead). Covers dev / writing / knowledge lifecycles with a review-and-ship learning loop.",
-  "version": "3.0.0",
+  "description": "Personal AI operator OS for Claude Code. Skill-only (no agents, no commands), 28 skills organized into thinking / doing / writing / meta buckets under skills/, tiered via manifest.toml. 5 persona skills (ceo + 4 -lead). Covers dev / writing / knowledge lifecycles with a review-and-ship learning loop, plus a skill-construction quality loop (writing-great-skills + skill-eval).",
+  "version": "3.1.0",
   "author": {
     "name": "Panda Zeng"
   },
@@ -42,6 +42,8 @@
     "./skills/meta/retro-month",
     "./skills/meta/retro-week",
     "./skills/meta/skill-creator",
-    "./skills/meta/using-pandastack"
+    "./skills/meta/skill-eval",
+    "./skills/meta/using-pandastack",
+    "./skills/meta/writing-great-skills"
   ]
 }

@@ -9,11 +9,11 @@ reads:
   - repo: lib/stop-rule.md
   - repo: lib/escape-hatch.md
   - repo: lib/capability-probe.md
-  - repo: skills/ceo/SKILL.md
-  - repo: skills/product-lead/SKILL.md
-  - repo: skills/design-lead/SKILL.md
-  - repo: skills/eng-lead/SKILL.md
-  - repo: skills/ops-lead/SKILL.md  # invoked only when ops-dominant
+  - repo: skills/thinking/ceo/SKILL.md
+  - repo: skills/thinking/product-lead/SKILL.md
+  - repo: skills/thinking/design-lead/SKILL.md
+  - repo: skills/thinking/eng-lead/SKILL.md
+  - repo: skills/thinking/ops-lead/SKILL.md  # invoked only when ops-dominant
 writes:
   - vault: Inbox/boardroom-*.md
   - cli: stdout
@@ -25,10 +25,10 @@ capability_required:
   - lib/persona-frame.md
   - lib/outside-voice-rule.md
   - lib/stop-rule.md
-  - skills/ceo
-  - skills/product-lead
-  - skills/design-lead
-  - skills/eng-lead
+  - skills/thinking/ceo
+  - skills/thinking/product-lead
+  - skills/thinking/design-lead
+  - skills/thinking/eng-lead
 ---
 
 # Boardroom — 4-voice plan critique
@@ -103,7 +103,7 @@ Default mode only. If `--panel` was given, skip to Stage 2-PANEL.
 
 For each voice in order:
 
-1. Load `skills/{voice}/SKILL.md` — extract Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns sections via `lib/persona-frame.md` contract.
+1. Load `skills/thinking/{voice}/SKILL.md` — extract Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns sections via `lib/persona-frame.md` contract.
 2. Print voice header:
    ```
    ─── {voice} ───
@@ -127,7 +127,7 @@ For each voice in order:
 
 Engineers independence — the deliberate opposite of default Stage 2. No voice sees another voice's output or any evolving plan; every voice critiques the **original** plan from a cold context.
 
-1. **Dispatch all in-scope voices in parallel as cold subagents.** For each voice, build the subagent prompt via the `lib/persona-frame.md` "Inline-from-skill dispatch pattern": resolve `skills/{voice}/SKILL.md`, extract the 6 contract sections (Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns + BAD/GOOD calibration), inline them as the persona block at the TOP of the prompt. Below the fence, paste ONLY the original plan plus the adversarial mandate. Inline the relevant hard rules (Panda's voice, no em dash, no Co-Authored-By) — subagents do not read substrate.
+1. **Dispatch all in-scope voices in parallel as cold subagents.** For each voice, build the subagent prompt via the `lib/persona-frame.md` "Inline-from-skill dispatch pattern": resolve `skills/thinking/{voice}/SKILL.md`, extract the 6 contract sections (Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns + BAD/GOOD calibration), inline them as the persona block at the TOP of the prompt. Below the fence, paste ONLY the original plan plus the adversarial mandate. Inline the relevant hard rules (Panda's voice, no em dash, no Co-Authored-By) — subagents do not read substrate.
 
 2. **Adversarial mandate, not descriptive.** Each subagent's task: "Find the strongest reasons this plan FAILS from the {voice} lens. Default to 'this has a fatal flaw' and try to justify it. Return 3-5 findings; for each: severity (blocker / major / minor), the failure it would cause, and a concrete patch. Do not soften, do not list what's good." Mirrors the adversarial-verify discipline (default-to-reject).
 

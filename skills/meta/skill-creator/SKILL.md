@@ -32,7 +32,7 @@ walking the index. If the capability is really knowledge (→ a brain page) or o
 deterministic step (→ a one-line script / `lib/` helper), stop here — "not a skill"
 is a valid outcome, and it kills sprawl upstream of the overlap check below.
 
-Open `pandastack/RESOLVER.md`. Walk every category (Knowledge / Writing / Dev workflow / Retro-session / Tool wrappers / Personas / Multi-lens review / Trust evaluation). For each existing skill in scope, ask: does its trigger surface already cover this intent? If yes, extend that skill instead of adding new.
+Open `RESOLVER.md`. Walk every category (Knowledge / Writing / Dev workflow / Retro-session / Tool wrappers / Personas / Multi-lens review / Trust evaluation). For each existing skill in scope, ask: does its trigger surface already cover this intent? If yes, extend that skill instead of adding new.
 
 Also read the **Disambiguation** section — it lists known "look-like overlap" pairs (sprint vs team-orchestrate, four review skills, requirement-discovery split, etc.). Make sure your new skill doesn't recreate a deliberately-separated split.
 
@@ -71,7 +71,7 @@ Use `lib/trigger-first-skill-evolution.md`:
 
 ### 4. Write SKILL.md
 
-Frontmatter must match `pandastack/SKILL-FRONTMATTER.md`:
+Frontmatter must match `SKILL-FRONTMATTER.md`:
 
 ```yaml
 ---
@@ -141,7 +141,7 @@ not start stealing a **near-neighbor's** traffic (route confusion). This is a
 infra would cost more than it saves and would rot in a solo repo.
 
 1. Pick ~6 **confusable pairs** whose trigger surfaces sit closest to the one you
-   touched. Sources for the candidates: `pandastack/RESOLVER.md` Disambiguation
+   touched. Sources for the candidates: `RESOLVER.md` Disambiguation
    section, `DISPATCH.md`, each SKILL.md's `Skip` / `NOT for` frontmatter, and
    `lib/skill-decision-tree.md`. Standing examples: sprint vs team-orchestrate,
    grill vs office-hours, the four review skills, ship vs handover.
@@ -155,16 +155,22 @@ infra would cost more than it saves and would rot in a solo repo.
 This is the cheap, solo-durable version of yao-meta-skill's route-confusion guard:
 steal the mechanism, refuse its harness shape.
 
+### 7. Construction self-check (generation-moment binding)
+
+Before declaring the skill done, score it against the [`../writing-great-skills/SKILL.md`](../writing-great-skills/SKILL.md) scorecard (the construction-quality SSOT). Any axis landing **weak/fail** with no reason to keep it → revise before merge. Then run `/skill-eval <name>` to write the co-located `eval.md` (every skill carries one; `lint-eval-fresh.sh` enforces it). This mirrors how `lib/quality-rubric.md` binds at the generation moment — author knows the axes upfront and steers toward them.
+
 ## Output Format
 
 ```
 skills/<bucket>/<name>/   (bucket = thinking | doing | writing | meta)
-└── SKILL.md            ← created
+├── SKILL.md            ← created
+└── eval.md             ← created by /skill-eval
 .claude-plugin/plugin.json ← "./skills/<bucket>/<name>" added to skills array
+manifest.toml            ← [skill.<name>] entry added
 RESOLVER.md              ← row added
 ```
 
-Verification checks pass, and any affected resolver-golden cases are noted.
+Verification checks pass (`lint-manifest-sync.sh`, `lint-eval-fresh.sh`), and any affected resolver-golden cases are noted.
 
 ## Anti-Patterns
 
@@ -177,6 +183,6 @@ Verification checks pass, and any affected resolver-golden cases are noted.
 
 ## Related
 
-- `pandastack/SKILL-FRONTMATTER.md` — the contract this skill enforces
-- `pandastack/RESOLVER.md` — the index this skill updates
+- `SKILL-FRONTMATTER.md` — the contract this skill enforces
+- `RESOLVER.md` — the index this skill updates
 - `learnings/patterns/long-session-evals` — why the hot/cold rule exists

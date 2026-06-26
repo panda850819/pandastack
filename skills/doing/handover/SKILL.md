@@ -7,7 +7,7 @@ description: |
   Use when a plan has several rote, file-scoped build units and Panda deliberately wants Codex subscription quota used. NOT for plan writing, generic engine invocation, subagent-driven-development loops, closing finished work, PR/ship flow, or exploratory judgment-heavy work.
 reads:
   - repo: docs/plans/**
-  - repo: skills/handover/references/codex-invocation.md
+  - repo: skills/doing/handover/references/codex-invocation.md
   - cli: git
   - cli: codex
 writes:

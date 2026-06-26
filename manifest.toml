@@ -68,7 +68,7 @@ updated = "2026-05-09"
 # etc. 90-day alias grace via SKILL.md frontmatter `aliases:`.
 
 # ============================================================================
-# CORE (24) — markdown-only, fresh-clone runnable
+# CORE (26) — markdown-only, fresh-clone runnable
 # ============================================================================
 
 [skill.boardroom]
@@ -154,6 +154,10 @@ description = "Hand unfinished work to Codex to DO (not /ship, which closes fini
 tier = "core"
 description = "Create new pandastack skills, MECE-checked against RESOLVER, trigger-first evolution."
 
+[skill.skill-eval]
+tier = "core"
+description = "Score a skill's construction against the writing-great-skills scorecard; write co-located eval.md."
+
 [skill.sprint]
 tier = "core"
 description = "1-2h focused execution: dojo, grill-lite, execute, review, ship."
@@ -166,6 +170,10 @@ description = "N independent branches in parallel git worktrees."
 [skill.using-pandastack]
 tier = "core"
 description = "Cognitive contract loaded at session start."
+
+[skill.writing-great-skills]
+tier = "core"
+description = "Reference + scorecard for well-constructed skills; the construction-quality SSOT skill-eval binds."
 
 [skill.write]
 tier = "core"
