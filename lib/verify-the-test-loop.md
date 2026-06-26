@@ -26,11 +26,12 @@ will be verified by someone re-running something.
 the artifact embeds this change.** No proof → do not ask them to test;
 the bug to fix is the pipeline, not the code.
 
-> **Enforce in code, not prose** (Nisi: enforce, don't instruct). Run the gate:
-> `lib/verify-deploy-proof.sh <artifact> --src <dir> --marker <unique-string>`
-> — exit 0 = proof holds; 1 missing / 2 marker absent (stale or wrong file) /
-> 3 source newer than artifact (stale build). Non-zero → STOP, do not ask a
-> human to test. A grep-by-eye that gets skipped is exactly the lie this prevents.
+> **Enforce in code, not prose** (Nisi: enforce, don't instruct). Use the
+> strongest automated proof your stack exposes: a marker check against the
+> deployed artifact, a source-not-newer-than-artifact check, a pinned deploy
+> path, or a stable artifact identity check. Non-zero / missing proof → STOP,
+> do not ask a human to test. A grep-by-eye that gets skipped is exactly the
+> lie this prevents.
 
 Minimum proof (pick what the stack allows, strongest first):
 

@@ -106,6 +106,11 @@ echo "$text_out" | grep -q "Worker runtime" \
 echo "$text_out" | grep -q "Operator runtime" \
   && pass "text output contains 'Operator runtime'" \
   || fail_t "text output missing 'Operator runtime'"
+if echo "$text_out" | grep -qi "agent-worker"; then
+  fail_t "text output should not require split-out agent-worker"
+else
+  pass "text output does not require split-out agent-worker"
+fi
 
 # T03 -- JSON has roles.host, roles.worker, roles.operator
 echo "$json_out" | "$PY3" -c "
@@ -114,8 +119,9 @@ r=json.load(sys.stdin)
 assert 'host' in r['roles'],'host missing'
 assert 'worker' in r['roles'],'worker missing'
 assert 'operator' in r['roles'],'operator missing'
+assert 'agent_worker_present' not in r['roles']['worker'],'agent-worker should not be pack-local'
 " 2>/dev/null \
-  && pass "JSON has roles.host, roles.worker, roles.operator" \
+  && pass "JSON has roles.host, roles.worker, roles.operator without agent-worker" \
   || fail_t "JSON missing roles structure"
 
 # ---------------------------------------------------------------------------
@@ -235,9 +241,14 @@ echo "$init_codex_out" | grep -qF "$repo_root" \
   || fail_t "init codex --dry-run missing absolute repo path"
 
 init_hermes_out="$("$PY3" "$CLI" init --host hermes --dry-run 2>&1)"
-echo "$init_hermes_out" | grep -qiE "hermes|pdctx" \
-  && pass "init --host hermes --dry-run mentions hermes/pdctx" \
-  || fail_t "init hermes --dry-run missing hermes/pdctx mention"
+echo "$init_hermes_out" | grep -qiE "hermes|\\.hermes/skills" \
+  && pass "init --host hermes --dry-run mentions Hermes direct import" \
+  || fail_t "init hermes --dry-run missing Hermes direct-import instructions"
+if echo "$init_hermes_out" | grep -qi "pdctx"; then
+  fail_t "init hermes --dry-run should not require pdctx"
+else
+  pass "init hermes --dry-run does not require pdctx"
+fi
 
 # T05 -- non-dry-run for claude/hermes exits nonzero (no mutation)
 for bad_host in claude hermes; do

@@ -151,7 +151,6 @@ Bolted onto it is a **second, separable product: an autonomous driver platform.*
 
 ## 5. ITEMS NEEDING A DECISION (called out, not auto-resolved)
 
-- `lib/verify-deploy-proof.sh` — referenced only by `lib/verify-the-test-loop.md` (1 lib→lib ref), zero SKILL.md uses. **Decide:** inline its one rule into `verify-the-test-loop.md`, or keep as a script. Live but barely.
 - `contexts/` (4 `.toml` recipes: developer/knowledge-manager/trader/writer) — referenced only by `RESOLVER.md` + `README.md`, which *claim* `persona-frame` loads them, but no SKILL.md or `lib/persona-frame.md` actually reads them. Orphan recipe layer. **Decide:** wire into `persona-frame`, or CUT as a stale subsystem (and fix the RESOLVER claim either way).
 - `ROADMAP.md` — mixed. The v1.x/v2 public-readiness sections are legit pack roadmap; ~40% (the Scheduler/driver-autonomy section + symphony feature-map + `drive-*` task ladder) is platform planning. **Decide:** keep `ROADMAP.md`, SPLIT the scheduler/driver-autonomy section out to the platform's own roadmap.
 - Version-drift reconcile (cosmetic but should ship together): `plugin.json` v3.1.0/28-skills vs `manifest.toml` + `RESOLVER.md` v2.2/26-skills.

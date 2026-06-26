@@ -3,17 +3,30 @@ title: Pandastack skill-quality baseline (corpus-wide)
 date: 2026-06-26
 scope: 28 skills across engineering/ meta/ productivity/ writing/
 criteria: writing-great-skills 8-axis scorecard
+status: historical-baseline
 ---
 
 # Pandastack skill-quality baseline — 2026-06-26
+
+## Current-state boundary
+
+This is a dated corpus baseline, not the active backlog. Current skill quality state lives in the co-located `skills/**/eval.md` files, and `scripts/lint-eval-fresh.sh` is the gate that proves each current eval still matches its `SKILL.md` hash.
+
+Post-baseline repairs changed several findings below:
+
+- `init` no longer has the Completion FAIL; current evidence is `skills/engineering/init/eval.md`.
+- `retro-week` no longer has the broken `retro-scan.sh` path or write-target contradiction; current evidence is `skills/productivity/retro-week/eval.md`.
+- `skill-creator` no longer cites the dead `learnings/patterns/long-session-evals` path; current evidence is `skills/meta/skill-creator/eval.md`.
+
+Current live debt should be taken from those co-located evals. At the time of this boundary note, the concrete live debt called out by current evals includes `retro-week` body length and trigger-clustering in `skills/productivity/retro-week/eval.md`; repaired baseline findings below are audit history only.
 
 ## Method
 
 Every skill was scored against the **writing-great-skills 8-axis scorecard**: Predictability, Description/invocation, Completion criteria, Information hierarchy, Leading words, Pruning, Granularity, pandastack conformance. Each axis verdict (pass / weak / fail) is **line-cited** to the exact `SKILL.md` line that backs it — no verdict rests on paraphrase. Every eval was then **adversarially re-verified** by a second pass that tried to refute each call: it confirmed the cited line exists and supports its verdict, probed every `pass` axis for a hidden no-op / duplication / vague criterion the first pass missed, and probed every `weak`/`fail` for an invented requirement (faulting `version`/`type`/`reads:` as missing when SKILL-FRONTMATTER.md makes them optional or advisory). Two evals were rewritten in that pass (`retro-week`, `team-orchestrate`) where a pass concealed a real defect or a fabricated requirement. Each eval's frontmatter carries an `evaluated_skill_hash` = `git hash-object` of the scored SKILL.md, so `scripts/lint-eval-fresh.sh` fails the moment a skill is edited without its eval being re-run. The baseline cannot silently drift.
 
-**Corpus health: 28 skills. 2 STRONG, 26 SOLID, 0 WEAK.** Every skill clears the bar on its load-bearing virtue (a deterministic process anchored by a pretrained leading word). No skill carries an overall WEAK verdict; the entire quality story is in the per-axis weaknesses, which cluster on three axes (Pruning, Conformance, Completion) and almost never touch the core (Predictability, Granularity). **Two axis-level FAILs** sit inside otherwise-SOLID skills: init's Completion criteria and retro-week's pandastack conformance.
+**Historical corpus health at capture time: 28 skills. 2 STRONG, 26 SOLID, 0 WEAK.** Every skill cleared the bar on its load-bearing virtue (a deterministic process anchored by a pretrained leading word). No skill carried an overall WEAK verdict; the entire quality story was in the per-axis weaknesses, which clustered on three axes (Pruning, Conformance, Completion) and almost never touched the core (Predictability, Granularity). **Two axis-level FAILs** sat inside otherwise-SOLID skills at capture time: init's Completion criteria and retro-week's pandastack conformance. See the current-state boundary above before treating either as live work.
 
-## Scorecard (per skill)
+## Historical Scorecard (Per Skill)
 
 Weak/fail axes use short labels: Pred, Desc, Compl, Hier, Lead, Prune, Gran, Conf.
 
@@ -48,7 +61,7 @@ Weak/fail axes use short labels: Pred, Desc, Compl, Hier, Lead, Prune, Gran, Con
 | careful | engineering | SOLID | Desc, Compl, Hier, Prune, Gran, Conf |
 | retro-week | productivity | SOLID | Pred, Desc, Hier, Prune, Gran + **FAIL: Conf** |
 
-## Corpus patterns
+## Historical Corpus Patterns
 
 Axis-level weakness counts across all 28 skills (a skill contributes once per weak/fail axis):
 
@@ -63,21 +76,21 @@ Axis-level weakness counts across all 28 skills (a skill contributes once per we
 | Predictability | 3 | 0 | 3 | 11% |
 | Granularity | 3 | 0 | 3 | 11% |
 
-**Weakest axes (the systemic debt):**
+**Weakest axes at capture time:**
 
 1. **Pruning — 26/28 (93%).** Near-universal. The dominant failure shape is the **"Common Rationalizations" table** (sprint, ship, review, careful) — motivational prose the model already obeys, a no-op that pays hot-context load to change no behavior. The second shape is **changelog sediment** (`## Origin` sections in dojo, grill, team-orchestrate; PRO-id lineage comments in retro-week) — provenance that belongs in commit history, not a hot SKILL.md. The third is **single-fact-stated-N-times** (routing boundaries restated in description + body + Team-protocol across every persona lens). Pruning weakness is what drives most of the length overruns.
 2. **pandastack conformance — 19/28 (68%), incl. 1 FAIL.** Almost entirely the **~80-line body budget**, not broken refs. The big bodies: retro-week (473), sprint (346), deepwiki (316), review (309), office-hours (280), boardroom (231). Lib/path refs resolve in the large majority of cases; the genuine *broken* refs are narrow and fixable — retro-month and retro-week both point at `~/site/skills/pandastack/scripts/retro-scan.sh` (canonical is the skillpack-root `scripts/...`), and skill-creator cites a dead `learnings/patterns/long-session-evals` path 3×. **retro-week is the only conformance FAIL:** the broken engine path plus a 473-line hot-bash body cross the hard bar. Frontmatter drift (`mode:` instead of `type:` in boardroom; missing `version`) is real but cosmetic and lint-tolerated.
 3. **Completion criteria — 18/28 (64%), incl. 1 FAIL.** The pattern is **soft middle steps** — "do a quick sanity check", "if it revealed something useful", "predict the failure mode", "ground in team reality" — directives with no checkable done-state that invite premature completion. Persona lenses (ceo/product/design/ops/eng) all share this: their On-Invoke steps end on actions, not done-conditions. **init is the Completion FAIL:** its final step *prints* "pandastack initialized" without verifying the config block was appended or the dirs created — it asserts done instead of checking it.
 
-**Strongest axes (what the corpus does right):**
+**Strongest axes at capture time:**
 
 1. **Predictability — only 3/28 weak (11%).** This is the corpus's spine and it holds. Almost every skill fixes a deterministic ordered process (numbered stages, fixed gather-state blocks, per-phase wait-gates, terminal-state contracts) so the *process* repeats even when the output varies. The three misses are routing non-determinism (boardroom's fuzzy `ops_dominant` keyword match), an unresolved `{learnings_dir}` path (review), and a self-contradicting write target (retro-week L18 vs L400) — not a vague core.
 2. **Granularity — only 3/28 weak (11%).** Splits are disciplined: persona lenses share `lib/persona-frame.md` rather than copy it; heavy sub-phases (dojo/grill/review/ship) are split off `/sprint` by independent reach; modes stay as branches within one skill. The 3 misses are accretion (`.5` sub-phases in skill-creator) or an un-split heavy sub-protocol (careful's logging subsystem, retro-week's GC sweep), not fragmentation.
 3. **Leading words — only 7/28 weak (25%).** The corpus leans hard on pretrained anchors that collapse a behavior region into a few tokens: "conductor", "STRIDE", "boil the lake", "leaky bucket", "pressure cooker", "whistle and a finish line", "every continue is a harness failure". These do real invocation+execution work, not decoration.
 
-## Skills needing work
+## Historical Follow-Up List
 
-No skill earned an overall WEAK verdict, so "needing work" here means the heaviest axis-debt, ranked by severity. The two structural FAILs lead; the rest are the 5–6-weak-axis cluster.
+This list records what the baseline saw on 2026-06-26. It is not the current backlog. Use current co-located `skills/**/eval.md` files plus `scripts/lint-eval-fresh.sh` / `python3 scripts/lint-refs-resolve.py` for live work selection.
 
 1. **init** (engineering, Completion **FAIL**) — **top fix: replace the print-only finish with a real completion check.** Step 5 must assert the `## pandastack` block exists in the target config and the `docs/learnings/*` + `docs/checkpoints` dirs were created, *then* print success. As written, a failed Step 3/4 still reports "initialized". This is the only correctness-class defect in the corpus.
 2. **retro-week** (productivity, Conformance **FAIL**, 6 dings) — **top fix: fix the broken engine path and the self-contradicting write target.** `~/site/skills/pandastack/scripts/retro-scan.sh` does not exist on disk (canonical is the skillpack-root `scripts/retro-scan.sh`), which also guts the "same brief every run" predictability claim; and L18 says Phase 3 writes `docs/retros/` while L400 actually writes `brain/reflections/weekly/`. Resolve the path via a skillpack-root variable, make both write targets read `brain/reflections/weekly/`, then move the 160-line GC-sweep sub-protocol and shell-portability sediment out of the 473-line hot body.

@@ -134,7 +134,7 @@ EOF
   Pick a host:
     Claude Code:  bash scripts/bootstrap.sh --claude
     Codex CLI:    bash scripts/bootstrap.sh --codex
-    Hermes:       see docs/HERMES.md (uses pdctx for dispatch — private overlay)
+    Hermes:       see docs/HERMES.md (direct skill import into ~/.hermes/skills/)
 EOF
     ;;
 esac
