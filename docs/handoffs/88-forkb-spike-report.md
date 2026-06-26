@@ -21,7 +21,7 @@ Spike skill: `sprint`. Branch: `feat/88-forkb-spike`. Mode: CAREFUL, no push, no
 | layout | real `skills/sprint/` untouched; `skills-cat/doing/sprint` → `../../skills/sprint` | `ls -la` |
 | #3 rel-path | SKILL.md + `references/codex-delegation.md` readable through the category view | `head`, `ls` via skills-cat path |
 | #3 rel-path | `../../lib/*.md` resolves physically from the real flat path (unchanged baseline) | `ls skills/sprint/../../lib/persona-frame.md` OK |
-| #5 lint | **no lint change needed** — original `-type d` lint stays green; skills-cat is a sibling of skills/, invisible to the scan | `lint` → OK 26 in sync (skills-cat untracked, not counted) |
+| #5 lint | **no lint change needed** — original `-type d` lint stays green; skills-cat/ is outside `skills/`, so the scan never sees it (this holds whether or not skills-cat is tracked) | `lint` → OK 26 in sync |
 | #5 hook | `conformance-smoke.sh hook` PASS (codex/claude/cursor) | run |
 | #4 dist | symlinks survive git (mode 120000) + `git archive` + macOS `cp -R` (the Claude cache directory-copy model) | tested in forward variant; same mechanism applies to skills-cat symlinks |
 | #6 rollback | trivial: `rm -r skills-cat/` → back to exact current state (skills/ never changed) | by construction |
