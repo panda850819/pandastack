@@ -52,7 +52,8 @@ echo "[4] distribution: symlink view survives the artifact path"
 tmp="$(mktemp -d)"
 git -C "$repo_root" archive --format=tar HEAD plugins/pandastack/skills-cat | tar -xf - -C "$tmp" 2>/dev/null || true
 [ -L "$tmp/plugins/pandastack/skills-cat/$cat_dir/$skill" ] \
-  && ok "git archive preserves the category symlink" || echo "  (note: symlink not in archive — commit skills-cat first)"
+  && ok "git archive preserves the category symlink" \
+  || no "git archive missing the category symlink (is skills-cat committed?)"
 
 echo "[5] double-load risk characterization (static)"
 direct=$(find "$plugin/skills" -maxdepth 1 -mindepth 1 \( -type d -o -type l \) -name "$skill" | wc -l | tr -d ' ')
@@ -77,13 +78,22 @@ echo "  If discovery is whole-plugin-recursive, the fix is cheap and local; it d
 if [ "${1:-}" = "--codex" ]; then
   echo
   echo "== --codex: isolated Codex live check (throwaway temp HOME, no ~/.codex mutation) =="
-  if ! command -v codex >/dev/null 2>&1; then echo "  SKIP: codex CLI not found"; else
+  if ! command -v codex >/dev/null 2>&1; then
+    no "NOT VERIFIED: codex CLI not found (--codex requested but cannot run; does NOT count as pass)"
+  else
     th="$(mktemp -d)"; mkdir -p "$th/.codex/skills"
     ln -s "$plugin/skills" "$th/.codex/skills/pandastack"
     echo "  temp HOME=$th ; codex skills -> worktree skills/ (skills-cat NOT linked = matches bootstrap design)"
-    out="$(HOME="$th" codex exec --skip-git-repo-check 'List your available skills names, one per line.' 2>&1 || true)"
-    n=$(printf '%s\n' "$out" | grep -ci "\b$skill\b" || true)
-    echo "  '$skill' mentioned ${n}x by codex (expect >=1, not duplicated)"
+    if ! out="$(HOME="$th" codex exec --skip-git-repo-check 'List your available skill names, one per line.' 2>&1)"; then
+      no "codex exec failed: $(printf '%s' "$out" | head -1)"
+    else
+      n=$(printf '%s\n' "$out" | grep -ci "\b$skill\b" || true)
+      case "$n" in
+        1) ok "codex discovered '$skill' exactly once" ;;
+        0) no "codex did NOT discover '$skill' (n=0)" ;;
+        *) no "codex double-loaded '$skill' (n=$n)" ;;
+      esac
+    fi
   fi
 fi
 
