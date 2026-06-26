@@ -9,27 +9,29 @@ rubric: writing-great-skills@1.0.0
 
 # Eval — retro-month
 
-**Verdict: SOLID.** A tightly-gated three-phase interview flow whose predictability is enforced by explicit human wait-points and verbatim-capture rules, weakened by sprawl and a script reference that does not resolve.
+**Verdict: WEAK.** Three axes land weak with no fail (completion, pruning, conformance), and the consistency rule is ≥2 weak → WEAK. Leading virtue is a hard-anchored interview process (one-question-at-a-time, verbatim capture, no-invent rule) that makes the strategic conversation reproducible; it loses the SOLID grade because the Phase 2 prep-summary fields (L100-105) name sections the resolved engine never emits, the body is 239 lines (~3x the ~80-line guideline), the 1a-1d sub-sections re-describe engine output (pruning sediment), and "scan-only month" leaves a soft completion edge with no checkable interview floor.
 
 | Axis | Verdict | Evidence |
 |---|---|---|
-| Predictability | pass | L113 — "Walk through layers ONE QUESTION AT A TIME" plus per-phase wait-gates (L86, L109) pin the same process every run |
-| Description / invocation | weak | L3 — "monthly retro", "monthly review" are two phrasings of one branch (near-synonym duplication); `version` absent from frontmatter |
-| Completion criteria | pass | L86 — Phase 1 ends on a checkable gate ("掃完了。要開始月度 interview 嗎？" — wait for user) and Phase 3 lands on a concrete write target (L159) |
-| Information hierarchy | weak | L31 — "The sub-sections below document what it gathers" frames 1a–1d as docs, yet L39–47/L53–56 ship full executable bash that re-runs what the engine already covers — duplication/sediment |
-| Leading words | pass | L236 — "prefer **append + supersede** over **delete + rewrite**" anchors the edit discipline in a compact, pretrained contrast |
-| Pruning | weak | L21 — the body is 239 lines (vs the ~<80 pandastack norm); much is the Phase-3 output template (L161–220), legitimate scaffold but still sprawl, and 1a–1d duplicate engine behaviour |
-| Granularity | pass | L7 — split from `retro-week` by sequence/cadence (`related_skills: [retro-week]`); the monthly cut earns its own leading word and strategic-layer steps |
-| pandastack conformance | weak | L21 — `~/site/skills/pandastack/scripts/retro-scan.sh` does NOT resolve; canonical install path is `plugins/pandastack/scripts/retro-scan.sh`, so the engine call breaks at the documented path |
+| Predictability | pass | L113 — "Walk through layers ONE QUESTION AT A TIME" plus the fixed 3-phase spine (L14-16) pins the same process every run regardless of output. |
+| Description / invocation | pass | L3 — front-loads "Interactive monthly retro", user-invocable, one trigger per branch ("/retro-month", "monthly retro", "monthly review"), no body-identity restated. |
+| Completion criteria | weak | L63 — "scan-only month" and L107 "use Phase 1 raw scan" let the run continue with no checkable floor for how much interview must happen; only 2b-i is named load-bearing (L238), the rest is fuzzy on done-vs-not. |
+| Information hierarchy | pass | L31 — engine call is hoisted, sub-sections "document what it gathers", and the Phase-3 template is co-located under one heading; steps and reference are placed by need. |
+| Leading words | pass | L122 "Drift candidates" / L141 "commodity check" / L236 "append + supersede over delete + rewrite" anchor behaviour in compact reusable concepts. |
+| Pruning | weak | L31 — "The sub-sections below document what it gathers" then 1a-1d re-describe git/learnings/weekly that the engine already produces; partial duplication of the engine's own output spec (sediment risk). |
+| Granularity | pass | L238 — the 2b-i-through-2b-v split is justified by anti-premature-completion (short-version still forces goal-alignment), each layer earns its load. |
+| pandastack conformance | weak | L100-105 — Phase 2 tells the agent to print "me.md goals (verbatim)", "Drift candidates (top 3)", "Strategic questions", "Active feedback patterns", but the resolved engine (retro-scan.sh) emits none of those (it states "semantic synthesis happens in the interview layer"), so the instructed summary references non-existent prep sections; body is also 239 lines (>~80 guideline). |
 
 ## Why it's good
-The phase gates and "ONE QUESTION AT A TIME" rule (L113) make this a genuinely deterministic interview, not a free-form chat — the agent stops and waits at L86 and L109, capturing user verdicts verbatim (L119, L146). The append+supersede discipline (L236) and the load-bearing-questions carve-out for short mode (L238: still run 2b-i goal-alignment) protect the irreducible core. Output is a single fixed brain template (L161–220), so two runs produce comparably-shaped retros.
+The interview engine is the load-bearing strength: one-question-at-a-time (L113), verbatim capture including "想不到/沒有" (L146), and a hard never-invent rule (L237) make a genuinely stochastic strategic conversation reproducible. The runtime-agnostic scan engine (L18-23) guarantees Claude/Codex/Hermes produce the same brief, and the append+supersede memory discipline (L236) protects project memory from lossy rewrites.
 
 ## Top fixes
-1. L21 — fix the broken engine path: the documented `~/site/skills/pandastack/scripts/retro-scan.sh` does not exist; canonical is `plugins/pandastack/scripts/retro-scan.sh`. A hardcoded path that breaks at install is a real conformance failure.
-2. L31 + L39–47/L53–56 — resolve the duplication: either delete the inline bash for 1a–1d (the engine runs it) or relabel them as "the engine does X" reference, not re-runnable steps. As written the agent may double-run the scan.
-3. L3 — collapse "monthly retro"/"monthly review" to one trigger and add `version:` to frontmatter for drift tracking.
+1. L100-105: reconcile the Phase 2 prep-summary fields with what retro-scan.sh actually emits. Either teach the engine to produce me.md-goals / drift-candidates / feedback-patterns, or rewrite the summary to the engine's real sections (git activity, learnings health, recent brain pages, GC sweep, inbox drain) so the agent is not told to print sections that do not exist.
+2. L63 / L107 / L238: give "scan-only month" and "短版/skip" a checkable interview floor — name the minimum questions (2b-i at least) as the completion criterion in every branch, not just the skip branch, so no run can silently finish on scan alone.
+3. L31-64: collapse the 1a-1d re-description of engine output; the engine is the single source of truth for what it gathers, so the sub-sections should reference its sections, not restate them — trimming this also pulls the body back toward the ~80-line guideline.
 
 ## Behavioral cases
-- trigger `/retro-month` (or "monthly retro") → expected process: run retro-scan engine → print compressed scan block → wait → strategic interview one question at a time → write `reflections/monthly/$YEAR-$MONTH.md`
-- anti-trigger `weekly retro` / `/retro-week` → should NOT fire (routes to sibling `retro-week`; this skill is the monthly strategic cadence only)
+- trigger `/retro-month` -> expected process: run retro-scan.sh month, print compressed scan block, ask "掃完了。要開始月度 interview 嗎？", then one-question-at-a-time interview, then write brain/reflections/monthly/$YEAR-$MONTH.md.
+- trigger `monthly review` -> expected process: same 3-phase flow; if a Hermes cron already wrote the prep, locate it via ls -t inbox/retros and read instead of re-scanning.
+- anti-trigger `weekly retro` -> should NOT fire (routes to retro-week; 30-day vs 7-day window and monthly output dir differ).
+- anti-trigger `stress test this idea` -> should NOT fire (routes to grill/office-hours; that is fuzzy-idea intake, not a periodic retro).

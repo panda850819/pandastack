@@ -9,27 +9,28 @@ rubric: writing-great-skills@1.0.0
 
 # Eval — ship
 
-**Verdict: SOLID.** A disciplined multi-mode close-verb: ordered, checkable git steps with a strong mode-dispatch table and clean progressive disclosure of the knowledge variant behind a pointer.
+**Verdict: WEAK.** Leading virtue is a deterministic mode-dispatch + numbered git pipeline where most steps carry a skip/stop rule; three axes drag it down — uncheckable end-states on two steps, a quote-gate + main-push rule each stated in three places, and a 183-line body that overruns the ~<80 prune budget.
 
 | Axis | Verdict | Evidence |
 |---|---|---|
-| Predictability | pass | L39 — mode dispatch table forces the same branch resolution every run; 11 numbered git steps run in fixed order. |
-| Description / invocation | pass | L5 — "Multi-mode ship verb" front-loads the leading word; one trigger per branch (git / knowledge), reach clause to /handover (L8). |
-| Completion criteria | weak | L74 — "do a quick sanity check against the diff" has no checkable done-state; same softness at L149 ("if it revealed something useful") invites premature completion / skipping. |
-| Information hierarchy | pass | L183 — knowledge mode pushed entirely behind `@./modes/knowledge.md`, keeping SKILL.md's hot body the git path only. |
-| Leading words | weak | L63 — "Pre-flight" anchors well, but L78/L97/L103 lean on generic section labels ("Scope Check", "Review Gate", "Commit") that restate rather than collapse into a pretrained anchor. |
-| Pruning | weak | L167 — the "Common Rationalizations" table is mostly no-op persuasion the model already obeys; combined with frontmatter `forbids` (L28) and Step 6 (L113) it triples the "never push to main" rule. |
-| Granularity | pass | L43 — knowledge variant split by invocation behind a pointer; git steps split by sequence to fight rush, each earning its cut. |
-| pandastack conformance | weak | L33 — body runs 183 lines, well past the ~<80 budget; `name: ship` and firewall fields are valid and `lib/` ref (L155) resolves, but the length is not clearly earned over the rationalizations table. |
+| Predictability | pass | L41 — the first-arg mode-dispatch table pins the same routing process every run, and each git step names a fixed skip/stop rule. |
+| Description / invocation | pass | L5 — front-loads "Multi-mode ship verb. Closes work", one trigger per branch (git / knowledge), and L8 pre-empts the /handover confusion. |
+| Completion criteria | weak | L74 — "do a quick sanity check against the diff" has no checkable done-state; L149 ("if it revealed something useful") and Step 5's action-list (L104) share the same softness, inviting silent skip. |
+| Information hierarchy | pass | L183 — knowledge mode is pushed behind `@./modes/knowledge.md`, keeping the hot body git-only; Common Rationalizations co-located under one heading. |
+| Leading words | pass | L63 — "Pre-flight", "Review Gate", "Scope Check", "Backflow" anchor each region in pretrained ops concepts; few restatements survive. |
+| Pruning | weak | L153 — the git-mode Quote gate restates the no-phantom-quotes rule that knowledge.md L147 already carries verbatim, and "never push to main" appears three times (frontmatter `forbids` L28, Step 6 L113, rationalization L176). |
+| Granularity | pass | L43 — the knowledge-mode split earns its load via a distinct `/ship knowledge` leading word; the 11 git steps are anti-premature-completion for a push-and-PR flow. |
+| pandastack conformance | weak | L183 — the body runs 183 lines, well past the ~<80 budget, and the L153/L155 duplications (pruning) are part of that overrun. Frontmatter `name: ship` matches the folder, the `@./modes/knowledge.md` cold pointer resolves, and the bare `lib/trigger-first-skill-evolution.md` ref (L155) resolves and matches sibling style (skill-creator L18, review L262 cite the same file bare) — the only conformance defect is length. |
 
 ## Why it's good
-The mode-dispatch table (L39-49) plus the path-sniff fallback (L46-50) make branch selection deterministic before any step runs, which is the root virtue here. The git path is a genuine ordered pipeline — pre-flight, scope check, review gate, commit, branch, push — each step naming concrete commands (`git pull`, `git diff --stat`, `git log origin/{main}..HEAD`) so "done vs not-done" is mostly observable. Knowledge mode is correctly held cold behind a single pointer, so the always-loaded body stays the common-case git flow.
+The load-bearing strength is determinism under branching: a single first-arg table (L41-49) plus a path-sniff fallback (L46-50) resolves git vs knowledge mode before any step runs, and every git step from Pre-flight to Release names its own skip-or-stop condition. Progressive disclosure is real — the 10KB knowledge-mode procedure lives cold behind a context pointer (L183), keeping the always-loaded body the common-case git flow. The Common Rationalizations table (L169-177) is a strong anti-bypass device that ties each shortcut to a concrete failure.
 
 ## Top fixes
-1. L74 / L149 — replace soft criteria ("quick sanity check", "if it revealed something useful") with a checkable gate (e.g. "if any matched pitfall touches a changed file, list it and require ack; else skip").
-2. L167-177 — cut or compress the Common Rationalizations table; it is persuasion prose the agent already obeys and it duplicates the L27/L113 main-push rule. This is the cheapest path back under the length budget.
-3. L113 — collapse the thrice-stated "never push to main" (frontmatter `forbids` L28, Step 6 L113, rationalization L176) to a single source of truth.
+1. L74 / L149 / L104 — replace the soft criteria ("quick sanity check", "if it revealed something useful", the bare commit action-list) with checkable gates (e.g. "if any matched pitfall touches a changed file, list it and require ack; else skip"; "stop if `git diff --cached` is empty after staging").
+2. L153 / knowledge.md L147 — collapse the duplicated Quote gate into one shared `lib/` pointer both modes reference; likewise reduce the thrice-stated main-push rule (L28 / L113 / L176) to a single source of truth.
+3. L183 — the 183-line body is the standing conformance defect. The pruning cuts in fix 2 plus pushing rarely-hit detail (Step 10 quote-gate prose, Step 11 `project-state` mechanics, the Common Rationalizations table) behind a `@./modes/` or `lib/` pointer pull it back toward the ~<80 budget. The `lib/trigger-first-skill-evolution.md` ref is already correct (resolves, bare style matches siblings) — do not touch it.
 
 ## Behavioral cases
-- trigger `/ship` (no args) → expected process: git mode — read config, pre-flight (pull/test/diff/log/branch), scope + review gates, conventional commit, feature branch, push -u, gh pr create, return PR URL.
-- anti-trigger `hand this unfinished build unit to Codex` → should NOT fire (routes to /handover — L8 explicitly disclaims this; /ship closes finished work, /handover delegates unfinished).
+- trigger `ship this` -> expected process: git mode — read config, pre-flight (pull + test + diff + log + branch), load learnings, scope check, review gate, conventional commit, feature branch, push -u, gh pr create, return URL.
+- trigger `/ship knowledge knowledge/foo.md` -> expected process: knowledge mode via `@./modes/knowledge.md` — Close (frontmatter verify + source-quality signal), optional Extract + Backflow, vault-only, never touches external systems.
+- anti-trigger `hand this unfinished unit to Codex` -> should NOT fire (routes to /handover; L8 explicitly disclaims this is a ship).

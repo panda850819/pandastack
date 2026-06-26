@@ -9,27 +9,28 @@ rubric: writing-great-skills@1.0.0
 
 # Eval — grill
 
-**Verdict: SOLID.** A tight, predictable adversarial-interrogation loop: one-question-at-a-time discipline plus a checkable, exhaustive stopping rule make the process repeatable across runs; it loses points to a thrice-stated office-hours boundary and a changelog tail that pushes the body past budget.
+**Verdict: WEAK.** Leading virtue is a genuinely predictable adversarial process (ONE-question loop + named push menu + hard stopping rule), but four axes leak points: the office-hours disambiguation and "atomic, no-brief" identity are restated across description and body, the push-once menu is pushed to lib then re-inlined verbatim, and the body carries changelog/deprecation sediment plus a dead `reads:` glob at 147 lines.
 
 | Axis | Verdict | Evidence |
 |---|---|---|
-| Predictability | pass | L48 — `**ONE question at a time.** Wait for the answer.` fixes the core process so every run drives the same loop, not a stochastic Q-dump. |
-| Description / invocation | pass | L4 — front-loads the leading phrase "Adversarial requirement discovery" and the description ends with an explicit anti-trigger handing structured output to `/office-hours`. |
-| Completion criteria | pass | L86 — stopping rule is checkable AND exhaustive: `3 consecutive answers reveal no new unknowns` / `7+ questions` / escape hatch. No premature-completion bait. |
-| Information hierarchy | pass | L52 — the 5-pattern pushback menu is a context pointer to `lib/push-once.md`, not inlined; goal-mapping (L30) is pushed to lib the same way. Progressive disclosure honoured. |
-| Leading words | pass | L26 — "surface **unknown unknowns** by interrogating one angle at a time"; reinforced by "Expect rehearsed first answers" (L50). Strong pretrained anchors, not "be thorough" no-ops. |
-| Pruning | weak | L147 — the Origin changelog re-narrates the `--mode structured` add-then-remove saga; sediment that no longer changes behaviour. Compounded by the office-hours boundary stated 3x (L8-9, L35, L139). |
-| Granularity | pass | L141 — the grill/office-hours/boardroom split is principled (atomic adversarial upstream vs structured brief vs full-plan review); each half has independent reach, so the cut earns its load. |
-| pandastack conformance | weak | L143 — frontmatter is valid (name=folder, advisory `reads/writes` resolve), but `## Origin` plus the triple-stated boundary push the body to ~147 lines, well past the ~<80 guidance, and the over-length is sediment, not earned. |
+| Predictability | pass | L48 — "ONE question at a time. Wait for the answer. Then pick the next question based on what the answer revealed" pins one invariant process every run, not a fixed output |
+| Description / invocation | weak | L5 — "Atomic 5-10 min tool, no brief output" restates body identity (L26, L139) and the office-hours steer is carried twice (L8-9 + L139) |
+| Completion criteria | pass | L85 — stopping rule is checkable and exhaustive (3 dry answers / 7+ Qs / escape hatch), with a hard-cap escape at L101 against premature continuation |
+| Information hierarchy | weak | L52 — push-once is pushed to `lib/push-once.md` (L13) yet the 5-pattern menu is re-inlined at L54-63, breaking progressive disclosure and co-location for that concept |
+| Leading words | pass | L26 — "unknown unknowns" anchors the whole skill in a pretrained concept; "rehearsed first answers" (L50) and "bike-shedding" (L87) carry behaviour cheaply |
+| Pruning | weak | L147 — Origin changelog (`--mode structured` add/remove archaeology) is sediment that changes no behaviour; also `reads: docs/learnings/**` (L11) is a no-op glob the body never consumes |
+| Granularity | pass | L52 — the push-once split earns its load: `lib/push-once.md` is reached by office-hours and boardroom too, so the cut buys cross-skill reach, not just length |
+| pandastack conformance | weak | L11 — frontmatter `name=grill` matches folder and lib refs resolve (`lib/goal-mapping.md`, `lib/push-once.md` exist at repo root, ~2K tokens combined so no hot/cold dispatch trip), but body is 147 lines (>~80) without the length earning itself, and `reads: docs/learnings/**` points at a near-empty dir (only an unrelated shell-guard pitfall) the skill ignores |
 
 ## Why it's good
-The process is genuinely deterministic where it matters: ONE question at a time (L48), push-once-minimum-per-axis (L50), a menu-driven pushback that forbids improvised pushes to keep an audit trail (L65), and a stopping rule that is both checkable and exhaustive (L85-88). The escape hatch is wired to the global "enough" protocol with a hard cap and a written unprocessed-axes line (L97-101), so the skill cannot run away from the user. The anti-pattern list (L131-135) and the drill axes as a "search space, not a checklist" (L67) keep it from degrading into the questionnaire it explicitly is not.
+The core engine is hard to misrun: L48 forces one question at a time with the next picked from the last answer, L50 codifies "push once before switching axes," and L85-101 give a checkable stopping rule with a two-strike escape hatch that defends against both bike-shedding and over-grilling. The axis list (L69-76) is framed explicitly as a search space, not a checklist (L67), which keeps the skill adversarial rather than a questionnaire — the exact thing that distinguishes it from office-hours.
 
 ## Top fixes
-1. L147 — delete the `--mode structured` add/remove changelog from Origin; it is pure sediment and the deprecation is already stated at L139. Keep only the one-line Matt-Pocock attribution.
-2. L8-9 / L35 / L139 — collapse the office-hours routing from three statements to one. Keep it in the description (HOT, does invocation work) and the "Relationship to other skills" line; cut the restatement inside "When to use".
-3. L143 — trimming fixes 1 and 2 brings the body back toward the ~80-line budget, resolving the conformance ding without losing any load-bearing step.
+1. L54-63 — collapse the re-inlined 5-pattern menu to a context pointer ("print the menu from `lib/push-once.md`"); the SKILL.md menu (L54-63) is byte-identical to the lib's Output-protocol menu (`lib/push-once.md` L49-60), so it is a true SSOT violation: two copies that must be hand-synced and will silently drift on the next edit to either file.
+2. L143-147 — delete the Origin changelog; `--mode structured` add-then-remove archaeology is sediment that changes no run behaviour. Keep at most the one-line Matt Pocock attribution (already at L24).
+3. L11 — drop or fix `reads: docs/learnings/**`; the body never consumes it and the dir holds only an unrelated pitfall, so it is a no-op declaration that fails the relevance check.
 
 ## Behavioral cases
-- trigger `grill me on the points system scope` → expected process: (optional) run goal-mapping (L30), then interrogate ONE axis at a time across Existence/Boundaries/Retroactivity/etc. (L69-76), pushing once per axis via the push-once menu (L52), stopping by the L85 rule, emitting the Grill-log template (L107) to `Inbox/grill-<slug>-<date>.md`.
-- anti-trigger `turn these grilled unknowns into a written brief` → should NOT fire; grill produces a confirmed/open log only. Routes to `/office-hours --quick` (L120, L139) for structured-brief output.
+- trigger `grill me on the points-system scope` -> expected process: optional goal-map (L30), then ONE question (L48), push-once menu on rehearsed reply (L52), drill axes as search space (L69), stop per L85, emit grill log to `Inbox/grill-*.md` (L126)
+- anti-trigger `draft me a brief / structured intake on X` -> should NOT fire; routes to `/office-hours` (default full or `--quick`) per L8-9, L139
+- anti-trigger `fix this typo` / `P0 incident, just ship` -> should NOT fire; explicit skip per L41-44

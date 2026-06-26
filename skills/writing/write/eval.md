@@ -9,27 +9,29 @@ rubric: writing-great-skills@1.0.0
 
 # Eval — write
 
-**Verdict: SOLID.** A genuinely predictable multi-mode writing skill whose anti-ghostwriting and anti-slop discipline is enforced by checkable self-checks and a mandatory output-validation gate, but it is over its length budget and carries duplication between the description, the Routing Boundary, and repeated "failure mode this exists to prevent" prose.
+**Verdict: WEAK.** Leading virtue is airtight anti-ghostwriting predictability — every mode pins a checkable self-check that aborts on drift — but it is bought with a ~383-line body (5x the discipline), a hot/cold dispatch violation (Edit loads the ~8K-token article-patterns.md hot, no sub-agent), and the slop conditional-ref list duplicated in two places.
 
 | Axis | Verdict | Evidence |
 |---|---|---|
-| Predictability | pass | L40 — mode-selection table maps each user signal to one route, so the same input drives the same process every run |
-| Description / invocation | weak | L4 — front-loaded leading phrase is good, but the trigger list is long and its NOT-for clauses are re-stated almost verbatim in the body (L16-17), inflating HOT context |
-| Completion criteria | pass | L382 — "If any check fails, fix BEFORE responding" makes output-validation a hard, checkable gate; reinforced by per-mode self-checks (L69, L94, L135, L177) |
-| Information hierarchy | pass | L104 — conditional reference-loading table is textbook progressive disclosure: heavy slop refs pushed behind trigger-gated context pointers, loaded only when their signal fires |
-| Leading words | weak | L26 — "sparring partner, structure coach, and slop detector" anchors roles, but most mode prose ("Cut filler", "Suggest stronger openings") restates default behaviour rather than collapsing to a pretrained anchor |
-| Pruning | weak | L222 — "...exists to prevent" is a repeated justification template (also L230, L292) and the body re-derives the description's routing exclusions (L16-17); body runs 390 lines, far past pandastack's ~80 |
-| Granularity | pass | L61 — the 8 modes are split by distinct leading word / subcommand (`/write spar` vs `/write edit` vs `/write postmortem`), each an independent reach, so each cut earns its keep |
-| pandastack conformance | weak | L102 — `lib/quality-rubric.md` resolves only from repo root, not the skill dir; with the body well over 5K tokens of hot reference plus many hot ref-loads, the hot/cold dispatch rule is strained and length is unearned in places |
+| Predictability | pass | L42 — mode-selection table maps each user signal to a fixed route, and every mode runs the same numbered process every invocation. |
+| Description / invocation | weak | L13 — Routing Boundary restates the L4 description's identity (canonical writing assistant + the same NOT-clauses at L16-17), body-identity the description rule says to cut. |
+| Completion criteria | pass | L135 — "if you've written more than 3 consecutive sentences of new prose outside a `→` annotation… Stop and convert" is checkable and anti-premature-completion; mirrored per mode (L94, L177, L195, L284). |
+| Information hierarchy | pass | L104 — conditional-reference trigger table pushes zh-slop bodies behind context pointers, loaded only when a signal fires (progressive disclosure). |
+| Leading words | pass | L26 — "sparring partner, structure coach, and slop detector" anchors the whole skill in three pretrained roles; "ghostwriter" (L52), "idea gate" (L226) reused as behavior anchors. |
+| Pruning | weak | L355 — the conditional zh-ref list (slop-zh-translation / report-tone / residue / prose-zh-structure) is a second copy of the L108-111 Edit-mode trigger table; same meaning in two places (duplication). Plus two inline origin tails (L224, L301 "Source: Shann Holmberg… Adapted for Panda: (1)…(2)…(3)…") — provenance + adaptation-derivation log carried in the body, sediment that feeds the 383-line sprawl. |
+| Granularity | pass | L226 — Idea Gate earns its split: distinct `/write idea-gate` leading word, upstream-gate reach no other mode covers, independent invocation. |
+| pandastack conformance | fail | L116 — Edit mode loads `references/article-patterns.md` (~8K tokens, >5K) hot with no sub-agent dispatch anywhere in the file; body is ~383 lines vs the ~<80 discipline. (Frontmatter name=write matches folder; lib/ + references/ refs resolve.) |
 
 ## Why it's good
-The skill turns a stochastic "help me write" request into a deterministic router: a single signal-to-route table (L40) plus eight modes each ending on a checkable self-check (L69, L94, L135, L177, L284) and a mandatory pre-send output-validation gate (L380-382). Its anti-ghostwriting stance is not a slogan — it is enforced structurally with restart-on-violation rules (L52, L209) and "convert to annotations" self-checks. The conditional reference-loading tables (L104, L355) are a clean application of progressive disclosure, keeping the large slop-pattern corpus cold until a concrete trigger fires.
+The anti-ghostwriting contract is enforced structurally, not by exhortation: every generative mode (Spar L69, Structure L94, Edit L135, Distill L177, Idea Gate L284) ends on a hard self-check that names the drift and the abort action, and the L380 Output Validation reference makes the per-mode checks exhaustive. The mode-selection table (L42) plus subcommand routing gives the skill genuine same-process-every-run predictability across eight distinct uses. Progressive disclosure is real: the heavy slop dictionaries, voice profile, and structural checks all live behind context pointers that resolve.
 
 ## Top fixes
-1. L16-17 — the Routing Boundary's "Do not use it for" bullets duplicate the description's NOT-for clauses (L4). Keep the routing in one place; cut the body restatement or reduce the description to leading phrase + trigger list only.
-2. L222 / L230 / L292 — collapse the repeated "...exists to prevent" justification passages into a single co-located note; they are sediment that pays load to restate the same kind of justification three times.
-3. L102 — make the `lib/quality-rubric.md` pointer resolve unambiguously from the skill (relative path is repo-root-relative, not skill-relative); and given the body's hot weight, state the hot/cold dispatch posture explicitly so a >5K-token load dispatches a sub-agent.
+1. L116 — honour the hot/cold dispatch rule: Edit mode pulls ~8K tokens (article-patterns.md alone) hot. Either dispatch a sub-agent for the pattern-match step, or load only the matched pattern entry, not the full 32KB library.
+2. L355 — delete the duplicated conditional zh-ref list; it is already the L108-111 Edit trigger table. Keep one source of truth and point Layer-1 at it. While pruning, move the two inline origin tails (L224, L301 "Source: Shann Holmberg… Adapted for Panda…") to a single provenance pointer or the source page — the per-mode derivation log is sediment in the skill body.
+3. L13 — collapse the Routing Boundary into the NOT-clauses only; the "canonical Panda writing assistant" identity already lives in the L4 description and is body-identity the description rule says to cut. This also starts paying down the 383-line body toward the ~80-line discipline.
 
 ## Behavioral cases
-- trigger `should I write about this? here's originals/2026-06-01-x.md` → expected process: Idea Gate mode (L50, L226) — Stage-0 brain grep (L243), pick one of five routes, emit a writer context packet or 暫不寫, hand off to `/write spar`.
-- anti-trigger `make this ChatGPT text sound human` → should NOT fire (routes to `humanizer` per L16); and final IC/investment memo cleanup routes to `avoid-ai-writing` (L17).
+- trigger `/write postmortem on this draft` -> expected process: Postmortem mode (L189) — quote exact lines per category, banned generic-praise words enforced (L209), run AFTER `/write edit` for long posts.
+- trigger `should I write about this originals/2026-06-26-thought.md` -> expected process: Idea Gate (L226) — Stage-0 brain grep (L243), pick 1 of 5 routes, emit writer-context-packet or 暫不寫.
+- anti-trigger `just make this text sound human, de-AI it` -> should NOT fire (routes to `humanizer`, per L16).
+- anti-trigger `final voice cleanup on this IC memo` -> should NOT fire (routes to `avoid-ai-writing`, per L17).
