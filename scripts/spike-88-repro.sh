@@ -90,10 +90,11 @@ if [ "${1:-}" = "--codex" ]; then
     echo "  scratch HOME=$ch ; codex skills -> worktree skills/ (skills-cat NOT linked = matches bootstrap design)"
     # Preflight: can codex even start in this isolated HOME? Env failure != discovery failure.
     if ! pf="$(printf 'reply with exactly: OK' | HOME="$ch" codex exec --skip-git-repo-check - 2>&1)"; then
-      no "NOT VERIFIED: codex environment (preflight failed, not a discovery result): $(printf '%s' "$pf" | head -1)"
+      # codex prints a version banner first; show the tail (redacted) so the real auth/env cause is visible, not the banner.
+      no "NOT VERIFIED: codex environment (preflight failed — auth/env, NOT a discovery result): $(printf '%s' "$pf" | grep -ivE '^OpenAI Codex' | tail -2 | tr '\n' ' ')"
     else
       if ! out="$(printf 'List your available skill names, one per line.' | HOME="$ch" codex exec --skip-git-repo-check - 2>&1)"; then
-        no "NOT VERIFIED: codex environment (exec failed, not a discovery result): $(printf '%s' "$out" | head -1)"
+        no "NOT VERIFIED: codex environment (exec failed — auth/env, NOT a discovery result): $(printf '%s' "$out" | grep -ivE '^OpenAI Codex' | tail -2 | tr '\n' ' ')"
       else
         n=$(printf '%s\n' "$out" | grep -ci "\b$skill\b" || true)
         case "$n" in
@@ -108,5 +109,7 @@ if [ "${1:-}" = "--codex" ]; then
 fi
 
 echo
-echo "== summary: $pass pass / $fail fail (static); live double-load = pending manual reload =="
+mode_label="static checks"
+[ "${1:-}" = "--codex" ] && mode_label="static checks + --codex live"
+echo "== summary: $pass pass / $fail fail ($mode_label); Claude double-load = pending probe install/reload =="
 [ "$fail" -eq 0 ]
