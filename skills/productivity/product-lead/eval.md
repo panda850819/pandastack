@@ -2,7 +2,7 @@
 type: skill-eval
 skill: product-lead
 bucket: productivity
-evaluated_skill_hash: 6be71bc505ca7ca6716f26bb9e9501a15434cc54
+evaluated_skill_hash: e987b6938b7fd001062e1b8b595d279d3f39eee6
 evaluated_at: 2026-06-26
 rubric: writing-great-skills@1.0.0
 ---

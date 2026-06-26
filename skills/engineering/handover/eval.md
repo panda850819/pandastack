@@ -2,37 +2,34 @@
 type: skill-eval
 skill: handover
 bucket: engineering
-evaluated_skill_hash: 0e2490858a426a445ac476f6c3b80fd0e3f85e98
+evaluated_skill_hash: 9a55cf0e6e756f5c02960cbe7bf7bb6d83866c06
 evaluated_at: 2026-06-26
 rubric: writing-great-skills@1.0.0
 ---
 
 # Eval — handover
 
-**Verdict: WEAK.** Leading virtue: a fail-closed 5-gate precondition block plus exemplary hot/cold split — the SKILL.md stays a pure orchestration layer while every brittle `codex exec` mechanic lives behind one shared pointer. Banded WEAK by the three independent weak axes (≥2 weak → WEAK): duplicated identity prose (HOT description restated in body), an uncheckable silent-skip on state emission, and repeated negative-scope clauses. None is a fail, and the four pass axes are real, so the fixes are cheap — collapsing the duplication alone clears two of the three.
+**Verdict: SOLID.** Fail-closed 5-gate preflight plus exemplary hot/cold split keep the body a pure orchestration layer; costs one point for repeating the Codex-quota economics across three sections.
 
 | Axis | Verdict | Evidence |
 |---|---|---|
-| Predictability | pass | L60 — the five-check "Gate (both modes)", each ending in a hard `stop`, plus the numbered sync Flow (L72) fix the delegate-poll-classify process every run; state is derived from git/acceptance (L74), not model whim. |
-| Description / invocation | weak | L4 — the full `/ship`-vs-`/handover` distinction sits in the HOT description and is restated almost verbatim in the body at L40; HOT fields should carry triggers + the reach clause, not body-identity prose that pays context load every turn. |
-| Completion criteria | weak | L94 — "Best-effort: skip silently if the binary is absent" is an uncheckable done-condition for the state-emission step; a silent skip is indistinguishable from a forgotten step. |
-| Information hierarchy | pass | L70 — the XML payload, result schema, sandbox-escape gate, and classification table are all pushed to `references/codex-invocation.md` and pulled only on demand; SKILL.md keeps only the orchestration sequence. |
-| Leading words | pass | L58 — "session occupancy, not cost" anchors the async/sync axis in one concept; L62 "this skill is a no-op (delegation would recurse)" anchors the platform gate; L89 "loop-in-agent" anchors the state event. |
-| Pruning | weak | L42 — the economics paragraph re-explains the L40 ship-vs-delegate distinction at length, and the negative-scope clause lands three times (L7 description, L32 routing list, L49 skip line); the single-source rule should collapse these. |
-| Granularity | pass | L70 — the split to `references/codex-invocation.md` earns its load: the file is independently reached by `/sprint --delegate codex` (its own header, ref L3), so the cut serves independent reach, not a single-use push. |
-| pandastack conformance | pass | L2 — `name: handover` equals the folder; `reads`/`writes`/`forbids` are spec-sanctioned advisory metadata; body is 59 non-blank lines (<80); the ~800-token ref loads hot, correctly under the 5K dispatch threshold; both pointers resolve. |
+| Predictability | pass | L60 — the five-check "Gate (both modes)", each ending in a hard `stop`, runs before either mode, so every invocation takes the same derive→payload→spawn→classify path; state is derived from acceptance/git (L74), not model whim. |
+| Description / invocation | pass | L4 — front-loads "Explicit Codex handover workflow", lists one trigger per branch (`/handover [slug]`, `--async`), and the NOT-clause (L7) fences plan-writing / ship / subagent loops. |
+| Completion criteria | pass | L94 — state-emission now has a checkable, exhaustive done-condition: "Done when EITHER the `delegated` event is appended OR `scripts/pandastack-state` is confirmed absent" with the `[ -x ]` test specified and "never skip silently". |
+| Information hierarchy | pass | L70 — XML payload, result schema, sandbox-escape gate, and status→action table are pushed to `references/codex-invocation.md`, pulled only when sync mode fires; the body keeps only the orchestration sequence. |
+| Leading words | pass | L58 — "session occupancy, not cost" anchors the async/sync axis in one pretrained concept; L62 "this skill is a no-op (delegation would recurse)" anchors the platform gate. |
+| Pruning | weak | L42 — the "separate Codex quota / not double-paying" economic point is restated at L46 ("rather spend Codex quota") and L58 ("not cost…same subscription either way"); one meaning, three touches, a single anchor could collapse it. |
+| Granularity | pass | L70 — the cold split earns its load: the reference's own header (its L3) shows both `/handover` and `/sprint --delegate codex` reach it, so the cut serves independent reach, not a single-use push. |
+| pandastack conformance | pass | L2 — `name: handover` equals the folder; `references/codex-invocation.md` resolves (~1K tokens, under the 5K hot/cold threshold so reading it hot is correct); `reads`/`writes`/`forbids`/`domain` are spec-sanctioned advisory metadata. |
 
 ## Why it's good
-The skill nails the hardest part of a delegation verb: Claude stays the git/review/ship owner and the brittle `codex exec` mechanics live behind one context pointer (L70), so the body reads as pure orchestration. The Gate (L60–66) is genuinely exhaustive — platform, sandbox-escape, availability, repo-root, plan-precondition — and each check fails closed with a named stop reason, so the skill cannot half-run. The mode table (L53–56) plus "session occupancy, not cost" (L58) kills the most likely confusion (that async is cheaper) in one line.
+The Gate (L60-66) is genuinely exhaustive — platform, sandbox-escape, availability, repo-root, plan-precondition — and each check fails closed with a named stop reason, so the skill cannot half-run and both modes share one preflight. Reference extraction is disciplined: every brittle `codex exec` mechanic lives behind one shared pointer the body reaches twice, keeping the hot body as pure routing. The state-emission step (L89-98), a silent best-effort skip in the prior revision, is now a checkable non-silent completion criterion.
 
 ## Top fixes
-1. L4 / L40 — collapse the duplicated `/ship`-vs-`/handover` distinction: keep the trigger + reach clause in the HOT description, state the distinction once in the body, cut the verbatim restatement (single source of truth, and the costliest duplication because the description is HOT).
-2. L94 — give the state-emission step a checkable criterion (e.g. "event appended OR binary confirmed absent"), not a silent best-effort skip that hides partial failure.
-3. L42 / L32 / L49 — the economics paragraph and the two negative-scope restatements all repeat the description's L7 NOT-clause; keep the Routing Boundary table, trim the overlapping prose.
+1. L42 / L46 / L58 — collapse the three restatements of the Codex-quota economics into one anchored sentence; keep the L58 "session occupancy, not cost" framing and drop the repeats in the Routing Boundary (L42) and When-to-use (L46).
+2. L106-108 — the "this reduces to `status: in_progress, owner: codex`" gloss is explanatory sediment the appended event already implies; trim it so the State-emission section earns its ~20 lines.
 
 ## Behavioral cases
-- trigger `/handover pro-31` with a plan holding ≥3 rote build units -> expected process: run the L60 gate, derive non-passing U-IDs from acceptance checks (L74), build the XML payload, spawn `codex exec` in background, poll in foreground, classify the single result per the reference table, Claude commits a `completed` batch and keeps review/ship.
-- trigger `/handover --async pro-31` -> expected process: gates pass, write ONE self-contained handoff to `docs/handoffs/{date}-{slug}-codex.md` (L82), print the path + dispatch one-liner, never spawn codex, never touch git (L87).
-- anti-trigger `ship this finished work / open the PR` -> should NOT fire; routes to `ship` (L37 excludes closing finished work, PR, publishing). Handover only delegates already-planned, unfinished mechanical units.
+- trigger `/handover pro-31` (plan with ≥3 rote build units) -> expected process: run the L60 gate, derive non-passing U-IDs from acceptance checks (L74), build the XML payload, spawn `codex exec` in background, poll in foreground, classify the single result per the reference table, Claude commits a `completed` batch and keeps review/ship, then append the `delegated` state event.
+- anti-trigger `ship this finished work / open the PR` -> should NOT fire; routes to `ship` (L37 excludes closing finished work, PR, publishing).
 - anti-trigger `write the plan for the refactor` -> should NOT fire; routes to `plan` / `writing-plans` (L33).
-- anti-trigger (on Codex / Gemini runtime) -> no-op by the platform gate (L62); delegation would recurse.

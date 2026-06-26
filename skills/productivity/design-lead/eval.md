@@ -2,34 +2,33 @@
 type: skill-eval
 skill: design-lead
 bucket: productivity
-evaluated_skill_hash: 366d6bd047bae4a6f980958f764450f69da54030
+evaluated_skill_hash: 36b845390bc1b5a2138d7b7cbe561d99086b42be
 evaluated_at: 2026-06-26
 rubric: writing-great-skills@1.0.0
 ---
 
 # Eval — design-lead
 
-**Verdict: WEAK.** Leading virtue is a clean, contract-conformant persona frame with strong pretrained leading words ("empty states are features", "if everything is bold, nothing is bold"); it loses points to a triple-stated NOT-list / slop meaning, a duplicated DESIGN.md instruction, soft completion criteria on the early On-Invoke steps, and a full-document hot `@import` of persona-frame that drags in boardroom/dispatch internals the running lens never needs.
+**Verdict: SOLID.** Leading virtue is a clean persona frame with strong pretrained leading words ("empty states are features", "if everything is bold, nothing is bold") and a checkable quality-rubric self-score. It still costs points on a dense NOT boundary and a few posture-shaped early On-Invoke steps.
 
 | Axis | Verdict | Evidence |
 |---|---|---|
 | Predictability | pass | L44 — `On Invoke` is a fixed 5-step process the agent walks identically every invocation; output varies, process does not. |
-| Description / invocation | weak | L22 — the description's NOT-list (L4) is restated near-verbatim in the body Routing Boundary; axis 2 penalizes body-identity restatement even though the skill-name pointers add real disambiguation. |
-| Completion criteria | weak | L46 — step 1 "Identify the user's actual UX problem" carries no done/not-done test; only step 5 (L50, "any axis < 3 → revise") is sharply checkable, the early steps read as postures. |
-| Information hierarchy | weak | L16 — `@../../../lib/persona-frame.md` inlines the entire 151-line contract doc hot (dispatch mechanics L50-102, origin notes L147-151) when only the 6-section structure (L39) is relevant; the pointer fires but pulls irrelevant sediment. |
+| Description / invocation | weak | L4 — the description has clear NOT-routing but is dense; the body now compresses the routing boundary to skill-name handoffs (L21) rather than restating the full prose. |
+| Completion criteria | weak | L45 — step 1 now has a done-test ("restate the UX problem in one sentence the user confirms"), and step 5 is sharply checkable (L49); steps 2-4 still read more like posture than binary completion. |
+| Information hierarchy | pass | L17 — the body is self-contained for a running review and only points at `lib/persona-frame.md` if the reader needs the contract itself; heavy calibration is behind `@../../../lib/bad-good-calibration.md` (L61), and quality-rubric loads only at the scoring moment (L49). |
 | Leading words | pass | L33 — "If everything is bold, nothing is bold" anchors hierarchy-through-restraint in a pretrained concept; reinforced by "Empty states are features" (L32) and "AI slop" (L35). |
-| Pruning | weak | L68 — "Read DESIGN.md if it exists before suggesting new patterns" duplicates On-Invoke step 2 (L47, "Reference 2-3 existing patterns in the codebase / DESIGN.md"); separately the line `"I like it" is not feedback` is verbatim-duplicated at L26 (Soul) and L36 (Iron Law 5), and the slop meaning recurs across L35/L42. |
+| Pruning | weak | L21 — the Routing Boundary still carries a compact NOT-list already present in the description, and "slop" appears in both Iron Law 4 (L34) and the slop-detector cognitive model (L41). The duplication is small but real. |
 | Granularity | pass | L20 — the split off the other 4 leads earns its load: a distinct leading word ("Design lens") plus boardroom/sprint reach justify the always-loaded description. |
-| pandastack conformance | pass | L2 — `name: design-lead` matches folder, body 59 lines < 80, all three `../../../lib/` refs resolve to repo-root `lib/`; the two hot `@import`s (persona-frame + bad-good-calibration, L16/L62) load ~3.0K tokens and the on-demand quality-rubric (L50) adds ~1.3K, so even all-three ~4.3K stays under the 5K hot/cold dispatch threshold. |
+| pandastack conformance | pass | L2 — `name: design-lead` matches folder, body 67 lines < 80, all three lib refs resolve to repo-root `lib/`; the hot calibration import and on-demand quality-rubric stay under the 5K hot/cold dispatch threshold. |
 
 ## Why it's good
-The skill obeys the `lib/persona-frame.md` 6-section contract exactly (Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns + BAD/GOOD), so boardroom can extract it programmatically and the persona stays consistent across edits. Its Iron Laws and Cognitive Models are written as compact, pretrained-anchored leading words rather than vague adjectives, which is the load-bearing predictability win. On-Invoke step 5 binds `lib/quality-rubric.md` at a real generation moment (self-score, any axis < 3 → revise), honouring the rubric's governance contract instead of a pointer-only link.
+The skill keeps the persona shape compact while preserving the load-bearing design checks. Its Iron Laws and Cognitive Models are written as compact, pretrained-anchored leading words rather than vague adjectives, which is the predictability win. On-Invoke step 5 binds `lib/quality-rubric.md` at a real generation moment (self-score, any axis < 3 → revise), honouring the rubric's governance contract instead of a pointer-only link.
 
 ## Top fixes
-1. Collapse the NOT-list duplication: L4 (description), L20-22 (Routing Boundary), and the slop/decisions restatements across L26/L35/L36/L42 carry overlapping boundaries — note `"I like it" is not feedback` is verbatim at L26 and L36. Keep the skill-name pointers in the body, cut the prose that re-says the HOT description and fold the duplicated slop/preferences lines down to one canonical statement.
-2. De-duplicate DESIGN.md: L47 (On Invoke step 2) and L68 (Team protocol) both instruct reading DESIGN.md before new patterns. Keep one, delete the other.
-3. Sharpen early completion criteria: L46-49 read as postures, not checks. Give step 1 a done-test (e.g. "restate the UX problem in one sentence the user confirms") so it cannot complete prematurely.
-4. Scope the persona-frame import: L16 hot-inlines the whole 151-line contract doc. Point at only the 6-section structure block (L39) (or rely on the frontmatter `reads:` declaration plus an on-demand pointer) so dispatch (L50-102) and origin (L147-151) sediment stay cold. Also add `lib/quality-rubric.md` to the `reads:` list (L5-7) since L50 loads it — advisory only, but the audit metadata is currently incomplete.
+1. L4 / L21 — collapse the remaining NOT-list duplication by keeping the full boundary in one place and using only skill-name handoffs in the other.
+2. L46-48 — sharpen steps 2-4 with done-tests matching step 1 and step 5, so the whole On Invoke block is binary-completable.
+3. L34 / L41 — make Iron Law 4 the canonical slop definition and let the Cognitive Model point to it instead of restating the scan.
 
 ## Behavioral cases
 - trigger `/design-lead the empty and error states on this onboarding flow feel off` -> expected process: run On Invoke L44-50 — restate the real UX problem, cite 2-3 existing patterns / DESIGN.md, reject slop by name, specify a11y inline, then quality-rubric self-score on Originality + Craft before declaring ready.

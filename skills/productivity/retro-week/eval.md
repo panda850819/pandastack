@@ -2,38 +2,36 @@
 type: skill-eval
 skill: retro-week
 bucket: productivity
-evaluated_skill_hash: d08d94db646e25785175db9fc49b7646d6f8cbd2
+evaluated_skill_hash: 4c577c5010c359de1f4cc06980c613ff2dfe7941
 evaluated_at: 2026-06-26
 rubric: writing-great-skills@1.0.0
 ---
 
 # Eval — retro-week
 
-**Verdict: WEAK.** Leading virtue is the gate-and-discipline architecture — every phase ends on a literal "wait for user" gate and the GC sweep holds a strict propose-only / recurrence-gate discipline. It loses points to these weaknesses: the phase overview contradicts the actual write target (plus an orphan `feedback-log.md` the agent is told to Edit but is never defined), the three triggers are one branch renamed, the recurrence-gate rule is restated across five surfaces, and the 473-line body overruns the pandastack length budget with hot inline bash.
+**Verdict: WEAK.** Leading virtue is the gate-and-discipline architecture: five phases, each ending on an explicit wait gate, plus a hard `count >= 2` recurrence gate that the propose-only GC sweep enforces. The prior pruning FAIL is resolved, but the body is still 309 lines and the description still clusters the slash command with its natural-language synonym.
 
 | Axis | Verdict | Evidence |
 |---|---|---|
-| Predictability | weak | L18 — overview says "write final retro to docs/retros/" but the real Phase 3 step (L400) writes `brain/reflections/weekly/$YEAR-W$WEEK_NUM.md`, and L20 declares the vault retired; an agent trusting the summary writes to the wrong (retired) directory. Second crack: L368-370 + L460 command the agent to read/increment/Edit a singular `feedback-log.md` whose path is never defined and which no phase produces — the GC rewrite replaced it with `memory/feedback_*.md` scanning (L173-181) but left the old references; an agent cannot deterministically find a file it is told to Edit. The cross-runtime engine itself (L20) is a sound determinism move and resolves on disk. |
-| Description / invocation | weak | L3 — the three triggers ("/retro-week", "weekly retro", "weekly review") are one branch renamed; the rubric says collapse near-synonyms — only the slash command plus one phrase earn their hot context load. |
-| Completion criteria | pass | L317 — "**GC sweep 完了 … 準備好聊嗎？**" — wait for user; every phase boundary ends on a literal user gate (also L68, L146, L349), no premature-completion bait. |
-| Information hierarchy | weak | L33 — the 1a–1c subsections "document what the engine gathers (for transparency / manual fallback)", restating work the same line says the engine "already covers"; that fallback prose sits hot in the body instead of behind a pointer. |
-| Leading words | pass | L157 — "Garbage Collection Day" borrows Lopopolo's pretrained anchor (cited inline) to compact the whole convert-slop-to-mechanism sub-protocol into two words. |
-| Pruning | fail | L322 — the recurrence-gate rule (count>=2) is restated at L230, L260, L266, L285 and L322 (five surfaces, not one source); combined with the PRO-40/PRO-42 ticket lineage (L196) and inlined multi-line bash, the same meaning lives in many places and the body runs 473 lines against the ~<80 guidance. Add the orphan `feedback-log.md` references (L368-370, L460) — sediment from the pre-GC design that the brain-data rewrite never cleaned up. |
-| Granularity | pass | L17 — each phase split is a user-gated checkpoint that blocks premature completion (scan → synthesis → GC → interview → write), and 1.5/1.6 carry their own skip conditions, so each cut earns its load. |
-| pandastack conformance | weak | L2 — frontmatter valid (name=retro-week matches folder) and `~/site/skills/pandastack/scripts/retro-scan.sh` resolves on disk; but the 473-line body far exceeds ~<80 lines, the extra length does not clearly earn itself given the duplication, and the synthesis/GC bash is hot inline rather than dispatched. |
+| Predictability | pass | L13 — five-phase flow (scan → synthesis → GC → interview → write), each gated by an explicit wait-for-user; the prior write-target contradiction is gone (L18 overview and L286 step both say `brain/reflections/weekly/`). |
+| Description / invocation | weak | L3 — front-loads "Interactive weekly retro," no body-identity, but `"/retro-week"` and `"weekly retro"` are the slash form and its NL synonym for one branch; near-synonyms renaming one branch should collapse. |
+| Completion criteria | pass | L163 — GC proposal gated on a checkable `count >= 2`; every phase boundary ends on a concrete wait/print gate (L56, L97, L203, L235), no premature-completion bait. |
+| Information hierarchy | pass | L33 / L114 — scan-block detail and GC shell-portability rationale are behind explicit skill-local lib pointers; output layouts are also pushed to `skills/productivity/retro-week/lib/output-formats.md` (L93, L201, L286). |
+| Leading words | pass | L108 — "Garbage Collection Day" borrows Lopopolo's pretrained anchor to compact the convert-slop-to-mechanism sub-protocol; "hotspot" / "salience proxy" / "forcing function" anchor compactly. |
+| Pruning | pass | L163 — recurrence gate now defined once canonically; downstream mentions point back to that gate instead of redefining it (L199, L201). Orphan `feedback-log.md` and the Phase 1/3 write-target contradiction are removed. |
+| Granularity | pass | L60 / L106 — Phase 1.5 (synthesis) and 1.6 (GC) are distinct processes with distinct inputs/outputs and their own skip conditions; each split earns its load. |
+| pandastack conformance | weak | L33 — skill-local references are now explicit repo-relative paths and pass `lint-refs-resolve.py`; the body is still 309 lines, well over the ~<80 guideline, though the heaviest output templates moved behind `lib/output-formats.md` pointers. |
 
 ## Why it's good
-The load-bearing strength is the gate-and-discipline architecture. The "propose only, never auto-write" rule is restated at every surface where the agent might overstep (L159, L321-324, L379), and completion is enforced by literal user-gate prompts at each phase boundary (L68, L146, L317, L349) so the agent cannot silently chain past a checkpoint. The recurrence gate (L230, count>=2) gives the GC sweep a checkable threshold instead of "be selective", and the shared `retro-scan.sh` engine (L20-27) is the right design to remove run-to-run variance and resolves cleanly on disk.
+The prior FAIL on pruning is genuinely fixed: the recurrence gate now has one canonical definition (L163) with downstream mentions back-referencing it, the orphan `feedback-log.md` is removed, and the Phase 1/Phase 3 write-target contradiction resolves to a single brain path. The spine is discipline: propose-only GC, a hard `count >= 2` gate, and per-phase user gates make the process deterministic and hard to short-circuit.
 
 ## Top fixes
-1. L18 vs L400 — reconcile the Phase 3 write target. The overview says `docs/retros/`; the actual step writes `brain/reflections/weekly/`, and L20 itself declares the brain the source and the vault retired. `docs/retros/` on L18 is stale sediment that mis-routes any agent reading the summary; make both say `brain/reflections/weekly/`. This is the predictability defect.
-2. L230 / L285 / L322 — collapse the recurrence-gate rule to a single source of truth. Define count>=2 once (the 1h step-5 definition), then reference it; delete the restatements in the GC-table caption and the "what NOT to do" block.
-3. L33-45 + L164-201 — drop or pointer-out the 1a–1c manual-fallback subsections (they duplicate what L33 says the engine already covers) and move the shell-portability commentary plus the PRO-40/PRO-42 ticket lineage into the engine script or a `lib/` ref; this is the bulk of the 473-line overrun.
-4. L3 — collapse the three synonym triggers to the slash command plus one canonical phrase; renaming one branch three times is pure context-load duplication.
-5. L368-370 / L460 — remove the orphan `feedback-log.md` references. The GC rewrite (Phase 1.6) replaced this singular file with `memory/feedback_*.md` scanning, but the interview and Phase-3 update steps still tell the agent to read, increment a counter in, and Edit a `feedback-log.md` whose path is never defined and which no phase produces. Either point them at the actual `memory/feedback_*.md` data or delete the steps; as written they are an un-actionable dead reference (predictability + sediment, same rewrite-debris class as the `docs/retros/` defect in fix 1).
+1. L137-199 — move the GC proposal-building mechanics into `skills/productivity/retro-week/lib/gc-inputs.md` or a second GC procedure reference; this is the largest remaining hot block.
+2. L3 — collapse the two triggers if they are one branch, or justify why the NL phrase covers phrasing the slash command cannot. As written they read as a synonym pair renaming the same weekly-retro action.
+3. L70-89 — move the Brain Synthesis shell probes into `skills/productivity/retro-week/lib/scan-blocks.md`; Phase 1.5 should keep the process gate hot and push command detail cold.
 
 ## Behavioral cases
-- trigger `/retro-week` -> expected process: run `retro-scan.sh week` engine → print compressed scan + Phase 1.5 brain synthesis + Phase 1.6 GC sweep, each ending on a user gate → Phase 2 one-question-at-a-time interview → Phase 3 write `brain/reflections/weekly/$YEAR-W$WEEK.md`.
-- trigger `weekly review` -> expected process: same flow; if a Hermes cron already pre-generated the prep brief, read it from brain/inbox/retros/ instead of re-scanning (L27, L337).
-- anti-trigger `monthly retro` -> should NOT fire (routes to retro-month).
-- anti-trigger `ship this note` -> should NOT fire (routes to ship; retro-week only writes the retro page and never git-commits, L462).
+- trigger `/retro-week` -> expected process: run `retro-scan.sh week`, print compressed scan, then Phase 1.5 synthesis, then Phase 1.6 GC sweep (each on a user gate), one-question-at-a-time interview, write `brain/reflections/weekly/$YEAR-W$WEEK_NUM.md`.
+- trigger `weekly review` -> expected process: same five-phase flow (covered by the "weekly retro" NL branch); if a Hermes cron pre-generated the brief, read it from brain/inbox/retros/ instead of re-scanning (L27).
+- anti-trigger `monthly review` -> should NOT fire (routes to retro-month).
+- anti-trigger `ship this note` -> should NOT fire (routes to ship; retro-week writes only the retro page and never git-commits, L298).

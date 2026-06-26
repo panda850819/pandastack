@@ -2,7 +2,7 @@
 type: skill-eval
 skill: ops-lead
 bucket: productivity
-evaluated_skill_hash: ccfaa3df07b86d0cff20676b4cf4d24dd50d9659
+evaluated_skill_hash: f5fd7e075b0678b7906390e5402370a3828ccad1
 evaluated_at: 2026-06-26
 rubric: writing-great-skills@1.0.0
 ---
@@ -20,7 +20,7 @@ rubric: writing-great-skills@1.0.0
 | Leading words | pass | L14 — "COO mindset… process over heroics" and "Templates before training" (L33) anchor behaviour in pretrained concepts in few tokens. |
 | Pruning | weak | L40 — "Process-when-painful" restates Iron Law 1 (L32) + Soul (L26) + both Anti-patterns (L53 twice-failed, L56 kill-when-gone); the same rule lives in five places, and "action + owner + deadline" repeats across L35/L41/L48. |
 | Granularity | pass | L4 — the split earns its load: distinct leading word `/ops-lead` and independent reach by boardroom/sprint via the persona frame. |
-| pandastack conformance | pass | L16 — name=folder, frontmatter valid (matches sibling `ceo`), 67-line body < 80, both lib refs resolve (~3K tokens < 5K so no sub-agent dispatch needed). |
+| pandastack conformance | pass | L16 — name=folder, frontmatter valid (matches sibling `ceo`), 64-line body < 80, both lib refs resolve (~3K tokens < 5K so no sub-agent dispatch needed). |
 
 ## Why it's good
 The On Invoke protocol (L44-48) makes the lens reproducible and ends on a genuinely checkable artifact — `<action> by <owner> by <deadline>` — which kills the most common ops failure mode (fuzzy non-decisions). The description (L4) and Routing Boundary (L18-22) draw crisp NOT-edges to the four sibling lenses, so dispatch is unambiguous. Reference bulk is correctly pushed to lib, keeping the body legible at 67 lines.
@@ -33,4 +33,4 @@ The On Invoke protocol (L44-48) makes the lens reproducible and ends on a genuin
 ## Behavioral cases
 - trigger `/ops-lead our weekly handoff keeps dropping things, design a cadence` -> expected process: ground in the specific team/people, check for eng/design sub-tasks to hand off, output a cadence as `<action> by <owner> by <deadline>` only if the pain failed twice.
 - anti-trigger `should we kill this product line` -> should NOT fire (routes to `ceo` for kill/pivot judgment, per L22).
-- anti-trigger `the deploy script is flaky, fix the automation` -> should NOT fire (routes to `eng-lead` — the fix is automation, not coordination, per L66).
+- anti-trigger `the deploy script is flaky, fix the automation` -> should NOT fire (routes to `eng-lead` — the fix is automation, not coordination, per L63).
