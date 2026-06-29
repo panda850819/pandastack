@@ -1,12 +1,12 @@
 # RESOLVER.md
 
-> Map of every skill / persona in pandastack. Use this as the index when something looks like overlap or you can't tell which skill to invoke.
+> Map of every skill in pandastack. Use this as the index when something looks like overlap or you can't tell which skill to invoke.
 >
 > Companion to PHILOSOPHY.md (the why) and the per-skill SKILL.md files (the how).
 
 ## Why this file exists
 
-pandastack ships **28 skills** (26 core + 2 ext) and 5 personas. **Lifecycle flows are no longer first-class constructs** — what used to live in `flows/*.md` is now either documented inline in the relevant skill (sprint covers dev, ship knowledge covers knowledge close) or has been demoted because it wasn't really a flow (decision was an autonomy contract, research was a knowledge variant, work was a dev variant + work-ship).
+pandastack ships **24 skills** (22 core + 2 ext). **Lifecycle flows are no longer first-class constructs** — what used to live in `flows/*.md` is now either documented inline in the relevant skill (sprint covers dev, ship knowledge covers knowledge close) or has been demoted because it wasn't really a flow (decision was an autonomy contract, research was a knowledge variant, work was a dev variant + work-ship).
 
 This is the pattern used by gstack and alirezarezvani: monorepo + RESOLVER.md beats multi-repo split, because the categorization lives next to the content.
 
@@ -51,7 +51,7 @@ Vault hygiene (orphans / stale / superseded / dead redirects) is a direct file s
 
 For multi-step sequential work, run multiple sprints in sequence. v1.x had `execute-plan` as a sequential subagent coordinator; cut in v2.0.0 because it overlapped sprint Phase 3 without earning its complexity.
 
-For greenfield design (DB schema / service topology / ADRs), use `eng-lead` persona inside a sprint. v1.x had a separate `architect` persona; folded into eng-lead in v2.0.0 because Panda's day-to-day is maintenance, not greenfield.
+Greenfield design (DB schema / service topology / ADRs) is rare for Panda's maintenance-heavy work; scope it in `office-hours`, then build in a sprint.
 
 ### Retro / session
 
@@ -69,18 +69,6 @@ For greenfield design (DB schema / service topology / ADRs), use `eng-lead` pers
 `agent-browser` skill archived 2026-06-08 (duplicate of the npm CLI's own docs); `qa` still drives the CLI directly.
 
 Private CLI wrappers (`bird` for X/Twitter) are not in the public package; `notion` and `slack` ops are replaced by Claude.ai MCP servers. v2.2.0 deleted the public `notion` and `slack` skills — use the Notion / Slack MCP via OAuth instead (token doesn't sit on disk).
-
-### Persona thinking frames
-
-(none in public package as of v2.2)
-
-v2.2.0 cut `think-like-naval` and `think-like-alan-chan` — replicating someone else's thinking pattern is mimicry not insight; the 5 role personas (ceo / product-lead / eng-lead / design-lead / ops-lead) cover the cognitive-lens use case. v1.x had `think-like-karpathy`; cut in v2.0.0 because Panda cited Karpathy in notes but did not actively use his frame.
-
-### Multi-lens review
-
-| Skill | Purpose |
-|---|---|
-| `pandastack:boardroom` | Single-skill 4-voice critique (CEO → product → design → eng) on a plan. Per-finding apply gate. |
 
 ### Trust evaluation (NOT code review)
 
@@ -154,22 +142,6 @@ If you're reviewing your own PR → `pandastack:review`. If you're deciding whet
 
 ---
 
-## Persona skills (5)
-
-pandastack is **skill-only**. No agent dispatch. The 5 lead personas live as skills under `skills/productivity/{persona}/SKILL.md`, share the structure defined in `lib/persona-frame.md`, and are invoked in-session via `/persona` slash or chained from `boardroom`.
-
-| Skill | When |
-|---|---|
-| `pandastack:ceo` | Strategic decisions, kill/pivot/continue, framework tension |
-| `pandastack:ops-lead` | COO-level — systems that run without you, process-when-painful, decision shape (action / owner / deadline) |
-| `pandastack:product-lead` | User problems over solutions, metric-driven, says no more often than yes |
-| `pandastack:eng-lead` | Build / debug / ship — minimal diff, root cause, no spiral. Also covers tech-stack / DB schema / API contract decisions (was: separate `architect` persona in v1.x, folded in v2.0.0). |
-| `pandastack:design-lead` | Intentional over decorative, every element earns its place |
-
-All 5 are READ-ONLY persona skills. They recommend; user decides.
-
----
-
 ## Lifecycle map
 
 3 documented compositions, no separate flow specs (cut in v2.2.0):
@@ -189,6 +161,13 @@ What used to be `flows/<name>.md` is gone. Reasons:
 - **retro**: `/retro-week` and `/retro-month` are the executable specs. The cadence (daily close → weekly → monthly) lives in their SKILL.md files.
 
 ---
+
+## v3.2.0 cut summary — persona layer removed
+
+| Action | Items | Reason |
+|---|---|---|
+| Deleted | `ceo`, `product-lead`, `ops-lead`, `design-lead`, `eng-lead`, `boardroom` | Role-persona lenses were a uniform wrapper over pretrained frames; a skill earns its slot only by lore + the reflexes the model gets wrong despite understanding. eng-lead debug lore → new `debug`; design-lead craft → new `ui`; scope-judgment + delete-first → `grill` / `office-hours`; ops-lead covered by retro-week / cron / minion. `lib/outside-voice-rule.md` deleted (substrate covers it). git history is the archive. |
+| Added | `debug`, `ui` | Function-named: lore + reflex-overrides, not a persona frame. |
 
 ## v2.2.0 cut summary
 
@@ -227,8 +206,7 @@ Public package shrinks 38 → 26 skills. 7 lifecycle flow specs → 0 (collapsed
 |---|---|
 | Built in v0.16 | careful, checkpoint, freeze, init, qa, review, ship |
 | Added in v1 from `~/.claude/skills/` (local) | grill, retro-week, retro-month, gatekeeper, deepwiki, agent-browser |
-| Persona skills | ceo, eng-lead, design-lead, ops-lead, product-lead |
-| Decision/sprint flow | sprint, dojo, office-hours, boardroom, team-orchestrate |
+| Decision/sprint flow | sprint, dojo, office-hours, team-orchestrate |
 | Meta | using-pandastack, init, skill-creator, writing-great-skills, skill-eval |
 | Writing | write |
 

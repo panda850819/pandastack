@@ -2,7 +2,7 @@
 name: sprint
 mode: skill
 description: |
-  Focused execution session: from "I want to do X" to shipped or explicitly paused/failed/aborted. Internal flow: dojo, grill (lite), execute, review, ship; only SHIPPED triggers backflow. Triggers on /sprint, "sprint on this", "let's ship X", "focused session". Auto-routes to design-lead on UI scope.
+  Focused execution session: from "I want to do X" to shipped or explicitly paused/failed/aborted. Internal flow: dojo, grill (lite), execute, review, ship; only SHIPPED triggers backflow. Triggers on /sprint, "sprint on this", "let's ship X", "focused session". Routes UI work to `ui`, bugs to `debug`.
 reads:
   - repo: lib/capability-probe.md
   - repo: lib/escape-hatch.md
@@ -13,7 +13,6 @@ reads:
   - repo: skills/productivity/grill/SKILL.md
   - repo: skills/engineering/review/SKILL.md
   - repo: skills/engineering/ship/SKILL.md
-  - repo: skills/productivity/design-lead/SKILL.md
   - repo: lib/verify-the-test-loop.md
   - repo: skills/engineering/sprint/references/codex-delegation.md
   - vault: knowledge/**
@@ -114,25 +113,7 @@ Rationale: the architect's context window and judgment are the scarce resource; 
 
 **Codex delegation (only when `--delegate codex` is passed):** instead of dispatching units to free runtime subagents, hand a batch of mechanical units to Codex (burns Codex quota) via the `/handover` invocation, keeping planning / review / git on Claude. OFF by default, never auto-triggered. A batch of ≥3 mechanical units is the threshold at which it's worth *surfacing* the flag to the user, but the switch is always explicit. Read `references/codex-delegation.md` for the gate, batching, and the circuit breaker; it delegates each batch via `skills/engineering/handover/references/codex-invocation.md`. This is SYNCHRONOUS (occupies this turn polling); for ASYNC fire-and-forget that frees the session, use `/handover --async` instead.
 
-@../../../lib/skill-decision-tree.md applies — read the persona routing table.
-
-Detect task shape from grill output (Stage 2) and load the matching persona skill as **in-session cognitive lens** for the ARCHITECT (the persona shapes spec + review judgment; it is NOT shipped to implementation subagents — they get the spec).
-
-Routing (read `lib/skill-decision-tree.md` § "Persona routing table"):
-
-| Task signal | Load skill |
-|---|---|
-| Code / refactor / debug / fix / feature impl / tech-stack 選型 / DB schema / API contract (default) | `skills/engineering/eng-lead/SKILL.md` |
-| UI / interaction / layout / visual hierarchy / accessibility | `skills/productivity/design-lead/SKILL.md` |
-| Multi-team coord / process design / SLA / runbook / on-call | `skills/productivity/ops-lead/SKILL.md` |
-| Feature scoping / metric / PMF / pricing / user research | `skills/productivity/product-lead/SKILL.md` |
-| Kill / pivot / scope cut / strategic frame | `skills/productivity/ceo/SKILL.md` |
-
-Apply the loaded persona's Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns to all Stage 3 work in this same context. Persona is a lens, not a subagent — it rides the architect (spec + review), while implementation runs per the Execution mode block above.
-
-**Single-persona discipline**: load ONE persona for the whole sprint. If the topic genuinely spans 2+ personas, split into multiple sequential sprints. Mixing personas mid-sprint dilutes the cognitive frame and produces inconsistent output.
-
-Apply minimal-diff + verify + 3-strike escalation (eng-lead iron laws apply even when another persona is the primary lens — they are baseline coding discipline).
+Stage 3 runs with baseline engineering discipline — root cause before fix, minimal diff, verify before done, 3-strike escalation — from `~/.agents/AGENTS.md` § Coding Discipline plus `careful` and `review`. For a UI build, follow `ui`; for a bug, follow `debug`. There is no separate persona-lens step.
 
 Track `iteration` counter starting at 1.
 

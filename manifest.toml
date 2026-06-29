@@ -72,33 +72,17 @@ updated = "2026-06-26"
 # Buckets on disk: engineering / productivity / writing / meta
 # ============================================================================
 
-[skill.boardroom]
-tier = "core"
-description = "4-voice plan critique (CEO / product / design / eng)."
-
 [skill.careful]
 tier = "core"
 description = "Confirmation gate before destructive commands."
-
-[skill.ceo]
-tier = "core"
-description = "Strategic advisor persona — kill / pivot / continue judgment."
 
 [skill.checkpoint]
 tier = "core"
 description = "Save / resume working state snapshots."
 
-[skill.design-lead]
-tier = "core"
-description = "Senior designer persona — anti-slop, accessibility-first."
-
 [skill.dojo]
 tier = "core"
 description = "Pre-action prep, surfaces gotchas before a work session."
-
-[skill.eng-lead]
-tier = "core"
-description = "Staff engineer persona — minimal diff, root cause."
 
 [skill.freeze]
 tier = "core"
@@ -119,14 +103,6 @@ description = "One-time pandastack init per project."
 [skill.office-hours]
 tier = "core"
 description = "5-stage flow: load context, grill, premise challenge, alternatives, brief."
-
-[skill.ops-lead]
-tier = "core"
-description = "COO persona — systems that run without you."
-
-[skill.product-lead]
-tier = "core"
-description = "VP Product persona — user problems over solutions."
 
 [skill.retro-month]
 tier = "core"
