@@ -2,8 +2,8 @@
 type: skill-eval
 skill: dojo
 bucket: productivity
-evaluated_skill_hash: 2300c398f0d0920d910f6f78428470c518b89672
-evaluated_at: 2026-06-26
+evaluated_skill_hash: 15588937d1681d5c545ed1f913215bab34c882ef
+evaluated_at: 2026-06-29
 rubric: writing-great-skills@1.0.0
 ---
 

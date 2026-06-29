@@ -2,8 +2,8 @@
 type: skill-eval
 skill: sprint
 bucket: engineering
-evaluated_skill_hash: 5b19c6f56e0df8f42e54e30a2b68d4b0f41c45c2
-evaluated_at: 2026-06-26
+evaluated_skill_hash: 337308c0fa467cbf0194c6d19476747618405511
+evaluated_at: 2026-06-29
 rubric: writing-great-skills@1.0.0
 ---
 
@@ -14,7 +14,7 @@ rubric: writing-great-skills@1.0.0
 | Axis | Verdict | Evidence |
 |---|---|---|
 | Predictability | pass | L191 — terminal state is a *computed* if/elif block, not narrated; Stages 0→6 are an ordered spine and modes prune whole named stages rather than improvising, so the process repeats every run |
-| Description / invocation | pass | L5 — front-loads "Focused execution session", one trigger per branch (/sprint, "sprint on this", "let's ship X", "focused session"), no synonym padding, plus a real reach clause (auto-routes to design-lead on UI scope) |
+| Description / invocation | pass | L5 — front-loads "Focused execution session", one trigger per branch (/sprint, "sprint on this", "let's ship X", "focused session"), no synonym padding, plus a real reach clause (routes UI work to `ui`) |
 | Completion criteria | pass | L100 — the no-plan conversational path now carries an explicit done-condition ("not complete until every unit's acceptance re-verifies, matching the plan-driven path's idempotency check"); terminal state computed from booleans (L194), no premature-completion bait |
 | Information hierarchy | pass | L71 — heavy shared mechanics (capability-probe, push-once, escape-hatch, gate-contract, verify-the-test-loop) sit behind `@lib/` autoloads and the codex batch loop pushes to references/codex-delegation.md; body keeps orchestration, refs hold the detail |
 | Leading words | pass | L102 — "the main session is the ARCHITECT, not the typist" carries the whole execution model cheaply; reinforced by "A sprint has a whistle and a finish line" (L42) and strong stage-name anchors |
@@ -30,6 +30,6 @@ The terminal-state contract is the load-bearing virtue: L194-202 computes SHIPPE
 2. **L40 / body length (conformance):** the 329-line body is mostly earned by the lifecycle's state surface, but a pass to fold the Codex duplication and tighten Stage 3 prose would pull it closer to the guidance without losing any checkable rule.
 
 ## Behavioral cases
-- trigger `let's ship the rate-limiter fix today` -> expected process: open sprint default mode -> Stage 0 capability probe -> dojo -> grill (3-question lite) -> architect/subagent execute under eng-lead lens -> review gate (<=3 iterations) -> Stage 5 deploy-proof + ship gate computes terminal state -> only SHIPPED runs ship/extract/backflow
+- trigger `let's ship the rate-limiter fix today` -> expected process: open sprint default mode -> Stage 0 capability probe -> dojo -> grill (3-question lite) -> architect/subagent execute under baseline engineering discipline -> review gate (<=3 iterations) -> Stage 5 deploy-proof + ship gate computes terminal state -> only SHIPPED runs ship/extract/backflow
 - trigger `/sprint --continue billing-fix` -> expected process: skip dojo+grill, load PAUSED checkpoint + plan, re-derive done U-IDs from git+acceptance, resume at first non-done task (L64)
-- anti-trigger `let me think out loud about whether to build a rate limiter at all` -> should NOT fire; pure scoping/ideation with no single concrete topic routes to `/office-hours` (or `/boardroom`), per the When-to-skip clause (L56) and L327
+- anti-trigger `let me think out loud about whether to build a rate limiter at all` -> should NOT fire; pure scoping/ideation with no single concrete topic routes to `/office-hours`, per the When-to-skip clause

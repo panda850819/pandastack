@@ -2,8 +2,8 @@
 type: skill-eval
 skill: office-hours
 bucket: productivity
-evaluated_skill_hash: d05e045c64b07989dbc7c17d23a5536fe82dde17
-evaluated_at: 2026-06-26
+evaluated_skill_hash: b045af250360d3efad1b98aaf860ecc9e3401db9
+evaluated_at: 2026-06-29
 rubric: writing-great-skills@1.0.0
 ---
 
@@ -37,4 +37,4 @@ The gate discipline is the load-bearing strength: adversarial drilling is gated 
 - trigger `I think I want to build a brief-router but I'm not sure` -> expected process: Stage 1 capability-probe + vault scan + goal-mapping, Stage 2 one-question-at-a-time premise drill (push-once menu on rehearsed replies), Stage 3 2-3 named alternatives with per-approach Apply gate, Stage 4 premise refresh, Stage 5 brief to `docs/briefs/`, Stage 5b plan to `docs/plans/` if it routes to /sprint.
 - trigger `draft a brief, context is already loaded` -> expected process: `/office-hours --quick`, Stage 1 skipped with the one-line context-summary print (L67), straight to Stage 2.
 - anti-trigger `grill me on this scope for 5 min, no brief needed` -> should NOT fire (routes to `/grill` — atomic mid-session pressure, confirmed/open log, no brief output per L58).
-- anti-trigger `I already wrote the brief, critique the plan` -> should NOT fire (routes to `/boardroom` per L47).
+- anti-trigger `just execute this confirmed plan` -> should NOT fire (routes to `/sprint` per the When-to-skip clause).

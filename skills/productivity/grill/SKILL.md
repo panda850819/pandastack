@@ -50,6 +50,8 @@ If goal mapping has not been done yet (e.g. you are running grill standalone, no
 
 **Pushback uses the 5-pattern menu in `lib/push-once.md`.** When a first reply is rehearsed / vague / unsupported, print the menu from `lib/push-once.md` (Output protocol). User picks; model uses that exact prompt as the next message. Never improvise the push without showing the menu first — that defeats the audit trail. See `lib/push-once.md` for the menu, selection rules, and anti-patterns.
 
+**Delete-first — drill whether before how.** Before drilling scope or edges, try to delete the whole requirement: can it be removed entirely? Who owns it, and can that person waive it? Requirements from smart or senior people are the most dangerous, because you question them least; optimizing something that should not exist is the most expensive mistake. Only what survives deletion is worth the axes below.
+
 Drill across these axes (not as a checklist — as a search space):
 
 1. **Existence** — does this already exist partially? What's the status quo?
@@ -124,4 +126,3 @@ Save to:
 
 - **For structured-brief output** — use `/office-hours` (default full mode) or `/office-hours --quick` (when context already loaded). Replaces the deprecated `grill --mode structured`.
 - **Before `/ship knowledge <decisions/path>` Close stage** — if you're closing a work topic and realize scope was never grilled (replaces v2.1 `/work-ship` reference)
-- **Not a replacement for `/boardroom`** — that's multi-voice review of a complete plan; grill is upstream (problem → grill, plan → boardroom)

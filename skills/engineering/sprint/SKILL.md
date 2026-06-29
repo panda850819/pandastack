@@ -2,18 +2,18 @@
 name: sprint
 mode: skill
 description: |
-  Focused execution session: from "I want to do X" to shipped or explicitly paused/failed/aborted. Internal flow: dojo, grill (lite), execute, review, ship; only SHIPPED triggers backflow. Triggers on /sprint, "sprint on this", "let's ship X", "focused session". Auto-routes to design-lead on UI scope.
+  Focused execution session: from "I want to do X" to shipped or explicitly paused/failed/aborted. Internal flow: dojo, grill (lite), execute, review, ship; only SHIPPED triggers backflow. Triggers on /sprint, "sprint on this", "let's ship X", "focused session". Routes UI work to `ui`, bugs to `debug`.
 reads:
   - repo: lib/capability-probe.md
   - repo: lib/escape-hatch.md
   - repo: lib/push-once.md
-  - repo: lib/skill-decision-tree.md
   - repo: lib/gate-contract.md
   - repo: skills/productivity/dojo/SKILL.md
   - repo: skills/productivity/grill/SKILL.md
+  - repo: skills/productivity/ui/SKILL.md
+  - repo: skills/engineering/debug/SKILL.md
   - repo: skills/engineering/review/SKILL.md
   - repo: skills/engineering/ship/SKILL.md
-  - repo: skills/productivity/design-lead/SKILL.md
   - repo: lib/verify-the-test-loop.md
   - repo: skills/engineering/sprint/references/codex-delegation.md
   - vault: knowledge/**
@@ -53,13 +53,13 @@ capability_required:
 
 - Trivial 1-line change (just edit + commit)
 - Multi-day project (use `/office-hours` first, then sprint per session)
-- Pure planning / scoping (use `/office-hours` or `/boardroom`, not sprint)
+- Pure planning / scoping (use `/office-hours`, not sprint)
 
 ## Modes
 
 - Default: full sprint (dojo → grill lite → execute → review → ship)
 - `--quick`: skip dojo + grill, go execute → review → ship
-- `--design`: auto-invoke design-lead skill at execute stage (replaces `commands/design.md`)
+- `--design`: auto-invoke `ui` skill at execute stage (replaces `commands/design.md`)
 - `--plan {path|slug}`: execute against a durable plan at `docs/plans/{slug}.md` (the artifact `/office-hours` Stage 5b emits). Sprint reads it READ-ONLY and derives per-task progress from git — see Stage 3 plan-driven execution. Auto-detect rule: slugify the topic the same way office-hours does and check for `docs/plans/{that-slug}.md` (exact slug, no fuzzy match); if the sprint began from an office-hours brief, use the plan path office-hours printed. If none found, run conversationally.
 - `--continue {slug}`: resume a PAUSED sprint. Skips dojo + grill; loads the PAUSED checkpoint + `docs/plans/{slug}.md`, recomputes which U-IDs are already done (git + acceptance), and resumes at the first non-done task.
 - `--delegate codex`: in Stage 3, hand a batch of mechanical units to Codex (synchronous, in-loop) via the `/handover` invocation. OFF unless you pass this flag — sprint defaults to free Claude subagents and never auto-delegates. A batch of ≥3 mechanical units is the advisory threshold worth surfacing the flag at, NOT an auto-trigger. Requires a plan file. See `references/codex-delegation.md` for the batch loop; the single-invocation mechanics live in `skills/engineering/handover/references/codex-invocation.md`. For ASYNC handover that frees this session, use `/handover --async`.
@@ -102,7 +102,7 @@ When no plan file is present, execute conversationally. Done-condition for the c
 **Execution mode (default: architect + subagent build — Panda directive 2026-06-12):** the main session is the ARCHITECT, not the typist. For each non-trivial build unit:
 
 1. Main session writes a tight spec: files in scope, seams/interfaces, hard constraints, style anchor (which existing file to imitate), and a checkable acceptance condition per unit.
-2. Dispatch the unit to a runtime-native subagent (Claude Code: `Agent` tool; one unit = one agent; parallel dispatch ONLY when units are file-disjoint). The subagent gets the spec, not the persona file. The architect judges which model/agent fits each unit by its nature — a deep-reasoning seam vs a mechanical edit — and passes `model:` accordingly. Decide per task at dispatch time; do not hardcode a fixed tier mapping. Codex delegation still targets the Codex runtime.
+2. Dispatch the unit to a runtime-native subagent (Claude Code: `Agent` tool; one unit = one agent; parallel dispatch ONLY when units are file-disjoint). The subagent gets the spec, not the architect's full context. The architect judges which model/agent fits each unit by its nature — a deep-reasoning seam vs a mechanical edit — and passes `model:` accordingly. Decide per task at dispatch time; do not hardcode a fixed tier mapping. Codex delegation still targets the Codex runtime.
 3. Main session reviews the returned diff against the spec, re-verifies acceptance itself (build/test — subagent-reported green is never trusted), fixes integration seams, and owns all git operations.
 
 Carve-outs:
@@ -114,37 +114,17 @@ Rationale: the architect's context window and judgment are the scarce resource; 
 
 **Codex delegation (only when `--delegate codex` is passed):** instead of dispatching units to free runtime subagents, hand a batch of mechanical units to Codex (burns Codex quota) via the `/handover` invocation, keeping planning / review / git on Claude. OFF by default, never auto-triggered. A batch of ≥3 mechanical units is the threshold at which it's worth *surfacing* the flag to the user, but the switch is always explicit. Read `references/codex-delegation.md` for the gate, batching, and the circuit breaker; it delegates each batch via `skills/engineering/handover/references/codex-invocation.md`. This is SYNCHRONOUS (occupies this turn polling); for ASYNC fire-and-forget that frees the session, use `/handover --async` instead.
 
-@../../../lib/skill-decision-tree.md applies — read the persona routing table.
-
-Detect task shape from grill output (Stage 2) and load the matching persona skill as **in-session cognitive lens** for the ARCHITECT (the persona shapes spec + review judgment; it is NOT shipped to implementation subagents — they get the spec).
-
-Routing (read `lib/skill-decision-tree.md` § "Persona routing table"):
-
-| Task signal | Load skill |
-|---|---|
-| Code / refactor / debug / fix / feature impl / tech-stack 選型 / DB schema / API contract (default) | `skills/engineering/eng-lead/SKILL.md` |
-| UI / interaction / layout / visual hierarchy / accessibility | `skills/productivity/design-lead/SKILL.md` |
-| Multi-team coord / process design / SLA / runbook / on-call | `skills/productivity/ops-lead/SKILL.md` |
-| Feature scoping / metric / PMF / pricing / user research | `skills/productivity/product-lead/SKILL.md` |
-| Kill / pivot / scope cut / strategic frame | `skills/productivity/ceo/SKILL.md` |
-
-Apply the loaded persona's Soul / Iron Laws / Cognitive Models / On Invoke / Anti-patterns to all Stage 3 work in this same context. Persona is a lens, not a subagent — it rides the architect (spec + review), while implementation runs per the Execution mode block above.
-
-**Single-persona discipline**: load ONE persona for the whole sprint. If the topic genuinely spans 2+ personas, split into multiple sequential sprints. Mixing personas mid-sprint dilutes the cognitive frame and produces inconsistent output.
-
-Apply minimal-diff + verify + 3-strike escalation (eng-lead iron laws apply even when another persona is the primary lens — they are baseline coding discipline).
+Stage 3 runs with baseline engineering discipline — root cause before fix, minimal diff, verify before done, 3-strike escalation — from `~/.agents/AGENTS.md` § Coding Discipline plus `careful` and `review`. For a UI build, follow `ui`; for a bug, follow `debug`. There is no separate persona-lens step.
 
 Track `iteration` counter starting at 1.
 
-**Step-level narrate** (Mnilax Rule 10, adopted 2026-05-24): every distinct sub-step within Stage 3 (file edit, command run, validation pass, persona-lens switch) must end with a one-line narrate:
+**Step-level narrate** (Mnilax Rule 10, adopted 2026-05-24): every distinct sub-step within Stage 3 (file edit, command run, validation pass) must end with a one-line narrate:
 
 ```
 done: {what was completed} | verified: {what was checked} | remaining: {next sub-step}
 ```
 
 Mirrors background-session protocol (`result:` / `needs input:` / `failed:`) but applied to foreground sprint. Purpose: at 50-min mark, model + user both know where the sprint is even if context drifts. Skip ONLY for trivial 1-line edits (`--quick` mode auto-skips). If you completed something you can't summarize back, stop — you've drifted past the last known-good state.
-
-**When scope detection is ambiguous**: ask user once with the candidate personas listed; pick the highest-confidence single one based on user reply. Do not silently default to eng-lead when signals point elsewhere — that misroutes architecture / ops / product work.
 
 **Multi-source aggregator dispatch-branch test**: if this sprint adds a new dispatch branch / per-source handler / per-source filter to a multi-source aggregator, the handler-level integration test for the new branch is part of Stage 3 implementation, NOT Stage 4 review iter 2. Read `skills/engineering/sprint/lib/aggregator-test-checklist.md` for the trigger shapes and test shape.
 
@@ -174,7 +154,7 @@ Three branches:
 
 **Auto-loop semantics**: approve/edit increment iteration counter and loop back to Stage 3. Stage 3 receives findings as additional context, then re-runs execute. Stage 4 fires again at end. Max 3 loops; iteration=3 with non-zero count → FAILED.
 
-**Why bounded**: 3 loops is the empirical "if you can't fix it in 3 review-cycles, the diagnosis itself is the bug" cap (mirrors eng-lead's 3-strike escalation rule). After FAILED, user does manual intervention (no auto-retry).
+**Why bounded**: 3 loops is the empirical "if you can't fix it in 3 review-cycles, the diagnosis itself is the bug" cap (the 3-strike escalation rule). After FAILED, user does manual intervention (no auto-retry).
 
 ### Stage 5: Ship gate (terminal state decision)
 
@@ -285,7 +265,7 @@ tags: [sprint, {state-lowercase}]
 | 0 capability probe | ok / degraded / abort | {summary} |
 | 1 dojo | done / skipped | {prep file path} |
 | 2 grill (lite) | done / escape-hatch / skipped | {n questions, log path} |
-| 3 execute | done / failed | {iteration, design-lead invoked Y/N} |
+| 3 execute | done / failed | {iteration} |
 | 4 review | done / iteration-exceeded / skipped | {findings count, P0/P1 remaining} |
 | 5 ship gate | SHIPPED / PAUSED / FAILED / ABORTED | {state rationale} |
 | 6 terminal | {handled per state} | {commit/checkpoint path} |
@@ -317,13 +297,13 @@ Save to `Inbox/sprint-{slug}-{date}.md` regardless of terminal state.
 | "Topic is clear, skip grill" | If it were clear, you'd be in execute mode, not opening `/sprint`. The 3-question cap costs 2 minutes; ambiguity costs a re-do. |
 | "Small change, skip review" | Small changes are where regressions hide because nobody looks. P0 review still runs in 90 seconds on a small diff. |
 | "One more iteration will fix it" (iter ≥ 3) | 3-strike rule is empirical: at iteration 4 the diagnosis itself is the bug. State=FAILED, manual intervention. |
-| "It's partly UI, partly backend, just mix personas" | Mixed personas dilute the cognitive lens and produce inconsistent output. Split into two sequential sprints. |
+| "It's partly UI, partly backend, do it all in one sprint" | Split into two sequential sprints — one for the `ui` surface, one for the backend. |
 | "Sprint within a sprint for the sub-task" | Flatten. Either the sub-task is a Stage 3 step in the current sprint, or it's a separate sprint that fires after this one ends. |
 | "Review found P1 but ship anyway" | Terminal state contract is load-bearing. P1 unaddressed = state ≠ SHIPPED. Mark PAUSED with the open finding logged, or fix and re-review. |
 | "BUILD SUCCEEDED, so the user is testing my fix" | Success proves the compiler ran, not that the deployed artifact is the one you built. Deploy-proof before human test (`lib/verify-the-test-loop.md` R1). |
 | "My instrumentation didn't show in their screenshot, weird — anyway" | That is the pipeline alarm, not a fluke. Stop, verify the loop (R1/R2). The session this rule exists for lost days exactly here. |
 | "3 lifecycle variants failed, the 4th is my escalation" | Same-shape failure ×3 ⇒ the abstraction/loop is wrong (R4). A 4th variant of the same approach is strike 4, not escalation. Switch primitive or re-verify the loop. |
 | "Re-asking the user to re-test is just one more round" | Each contaminated human round-trip is the expensive unit. If the loop needs repeated round-trips, harden the loop first (R3), then iterate. |
-| "Let's sprint on stuff" (no single topic) | Sprint requires one concrete topic. No-topic ideation routes to `/office-hours` or `/boardroom`, not sprint. |
+| "Let's sprint on stuff" (no single topic) | Sprint requires one concrete topic. No-topic ideation routes to `/office-hours`, not sprint. |
 | "Substrate's fine, skip Stage 0 capability probe" | Probe each run — state changes between sessions. The probe block is the opening, not optional. |
 | "Sprint didn't ship, so it failed (PAUSED = failure)" | PAUSED is a legitimate terminal outcome, not a break. No extract/backflow; write the checkpoint and stop cleanly. |
