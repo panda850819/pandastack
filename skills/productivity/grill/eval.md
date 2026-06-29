@@ -2,8 +2,8 @@
 type: skill-eval
 skill: grill
 bucket: productivity
-evaluated_skill_hash: f4ed84eb3897ff5a3a76ebf6566ce0f388cf171b
-evaluated_at: 2026-06-26
+evaluated_skill_hash: e607c87e4fc5889cd99ea5b60caaeccd9c107861
+evaluated_at: 2026-06-29
 rubric: writing-great-skills@1.0.0
 ---
 
@@ -19,7 +19,7 @@ rubric: writing-great-skills@1.0.0
 | Information hierarchy | pass | L51 — push-once is correctly deferred to lib/push-once.md (body keeps the trigger, lib holds the 5-pattern menu); the menu re-inlining from the prior version is gone, so progressive disclosure now holds. |
 | Leading words | weak | L23 — "Adversarial requirement discovery" is restated verbatim from the description (L4) at the body opener (L23) and echoed again at L25; the restatements should collapse to one canonical statement. |
 | Pruning | weak | L126 — "(replaces v2.1 /work-ship reference)" and L125 "Replaces the deprecated grill --mode structured" are migration archaeology that change no run behaviour and belong in a changelog, not the load-bearing body. |
-| Granularity | pass | L11 — the two lib splits (goal-mapping, push-once) each earn their load: push-once is genuinely reached by office-hours and boardroom too, so the cut buys cross-skill reach, not just length. |
+| Granularity | pass | L11 — the two lib splits (goal-mapping, push-once) each earn their load: push-once is genuinely reached by office-hours too, so the cut buys cross-skill reach, not just length. |
 | pandastack conformance | pass | L2 — name=grill matches folder; frontmatter valid; both lib/ pointers (and the transitively-referenced lib/gate-contract.md) resolve at repo root; lib reads ~2.1K tokens stay under the 5K hot/cold dispatch line, so inline loading is correct and 127 lines is earned reference. |
 
 ## Why it's good
