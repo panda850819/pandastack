@@ -1,7 +1,7 @@
 ---
 name: review
 description: |
-  Use when asked to "review", "check my code", or before creating a PR.
+  Use when asked to "review", "check my code", or before creating a PR. NOT UI/browser (qa), plan critique (boardroom), or correctness-bug hunting (code-review).
 reads:
   - repo: "**"
   - repo: CLAUDE.md
@@ -67,7 +67,7 @@ grep -rl "keyword" {learnings_dir}/ 2>/dev/null
 Read matching files. For each match, note:
 "Prior learning: [key] (confidence N/10, from [date])"
 
-Apply confidence decay per `lib/confidence.md` rules. Skip learnings with effective confidence < 3.
+Apply confidence decay per `skills/engineering/review/lib/confidence.md` rules. Skip learnings with effective confidence < 3.
 
 ## Step 3: Brief Alignment Check
 
