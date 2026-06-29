@@ -1,0 +1,36 @@
+---
+name: debug
+description: |
+  Systematic root-cause debugging. Use for errors, crashes, regressions,
+  failing tests, "used to work and now doesn't", or flaky/intermittent
+  behavior. Triggers: 排查, 查 bug, 報錯, 崩潰, 跑不通, 以前是好的, 回歸,
+  反覆修不好, debug, why is this broken, regression, root cause, used to work,
+  stack trace. NOT for code-diff review (use `review`), UI taste complaints
+  (use `ui`), or building new features.
+---
+
+# Debug
+
+You already know how to debug. This skill is not the method. It overrides the three reflexes you get
+wrong under momentum, and points you to lore you cannot derive.
+
+## Override
+
+- **Name the root cause before you edit.** At `file:function:line`, with the evidence. "A state issue"
+  is not a root cause; "stale cache in `useUser` at `user.ts:42`, dep array missing `userId`" is.
+  Editing before you can say that sentence is the failure mode.
+- **Do not claim fixed until you ran it and looked.** "Should work" is not evidence. Compile-only is
+  not enough for UI / native / generated-artifact bugs: open it, and for generated output read the
+  contents, not the source diff. Cannot run it here → say so and hand off the exact check.
+- **Before "fixed", grep the signature for siblings.** One fix that ignores siblings leaves N-1 in the
+  tree; the same shape usually hides elsewhere.
+
+## Lore (consult when the cause is not obvious)
+
+`skills/engineering/debug/lib/diagnosis.md` — known bug classes (listener-owns-lifetime, O(N²)
+accumulators, schema category-leak, and CLI archetypes: PATH drift, stdout/stderr contract, pipe
+backpressure, cold-start), instrument-first-by-bug-class, bisect with worktree safety, and the
+3-failed-hypotheses handoff template.
+
+Root cause is a bug class not in that file and not in `docs/learnings/` → write a learning
+(`lib/learning-format.md`). Matches one → bump its `recurrence`.

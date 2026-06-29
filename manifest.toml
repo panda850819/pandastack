@@ -141,6 +141,11 @@ tier = "core"
 requires = ["cli:git"]
 description = "Parallel 3-pass review (correctness, security, architecture)."
 
+[skill.debug]
+tier = "core"
+requires = ["cli:git"]
+description = "Systematic root-cause debugging: hypothesis gate, instrument-first by bug class, bisect, scope-blast, known bug classes. NOT diff review (review) or UI taste (ui)."
+
 [skill.ship]
 tier = "core"
 requires = ["cli:git", "cli:gh"]

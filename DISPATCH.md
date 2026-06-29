@@ -8,6 +8,7 @@ Before responding to any task-shaped message, match it against this table. On ma
 | Plan done, want multi-lens critique | `boardroom` |
 | Touching prod, shared infra, or harness paths (`~/.agents`, `~/.claude`, `~/.codex`) | `careful` first |
 | Bug fix / feature / refactor (3+ files or new abstraction) | grill-lite plan first, not direct edits |
+| Error / crash / regression / failing test / "used to work and now doesn't" | `debug` (root cause before any fix) |
 | Focused build-to-ship session | `sprint` |
 | About to commit | `review`, then `ship` |
 | Knowledge note or decision closed | `ship knowledge <path>` |

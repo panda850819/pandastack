@@ -19,6 +19,7 @@
   "skills": [
     "./skills/engineering/careful",
     "./skills/engineering/checkpoint",
+    "./skills/engineering/debug",
     "./skills/engineering/deepwiki",
     "./skills/engineering/eng-lead",
     "./skills/engineering/freeze",

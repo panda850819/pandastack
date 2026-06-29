@@ -41,6 +41,7 @@ Vault hygiene (orphans / stale / superseded / dead redirects) is a direct file s
 | `pandastack:freeze` | Lock editing scope to specific paths | scope discipline |
 | `pandastack:qa` | Browser-based UI QA | test this UI |
 | `pandastack:review` | Parallel 3-pass review + Codex cross-check | review PR |
+| `pandastack:debug` | Systematic root-cause debugging: one-sentence root-cause gate, hypothesis-explains-every-symptom, instrument-first by bug class, bisect, scope-blast (举一反三), known bug classes. NOT diff review (`review`) or UI taste (`ui`). | bug, crash, regression, 報錯, 跑不通, used to work |
 | `pandastack:ship` | Test + commit + PR (git mode is default). CLOSES finished work — to hand UNFINISHED work to Codex use `handover`. | code done, ship it |
 | `pandastack:handover` | Hand unfinished work to Codex to DO: sync (spawn `codex exec` now) or `--async` (write payload for Hermes). Not `ship` — ship closes, handover delegates. | hand this to codex, let codex finish, 丟給 codex |
 | `pandastack:sprint` | Single-track 1-2h focused execution: dojo → grill-lite → execute → review → ship. Replaces the v2.1 `dev` flow spec. `--delegate codex` delegates a ≥3-unit batch via `handover`. | small focused task |
