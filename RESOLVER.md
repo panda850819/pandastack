@@ -39,6 +39,7 @@ Vault hygiene (orphans / stale / superseded / dead redirects) is a direct file s
 | `pandastack:careful` | Confirmation gates for production / shared infra | working on prod |
 | `pandastack:checkpoint` | Save / resume working state snapshot | pausing work |
 | `pandastack:freeze` | Lock editing scope to specific paths | scope discipline |
+| `pandastack:ui` | Build/fix UI with a point of view: 4 override reflexes (lock direction + anti-slop, verify render not source, build past happy path, decompose cited products) + craft lore in references (fonts, CJK+Latin type, OKLCH, CSS bans, omissions). NOT browser-test (`qa`) or render-bug (`debug`). | design, 做頁面, 不好看, 很醜, 排版 |
 | `pandastack:qa` | Browser-based UI QA | test this UI |
 | `pandastack:review` | Parallel 3-pass review + Codex cross-check | review PR |
 | `pandastack:debug` | Systematic root-cause debugging: one-sentence root-cause gate, hypothesis-explains-every-symptom, instrument-first by bug class, bisect, scope-blast (举一反三), known bug classes. NOT diff review (`review`) or UI taste (`ui`). | bug, crash, regression, 報錯, 跑不通, used to work |

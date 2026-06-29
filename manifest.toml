@@ -185,6 +185,10 @@ description = "Reference + scorecard for well-constructed skills; the constructi
 tier = "core"
 description = "Voice-aware drafting + slop detection."
 
+[skill.ui]
+tier = "core"
+description = "Build/fix UI with a committed point of view. Four override reflexes + craft lore in references (reflex-font blocklist, CJK+Latin type, OKLCH, CSS bans+rewrites, strategic omissions). NOT browser-test (qa) or render-bug debugging (debug)."
+
 # ============================================================================
 # EXT (2) — public CLI dependencies
 # ============================================================================
