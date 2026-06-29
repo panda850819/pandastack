@@ -30,9 +30,9 @@
 # This file is hand-curated. When you add or rename a skill, update here.
 
 [manifest]
-version = "3.1.0"
+version = "3.2.0"
 schema  = "skill-tier-v1"
-updated = "2026-06-26"
+updated = "2026-06-29"
 
 # v2.2.0 (2026-05-09): scope tightening. Public package shrinks 38 → 26 skills.
 #   - Archived (true cuts): think-like-naval, think-like-alan-chan (mimicry not

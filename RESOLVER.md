@@ -165,7 +165,7 @@ What used to be `flows/<name>.md` is gone. Reasons:
 
 ---
 
-## Persona layer removed (2026-06-29, PR #100/#101)
+## v3.2.0 — persona layer removed (2026-06-29, PR #100/#101)
 
 | Action | Items | Reason |
 |---|---|---|
@@ -217,7 +217,7 @@ Public package shrinks 38 → 26 skills. 7 lifecycle flow specs → 0 (collapsed
 
 ## Version
 
-This RESOLVER.md is for pandastack v3.1.0. Update when adding / removing / renaming skills.
+This RESOLVER.md is for pandastack v3.2.0. Update when adding / removing / renaming skills.
 
 ---
 
