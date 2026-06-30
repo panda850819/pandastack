@@ -52,22 +52,16 @@ If output for any command is > 30 lines, summarize. Don't dump raw output into t
 3. Run `git diff origin/{main} --stat`. If no diff, stop.
 4. Get the full diff: `git diff origin/{main}`
 
-## Step 2: Load Learnings
+## Step 2: Load Learnings (recall)
 
-Search `{learnings_dir}` for learnings related to the changed files:
+Run the learnings recall per [`lib/learning-recall.md`](../../../lib/learning-recall.md): derive the review topic from the changed files + diff keywords, pull the top 3-5 relevant learnings from the store, and INJECT them. Store resolution is store-agnostic — `gbrain query "<topic>"` filtered to `learnings/` when gbrain is present, else ranked grep over `{learnings_dir}`:
 
 ```bash
-# Search by file paths mentioned in the diff
-grep -rl "relevant-file-path" {learnings_dir}/ 2>/dev/null
-
-# Search by keywords from the diff (function names, patterns)
-grep -rl "keyword" {learnings_dir}/ 2>/dev/null
+grep -rl "relevant-file-path" {learnings_dir}/ 2>/dev/null   # by changed path
+grep -rl "keyword" {learnings_dir}/ 2>/dev/null               # by diff keyword / function name
 ```
 
-Read matching files. For each match, note:
-"Prior learning: [key] (confidence N/10, from [date])"
-
-Apply confidence decay: `effective = max(0, confidence − floor(days_since_created / 30))` — `observed`/`inferred` sources lose 1 point per 30d, `user-stated` never decays. Skip learnings with effective confidence < 3.
+This step was historically listed but skipped (measured: 0 fires across 375 sessions) — it is now mandatory and must **change the review, not just list titles**. For each surfaced learning, apply confidence decay (`effective = max(0, confidence − floor(days_since_created / 30))`; `observed`/`inferred` lose 1 pt per 30d; `user-stated` never decays; skip effective < 3) and state in one line whether it bears on this diff. A learning flagging a known pitfall in a changed file is a finding, not a footnote. If nothing relevant surfaces, print `(no relevant prior learning)`.
 
 ## Step 3: Brief Alignment Check
 
