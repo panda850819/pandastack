@@ -20,7 +20,10 @@ cd "$(dirname "$0")/.."
 # Non-deterministic / external-dependency tests, excluded from the blocking gate.
 # (none today — the suite is offline by design; listed here so future additions
 #  that touch network/secrets/LLM are quarantined explicitly, not silently.)
-EXCLUDE="conformance-smoke.sh"
+# NB: the scripts/ semantic linters run offline via tests/lint-suite.sh, which
+# invokes only conformance-smoke.sh's offline `hook` subtarget — its LLM-backed
+# host probes are never reached, so nothing here needs quarantining.
+EXCLUDE=""
 
 TIMEOUT="${PSTEST_TIMEOUT:-240}"
 TO=""
