@@ -100,6 +100,38 @@ name: demo
 Use \`pandastack:ghost\` and \`/ghost-command\`."
 fail_case refs-drift python3 scripts/lint-refs-resolve.py "$refs_drift"
 
+# gbrain refs must be gated even with the pack absent (the CI condition):
+# resolution runs against the checked-in scripts/gbrain-skills.list snapshot.
+gbrain_clean="$tmp/gbrain-clean"
+mkdir -p "$gbrain_clean/scripts"
+printf 'query\n' >"$gbrain_clean/scripts/gbrain-skills.list"
+write_skill "$gbrain_clean" meta demo "---
+name: demo
+---
+# Demo
+Use \`gbrain:query\`."
+pass_case gbrain-clean env PANDASTACK_GBRAIN_SKILLS="$tmp/absent-pack" python3 scripts/lint-refs-resolve.py "$gbrain_clean"
+
+gbrain_drift="$tmp/gbrain-drift"
+mkdir -p "$gbrain_drift/scripts"
+printf 'query\n' >"$gbrain_drift/scripts/gbrain-skills.list"
+write_skill "$gbrain_drift" meta demo "---
+name: demo
+---
+# Demo
+Use \`gbrain:ghost\`."
+fail_case gbrain-drift env PANDASTACK_GBRAIN_SKILLS="$tmp/absent-pack" python3 scripts/lint-refs-resolve.py "$gbrain_drift"
+
+# and when the pack IS present, a stale snapshot entry must fail (freshness).
+gbrain_stale="$tmp/gbrain-stale"
+mkdir -p "$gbrain_stale/scripts" "$tmp/mini-pack/query"
+printf 'query\nghost-skill\n' >"$gbrain_stale/scripts/gbrain-skills.list"
+write_skill "$gbrain_stale" meta demo "---
+name: demo
+---
+# Demo"
+fail_case gbrain-stale env PANDASTACK_GBRAIN_SKILLS="$tmp/mini-pack" python3 scripts/lint-refs-resolve.py "$gbrain_stale"
+
 quotes_clean="$tmp/quotes-clean"
 write_skill "$quotes_clean" meta demo "---
 name: demo

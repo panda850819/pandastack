@@ -15,7 +15,10 @@ docs/handoffs — not tracked when empty), absolute-path substrings
 placeholders containing { or < (verified by shape, not existence).
 
 Cross-pack token limits: pandastack:<name> resolves to this pack's skill dirs;
-gbrain:<name> resolves only when the gbrain skill pack checkout is present; and
+gbrain:<name> resolves against the checked-in snapshot scripts/gbrain-skills.list
+(so CI, which has no gbrain checkout, still gates the class deterministically);
+when the local pack IS present, every snapshot entry is also freshness-checked
+against the real dirs so the snapshot cannot silently rot; and
 slash commands are checked only when shaped as backticked `/lower-kebab` (or
 `/pandastack:name`) so prose slashes, paths, and CLI flags do not false-positive.
 Bare skill names in prose are outside this deterministic token shape.
@@ -65,6 +68,13 @@ if os.path.exists(allowlist_path):
 
 gbrain_dir = os.environ.get("PANDASTACK_GBRAIN_SKILLS") or os.path.join(os.path.expanduser("~"), "site", "knowledge", "brain", "skills")
 gbrain_present = os.path.isdir(gbrain_dir)
+gbrain_list_path = os.path.join(ROOT, "scripts", "gbrain-skills.list")
+gbrain_list = set()
+if os.path.exists(gbrain_list_path):
+    for line in open(gbrain_list_path, encoding="utf-8"):
+        line = line.strip()
+        if line and not line.startswith("#"):
+            gbrain_list.add(line)
 
 for f in glob.glob("skills/**/SKILL.md", recursive=True):
     if "/.archive/" in f or "/_deprecated/" in f:
@@ -86,10 +96,12 @@ for f in glob.glob("skills/**/SKILL.md", recursive=True):
             if name not in skill_bucket:
                 broken.setdefault(f, []).append((f"pandastack:{name}", "no matching skills/*/<name>/ directory"))
         else:
-            if not gbrain_present:
-                notices.add(f"NOTICE: gbrain skill pack absent at {gbrain_dir}; skipping gbrain:* refs")
-            elif not os.path.isdir(os.path.join(gbrain_dir, name)):
-                broken.setdefault(f, []).append((f"gbrain:{name}", f"no matching gbrain skill dir under {gbrain_dir}"))
+            if name in gbrain_list:
+                continue
+            if gbrain_present and os.path.isdir(os.path.join(gbrain_dir, name)):
+                broken.setdefault(f, []).append((f"gbrain:{name}", "in the local pack but missing from scripts/gbrain-skills.list — add it so CI gates the ref"))
+            else:
+                broken.setdefault(f, []).append((f"gbrain:{name}", "not in scripts/gbrain-skills.list (the CI-gated snapshot)"))
 
     for command in set(SLASH_COMMAND.findall(text)):
         name = command[1:]
@@ -98,6 +110,13 @@ for f in glob.glob("skills/**/SKILL.md", recursive=True):
         if name in skill_bucket or command in command_allowlist:
             continue
         broken.setdefault(f, []).append((command, "slash command does not match a pandastack skill or allowlist entry"))
+
+if gbrain_present:
+    for name in sorted(gbrain_list):
+        if not os.path.isdir(os.path.join(gbrain_dir, name)):
+            broken.setdefault("scripts/gbrain-skills.list", []).append((name, f"stale snapshot entry — no such dir in the local gbrain pack at {gbrain_dir}"))
+elif gbrain_list:
+    notices.add(f"NOTICE: gbrain pack absent at {gbrain_dir}; gbrain:* refs gated against scripts/gbrain-skills.list, freshness check skipped")
 
 for notice in sorted(notices):
     print(notice)
