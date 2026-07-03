@@ -1,7 +1,7 @@
 ---
 name: review
 description: |
-  Use when asked to "review", "check my code", or before creating a PR. NOT UI/browser (qa), plan critique (boardroom), or correctness-bug hunting (code-review).
+  Use when asked to "review", "check my code", or before creating a PR. NOT UI/browser (qa), plan critique (boardroom), or lightweight single-pass diff checks.
 reads:
   - repo: "**"
   - repo: CLAUDE.md

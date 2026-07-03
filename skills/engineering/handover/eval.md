@@ -3,8 +3,8 @@ type: skill-eval
 skill: handover
 bucket: engineering
 evaluated_skill_hash: 7207fa74b964f9683d09cc48aaa20a1fc32e6eb7
-evaluated_at: 2026-06-30
-rubric: writing-great-skills@1.0.0
+evaluated_at: 2026-07-03
+rubric: writing-great-skills@1.1.0
 ---
 
 # Eval — handover
@@ -19,6 +19,7 @@ rubric: writing-great-skills@1.0.0
 | Information hierarchy | pass | L70 — the XML payload, result schema, sandbox-escape gate, and status→action table are pushed to `references/codex-invocation.md`, pulled only when sync mode fires; the body keeps just the orchestration sequence. |
 | Leading words | pass | L58 — "session occupancy, not cost" anchors the async/sync axis in one pretrained concept; L62 "already inside a sandbox… (delegation would recurse)" anchors the env/platform gate. |
 | Pruning | weak | L42 — the "separate Codex quota / not double-paying" economic point recurs at L46 ("rather spend Codex quota") and L58 ("not cost… same subscription either way"); one meaning, three touches, collapsible to a single anchor. |
+| Native parity | pass | L35 — names the native competitor as direct Codex CLI usage outside the protocol, while L70 gives the delta: verified invocation payload, result schema, sandbox gate, and classification table. |
 | Granularity | pass | L70 — the cold split earns its load: the reference's own header (its L3) shows both `/handover` (sync) and `/sprint --delegate codex` (batch loop) reach it, so the cut serves independent reach, not a single-use push. |
 | pandastack conformance | pass | L30 — #110 de-personalization landed: "an explicit pandastack `/handover`" (was "Panda Stack"), description "you" (L7), Boundaries "the orchestrator" (L114) are now generic/redistributable; `name: handover` (L2) matches the folder and `references/codex-invocation.md` (~1K tokens, under the 5K hot threshold) resolves. |
 

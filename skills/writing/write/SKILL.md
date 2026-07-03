@@ -202,7 +202,7 @@ Rules:
 - For X long posts (>200 words) or essays (>500 words), this mode is the **final pass before ship** -- run AFTER `/write edit` cleans slop.
 - For drafts under 200 words, pick the 3 most relevant categories (typically hook move + save-worthy + weakest) -- short content cannot load all 6.
 
-Origin + Panda adaptation notes: `[[media/articles/shann-content-os-bookmarkable-personalized]]`.
+Origin and adaptation notes: `[[media/articles/shann-content-os-bookmarkable-personalized]]`.
 
 ### 8. Idea Gate (`/write idea-gate`)
 

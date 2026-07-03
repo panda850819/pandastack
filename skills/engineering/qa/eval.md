@@ -3,8 +3,8 @@ type: skill-eval
 skill: qa
 bucket: engineering
 evaluated_skill_hash: d8a50cfdab93681e1ca04561a759f54d67e1d5aa
-evaluated_at: 2026-06-26
-rubric: writing-great-skills@1.0.0
+evaluated_at: 2026-07-03
+rubric: writing-great-skills@1.1.0
 ---
 
 # Eval — qa
@@ -19,6 +19,7 @@ rubric: writing-great-skills@1.0.0
 | Information hierarchy | pass | L79 — bug `[BUG]` template + screenshot path extracted to `skills/engineering/qa/lib/test-output-format.md`; the verification rigor ladder (L72-75) stays inline because it fires every run; progressive disclosure honored. |
 | Leading words | pass | L26 — pretrained anchors carry each branch (Functional / Adversarial / Coverage; Deterministic / Snapshot / Screenshot); no restatement sediment. |
 | Pruning | weak | L91 — the AUTO-FIX mechanical-bug example list ("CSS, missing null check, wrong URL") is duplicated verbatim inside `lib/test-output-format.md`'s `Action` routing line; the same enumeration lives in two places, so neither is the single source. |
+| Native parity | weak | L46 — nearest native feature is the main agent manually clicking through browser checks; the delta is isolated sub-agent browser sessions plus structured merge, but the skill never names that native baseline. |
 | Granularity | pass | L40 — Step 3's sub-sections (Parallel Execution, Assertion Protocol, Verification, Failure Output, Summary) are distinct mechanics, each earning its load; 5 steps map to a real pipeline with no over-split. |
 | pandastack conformance | pass | L79 — `name: qa` = folder; repo-root `lib/learning-format.md` is intentionally distinct from the explicit skill-local `skills/engineering/qa/lib/test-output-format.md`; all refs resolve, and the 102-line body is earned by browser-QA orchestration plus extracted failure-output detail. |
 

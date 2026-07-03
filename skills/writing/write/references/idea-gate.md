@@ -64,4 +64,4 @@ This mode is the **upstream gate** for the writing pipeline. It exists to preven
 - If source is someone else's tweet/essay and route is REWRITE, flag the "voice-borrowing risk" in `risks:` explicitly -- writing user's own POV on someone else's frame is the slop trap.
 - Cap packet at 400-900 tokens (Shann's discipline). If you need more, the idea is too broad -- split or downgrade to RESEARCH+IDEATE.
 
-Origin + Panda adaptation notes: `[[media/articles/shann-content-os-bookmarkable-personalized]]`.
+Origin and adaptation notes: `[[media/articles/shann-content-os-bookmarkable-personalized]]`.

@@ -26,7 +26,7 @@ The point is NOT to fill a structured questionnaire (that's `/office-hours`). Th
 
 ## Pre-step: Goal Mapping (recommended)
 
-If goal mapping has not been done yet (e.g. you are running grill standalone, not after brief), run `lib/goal-mapping.md` first. Adversarial drilling lands better when the agent knows what is actually being protected — questions about edge cases hit different when L1 portability is the dominant goal vs L3 ship-this-week. Skip if user already established goal context this session.
+If goal mapping has not been done yet (e.g. you are running grill standalone, not after brief), run only the L1/L2/L3 identification step in `lib/goal-mapping.md`. Do not import brief-only gates or output scaffolds. Adversarial drilling lands better when the agent knows what is actually being protected — questions about edge cases hit different when L1 portability is the dominant goal vs L3 ship-this-week. Skip if user already established goal context this session.
 
 ## When to use
 
@@ -124,5 +124,5 @@ Save to:
 
 ## Relationship to other skills
 
-- **For structured-brief output** — use `/office-hours` (default full mode) or `/office-hours --quick` (when context already loaded). Replaces the deprecated `grill --mode structured`.
-- **Before `/ship knowledge <decisions/path>` Close stage** — if you're closing a work topic and realize scope was never grilled (replaces v2.1 `/work-ship` reference)
+- **For structured-brief output** — use `/office-hours` (default full mode) or `/office-hours --quick` (when context already loaded).
+- **Before `/ship knowledge <decisions/path>` Close stage** — if you're closing a work topic and realize scope was never grilled.

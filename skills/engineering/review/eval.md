@@ -2,9 +2,9 @@
 type: skill-eval
 skill: review
 bucket: engineering
-evaluated_skill_hash: 6778e1e51f0b342b6e8c6617a359d770638b72d4
-evaluated_at: 2026-06-30
-rubric: writing-great-skills@1.0.0
+evaluated_skill_hash: c804434cfc9934f9ba2a5f9cefedf1b894fd1619
+evaluated_at: 2026-07-03
+rubric: writing-great-skills@1.1.0
 ---
 
 # Eval — review
@@ -14,11 +14,12 @@ rubric: writing-great-skills@1.0.0
 | Axis | Verdict | Evidence |
 |---|---|---|
 | Predictability | pass | L64 — the once-dead recall step ("measured: 0 fires across 375 sessions") is now "mandatory and must **change the review, not just list titles**"; with the L27 "Do not skip" opener and `{main}`/`{learnings_dir}` bound at L50, every run takes the same shape and conditional passes gate on deterministic `SCOPE_*` signals, not model whim. |
-| Description / invocation | pass | L4 — front-loads the "review"/"check my code"/"before creating a PR" triggers and reciprocates boundaries: "NOT UI/browser (qa), plan critique (boardroom), or correctness-bug hunting (code-review)"; only the `verify` (runtime-behavior) edge is still unstated. |
+| Description / invocation | pass | L4 — front-loads the "review"/"check my code"/"before creating a PR" triggers and reciprocates boundaries: NOT UI/browser (`qa`), plan critique (`boardroom`), or lightweight single-pass diff checks. |
 | Completion criteria | pass | L234 — "Before exiting, print a single ASCII box" forces per-step accounting (audit ran/skipped, P0–P3 counts, COLD/CODEX catches, OPEN_QUESTIONS, CRITICAL_GAPS); abort still prints the box with unrun steps marked `skipped (user)` (L257), and Step 2 now ends on a checkable criterion (`(no relevant prior learning)` vs a per-learning bearing line). |
 | Information hierarchy | pass | L57 — the recall mechanics are pushed behind the `lib/learning-recall.md` context pointer and resolved store-agnostically (gbrain filtered to `learnings/`, else ranked grep over `{learnings_dir}`), while Pass 4–8 catalogs stay cold behind `lib/conditional-passes.md` (L122, "Skip the file entirely when no scope signal fired") and rationalizations behind a pointer (L261). Steps hot, mechanics/catalogs cold. |
 | Leading words | pass | L114 — strong pretrained/coined anchors carry the behaviour: "Grounding requirement (anti-hallucination)", plus "AUTO-FIX \| ASK" (L133), "COLD-CATCH", "CROSS-MODEL CONFIRMED", "needs-trace"; restatements collapse into merge tags instead of re-prose. |
 | Pruning | weak | L97 — "Model routing" stays soft ("the orchestrator judges which model fits", "decide by task nature at dispatch time") with no concrete anchor, the one near-no-op the prune left in; the body also runs 261 lines (~3× the ~80 guideline), so the axis is improved (recall mechanics moved to lib), not resolved. |
+| Native parity | weak | L162 — nearest native feature is a single in-context review pass or platform review command; the delta is cold-context plus cross-model decorrelation, but the skill does not name that native competitor directly. |
 | Granularity | pass | L162 — the Step 6 / Step 6.5 split earns its load: cold-context (same model, zero intent) and cross-model (GPT, different reasoning) are distinct decorrelation axes, and the `.5` numbering signals run-in-parallel-with-6, not a gratuitous sequence split. |
 | pandastack conformance | pass | L57 — the new `../../../lib/learning-recall.md` pointer resolves (worktree-root `lib/`), as do the other five refs (`conditional-passes`/`rationalizations` skill-local; `gate-contract`/`learning-format`/`trigger-first-skill-evolution` repo-root `lib/`); name=folder (`review`) and hot/cold honoured via `context: fork` (L95) / `isolation: "worktree"` (L140) dispatch. |
 

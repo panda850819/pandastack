@@ -3,8 +3,8 @@ type: skill-eval
 skill: debug
 bucket: engineering
 evaluated_skill_hash: 8ed3ef8cd40a62eb14aa3839e3c186dcc686307b
-evaluated_at: 2026-06-30
-rubric: writing-great-skills@1.0.0
+evaluated_at: 2026-07-03
+rubric: writing-great-skills@1.1.0
 ---
 
 # Eval — debug
@@ -19,6 +19,7 @@ rubric: writing-great-skills@1.0.0
 | Information hierarchy | pass | L35 — the recall procedure is not inlined; it is a store-agnostic context-pointer to `../../../lib/learning-recall.md` loaded only when stuck, alongside the diagnosis.md lore pointer. Spine stays at live gates. |
 | Leading words | pass | L15 — "lore you cannot derive" anchors the consult-don't-invent region in three words; "the failure mode" (L21) and "ratchet" (L35) also pull weight. |
 | Pruning | pass | L14 — "You already know how to debug. This skill is not the method." explicitly refuses to restate pretrained procedure (anti-duplication / anti-no-op); body is 35 lines with all method offloaded. |
+| Native parity | pass | L14 — names the native/default competitor ("You already know how to debug") and the earned delta ("overrides the three reflexes"), which is exactly the axis's native-vs-skill check. |
 | Granularity | pass | L9 — by-invocation splits are explicit (NOT for `review` diff / `ui` taste); lore split by size into diagnosis.md and recall shared by-reference via lib, neither minted as its own skill. Right-sized. |
 | pandastack conformance | pass | L30 — hot/cold dispatch honored: the >5K-token lore lives cold in `skills/engineering/debug/lib/diagnosis.md`; frontmatter valid, 35 lines (<80), and the L35 recall lib ref resolves to repo-root `lib/`. |
 

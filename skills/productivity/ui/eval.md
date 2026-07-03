@@ -3,20 +3,32 @@ type: skill-eval
 skill: ui
 bucket: productivity
 evaluated_skill_hash: f51f99ace86c25b646a2254c1965fde119819720
-evaluated_at: 2026-06-29
-rubric: writing-great-skills@1.0.0
+evaluated_at: 2026-07-03
+rubric: writing-great-skills@1.1.0
 ---
 
 # Eval — ui
 
-**Verdict: SOLID.** The inverted shape of `debug`: a lean 27-line spine (CJK gut-feel intake routing + three override reflexes) over a single 118-line `references/craft.md` that holds the lore. The skill's value is exactly what a model cannot derive — the reflex-font blocklist, CJK vs Latin line-heights, OKLCH chroma magnitudes, the CSS bans-with-rewrites, the strategic-omissions checklist — while the spine carries only the reflexes the model ships wrong by default (the AI-default aesthetic, trusting source over render, happy-path-only). Generic design advice (a11y basics, 60-30-10, "use whitespace") was filtered out at extraction. Loses points only where the single reference is dense.
+**Verdict: SOLID.** A lean UI override spine over a dense craft reference: it names the AI-default aesthetic, forces render verification, and routes visual taste separately from bugs and browser QA.
 
 | Axis | Verdict | Evidence |
 |---|---|---|
-| Description / invocation | pass | Front-loaded triggers (zh + en) with NOT-clauses to `qa` (browser test) and `debug` (broken render). |
-| Predictability | pass | Intake routing for CJK taste complaints + three fixed overrides; same lens every run. |
-| Information hierarchy | pass | All craft cold behind `references/craft.md`; the spine stays a running lens, read before writing CSS. |
-| Lore density | pass | Every reference item is a concrete number / name / CSS pattern the model would not invent — not advice it already has. |
-| Pruning | weak | `craft.md` at 118 dense lines is the upper bound for one reference file; defensible as pure lookup lore, but split by surface (type / css / product) if it grows past ~150. |
+| Predictability | pass | L18 — the three fixed overrides run every UI task: fight defaults, verify render, and build past happy path. |
+| Description / invocation | pass | L4 — front-loads UI surfaces and trigger terms, while L7-9 cleanly excludes backend logic, browser-test QA, and root-cause debugging. |
+| Completion criteria | pass | L21 — screenshot verification at 375px and 1280px before "done" gives the skill an observable finish condition, not source-level confidence. |
+| Information hierarchy | pass | L26 — fonts, CJK type, OKLCH, CSS bans, motion, spacing, and content rules are all cold in `references/craft.md`; the hot body stays a 27-line spine. |
+| Leading words | pass | L18 — "Fight your defaults" plus "AI-default" names the main override in a phrase the model can keep active while editing. |
+| Pruning | pass | L14 — the body says the agent already knows design and only lacks craft numbers plus override discipline; it avoids restating generic design advice. |
+| Native parity | pass | L18 — names the native/default competitor directly: Inter, purple-blue gradient, centered hero, two CTAs, identical cards. The delta is a forced named direction plus default-trap scan. |
+| Granularity | pass | L26 — one craft reference is the right split for this size; the skill does not split typography, color, and layout into separate skills before repeated evidence demands it. |
+| pandastack conformance | pass | L2 — `name: ui` matches the folder, the reference path resolves, and the 27-line hot body stays well under the soft cap. |
 
-**Recommendations:** watch `craft.md` length; the split into per-surface references was collapsed to one file for simplicity, so re-split only if it earns it.
+## Why it's good
+The skill's delta is practical UI discipline the base model routinely misses: named visual direction, real screenshot verification, non-happy states, and CJK taste routing. The craft detail stays out of the hot body until needed.
+
+## Top fixes
+1. `references/craft.md` is dense; split only if it grows past the current single-reference shape and repeated use shows separate surfaces fire independently.
+
+## Behavioral cases
+- trigger `這個頁面很醜，幫我改` → expected process: keep it in UI taste, read craft, choose direction, edit, screenshot at mobile and desktop.
+- anti-trigger `button click throws an exception` → should NOT fire (routes to `debug`).

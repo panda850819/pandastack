@@ -2,7 +2,7 @@
 name: deepwiki
 aliases: [tool-deepwiki]
 description: |
-  GitHub repo docs + Mermaid diagrams via deepwiki.
+  GitHub repo docs + Mermaid diagrams from a local clone.
 
   Trigger on: /deepwiki, 'document this repo', github.com URL when summary needed.
   Skip when: code grep/lookup (use gh CLI or grep).

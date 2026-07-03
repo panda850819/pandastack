@@ -36,7 +36,7 @@ classification: exec
 
 # Ship
 
-`/ship` closes a unit of work. The mode determines what "closing" means: pushing code, filing a knowledge note, or publishing a draft.
+`/ship` closes a unit of work. The mode determines what "closing" means: pushing code or filing a knowledge note.
 
 ## Mode dispatch
 

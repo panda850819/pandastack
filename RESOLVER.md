@@ -54,7 +54,7 @@ Greenfield design (DB schema / service topology / ADRs) is rare for Panda's main
 
 | Skill | Wraps |
 |---|---|
-| `pandastack:deepwiki` | DeepWiki repo docs |
+| `pandastack:deepwiki` | GitHub repo docs from a local clone |
 
 `agent-browser` skill archived 2026-06-08 (duplicate of the npm CLI's own docs); `qa` still drives the CLI directly.
 

@@ -14,7 +14,6 @@ reads:
   - vault: knowledge/**
   - vault: docs/sessions/**
 writes:
-  - vault: Inbox/office-hours-*.md
   - vault: docs/briefs/*.md
   - vault: docs/plans/*.md
   - cli: stdout
