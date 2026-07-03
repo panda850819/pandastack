@@ -3,19 +3,32 @@ type: skill-eval
 skill: boardroom
 bucket: productivity
 evaluated_skill_hash: 4d1bca8d5780bcf8f4b866f2819a2def501471b8
-evaluated_at: 2026-06-29
-rubric: writing-great-skills@1.0.0
+evaluated_at: 2026-07-03
+rubric: writing-great-skills@1.1.0
 ---
 
 # Eval — boardroom
 
-**Verdict: SOLID.** A tiny forcing-function skill: it packages the one capability the deleted persona-boardroom actually had — mutually-blind parallel critique — as ~30 lines with no persona machinery. Every step is a move the model skips by default (it accepts its own plan, runs one correlated review pass, or lets critics see each other): mutual blindness for decorrelated errors, distinct risk-surface lenses, keep-every-lone-finding, per-finding gate, stop-don't-execute. It carries no lore (none is needed — the value is the discipline), so it lives or dies on the forcing functions, and they hold.
+**Verdict: STRONG.** A tiny forcing-function skill whose value is native-parity clear: it beats a single in-context plan review by forcing blind, decorrelated critics and a per-finding apply gate.
 
 | Axis | Verdict | Evidence |
 |---|---|---|
-| Description / invocation | pass | Front-loaded triggers (zh + en) with three NOT-clauses carving it from `review` (diff), `office-hours`/`grill` (fuzzy idea), and `sprint` (execute). The object — a prepared plan — is named, distinguishing it from every neighbour. |
-| Predictability | pass | Fixed move every run: spawn N blind critics → synthesize keeping lone findings → per-finding gate → stop. No improvisation in the control flow. |
-| Forcing-function integrity | pass | Each step overrides a real default: blindness vs groupthink/single-pass, distinct lenses vs N identical reviews, keep-lone-finding vs outlier-drop, gate vs auto-incorporate. None is restated pretrained advice. |
-| Pruning | pass | ~30 lines, no persona contract, none of the sequential-vs-panel duplication that bloated the old boardroom; reuses `lib/gate-contract.md` rather than restating the gate. |
+| Predictability | pass | L20 — the same move runs every time: spawn N mutually-blind critics, synthesize, gate. No task-specific control-flow invention. |
+| Description / invocation | pass | L4 — front-loads independent critique of a prepared plan, then L6-8 fences it away from code diff review, fuzzy intake, and execution. |
+| Completion criteria | pass | L41 — the per-finding `Apply? [Y / N / edit]` gate is a concrete done-state for every finding before the skill stops at L44. |
+| Information hierarchy | pass | L10 — only the reusable gate contract is referenced cold; the hot body carries the complete 44-line execution spine. |
+| Leading words | pass | L23 — "Mutually blind" is a compact execution anchor and the body immediately explains the groupthink failure it prevents. |
+| Pruning | pass | L15 — the body names the single failure mode it exists for, then spends every remaining line on blindness, lenses, synthesis, and gate mechanics. |
+| Native parity | pass | L15 — names the native/default competitor as accepting your own plan or doing a single review pass; L16 names the earned delta, independent critique you cannot self-generate. |
+| Granularity | pass | L20 — this is one atomic plan-critique move; it correctly points diff review to `review` and execution to `sprint` instead of absorbing them. |
+| pandastack conformance | pass | L2 — `name: boardroom` matches the folder, `lib/gate-contract.md` resolves, and the body is 44 lines with no hot/cold issue. |
 
-**Recommendations:** none. If a fixed count of 3 proves wrong for large plans, let the caller pass N; otherwise leave it fixed.
+## Why it's good
+The skill keeps only the behavior the base model skips: independent critics, distinct risk lenses, lone-finding preservation, and a caller gate. It does not carry persona machinery or generic review advice.
+
+## Top fixes
+None.
+
+## Behavioral cases
+- trigger `critique this prepared migration plan` → expected process: run N blind critics, synthesize findings, gate each finding, stop.
+- anti-trigger `review this PR diff` → should NOT fire (routes to `review`).

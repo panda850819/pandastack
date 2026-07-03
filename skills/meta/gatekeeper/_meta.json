@@ -20,14 +20,5 @@
   "requires": {
     "bins": []
   },
-  "optional": {
-    "integrations": [
-      {
-        "name": "misttrack-skills",
-        "description": "For on-chain AML risk assessment",
-        "url": "https://github.com/slowmist/misttrack-skills"
-      }
-    ]
-  },
   "minClawVersion": "0.1.0"
 }

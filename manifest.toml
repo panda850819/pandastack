@@ -151,7 +151,7 @@ description = "Browser-based UI QA, real pages, real flows."
 [skill.deepwiki]
 tier = "ext"
 requires = ["cli:curl", "cli:jq"]
-description = "GitHub repo docs + Mermaid diagrams via deepwiki."
+description = "GitHub repo docs + Mermaid diagrams from a local clone."
 
 [skill.ship]
 tier = "ext"

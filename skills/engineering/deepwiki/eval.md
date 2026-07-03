@@ -2,9 +2,9 @@
 type: skill-eval
 skill: deepwiki
 bucket: engineering
-evaluated_skill_hash: 5ba40f2fa2dfb8fa0d0cedfcef44c57d7e4a0dc0
-evaluated_at: 2026-06-26
-rubric: writing-great-skills@1.0.0
+evaluated_skill_hash: be5dbcd6f2bc42bc375320e21601c42433e0172c
+evaluated_at: 2026-07-03
+rubric: writing-great-skills@1.1.0
 ---
 
 # Eval — deepwiki
@@ -19,6 +19,7 @@ rubric: writing-great-skills@1.0.0
 | Information hierarchy | weak | L124 — the Mandatory-Output table plus the tech-stack/key-files tables sit hot in the body while only the fill-in template was pushed to lib/; reference-grade material is split across both tiers rather than fully behind the pointer. |
 | Leading words | pass | L162 — "code gate, not honor system" and "the lint is the backstop" are compact anchors that carry the grounding discipline in few tokens. |
 | Pruning | weak | L178 — the source-grounding rule lives in Phase 3 (L158), the Source Reading Rule (L138), and Phase 5 check 1; the gate self-defends "does not restate them" (L184) yet check 1 still re-describes the edged-diagram fix, and routing repeats across L142 and L170. |
+| Native parity | weak | L16 — nearest native feature is ad hoc `gh clone` plus manual source reading; the skill's delta is the fixed clone→analyze→grounded-diagram pipeline, but the body does not explicitly name that native baseline. |
 | Granularity | weak | L168 — Phase 4 "Output" is a thin section that mostly re-points to the Output Routing Rule already defined in Phase 2; the split does not clearly earn its load. |
 | pandastack conformance | weak | L152 — the skill-local template is now an explicit repo-relative path (`skills/engineering/deepwiki/lib/output-and-diagrams.md`) and the code gate uses the repo-root `lib/lint-mermaid-grounding.sh` (L162), so refs resolve under `lint-refs-resolve.py`. Residual: body ~205 lines exceeds the ~<80 reference and still carries duplicated routing/grounding prose. |
 

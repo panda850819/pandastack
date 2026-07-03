@@ -3,8 +3,8 @@ type: skill-eval
 skill: init
 bucket: engineering
 evaluated_skill_hash: 5af4941809ae3f94f6cb64f5dadd4013f656aaab
-evaluated_at: 2026-06-26
-rubric: writing-great-skills@1.0.0
+evaluated_at: 2026-07-03
+rubric: writing-great-skills@1.1.0
 ---
 
 # Eval — init
@@ -19,6 +19,7 @@ rubric: writing-great-skills@1.0.0
 | Information hierarchy | pass | L42 — config block inlined exactly where Step 3 writes it; flat, all-inline, no external pointer, correct for a ~66-line single-branch skill. Co-location held. |
 | Leading words | pass | L60 — `Step 5: Verify` is a distinct pretrained anchor matching its job; the prior `Confirm`/`Confirm` collision with Step 2 (L22) is resolved, so each step name now anchors one purpose. |
 | Pruning | pass | L66 — Step 5 now does load-bearing work (grep + dir checks gate the success string), so the former no-op print is gone; single source of truth, no sediment, every step earns its lines. |
+| Native parity | weak | L38 — nearest native feature is manually choosing `CLAUDE.md`/`AGENTS.md` and writing config by hand; the delta is runtime-aware setup plus verification, but the skill does not name the manual baseline directly. |
 | Granularity | pass | L60 — Step 5 earns its split as a by-sequence, anti-premature-completion cut: it withholds the "initialized" claim until the writes are observed, the exact split the rubric sanctions (writing-great-skills L50-51). Steps 1-4 are clean independent cuts. |
 | pandastack conformance | pass | L2 — `name: init` equals the folder; 66 lines < ~80; no `lib/` refs to resolve; no >5K-token read, so hot/cold dispatch is not triggered; `version`/`type` are spec-optional. |
 

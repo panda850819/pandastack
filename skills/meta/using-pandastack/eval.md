@@ -3,8 +3,8 @@ type: skill-eval
 skill: using-pandastack
 bucket: meta
 evaluated_skill_hash: 99324316af0ad54bb8925ebe64c356c437b18724
-evaluated_at: 2026-07-01
-rubric: writing-great-skills@1.0.0
+evaluated_at: 2026-07-03
+rubric: writing-great-skills@1.1.0
 ---
 
 # Eval — using-pandastack
@@ -19,6 +19,7 @@ rubric: writing-great-skills@1.0.0
 | Information hierarchy | weak | L48 — the 18-line session-opener ritual + fenced code block (L46-63) sits fully hot, while its three neighbours (loop-guard L67, harness-evolution L71, overlay L101) were correctly pushed behind lib/ pointers. The ritual is the heaviest, most reference-shaped block in the file; a one-line 'run the 5-step opener → `lib/session-opener.md`' pointer would match how the neighbours were already extracted. |
 | Leading words | pass | L18 — "forcing function" (and "cognitive contract" in the description) are compact pretrained anchors naming the whole behaviour region in few tokens; the red-flags table (L77-90) collapses a dozen rationalizations into one reusable STOP-on-this-thought pattern instead of restating the rule per row. |
 | Pruning | weak | L101 — both sentences of the overlay-extension paragraph are verbatim copies of `lib/overlay-extension.md` L3 + L16 ("A personal / org overlay may be appended…"; "If no overlay loads, this public contract still works on its own — the lifecycle map degrades to abstract guidance"). A pointer block should carry the trigger, not duplicate the ref's prose; the copy means a future edit to one will silently diverge. Body is otherwise clean (v2.1 rename noted once inline at L40, no stale skill count). |
+| Native parity | pass | L18 — names the native/default competitor ("the model defaults to 'I'll just answer directly'") and the delta ("this file is the forcing function") in the body. |
 | Granularity | pass | L67 — the three splits each earn their load: loop-guard, harness-evolution, and overlay-extension are independently-triggered subsystems (loop detection vs skill-authoring vs install-time wiring) gated behind distinct conditions, so each pointer fires only when its condition is live rather than taxing every read. |
 | pandastack conformance | weak | L2 — frontmatter `name: using-pandastack` matches the folder and is valid; all three body lib pointers (L67/L71/L101) resolve. Weak only because the body runs 101 lines, over the ~80 soft cap, with the hot session-opener ritual (L46-63) as the main overflow. |
 

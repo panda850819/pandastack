@@ -2,9 +2,9 @@
 type: skill-eval
 skill: office-hours
 bucket: productivity
-evaluated_skill_hash: 003b7367cc0e6dcf12f963abd8af09a3df4b2ab5
-evaluated_at: 2026-07-02
-rubric: writing-great-skills@1.0.0
+evaluated_skill_hash: ccbddbe3f85c51320313cbd67b387269b223ccab
+evaluated_at: 2026-07-03
+rubric: writing-great-skills@1.1.0
 ---
 
 # Eval — office-hours
@@ -21,6 +21,7 @@ _2026-07-02 re-stamp: v3.4.0 retired `team-orchestrate`; execution routing now p
 | Information hierarchy | pass | L68 — capability-probe is an explicit cold pointer ("Cold pointer, not a hot import — `--quick` runs never pay its tokens"); push-once / escape-hatch / stop-rule / bad-good are `@`-pointers and both output scaffolds live in `lib/output-templates.md` (L158, L168). |
 | Leading words | pass | L32 — "30-minute structured pressure cooker" anchors the whole behaviour in one pretrained concept; reinforced by "mid-flight weapon" (L60) and one-way/two-way door (L95). |
 | Pruning | weak | L85 — the Stage-2 skip-guard re-argues the four-condition print (L80-83) in prose ("self-confirming … the evidence print is the guard … do NOT skip"); the Differs-from-grill block (L57-58) also restates the mode-timing already at L50-51. |
+| Native parity | weak | L50 — nearest native feature is an unstructured planning chat; the delta is a staged fuzzy-idea intake with goal mapping, premise challenge, alternatives, and a written brief, but the skill does not name that native baseline directly. |
 | Granularity | pass | L162 — splitting Stage 5b (executable plan) off Stage 5 (brief) is earned by-sequence: reached only when the brief routes to /sprint or /handover, and it guards the WHY/WHAT separation. The 5 numbered stages are a clean single-skill sequence. |
 | pandastack conformance | weak | L178 — file ends at 178 lines (~98 non-blank body lines), past the ~80 discipline and not all earned (skip-guard prose L85, Differs-from-grill dup L57-58). Frontmatter valid (`type: skill`, L3), hot/cold dispatch honoured (L68), all 7 `lib/` refs + output-templates.md resolve — the only ding is length. |
 

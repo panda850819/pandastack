@@ -3,8 +3,8 @@ type: skill-eval
 skill: careful
 bucket: engineering
 evaluated_skill_hash: d19adea78a769c60e23cb91ce73c5b9325eed7f9
-evaluated_at: 2026-06-29
-rubric: writing-great-skills@1.0.0
+evaluated_at: 2026-07-03
+rubric: writing-great-skills@1.1.0
 ---
 
 # Eval — careful
@@ -19,6 +19,7 @@ rubric: writing-great-skills@1.0.0
 | Information hierarchy | pass | L85 — the 8-row rationalizations catalog now sits behind a pointer to lib/rationalizations.md (the #106 slim); together with L77 (stopping-discipline) and L55 (verify-the-test-loop) the hot body keeps only the gate predicates, full progressive disclosure. |
 | Leading words | pass | L22 — "confirmation gate" is the consistent pretrained anchor carried through L30/L44/L77; L77 "Lopopolo 'continue' failure" is a strong named concept the agent thinks with, no weak "be careful" no-op. |
 | Pruning | weak | L33 — `git push --force`, `git reset --hard`, `git clean -f` are echoed verbatim from `forbids:` (L10-12), and L48 repeats `npm publish` / `cargo publish` from L14-15; the literal command strings live in two sources of truth. |
+| Native parity | weak | L30 — nearest native feature is the model's default caution before destructive commands; the delta is a mandatory confirmation gate, but the skill does not name that native baseline directly. |
 | Granularity | pass | L44 — Git/FS/External/DB/Verification split each earns its load (distinct command class), and the dense rm-rf exemption is one block of load-bearing judgment rather than over-fragmented; the three lib/ splits are by-reference cuts that earn it. |
 | pandastack conformance | pass | L2 — `name: careful` matches the folder; frontmatter (writes/forbids/domain/classification) valid; 85-line body is just over the ~80 norm but the rm-rf exemption + verification summary earn it; all three lib/ refs (L55, L77, L85) resolve. |
 
@@ -27,7 +28,7 @@ The body is pure gate-and-confirm: every pause is a concrete destructive predica
 
 ## Top fixes
 1. L33 / L48 — collapse the verbatim command echo: let the prose gates name categories and carry only the judgment the frontmatter cannot (exemptions, multi-path rule), leaving `forbids:` (L10-15) the single source of the literal command strings.
-2. L55 / L77 / L85 — unify the three pointer conventions (`@../../../lib/…`, bare `skills/…/lib/…`, `@skills/…/lib/…`); three sibling lib files use three different reference styles, which obscures which are auto-loaded vs read-on-demand.
+2. L55 / L77 / L85 — unify the pointer conventions: repo-root `lib/verify-the-test-loop.md` and skill-local stopping/rationalizations use three different reference styles, which obscures which are auto-loaded vs read-on-demand.
 3. L56-64 — the inline verification-integrity summary restates Rule 1 / the instrumentation tell / Rule 4 that live in full at lib/verify-the-test-loop.md; trim to the gate trigger + pointer so the rule text has one home.
 
 ## Behavioral cases

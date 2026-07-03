@@ -32,7 +32,7 @@ walking the index. If the capability is really knowledge (→ a brain page) or o
 deterministic step (→ a one-line script / `lib/` helper), stop here — "not a skill"
 is a valid outcome, and it kills sprawl upstream of the overlap check below.
 
-Open `RESOLVER.md`. Walk every category (Knowledge / Writing / Dev workflow / Retro / session / Tool wrappers / Trust evaluation / Meta / skill authoring). For each existing skill in scope, ask: does its trigger surface already cover this intent? If yes, extend that skill instead of adding new.
+Open `RESOLVER.md`. Walk every current category (Knowledge / Writing / Dev workflow / Tool wrappers / Trust evaluation / Meta / skill authoring). For each existing skill in scope, ask: does its trigger surface already cover this intent? If yes, extend that skill instead of adding new.
 
 **subtract-first gate:** before creating a skill, name the existing skill it absorbs/replaces, or why extending an existing skill was rejected. If neither can be named, do not create the skill.
 
@@ -132,7 +132,7 @@ Verification checks pass (`lint-manifest-sync.sh`, `lint-eval-fresh.sh`), and an
 - **Skipping Phase 3 (hot/cold check)** — data-heavy skill running inline degrades long sessions (evidence cited in Phase 3).
 - **gbrain-flavored frontmatter** — `triggers:` array, `tools:`, `mutating:`. Pandastack uses description-sentence + optional `allowed-tools`.
 - **Adding a new RESOLVER category without justification** — categories are an MECE budget, not a free namespace.
-- **Shipping a one-off skill** — if it won't fire >3 times in the next month, don't ship. Pandastack tightened 38 → 26 for this reason.
+- **Shipping a one-off skill** — if it won't fire >3 times in the next month, don't ship. Pandastack has repeatedly cut low-leverage skills for this reason.
 
 ## Related
 
