@@ -35,8 +35,15 @@ allowlist_summary=""
 verdict_allowlist_reason() {
   case "$1" in
     skills/engineering/deepwiki)
-      echo "pre-existing WEAK eval before issue #155; follow-up: prune and re-evaluate deepwiki"
-      return 0
+      # Allowlist expires 2026-07-10; deepwiki must be re-evaluated after fixes in
+      # eval.md top-fixes (L158/L178 dedup, L168 phase fold, L124/L150 lib move)
+      local today="$(date +%Y-%m-%d)"
+      if [ "$today" \< "2026-07-10" ]; then
+        echo "WEAK eval allowlist expires 2026-07-10; re-evaluate after applying top-fixes"
+        return 0
+      else
+        return 1
+      fi
       ;;
   esac
   return 1
