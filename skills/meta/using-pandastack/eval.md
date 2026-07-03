@@ -2,7 +2,7 @@
 type: skill-eval
 skill: using-pandastack
 bucket: meta
-evaluated_skill_hash: 99324316af0ad54bb8925ebe64c356c437b18724
+evaluated_skill_hash: b87825dbf2e84e266d8093ca00c84897f4daa229
 evaluated_at: 2026-07-03
 rubric: writing-great-skills@1.1.0
 ---

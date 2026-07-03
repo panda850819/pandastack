@@ -2,7 +2,7 @@
 type: skill-eval
 skill: ship
 bucket: engineering
-evaluated_skill_hash: c8957a9d05992dcf119a0d750f9a8b0afb71e364
+evaluated_skill_hash: 0c9288e3a543a7c6a9a40086305b767036b5b43c
 evaluated_at: 2026-07-03
 rubric: writing-great-skills@1.1.0
 ---
