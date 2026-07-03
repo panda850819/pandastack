@@ -6,12 +6,14 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-skills_dir="$repo_root/skills"
+skills_dir="${PANDASTACK_LINT_SKILLS_DIR:-$repo_root/skills}"
 
 fail=0
+checked=0
 
 while IFS= read -r skill_md; do
   [ -n "$skill_md" ] || continue
+  checked=$((checked + 1))
   rel="${skill_md#"$repo_root"/}"
   if ! awk '
     NR == 1 && $0 == "---" { in_frontmatter = 1; next }
@@ -24,7 +26,13 @@ while IFS= read -r skill_md; do
   fi
 done <<< "$(find "$skills_dir" -mindepth 3 -maxdepth 4 -path '*/SKILL.md' ! -path '*/.archive/*' | sort)"
 
+# Zero scanned skills (missing/renamed skills dir) must never pass as green.
+if [ "$checked" -eq 0 ]; then
+  echo "FAIL: no SKILL.md found under $skills_dir — refusing to pass an empty gate"
+  exit 1
+fi
+
 if [ "$fail" -eq 0 ]; then
-  echo "OK: all skills (incl. _deprecated, still shipped to Codex) declare user-invocable."
+  echo "OK: all $checked skills (incl. _deprecated, still shipped to Codex) declare user-invocable."
 fi
 exit "$fail"
