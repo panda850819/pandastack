@@ -4,7 +4,7 @@ description: |
   Explicit Codex handover workflow for unfinished mechanical build units from an existing plan.
   - /handover [slug]: sync handoff, spawn `codex exec`, poll, collect structured result.
   - /handover --async [slug]: write a self-contained payload to docs/handoffs/ only; does not spawn Codex or touch git.
-  Use when a plan has several rote, file-scoped build units and you deliberately want Codex subscription quota used. NOT for plan writing, generic engine invocation, subagent-driven-development loops, closing finished work, PR/ship flow, or exploratory judgment-heavy work.
+  Use when a plan has several rote, file-scoped build units and you deliberately want Codex subscription quota used. NOT for plan writing, closing finished work, PR/ship flow, or exploratory judgment-heavy work (pull a cross-model take with advisor instead).
 reads:
   - repo: docs/plans/**
   - repo: skills/engineering/handover/references/codex-invocation.md
@@ -30,12 +30,10 @@ user-invocable: false
 Use this skill only for an explicit pandastack `/handover`: unfinished mechanical build units from an existing plan are delegated to Codex, while the orchestrator keeps planning, review, and git ownership.
 
 Do not use it for:
-- Writing plans — use `plan` or `writing-plans`.
-- General Hermes subagent execution — use `subagent-driven-development`.
-- Direct Codex CLI usage outside the handover protocol — use `codex`.
-- Claude Code or OpenCode engine usage — use `claude-code` or `opencode`.
-- Closing finished work, PR creation, publishing, or shipping.
-- Exploratory or judgment-heavy work where Codex should not be the executor.
+- Direct `codex exec` outside the handover protocol — raw CLI use skips the payload contract, the preflight gate, and the result classification this skill adds.
+- Closing finished work, PR creation, publishing, or shipping — use `ship`.
+- Exploratory or judgment-heavy work where a model should reason, not execute — pull a cross-model take with `advisor`; do not hand the thinking to Codex.
+- Multi-step sequential plan-and-build in one runtime — use `sprint`.
 
 `/handover` gives a unit of work to **Codex** to execute. The distinction from `/ship`: ship *closes* work that is already done (commit, PR, file a note); handover *delegates* work that is not done yet to a second runtime.
 
