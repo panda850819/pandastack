@@ -47,7 +47,7 @@ with open(path, encoding="utf-8") as handle:
                 versions.append(version_match.group(1))
         elif section == "product":
             value_match = re.match(
-                r'^(id|marketplace_id|archive_prefix)\s*=\s*"([^"\r\n]+)"\s*(?:#.*)?$',
+                r'^(id|marketplace_id)\s*=\s*"([^"\r\n]+)"\s*(?:#.*)?$',
                 line,
             )
             if value_match:
@@ -57,7 +57,7 @@ with open(path, encoding="utf-8") as handle:
 if len(versions) != 1:
     print("manifest.toml must contain exactly one [manifest] version", file=sys.stderr)
     sys.exit(1)
-for key in ("id", "marketplace_id", "archive_prefix"):
+for key in ("id", "marketplace_id"):
     values = product.get(key, [])
     if len(values) != 1:
         print(
@@ -73,7 +73,6 @@ print(
     "\t".join(
         [
             versions[0],
-            product["archive_prefix"][0],
             product["id"][0],
             product["marketplace_id"][0],
         ]
@@ -84,14 +83,14 @@ PY
   die "cannot derive release identity from manifest.toml"
 fi
 
-IFS=$'\t' read -r manifest_version archive_prefix product_id marketplace_id \
+IFS=$'\t' read -r manifest_version product_id marketplace_id \
   <<< "$manifest_facts"
-[ -n "$manifest_version" ] && [ -n "$archive_prefix" ] && \
-  [ -n "$product_id" ] && [ -n "$marketplace_id" ] || \
+[ -n "$manifest_version" ] && [ -n "$product_id" ] && \
+  [ -n "$marketplace_id" ] || \
   die "manifest.toml release identity is incomplete"
 
 release_ref="v$manifest_version"
-archive_name="$archive_prefix-$release_ref.tar.gz"
+archive_name="$product_id-$release_ref.tar.gz"
 plugin_selector="$product_id@$marketplace_id"
 dist_title="dist/release-title.txt"
 dist_notes="dist/release-notes.md"
@@ -153,7 +152,7 @@ if [ "$mode" = "--tag" ]; then
     die "tag $release_ref is not contained in origin/main"
 fi
 
-tmp_root="$(mktemp -d "${TMPDIR:-/tmp}/$archive_prefix-release.XXXXXX")"
+tmp_root="$(mktemp -d "${TMPDIR:-/tmp}/$product_id-release.XXXXXX")"
 stage_dir="$tmp_root/stage"
 extract_dir="$tmp_root/extract"
 test_home="$tmp_root/home"
@@ -163,7 +162,7 @@ stage_title="$stage_dir/release-title.txt"
 stage_notes="$stage_dir/release-notes.md"
 stage_archive="$stage_dir/$archive_name"
 stage_checksum="$stage_archive.sha256"
-package_dir_name="$archive_prefix-$release_ref"
+package_dir_name="$product_id-$release_ref"
 package_prefix="$package_dir_name/"
 
 python3 - CHANGELOG.md "$manifest_version" "$stage_title" "$stage_notes" <<'PY'
@@ -392,4 +391,4 @@ mv "$stage_archive" "$dist_archive"
 mv "$stage_checksum" "$dist_checksum"
 
 echo "OK: release preflight passed for $release_ref ($mode)"
-echo "Artifacts: $dist_title $dist_notes $dist_archive $dist_checksum"
+echo "Preflight outputs: $dist_title $dist_notes $dist_archive $dist_checksum"

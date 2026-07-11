@@ -41,7 +41,6 @@ description = "Fixture software-work description."
 hero = "Fixture composable-skills hero."
 support = "Fixture host support statement."
 category = "Fixture Developer Tools"
-archive_prefix = "fixture-verbs"
 environment_prefix = "FIXTURE_VERBS"
 keywords = ["fixture-skills", "testing"]
 
@@ -252,7 +251,6 @@ description = "Fixture software-work description."
 hero = "Fixture composable-skills hero."
 support = "Fixture host support statement."
 category = "Fixture Developer Tools"
-archive_prefix = "fixture-verbs"
 environment_prefix = "FIXTURE_VERBS"
 keywords = ["fixture-skills", "testing"]
 

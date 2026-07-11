@@ -74,27 +74,31 @@ case "$command_name" in
     done
     [ "$strict" -eq 1 ] || exit 23
     [ -f "$root/LICENSE" ] || exit 24
+    product_id="$(sed -n 's/^id = "\([^"]*\)"/\1/p' "$root/manifest.toml" | head -1)"
+    marketplace_id="$(sed -n 's/^marketplace_id = "\([^"]*\)"/\1/p' "$root/manifest.toml" | head -1)"
+    version="$(sed -n 's/^version = "\([^"]*\)"/\1/p' "$root/manifest.toml" | head -1)"
+    selector="$product_id@$marketplace_id"
     case "$host" in
       claude)
         if [ -f "$root/.fixture-fail-claude" ]; then
           echo "fixture Claude strict forced failure" >&2
           exit 25
         fi
-        cache="$HOME/.claude/plugins/cache/verbs/verbs/7.8.9"
+        cache="$HOME/.claude/plugins/cache/$marketplace_id/$product_id/$version"
         registry="$HOME/.claude/plugins/installed_plugins.json"
         [ -f "$cache/LICENSE" ] || exit 26
-        python3 - "$registry" "$cache" <<'PY'
+        python3 - "$registry" "$cache" "$selector" "$version" <<'PY'
 import json
 import sys
 
 with open(sys.argv[1], encoding="utf-8") as handle:
     data = json.load(handle)
-records = data["plugins"]["verbs@verbs"]
+records = data["plugins"][sys.argv[3]]
 if not isinstance(records, list) or len(records) != 1:
     sys.exit(1)
 if records[0].get("installPath") != sys.argv[2]:
     sys.exit(1)
-if records[0].get("version") != "7.8.9":
+if records[0].get("version") != sys.argv[4]:
     sys.exit(1)
 PY
         ;;
@@ -103,7 +107,7 @@ PY
           echo "fixture Codex strict forced failure" >&2
           exit 27
         fi
-        cache="$HOME/.codex/plugins/cache/verbs/verbs/7.8.9"
+        cache="$HOME/.codex/plugins/cache/$marketplace_id/$product_id/$version"
         [ -f "$cache/LICENSE" ] || exit 28
         ;;
       *) exit 29 ;;
@@ -141,7 +145,6 @@ EOF
 [product]
 id = "verbs"
 marketplace_id = "verbs"
-archive_prefix = "verbs"
 
 [manifest]
 version = "7.8.9"
@@ -343,21 +346,21 @@ case_deterministic_candidate() {
   fi
 }
 
-case_manifest_archive_prefix() {
+case_manifest_product_id() {
   new_fixture
   python3 - "$repo/manifest.toml" <<'PY'
 import sys
 
 path = sys.argv[1]
 text = open(path, encoding="utf-8").read()
-text = text.replace('archive_prefix = "verbs"', 'archive_prefix = "fixture-verbs"', 1)
+text = text.replace('id = "verbs"', 'id = "fixture-verbs"', 1)
 open(path, "w", encoding="utf-8", newline="\n").write(text)
 PY
-  commit_and_push "change manifest archive prefix"
+  commit_and_push "change manifest product id"
   if run_preflight --candidate v7.8.9; then
-    pass "candidate derives archive name from manifest product identity"
+    pass "candidate derives package and cache identity from manifest product id"
   else
-    fail_t "manifest-derived archive candidate failed: $(tail -20 "$run_log")"
+    fail_t "manifest-derived product identity failed: $(tail -20 "$run_log")"
     return
   fi
 
@@ -365,9 +368,9 @@ PY
   derived_checksum="$derived_archive.sha256"
   if [ -f "$derived_archive" ] && [ -f "$derived_checksum" ] && \
      [ ! -e "$(archive_path)" ] && [ ! -e "$(checksum_path)" ]; then
-    pass "manifest archive prefix controls both release outputs"
+    pass "manifest product id controls both internal package outputs"
   else
-    fail_t "release outputs did not follow the manifest archive prefix"
+    fail_t "internal package outputs ignored the manifest product id"
   fi
 
   if python3 - "$derived_archive" <<'PY'
@@ -381,9 +384,9 @@ if not names or not all(name.startswith(prefix) for name in names):
     sys.exit(1)
 PY
   then
-    pass "manifest archive prefix controls the package root"
+    pass "manifest product id controls the extracted package root"
   else
-    fail_t "package root did not follow the manifest archive prefix"
+    fail_t "package root ignored the manifest product id"
   fi
 }
 
@@ -810,7 +813,7 @@ case_untracked_dirty_worktree() {
 
 case_happy_candidate
 case_deterministic_candidate
-case_manifest_archive_prefix
+case_manifest_product_id
 case_candidate_feature_branch
 case_version_mismatch
 case_missing_changelog_section

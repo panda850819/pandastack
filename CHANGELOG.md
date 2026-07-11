@@ -6,14 +6,34 @@ Released: 2026-07-11
 
 ### Changed
 
-- The product name is **Verbs**. The repository, display name, archive prefix,
-  and canonical environment prefix are now `panda850819/verbs`, `Verbs`,
-  `verbs`, and `VERBS_`.
+- The product name is **Verbs**. The repository, display name, and canonical
+  environment prefix are now `panda850819/verbs`, `Verbs`, and `VERBS_`.
 - The active roadmap now tracks a small 0.x evidence line and explicit v1.0
   gates. The retired persona, vault, personal-OS, and lifecycle milestones no
   longer appear as current work.
 - `v0.5.0` begins a new Verbs version epoch. Existing `v1.*` and
   `v4.0.0-rc.1` tags/releases remain immutable legacy history.
+
+### Install
+
+Claude Code:
+
+```bash
+claude plugin marketplace add panda850819/verbs --scope user
+claude plugin install verbs@verbs --scope user
+```
+
+Codex:
+
+```bash
+codex plugin marketplace add panda850819/verbs --json
+codex plugin add verbs@verbs --json
+```
+
+Generic `npx skills` installation is not advertised yet. It discovers the 14
+skills but drops shared root contracts when it installs each skill directory in
+isolation. Self-contained generic installs are tracked in
+[#189](https://github.com/panda850819/verbs/issues/189).
 
 ### Compatibility
 
@@ -24,12 +44,37 @@ Released: 2026-07-11
   `scripts/pandastack` shim also forwards its two legacy path variables.
 - The plugin selector and namespace stay `verbs@verbs` and `/verbs:*`.
 
+Claude Code reinstall:
+
+```bash
+claude plugin uninstall verbs@verbs --scope user --keep-data
+claude plugin marketplace remove verbs --scope user
+claude plugin marketplace add panda850819/verbs --scope user
+claude plugin install verbs@verbs --scope user
+```
+
+Codex reinstall:
+
+```bash
+codex plugin remove verbs@verbs --json
+codex plugin marketplace remove verbs
+codex plugin marketplace add panda850819/verbs --json
+codex plugin add verbs@verbs --json
+```
+
+### Distribution
+
+- GitHub Releases contain the changelog and install commands, with no custom
+  tarball or checksum. GitHub's standard source archives remain available.
+- Exact-tag archive extraction stays an internal test of the packaged tree; an
+  asset is added only when a separate consumer needs its own format.
+
 ### Verified
 
 - Manifest-driven Claude, Codex, and Agents metadata agree on version `0.5.0`,
   repository identity, and the exact 14-skill surface.
-- Release preflight proves the deterministic `verbs-v0.5.0.tar.gz` archive and
-  checksum before the annotated tag is pushed.
+- Release preflight extracts and tests the exact tagged tree before the
+  annotated tag is pushed, while the public release remains metadata-only.
 - Disposable Claude and Codex profiles install and invoke the exact tagged
   artifact; real profiles use the same explicit reinstall path.
 
