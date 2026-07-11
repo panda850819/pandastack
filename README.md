@@ -32,6 +32,27 @@ needs an additional public CLI. Full spec in `manifest.toml`.
 
 ## Install
 
+Claude Code:
+
+```bash
+claude plugin marketplace add panda850819/verbs --scope user
+claude plugin install verbs@verbs --scope user
+```
+
+Codex:
+
+```bash
+codex plugin marketplace add panda850819/verbs --json
+codex plugin add verbs@verbs --json
+```
+
+Generic `npx skills` installation is not supported yet. It discovers all 14
+skills but installs each directory in isolation, while some Verbs skills still
+share root `lib/` contracts. Track the self-contained install gate in
+[#189](https://github.com/panda850819/verbs/issues/189).
+
+### Inspect or develop locally
+
 ```bash
 git clone https://github.com/panda850819/verbs.git
 cd verbs
@@ -39,14 +60,6 @@ bash scripts/bootstrap.sh             # report only
 bash scripts/bootstrap.sh --claude    # print Claude Code install steps
 bash scripts/bootstrap.sh --codex     # print Codex CLI install steps
 ```
-
-### Per-host
-
-| Host | Install after clone |
-|---|---|
-| Claude Code | `claude plugin marketplace add /absolute/path/to/verbs --scope user` then `claude plugin install verbs@verbs --scope user` |
-| Codex CLI | `codex plugin marketplace add /absolute/path/to/verbs --json` then `codex plugin add verbs@verbs --json` |
-| Hermes | Import/symlink selected skills into `~/.hermes/skills/` (see `docs/HERMES.md`) |
 
 **Work dirs** (`Inbox/`, `docs/briefs/`, etc.) are auto-created on first write; you don't pre-make them.
 
@@ -128,9 +141,10 @@ Maintainer workflow:
    for `codex`.
 6. Push only the tag after both real installer smokes pass.
 
-The release workflow publishes archives and checksums; release stays draft until
-all artifacts upload. If automation fails after tag push, repair the workflow on
-`main` and manually dispatch that same immutable tag. Never rewrite the tag.
+The public release contains notes and install commands only. Exact-tag package
+extraction remains an internal preflight; GitHub supplies the standard source
+archives. If automation fails after tag push, repair the workflow on `main` and
+manually dispatch that same immutable tag. Never rewrite the tag.
 
 
 ## License

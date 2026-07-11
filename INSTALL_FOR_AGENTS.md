@@ -3,7 +3,28 @@
 This is the install source of truth for Claude Code and Codex. Both hosts use
 the plugin id `verbs`, marketplace `verbs`, and selector `verbs@verbs`.
 
-## Clone and inspect
+## Fast install
+
+Claude Code:
+
+```bash
+claude plugin marketplace add panda850819/verbs --scope user
+claude plugin install verbs@verbs --scope user
+```
+
+Codex:
+
+```bash
+codex plugin marketplace add panda850819/verbs --json
+codex plugin add verbs@verbs --json
+```
+
+These remote marketplace commands were verified in disposable profiles. Do not
+use `npx skills` yet: it installs each skill directory without the shared root
+contracts some Verbs skills require. Generic installer support is tracked in
+[#189](https://github.com/panda850819/verbs/issues/189).
+
+## Clone and inspect source
 
 ```bash
 git clone https://github.com/panda850819/verbs.git

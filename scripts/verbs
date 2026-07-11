@@ -33,8 +33,8 @@ SKILLS_DIR = REPO_ROOT / "skills"
 
 _PRODUCT_KEYS = (
     "id", "display_name", "marketplace_id", "repository", "homepage",
-    "description", "hero", "support", "category", "archive_prefix",
-    "environment_prefix", "keywords",
+    "description", "hero", "support", "category", "environment_prefix",
+    "keywords",
 )
 
 # Schema version for the machine-readable doctor report.

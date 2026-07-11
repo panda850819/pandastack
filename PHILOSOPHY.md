@@ -21,11 +21,15 @@ Every review may search a project-provided learning path and surface a new
 candidate. The host owns persistence and reuse; the skill owns the evidence and
 candidate format.
 
-### 3. Markdown First
+### 3. Markdown for Judgment, Scripts for Determinism
 
-Core skills are readable markdown with no package build step. Optional tools are
-declared per skill and checked explicitly. The same source is verified on Claude
-Code and Codex; Hermes supports selective manual import.
+Core skill behavior stays in readable markdown with no package build step.
+Small scripts are appropriate when parsing, validation, fetching, or formatting
+must be repeatable. Prefer standard-library implementations, keep helpers local
+to the capability they serve, and declare their runtime explicitly. A helper
+needed by one skill must not become an install prerequisite for every skill.
+The same source is verified on Claude Code and Codex; Hermes supports selective
+manual import.
 
 ### 4. Less Is More
 

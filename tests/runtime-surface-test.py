@@ -30,7 +30,6 @@ PRODUCT = {
         "Verified on Claude Code and Codex. Hermes supports selective manual import."
     ),
     "category": "Developer Tools",
-    "archive_prefix": "verbs",
     "environment_prefix": "VERBS",
     "keywords": ["agent-skills", "coding-agents"],
 }
@@ -90,7 +89,6 @@ def manifest_text():
         f'hero = "{PRODUCT["hero"]}"\n'
         f'support = "{PRODUCT["support"]}"\n'
         f'category = "{PRODUCT["category"]}"\n'
-        f'archive_prefix = "{PRODUCT["archive_prefix"]}"\n'
         f'environment_prefix = "{PRODUCT["environment_prefix"]}"\n'
         f"keywords = [{keywords}]\n\n"
         "[manifest]\n"

@@ -123,9 +123,9 @@ check(
     "annotated tag restoration must happen before release preflight",
 )
 check(
-    "          name: release-artifacts\n          if-no-files-found: error\n          path: |"
+    "          name: release-metadata\n          if-no-files-found: error\n          path: |"
     in preflight,
-    "upload must use the release-artifacts name and fail on missing files",
+    "upload must use the release-metadata name and fail on missing files",
 )
 
 path_match = re.search(r"(?m)^          path: \|\n((?:^            .+(?:\n|$))+)", preflight)
@@ -137,10 +137,8 @@ check(
     == [
         "dist/release-title.txt",
         "dist/release-notes.md",
-        "dist/*-${{ env.RELEASE_TAG }}.tar.gz",
-        "dist/*-${{ env.RELEASE_TAG }}.tar.gz.sha256",
     ],
-    "artifact upload must contain exactly the four dist outputs",
+    "metadata upload must contain exactly title and notes",
 )
 
 check("    needs: preflight" in publish, "publish must need preflight")
@@ -155,12 +153,12 @@ check(
     "publish must use only the exact pinned download SHA",
 )
 check(
-    "          name: release-artifacts\n          path: dist" in publish,
-    "publish must download release-artifacts into dist",
+    "          name: release-metadata\n          path: dist" in publish,
+    "publish must download release-metadata into dist",
 )
 check(
     re.findall(r"(?m)^      - name: (.+)$", publish)
-    == ["Download release artifacts", "Publish GitHub release"],
+    == ["Download release metadata", "Publish GitHub release"],
     "publish must contain only download and final publish steps",
 )
 check("actions/checkout@" not in publish, "publish must not check out repository code")
@@ -196,16 +194,8 @@ check(
     re.search(r"(?m)^\s*(?:bash|sh|python3?|ruby|node|source|\.)\s", script) is None,
     "publish must not execute downloaded or repository code",
 )
-check(
-    'archives=(dist/*-"$RELEASE_TAG".tar.gz)' in script
-    and 'if [ "${#archives[@]}" -ne 1 ]; then' in script,
-    "publish must resolve exactly one manifest-named release archive",
-)
-check(
-    'checksum_path="$archive_path.sha256"' in script
-    and '[ ! -f "$checksum_path" ]' in script,
-    "publish must require the checksum paired with the resolved archive",
-)
+check(".tar.gz" not in text and ".sha256" not in text,
+      "public release workflow must not carry custom archives or checksums")
 
 check(
     'gh release view "$RELEASE_TAG"' in script
@@ -242,23 +232,20 @@ check(script.count("--latest=false") == 1, "latest=false flag policy must be sin
 check(create in script, "release creation must use only the policy-derived flags")
 check('--title "$(cat dist/release-title.txt)"' in script, "title must come from the exact title file")
 check("--notes-file dist/release-notes.md" in script, "notes must come from the exact notes file")
-check('"$archive_path"' in script, "resolved archive must be uploaded")
-check('"$checksum_path"' in script, "resolved archive checksum must be uploaded")
-check(edit in script, "draft must be published only after asset upload")
+check(edit in script, "draft must be published only after metadata-derived creation")
 
 view_at = script.find('gh release view "$RELEASE_TAG"')
 delete_at = script.find('gh release delete "$RELEASE_TAG" --yes')
 create_at = script.find(create)
-checksum_at = script.find('"$checksum_path"', create_at)
 edit_at = script.find(edit)
 check(
-    -1 not in (view_at, delete_at, create_at, checksum_at, edit_at)
-    and view_at < delete_at < create_at < checksum_at < edit_at,
-    "release order must be inspect, draft cleanup, draft create/assets, publish",
+    -1 not in (view_at, delete_at, create_at, edit_at)
+    and view_at < delete_at < create_at < edit_at,
+    "release order must be inspect, draft cleanup, draft create, publish",
 )
 
 check("--generate-notes" not in text, "generated notes are forbidden")
-check("gh release upload" not in text, "assets must upload during draft creation")
+check("gh release upload" not in text, "workflow must not upload custom release assets")
 check(
     re.search(r"(?m)^\s*git\s+(?:tag|push)\b", text) is None,
     "workflow must never create or push tags",
@@ -269,7 +256,7 @@ if errors:
         print("FAIL: {}".format(error), file=sys.stderr)
     sys.exit(1)
 
-print("OK: release workflow is immutable-tag, least-privilege, pinned, draft-first, and prerelease-aware")
+print("OK: release workflow is immutable-tag, least-privilege, metadata-only, draft-first, and prerelease-aware")
 PY
 
 python3 "$validator" "$workflow"
@@ -398,48 +385,9 @@ run_publish_policy() {
   )
 }
 
-seed_publish_artifacts() {
-  ref="$1"
-  prefix="$2"
-  rm -f "$publish_fixture"/dist/*.tar.gz "$publish_fixture"/dist/*.tar.gz.sha256
-  : > "$publish_fixture/dist/$prefix-$ref.tar.gz"
-  : > "$publish_fixture/dist/$prefix-$ref.tar.gz.sha256"
-}
-
-assert_rejected_before_gh() {
-  label="$1"
-  ref="$2"
-  log="$3"
-  : > "$log"
-  if run_publish_policy "$ref" "$log" >/dev/null 2>&1; then
-    echo "FAIL: $label unexpectedly passed" >&2
-    exit 1
-  fi
-  if [ -s "$log" ]; then
-    echo "FAIL: $label reached gh before artifact validation" >&2
-    exit 1
-  fi
-}
-
-zero_log="$tmp/zero-artifact-calls.log"
-rm -f "$publish_fixture"/dist/*.tar.gz "$publish_fixture"/dist/*.tar.gz.sha256
-assert_rejected_before_gh "zero release archives" v4.0.0-rc.1 "$zero_log"
-
-missing_checksum_log="$tmp/missing-checksum-calls.log"
-: > "$publish_fixture/dist/fixture-verbs-v4.0.0-rc.1.tar.gz"
-assert_rejected_before_gh "missing paired checksum" v4.0.0-rc.1 "$missing_checksum_log"
-
-multiple_log="$tmp/multiple-artifact-calls.log"
-seed_publish_artifacts v4.0.0-rc.1 fixture-verbs
-: > "$publish_fixture/dist/second-verbs-v4.0.0-rc.1.tar.gz"
-: > "$publish_fixture/dist/second-verbs-v4.0.0-rc.1.tar.gz.sha256"
-assert_rejected_before_gh "multiple release archives" v4.0.0-rc.1 "$multiple_log"
-
 rc_log="$tmp/rc-calls.log"
 stable_log="$tmp/stable-calls.log"
-seed_publish_artifacts v4.0.0-rc.1 fixture-verbs
 run_publish_policy v4.0.0-rc.1 "$rc_log"
-seed_publish_artifacts v4.0.0 stable-verbs
 run_publish_policy v4.0.0 "$stable_log"
 
 python3 - "$rc_log" "$stable_log" <<'PY'
@@ -468,25 +416,21 @@ def create_call(path):
 
 rc = create_call(sys.argv[1])
 stable = create_call(sys.argv[2])
-for required in ("--verify-tag", "--draft", "--prerelease", "--latest=false"):
-    if required not in rc:
-        raise SystemExit("RC release create is missing {}".format(required))
-for forbidden in ("--prerelease", "--latest=false"):
-    if forbidden in stable:
-        raise SystemExit("stable release create unexpectedly contains {}".format(forbidden))
-for required in ("--verify-tag", "--draft"):
-    if required not in stable:
-        raise SystemExit("stable release create is missing {}".format(required))
-for call, basename in (
-    (rc, "fixture-verbs-v4.0.0-rc.1.tar.gz"),
-    (stable, "stable-verbs-v4.0.0.tar.gz"),
-):
-    if not any(arg.endswith(basename) for arg in call):
-        raise SystemExit("release create is missing {}".format(basename))
-    if not any(arg.endswith(basename + ".sha256") for arg in call):
-        raise SystemExit("release create is missing {}.sha256".format(basename))
+expected_rc = [
+    "release", "create", "v4.0.0-rc.1", "--verify-tag", "--draft",
+    "--prerelease", "--latest=false", "--title", "Release title",
+    "--notes-file", "dist/release-notes.md",
+]
+expected_stable = [
+    "release", "create", "v4.0.0", "--verify-tag", "--draft",
+    "--title", "Release title", "--notes-file", "dist/release-notes.md",
+]
+if rc != expected_rc:
+    raise SystemExit("unexpected RC release create argv: {!r}".format(rc))
+if stable != expected_stable:
+    raise SystemExit("unexpected stable release create argv: {!r}".format(stable))
 
-print("OK: RC publish call has --prerelease --latest=false; stable publish call has neither")
+print("OK: release create argv is exact, metadata-only, and prerelease-aware")
 PY
 
-echo "OK: artifact fail-safes, permission/draft mutations, and RC/stable publish policy passed."
+echo "OK: no-custom-asset policy, permission/draft mutations, and RC/stable publish policy passed."

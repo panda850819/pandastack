@@ -15,7 +15,8 @@ The baseline is deliberately small:
 - 14 composable skills with manifest, resolver, eval, and test coverage
 - verified marketplace installs for Claude Code and Codex
 - selective manual import for Hermes
-- deterministic archives, checksums, exact-tag preflight, and rollback proof
+- exact-tag extracted-package preflight and rollback proof
+- release notes with install commands and no redundant custom assets
 
 `v0.5.0` begins the Verbs version epoch. Existing `v1.*` and
 `v4.0.0-rc.1` tags/releases are immutable legacy history. The transition from
@@ -32,6 +33,7 @@ existing surface they replace or extend.
 The active work queue is limited to failures found through:
 
 - fresh install and first-session attempts
+- isolated generic-installer attempts such as `npx skills`
 - repeated use of the existing 14 skills
 - Claude/Codex parity checks
 - release, reinstall, and rollback drills
@@ -44,8 +46,8 @@ in GitHub issues; this roadmap carries gates, not a duplicate backlog.
 Cut `v1.0.0` only when all of these are true:
 
 1. The product name, plugin selector, namespace, CLI, manifest schema,
-   repository contract, archive naming, and canonical environment prefix
-   survive two consecutive 0.x releases without a breaking rename.
+   repository and install contracts, and canonical environment prefix survive
+   two consecutive 0.x releases without a breaking rename.
 2. Claude Code and Codex both pass exact-tag fresh install, documented
    upgrade/reinstall, cold-start invocation, and rollback proof.
 3. At least three people other than the author complete installation without
