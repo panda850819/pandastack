@@ -2,11 +2,12 @@
 
 An opinionated skill pack for taking software work from ambiguity to verified delivery. Hard-won ways of working, encoded as composable skills for coding agents.
 
-Verified on Claude Code and Codex. Hermes supports selective manual import.
+The Marketplace Plugin is the recommended Claude Code and Codex surface.
+Portable hook-free skills and selective Hermes import are also supported.
 
 ## Product boundary
 
-Verbs ships **skills, shared procedural primitives, dispatch, narrow host adapters, install manifests, evals, and tests**. It does not own: identity, context, brain or memory, project truth, runtimes or models, scheduling, autonomous drivers, connectors, or global routing.
+Verbs ships **skills, shared procedural primitives, dispatch, narrow host adapters, install manifests, evals, and tests**. It does not own identity, context, brain or memory, project truth, runtimes, scheduling, autonomous drivers, connectors, or global model routing.
 
 ## Skills
 
@@ -32,6 +33,8 @@ needs an additional public CLI. Full spec in `manifest.toml`.
 
 ## Install
 
+### Recommended: Marketplace Plugin
+
 Claude Code:
 
 ```bash
@@ -46,10 +49,18 @@ codex plugin marketplace add panda850819/verbs --json
 codex plugin add verbs@verbs --json
 ```
 
-Generic `npx skills` installation is not supported yet. It discovers all 14
-skills but installs each directory in isolation, while some Verbs skills still
-share root `lib/` contracts. Track the self-contained install gate in
-[#189](https://github.com/panda850819/verbs/issues/189).
+The Marketplace Plugin registers three narrow adapters: SessionStart dispatch,
+the Bash PreToolUse destructive guard, and the Stop verification gate.
+
+### Portable: hook-free skills
+
+```bash
+npx skills@latest add panda850819/verbs -a claude-code codex -g -y
+```
+
+This installs the same self-contained 14-skill payload without plugin metadata
+or hooks. Choose one surface per host profile. Do not install both in the same
+profile.
 
 ### Inspect or develop locally
 
@@ -86,19 +97,20 @@ Artifacts flow between skills; you decide when to invoke each step.
 
 | Host | Status |
 |---|---|
-| Claude Code | Verified plugin marketplace install |
-| Codex CLI | Verified plugin marketplace install |
+| Claude Code | Marketplace Plugin recommended; portable npx skills supported |
+| Codex CLI | Marketplace Plugin recommended; portable npx skills supported |
 | Hermes | Selective manual skill import |
 
 ## Version reset
 
-`v0.5.0` starts the Verbs version line. Older `v1.*` tags belong to pandastack;
+`v0.5.0` started the Verbs version line; `v0.6.0` adds the explicit native-plugin
+and portable-skill surfaces. Older `v1.*` tags belong to pandastack;
 `v4.0.0-rc.1` belongs to the short-lived product name used during the boundary
 cut. Those tags and releases stay immutable history.
 
-Because `0.5.0` sorts below `4.0.0-rc.1`, hosts cannot treat this as an ordinary
-upgrade. Pin the RC checkout for rollback, then explicitly uninstall and
-reinstall `verbs@verbs` from the new Verbs checkout:
+Because `0.6.0` sorts below `4.0.0-rc.1`, hosts cannot treat migration from that
+RC as an ordinary upgrade. Pin the RC checkout for rollback, then explicitly
+uninstall and reinstall `verbs@verbs` from the current Verbs checkout:
 
 ```bash
 git worktree add --detach ../verbs-v4-rollback v4.0.0-rc.1
@@ -109,7 +121,7 @@ claude plugin marketplace add "/absolute/path/to/verbs" --scope user
 claude plugin install verbs@verbs --scope user
 ```
 
-Run `/reload-plugins`, verify `0.5.0`, then repeat for Codex using the exact
+Run `/reload-plugins`, verify `0.6.0`, then repeat for Codex using the exact
 commands in the install guide. `/pandastack:*` has no alias.
 
 ## Development and verification
@@ -132,19 +144,23 @@ Score a skill against the construction quality SSOT:
 Maintainer workflow:
 
 1. Update `manifest.toml`, `CHANGELOG.md`, and skill content on an issue branch.
-2. Run `scripts/verbs sync`, `bash tests/run-all.sh`, and
+2. Run `scripts/verbs sync`, `bash tests/run-all.sh`,
+   `bash tests/skills-sh-installer-external.sh`, and
    `bash scripts/release-preflight.sh --candidate vX.Y.Z` from a clean commit.
 3. Merge the green PR to `main`.
 4. Create an annotated tag whose subject equals the changelog heading.
-5. Run `bash scripts/release-preflight.sh --tag vX.Y.Z`, then run
+5. Run `bash scripts/release-preflight.sh --tag vX.Y.Z`, then run the native
+   Marketplace Plugin proof with
    `bash scripts/installer-smoke.sh claude "$PWD" vX.Y.Z` and the same command
-   for `codex`.
+   for `codex`. For v0.6.0, also run both hosts through
+   `bash scripts/installer-smoke.sh <host> --upgrade ../verbs-v0.5.0 "$PWD"`.
 6. Push only the tag after both real installer smokes pass.
 
-The public release contains notes and install commands only. Exact-tag package
-extraction remains an internal preflight; GitHub supplies the standard source
-archives. If automation fails after tag push, repair the workflow on `main` and
-manually dispatch that same immutable tag. Never rewrite the tag.
+The public release contains notes and install commands with zero custom release
+assets. Exact-tag package extraction remains an internal preflight; GitHub
+supplies the standard source archives. If automation fails after tag push,
+repair the workflow on `main` and manually dispatch that same immutable tag.
+Never rewrite the tag.
 
 
 ## License

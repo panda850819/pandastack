@@ -24,6 +24,23 @@ The baseline is deliberately small:
 `4.0.0-rc.1` requires explicit uninstall/reinstall because SemVer sorts
 `0.5.0` below the RC.
 
+## v0.6.0 — portable skills, native hooks
+
+Release target: `v0.6.0`. The tag and GitHub Release are created only after the
+exact-tag installer gates pass.
+
+The same 14-skill payload now has two explicit install surfaces:
+
+- the recommended Marketplace Plugin for Claude Code and Codex, registering
+  SessionStart dispatch, the Bash PreToolUse destructive guard, and the Stop
+  verification gate
+- a self-contained, hook-free `npx skills` install for portable use
+
+One host profile uses one surface; native and portable installs do not coexist.
+Hermes continues to use selective manual import. The host still owns identity,
+brain or memory, scheduling, project truth, and global model routing. The public
+release remains metadata-only with zero custom release assets.
+
 ## 0.x — evidence releases
 
 0.x releases may break contracts when real usage exposes a bad boundary. Every
@@ -34,16 +51,13 @@ existing surface they replace or extend.
 The active work queue is limited to failures found through:
 
 - fresh install and first-session attempts
-- isolated generic-installer attempts such as `npx skills`
+- native Marketplace Plugin and portable `npx skills` install attempts
 - repeated use of the existing 14 skills
 - Claude/Codex parity checks
 - release, reinstall, and rollback drills
 
 No feature is scheduled only to fill a version milestone. Concrete work lives
 in GitHub issues; this roadmap carries gates, not a duplicate backlog.
-The first open install-evidence item is
-[#189](https://github.com/panda850819/verbs/issues/189): make every skill
-self-contained before advertising a generic `npx skills` command.
 
 ## v1.0 gate
 

@@ -1,9 +1,10 @@
 # Install Verbs
 
-This is the install source of truth for Claude Code and Codex. Both hosts use
+This is the install source of truth for Claude Code and Codex. Choose exactly
+one install surface per host profile. The recommended Marketplace Plugin uses
 the plugin id `verbs`, marketplace `verbs`, and selector `verbs@verbs`.
 
-## Fast install
+## Recommended: Marketplace Plugin
 
 Claude Code:
 
@@ -19,10 +20,20 @@ codex plugin marketplace add panda850819/verbs --json
 codex plugin add verbs@verbs --json
 ```
 
-These remote marketplace commands were verified in disposable profiles. Do not
-use `npx skills` yet: it installs each skill directory without the shared root
-contracts some Verbs skills require. Generic installer support is tracked in
-[#189](https://github.com/panda850819/verbs/issues/189).
+These remote marketplace commands were verified in disposable profiles. The
+Marketplace Plugin registers the SessionStart dispatch adapter, Bash PreToolUse
+destructive guard, and Stop verification gate.
+
+## Portable: hook-free skills
+
+```bash
+npx skills@latest add panda850819/verbs -a claude-code codex -g -y
+```
+
+The portable surface installs the same self-contained 14-skill payload. It does
+not install marketplace metadata or any hooks. Do not install both surfaces in
+one host profile; duplicate discovery makes the active skill and hook contract
+ambiguous.
 
 ## Clone and inspect source
 
@@ -37,7 +48,7 @@ bash scripts/bootstrap.sh
 packaged source/cache parity. `bootstrap` reports the core and extension skills
 plus their optional CLI requirements. Neither command changes host configuration.
 
-## Install in Claude Code
+## Install the Marketplace Plugin in Claude Code
 
 ```bash
 cd /absolute/path/to/verbs
@@ -54,7 +65,10 @@ python3 scripts/verbs doctor --host claude --strict
 bash scripts/conformance-smoke.sh claude
 ```
 
-## Install in Codex
+The strict check includes plugin version, skill set, `DISPATCH.md`, and the
+registered hook tree.
+
+## Install the Marketplace Plugin in Codex
 
 ```bash
 cd /absolute/path/to/verbs
@@ -70,14 +84,16 @@ python3 scripts/verbs doctor --host codex --strict
 bash scripts/conformance-smoke.sh codex
 ```
 
-Codex plugin install is the supported path. A bare skill-directory symlink does
-not install marketplace metadata or the complete packaged surface.
+The Marketplace Plugin is the recommended Codex surface. For a hook-free
+skill-only install, use the portable command above. A bare skill-directory
+symlink is not a substitute for either documented surface.
 
 ## Migrate from v4.0.0-rc.1
 
-`v0.5.0` starts a new version epoch and sorts below `v4.0.0-rc.1`. Host package
-managers cannot express that transition as an upgrade. Keep an immutable RC
-rollback checkout and reinstall one host at a time.
+`v0.5.0` started a new version epoch; the current `v0.6.0` still sorts below
+`v4.0.0-rc.1`. Host package managers cannot express migration from that RC as
+an upgrade. Keep an immutable RC rollback checkout and reinstall one host at a
+time.
 
 ```bash
 git worktree add --detach ../verbs-v4-rollback v4.0.0-rc.1
@@ -194,7 +210,7 @@ after both hosts pass verification.
 The namespace is `/verbs:*`; `/pandastack:*` has no alias. The old GitHub
 repository URL redirects after the repository rename. Compatibility is limited
 to the `scripts/pandastack` CLI shim and documented legacy environment-variable
-reads through v0.5.x.
+reads through the 0.x release line.
 Existing `~/.pandastack` lifecycle data is left untouched; Verbs does not read,
 move, or delete it.
 
@@ -223,9 +239,22 @@ bash scripts/installer-smoke.sh claude "$PWD" vX.Y.Z
 bash scripts/installer-smoke.sh codex "$PWD" vX.Y.Z
 ```
 
+After creating the local v0.6.0 tag, the release gate also proves upgrade and
+rollback in one disposable host profile. Keep an exact v0.5.0 checkout, then
+run both hosts:
+
+```bash
+git worktree add --detach ../verbs-v0.5.0 v0.5.0
+bash scripts/installer-smoke.sh claude --upgrade ../verbs-v0.5.0 "$PWD"
+bash scripts/installer-smoke.sh codex --upgrade ../verbs-v0.5.0 "$PWD"
+```
+
 The script uses official host installers, requires enabled inventory plus
 strict parity, and performs one namespaced skill invocation. It does not copy
 caches or synthesize registry/config receipts. Authentication is reused only
 for the invocation: Claude loads the exact disposable installed artifact in a
-fresh authenticated process; Codex copies only `auth.json` into the temporary
-profile with mode 0600 and removes it on exit.
+fresh authenticated process; Codex uses a disposable API-key login when
+`OPENAI_API_KEY` is available, otherwise it copies only `auth.json` with mode
+0600. The temporary credential is removed on exit. Upgrade mode keeps one
+disposable HOME across `v0.5.0 → v0.6.0 → v0.5.0`, and executes the installed
+v0.6 hook contracts before rollback.

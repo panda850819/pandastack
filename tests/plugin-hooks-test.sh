@@ -3,7 +3,8 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-ROOT="$(pwd)"
+ROOT="${VERBS_HOOK_ROOT:-$(pwd)}"
+ROOT="$(cd "$ROOT" && pwd -P)"
 MANIFEST="$ROOT/hooks/hooks.json"
 SESSION="$ROOT/hooks/session-start"
 GUARD="$ROOT/hooks/pretooluse-destructive-guard.sh"

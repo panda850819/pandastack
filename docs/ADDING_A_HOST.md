@@ -1,15 +1,17 @@
 # Adding a Host to Verbs
 
 A host adapter makes the existing skill pack discoverable in one runtime. It
-does not add orchestration, memory, scheduling, identity, or project state to
-Verbs.
+does not add identity, brain or memory, scheduling, project truth, or global
+model routing to Verbs.
 
 ## Sources of truth
 
 - `manifest.toml` owns product identity, version, and the active skill set.
 - `scripts/verbs sync` generates the Claude, Codex, and Agents loader metadata.
 - `DISPATCH.md` owns public routing.
-- `hooks/` contains reference adapters. No hook is registered automatically.
+- `hooks/` contains SessionStart dispatch, the Bash PreToolUse destructive
+  guard, and the Stop verification gate. The Marketplace Plugin registers them;
+  portable and manual skill installs are hook-free.
 - Each `SKILL.md` owns its workflow and tool assumptions.
 
 Do not fork skill content merely to rename tools. Keep any translation in the
@@ -25,11 +27,14 @@ Before claiming support, define:
 | Discovery | How the host exposes exactly the manifest skill set |
 | Namespace | Whether the host displays `verbs:<name>` or plain names |
 | Tools | Explicit mapping for read, edit, shell, browser, and delegation |
-| Hooks | Which reference adapters, if any, the host enables explicitly |
+| Hooks | Whether the surface registers native adapters or is explicitly hook-free |
 | Boundary | Native, degraded, selective, experimental, or unsupported |
 
 The adapter may support a subset, but it must not imply parity for skills or
 adapters it does not enable.
+
+One host profile uses one install surface. Do not combine a native Marketplace
+Plugin with portable skills in the same profile.
 
 ## Verification gate
 
@@ -48,8 +53,8 @@ test the scanner; they do not prove the real installer.
 
 | Host | Status | Install surface |
 |---|---|---|
-| Claude Code | Verified | Local plugin marketplace |
-| Codex | Verified | Local plugin marketplace |
+| Claude Code | Verified | Marketplace Plugin (recommended); portable npx skills |
+| Codex | Verified | Marketplace Plugin (recommended); portable npx skills |
 | Hermes | Selective manual import | Individual skill directories |
 | OpenClaw | Unsupported / experimental | None |
 

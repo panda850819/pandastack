@@ -100,14 +100,23 @@ if host == "claude":
     )
     ok = called and launched and completed
 else:
-    completed = any(
-        event.get("type") == "item.completed"
+    messages = [
+        event.get("item", {}).get("text")
+        for event in events
+        if event.get("type") == "item.completed"
         and event.get("item", {}).get("type") == "agent_message"
-        and event.get("item", {}).get("text") == activation
+    ]
+    tool_types = {
+        "command_execution", "file_change", "mcp_tool_call", "web_search",
+        "image_generation", "dynamic_tool_call", "tool_call",
+    }
+    used_tool = any(
+        event.get("type") == "item.completed"
+        and event.get("item", {}).get("type") in tool_types
         for event in events
     )
     turn_done = any(event.get("type") == "turn.completed" for event in events)
-    ok = completed and turn_done
+    ok = messages == [activation] and turn_done and not used_tool
 
 raise SystemExit(0 if ok else 1)
 ' "$host"; then
@@ -154,6 +163,7 @@ run_claude() {
 }
 
 run_codex() {
+  local -a codex_args
   if ! command -v codex >/dev/null 2>&1; then
     echo "FAIL [codex]: codex CLI not on PATH" >&2
     fail=1
@@ -178,7 +188,21 @@ run_codex() {
     return
   fi
   prompt='$verbs:careful Return the skill standard activation announcement exactly as written, then stop.'
-  out="$(codex exec --ephemeral --sandbox read-only --json "$prompt" 2>&1)" || {
+  codex_args=(exec --ephemeral --sandbox read-only --json)
+  if [ -n "${VERBS_SMOKE_EXPECT_HOME:-}" ]; then
+    codex_args+=(--cd "$VERBS_SMOKE_EXPECT_HOME" --skip-git-repo-check)
+  fi
+  if [ "${VERBS_SMOKE_BYPASS_HOOK_TRUST:-0}" = 1 ]; then
+    codex_args+=(--dangerously-bypass-hook-trust)
+  fi
+  if [ -n "${VERBS_SMOKE_MODEL:-}" ]; then
+    codex_args+=(--model "$VERBS_SMOKE_MODEL")
+  fi
+  if [ "${VERBS_SMOKE_DISABLE_REMOTE_PLUGINS:-0}" = 1 ]; then
+    codex_args+=(--disable remote_plugin --disable plugin_sharing)
+  fi
+  out="$(env -u VERBS_REPO_ROOT -u VERBS_MANIFEST \
+    codex "${codex_args[@]}" "$prompt" 2>&1)" || {
     echo "FAIL [codex]: namespaced invocation error" >&2
     fail=1
     return

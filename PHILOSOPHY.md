@@ -11,7 +11,10 @@ Each unit of engineering work should make subsequent units easier — not harder
 The intelligence lives in the model plus the skill's own lore, not in swappable
 persona agents. A skill is a short sequence of steps that frames the task, loads the
 relevant lore, and manages the learnings loop. Verbs ships skills and thin host
-adapters. The host owns agents, identity, memory, and scheduling.
+adapters. The recommended Marketplace Plugin registers only SessionStart
+dispatch, the Bash PreToolUse destructive guard, and the Stop verification
+gate. The portable skill surface is self-contained and hook-free. The host owns
+identity, brain or memory, scheduling, project truth, and global model routing.
 
 ### 2. Close the Loop
 
@@ -28,8 +31,9 @@ Small scripts are appropriate when parsing, validation, fetching, or formatting
 must be repeatable. Prefer standard-library implementations, keep helpers local
 to the capability they serve, and declare their runtime explicitly. A helper
 needed by one skill must not become an install prerequisite for every skill.
-The same source is verified on Claude Code and Codex; Hermes supports selective
-manual import.
+The same source is verified as a Marketplace Plugin and as portable skills on
+Claude Code and Codex; Hermes supports selective manual import. One host profile
+uses one install surface.
 
 ### 4. Less Is More
 
@@ -73,5 +77,6 @@ gets misallocated across passes (model overbuild).
 ## What Verbs Is Not
 
 - Not a replacement for thinking. It's a tool for structured thinking.
-- Not an agent runtime, personal context store, scheduler, or project source of truth.
+- Not an agent runtime, identity layer, brain or memory, scheduler, project
+  source of truth, or global model router.
 - Not a fixed pipeline. Skills are composable and readable. Fork or delete what you do not need.
