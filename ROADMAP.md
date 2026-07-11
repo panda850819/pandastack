@@ -6,7 +6,8 @@
 
 ## v0.5.0 — product baseline
 
-Status: shipping.
+Status: shipped on 2026-07-11 as
+[`v0.5.0`](https://github.com/panda850819/verbs/releases/tag/v0.5.0).
 
 The baseline is deliberately small:
 
@@ -40,6 +41,9 @@ The active work queue is limited to failures found through:
 
 No feature is scheduled only to fill a version milestone. Concrete work lives
 in GitHub issues; this roadmap carries gates, not a duplicate backlog.
+The first open install-evidence item is
+[#189](https://github.com/panda850819/verbs/issues/189): make every skill
+self-contained before advertising a generic `npx skills` command.
 
 ## v1.0 gate
 
