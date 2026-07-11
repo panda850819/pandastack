@@ -9,10 +9,10 @@ with exit 0 plus a visible stderr notice — the gate must never break a session
 
 stdin: Claude Code or Codex Stop-hook JSON (transcript_path, stop_hook_active).
 stdout: exactly one {"decision":"block","reason":...} object, or nothing.
-Kill switch: VERBS_VERIFY_GATE=off. During v0.5.x, the adapter also reads the
-legacy PANDA_VERBS_VERIFY_GATE and PANDASTACK_VERIFY_GATE names when the
-canonical variable is unset. Python 3.9+, stdlib only, no network, no file
-writes. Design ported from fable-harness verify_gate.py (MIT).
+Kill switch: VERBS_VERIFY_GATE=off. During the 0.x release line, the adapter
+also reads the legacy PANDA_VERBS_VERIFY_GATE and PANDASTACK_VERIFY_GATE names
+when the canonical variable is unset. Python 3.9+, stdlib only, no network, no
+file writes. Design ported from fable-harness verify_gate.py (MIT).
 """
 import json
 import os

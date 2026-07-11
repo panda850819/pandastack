@@ -1,5 +1,61 @@
 # Changelog
 
+## v0.6.0 — Portable Skills, Native Hooks
+
+Released: 2026-07-11
+
+### Added
+
+- The recommended Marketplace Plugin surface for Claude Code and Codex now
+  registers the SessionStart dispatch adapter, Bash PreToolUse destructive
+  guard, and Stop verification gate.
+- The full 14-skill pack is self-contained for portable installation. Each
+  skill carries its declared resources and composition edges without depending
+  on shared root files.
+
+### Install
+
+Recommended Marketplace Plugin:
+
+```bash
+claude plugin marketplace add panda850819/verbs --scope user
+claude plugin install verbs@verbs --scope user
+
+codex plugin marketplace add panda850819/verbs --json
+codex plugin add verbs@verbs --json
+```
+
+Portable, hook-free skills:
+
+```bash
+npx skills@latest add panda850819/verbs -a claude-code codex -g -y
+```
+
+Choose one surface per host profile. Installing both creates duplicate skill
+discovery and an ambiguous hook contract.
+
+### Boundary
+
+- Verbs owns the skill pack and its narrow native hook adapters. The host owns
+  identity, brain or memory, scheduling, project truth, and global model
+  routing. Hermes remains a selective manual import.
+
+### Distribution
+
+- The GitHub release remains metadata-only with zero custom release assets.
+  GitHub's standard source archives remain available.
+
+### Verified
+
+- The public `npx skills` command found and installed all 14 skills into
+  disposable Claude Code and Codex targets. All 36 declared resources and 7
+  directional companion edges resolved inside the installed payload.
+- Claude Code and Codex both passed a same-profile
+  `v0.5.0 → v0.6.0 → v0.5.0` reinstall cycle. The installed v0.6 hook tree
+  passed all 27 contract checks; Claude's component inventory reported exactly
+  three registered hooks, and Codex discovered the same three hooks and
+  triggered SessionStart from the installed plugin.
+
 ## v0.5.0 — Verbs
 
 Released: 2026-07-11

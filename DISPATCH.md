@@ -18,6 +18,7 @@ Before responding to any task-shaped message, match it against this table. On ma
 | Non-trivial but no row matches | classify the load-bearing unknown: fact→inspect first (code/docs/knowledge base) · intent→`grill` · taste→`ui` · architecture→`grill --brief` · risk→`careful` · verification→`debug` · mechanical→`handover`; still unclear → Verbs `RESOLVER.md`, pick closest |
 
 <!-- Maintenance: this file is the SINGLE SOURCE for the process-axis routing table.
-     Hosts may point to it directly or explicitly wire hooks/session-start as a
-     reference adapter. Verbs does not register the adapter automatically.
+     The Marketplace Plugin registers hooks/session-start to inject this table.
+     Portable npx and manual installs are hook-free; other hosts may point to
+     this source explicitly.
      Do not fork the table. -->

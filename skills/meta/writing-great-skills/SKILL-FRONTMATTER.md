@@ -74,7 +74,8 @@ Other top-level keys are not warned and not blocked. Stacks may extend.
 `reads`, `writes`, `forbids`, `domain`, and `classification` are optional
 advisory audit metadata. Current hosts do not enforce them as a per-skill
 security boundary. Reference adapters under `hooks/` are separate and activate
-only when a host enables them explicitly.
+only when a host registers them. The Marketplace Plugin registers its three
+documented adapters; portable and manual skill installs remain hook-free.
 
 ## HOT / COLD classification
 

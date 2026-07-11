@@ -98,7 +98,7 @@ def main():
         for failure in failures:
             print(f"  {failure}")
         return 1
-    print("OK: living surfaces use the Verbs v0.5 identity and current routes.")
+    print("OK: living surfaces use the current Verbs identity and routes.")
     return 0
 
 
