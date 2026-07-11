@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.6.1 — Runtime Parity and Live Trust
+
+Released: 2026-07-11
+
+### Fixed
+
+- Claude transcript reduction no longer treats a background verification launch
+  acknowledgement as a completed green check.
+- List-form user prompts now reset the Claude turn window, preventing verified
+  work from an earlier turn from leaking into the current Stop decision.
+
+### Added
+
+- `scripts/verbs doctor --host codex --strict --live-hooks` now asks the live
+  Codex app-server for the installed Verbs hook inventory and fails when any of
+  the three hooks lacks persisted trust.
+- The live hook verifier supports an inventory-only trust gate while preserving
+  the existing explicit bypass path used by isolated installer automation.
+
+### Verified
+
+- The blocking suite covers trusted and untrusted live-inventory outcomes with
+  a synthetic app-server boundary and keeps the default doctor path offline.
+
 ## v0.6.0 — Portable Skills, Native Hooks
 
 Released: 2026-07-11

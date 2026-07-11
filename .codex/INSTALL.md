@@ -25,7 +25,7 @@ Restart Codex, then verify:
 
 ```bash
 codex plugin list --json
-python3 scripts/verbs doctor --host codex --strict
+python3 scripts/verbs doctor --host codex --strict --live-hooks
 bash scripts/conformance-smoke.sh codex
 ```
 
@@ -39,6 +39,6 @@ The portable surface contains self-contained skills without marketplace
 metadata or hooks. Do not install both surfaces in one Codex profile.
 
 To migrate from `v4.0.0-rc.1`, follow the root guide's explicit
-uninstall/reinstall path. `0.6.0` sorts below the RC and cannot be installed as
+uninstall/reinstall path. `0.6.1` sorts below the RC and cannot be installed as
 an ordinary upgrade. Do not use a bare skill-directory symlink as a substitute
 for either documented surface.

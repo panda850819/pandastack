@@ -32,10 +32,10 @@ def fail(message):
 
 
 class AppServer:
-    def __init__(self, profile):
+    def __init__(self, profile, codex_home=None):
         env = os.environ.copy()
         env["HOME"] = str(profile)
-        env["CODEX_HOME"] = str(profile / ".codex")
+        env["CODEX_HOME"] = str(codex_home or profile / ".codex")
         self.process = subprocess.Popen(
             [
                 "codex", "app-server", "--stdio",
@@ -139,7 +139,7 @@ def hook_inventory(server, profile):
     return rows[0].get("hooks", [])
 
 
-def assert_inventory(server, profile, installed_root):
+def assert_inventory(server, profile, installed_root, require_trusted=False):
     hooks = [
         hook for hook in hook_inventory(server, profile)
         if hook.get("pluginId") == "verbs@verbs"
@@ -156,6 +156,8 @@ def assert_inventory(server, profile, installed_root):
             fail("Codex hook inventory escaped the installed plugin")
         if str(installed_root) not in (hook.get("command") or ""):
             fail("Codex hook command does not target the installed plugin")
+        if require_trusted and hook.get("trustStatus") != "trusted":
+            fail("Codex discovered an untrusted Verbs hook")
     return manifest
 
 
@@ -222,24 +224,32 @@ def assert_host_behavior(server, profile, installed_manifest):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--expect-none", action="store_true")
+    parser.add_argument("--inventory-only", action="store_true")
+    parser.add_argument("--require-trusted", action="store_true")
+    parser.add_argument("--allow-external-installed-root", action="store_true")
+    parser.add_argument("--codex-home", type=Path)
     parser.add_argument("profile", type=Path)
     parser.add_argument("installed_root", type=Path, nargs="?")
     args = parser.parse_args()
     profile = args.profile.resolve()
+    codex_home = (args.codex_home or profile / ".codex").resolve()
     installed_root = args.installed_root.resolve() if args.installed_root else None
+    if args.expect_none and args.require_trusted:
+        fail("--expect-none and --require-trusted cannot be combined")
     if not args.expect_none:
         if installed_root is None:
             fail("installed_root is required unless --expect-none is used")
-        expected_plugins = (profile / ".codex" / "plugins").resolve()
+        expected_plugins = (codex_home / "plugins").resolve()
         try:
             installed_root.relative_to(expected_plugins)
         except ValueError:
-            fail("installed plugin is outside the disposable Codex profile")
+            if not (args.inventory_only and args.allow_external_installed_root):
+                fail("installed plugin is outside the disposable Codex profile")
 
-    server = AppServer(profile)
+    server = AppServer(profile, codex_home)
     try:
         server.request("initialize", {
-            "clientInfo": {"name": "verbs-hook-smoke", "title": None, "version": "0.6.0"},
+            "clientInfo": {"name": "verbs-hook-smoke", "title": None, "version": "0.6.1"},
             "capabilities": None,
         })
         server.notify("initialized")
@@ -247,12 +257,18 @@ def main():
             assert_no_inventory(server, profile)
         else:
             print("INFO [codex hooks]: inspect installed hook inventory", flush=True)
-            installed_manifest = assert_inventory(server, profile, installed_root)
-            assert_host_behavior(server, profile, installed_manifest)
+            installed_manifest = assert_inventory(
+                server, profile, installed_root, args.require_trusted)
+            if not args.inventory_only:
+                assert_host_behavior(server, profile, installed_manifest)
     finally:
         server.close()
     if args.expect_none:
         print("PASS [codex]: rollback left no Verbs hooks registered")
+    elif args.inventory_only and args.require_trusted:
+        print("PASS [codex]: host discovered exactly three trusted Verbs hooks")
+    elif args.inventory_only:
+        print("PASS [codex]: host discovered exactly three Verbs hooks")
     else:
         print("PASS [codex]: host discovered three hooks and triggered installed SessionStart")
 

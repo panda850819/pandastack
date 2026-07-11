@@ -248,6 +248,12 @@ verify_installed_hooks() {
   else
     HOME="$profile" CODEX_HOME="$profile/.codex" \
       python3 "$source/scripts/codex-hook-smoke.py" "$profile" "$INSTALLED_PATH"
+    if python3 "$source/scripts/verbs" doctor --help 2>/dev/null \
+        | grep -Fq -- '--live-hooks'; then
+      HOME="$profile" CODEX_HOME="$profile/.codex" \
+        VERBS_REPO_ROOT="$source" \
+        python3 "$source/scripts/verbs" doctor --host codex --strict --live-hooks
+    fi
   fi
   echo "PASS [$host]: installed v0.6 Plugin discovery and hook behavior passed"
 }
@@ -342,7 +348,7 @@ if [ "$host" = claude ]; then
   install_claude_source "$source_root" "$source_version"
   verify_installed_inventory "$source_root"
   install_path="$INSTALLED_PATH"
-  if [ "$source_version" = 0.6.0 ]; then
+  if [ -f "$INSTALLED_PATH/hooks/hooks.json" ]; then
     verify_installed_hooks "$source_root"
   fi
   prompt='Invoke verbs:careful. Return the skill standard activation announcement exactly as written, then stop.'
@@ -423,7 +429,7 @@ else
   source_version="$(manifest_version "$source_root")"
   install_codex_source "$source_root" "$source_version"
   codex_smoke_bypass=0
-  if [ "$source_version" = 0.6.0 ]; then
+  if [ -f "$INSTALLED_PATH/hooks/hooks.json" ]; then
     verify_installed_hooks "$source_root"
     codex_smoke_bypass=1
   fi
