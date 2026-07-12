@@ -9,6 +9,7 @@ This script never edits the source checkout.
 """
 
 import argparse
+from collections import Counter
 import json
 import os
 from pathlib import Path
@@ -20,11 +21,12 @@ import time
 
 
 TIMEOUT_SECONDS = 30
-EXPECTED_EVENTS = {
+EXPECTED_EVENTS = [
+    ("preToolUse", "Bash"),
     ("preToolUse", "Bash"),
     ("sessionStart", "startup|clear|compact"),
     ("stop", None),
-}
+]
 
 
 def fail(message):
@@ -144,9 +146,11 @@ def assert_inventory(server, profile, installed_root, require_trusted=False):
         hook for hook in hook_inventory(server, profile)
         if hook.get("pluginId") == "verbs@verbs"
     ]
-    actual = {(hook.get("eventName"), hook.get("matcher")) for hook in hooks}
-    if actual != EXPECTED_EVENTS or len(hooks) != 3:
-        fail("Codex did not discover exactly the three Verbs hooks")
+    actual = Counter(
+        (hook.get("eventName"), hook.get("matcher")) for hook in hooks
+    )
+    if actual != Counter(EXPECTED_EVENTS) or len(hooks) != 4:
+        fail("Codex did not discover exactly the four Verbs hook handlers")
 
     manifest = (installed_root / "hooks" / "hooks.json").resolve()
     for hook in hooks:
@@ -266,11 +270,11 @@ def main():
     if args.expect_none:
         print("PASS [codex]: rollback left no Verbs hooks registered")
     elif args.inventory_only and args.require_trusted:
-        print("PASS [codex]: host discovered exactly three trusted Verbs hooks")
+        print("PASS [codex]: host discovered exactly four trusted Verbs hook handlers")
     elif args.inventory_only:
-        print("PASS [codex]: host discovered exactly three Verbs hooks")
+        print("PASS [codex]: host discovered exactly four Verbs hook handlers")
     else:
-        print("PASS [codex]: host discovered three hooks and triggered installed SessionStart")
+        print("PASS [codex]: host discovered four hook handlers and triggered installed SessionStart")
 
 
 if __name__ == "__main__":

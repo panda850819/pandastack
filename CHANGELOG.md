@@ -20,6 +20,8 @@ Released: 2026-07-12
   `VERBS_GUARD_EVENT_LEVEL=all` for full allow tracing.
 - Regression coverage makes ticket-gate absence, verify-gate fail-open,
   command-vs-data confusion, hook drift, and event-log loss red-capable.
+- Codex live-hook verification counts all four installed handlers, including
+  both Bash PreToolUse guards, instead of collapsing them to three events.
 
 ### Changed
 
