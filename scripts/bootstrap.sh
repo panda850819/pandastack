@@ -95,7 +95,7 @@ ext_check_version() {
 ext_check "ship"           "gh"            "brew install gh"
 ext_check_version "handover"       "codex"  "0.144.1" "codex update"
 ext_check_version "advisor/codex"  "codex"  "0.144.1" "codex update"
-ext_check_version "advisor/claude" "claude" "2.1.206" "claude update"
+ext_check_version "advisor/claude" "claude" "2.1.207" "claude update"
 
 echo
 

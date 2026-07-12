@@ -4,15 +4,15 @@ This file is the single source for role-specific model and effort defaults used 
 `advisor` and `handover`. It is an execution contract, not a catalog of every
 available model. Broad workflow fan-out economics stay at the harness layer.
 
-Last verified: 2026-07-10 with Codex CLI 0.144.1 and Claude Code 2.1.206.
+Last verified: 2026-07-12 with Codex CLI 0.144.1 and Claude Code 2.1.207.
 
 | Role key | Transport | Model | Effort | Minimum CLI | Guard | Status |
 |---|---|---|---|---|---|---|
 | `advisor.openai` | direct `codex exec` | `gpt-5.6-sol` | `high` | `codex >= 0.144.1` | read-only sandbox | verified |
-| `advisor.anthropic` | direct `claude -p` | `opus` | `high` | `claude >= 2.1.206` | clear `CLAUDECODE`, tools disabled, no session persistence | verified |
+| `advisor.anthropic` | direct `claude -p` | `fable` | `high` | `claude >= 2.1.207` | clear `CLAUDECODE`, tools disabled, no session persistence | verified |
 | `advisor.panel.openai.fast` | direct `codex exec` | `gpt-5.6-terra` | `medium` | `codex >= 0.144.1` | read-only sandbox | verified |
 | `advisor.panel.fast` | direct `claude -p` | `sonnet` | `medium` | `claude >= 2.1.206` | clear `CLAUDECODE`, tools disabled, no session persistence | verified |
-| `advisor.panel.deep` | direct `claude -p` | `opus` | `high` | `claude >= 2.1.206` | clear `CLAUDECODE`, tools disabled, no session persistence | verified |
+| `advisor.panel.deep` | direct `claude -p` | `fable` | `high` | `claude >= 2.1.207` | clear `CLAUDECODE`, tools disabled, no session persistence | verified |
 | `handover.mechanical` | direct `codex exec` | `gpt-5.6-luna` | `medium` | `codex >= 0.144.1` | workspace-write sandbox | verified |
 | `handover.risky` | direct `codex exec` | `gpt-5.6-sol` | `high` | `codex >= 0.144.1` | workspace-write sandbox | verified |
 
@@ -49,8 +49,8 @@ codex exec -m "{Model}" -c 'model_reasoning_effort="{Effort}"' \
 
 - Direct `codex exec` selected and completed fixed-token probes on
   `gpt-5.6-sol/high`, `gpt-5.6-terra/medium`, and `gpt-5.6-luna/medium`.
-- Direct `claude -p --model opus --effort high` selected
-  `claude-opus-4-8` and completed its fixed-token probe with tools disabled and
+- Direct `claude -p --model fable --effort high` selected `claude-fable-5` and
+  completed the fixed-token `FABLE_PROBE_OK` probe with tools disabled and
   session persistence off.
 - Direct `claude -p --model sonnet --effort medium` selected `claude-sonnet-5`
   and completed its fixed-token probe with tools disabled and session
