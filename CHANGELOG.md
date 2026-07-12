@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- One fsynced, append-only `verbs.guard-event.v1` JSONL stream records
+  privacy-minimal deny, error, and override decisions from Claude Code and
+  Codex without storing shell command payloads. Set
+  `VERBS_GUARD_EVENT_LEVEL=all` for full allow tracing.
+- Regression coverage makes ticket-gate absence, verify-gate fail-open,
+  command-vs-data confusion, hook drift, and event-log loss red-capable.
+- `tests/ticket-gate-guard-test.sh` expands its offline fixture-repo suite from
+  29 to 52 cases.
+
+### Changed
+
+- Stop verification fails closed when its input or runtime adapter is
+  unavailable, while loop prevention and pure Q&A still pass.
+
 ## v0.7.2 — Four-Hook Smoke Truth
 
 Released: 2026-07-12
@@ -24,22 +42,12 @@ Released: 2026-07-12
   kill switch `VERBS_TICKET_GATE=off`; per-repo opt-out via a
   `.verbs-ticket-gate-off` file at the repo toplevel; fails open on
   guard-internal ambiguity. Branch naming stays advisory. (#203)
-- `tests/ticket-gate-guard-test.sh`: offline fixture-repo suite (52 cases).
-- One fsynced, append-only `verbs.guard-event.v1` JSONL stream records
-  privacy-minimal deny, error, and override decisions from Claude Code and
-  Codex without storing shell command payloads. Set
-  `VERBS_GUARD_EVENT_LEVEL=all` for full allow tracing.
-- Regression coverage makes ticket-gate absence, verify-gate fail-open,
-  command-vs-data confusion, hook drift, and event-log loss red-capable.
-- Codex live-hook verification counts all four installed handlers, including
-  both Bash PreToolUse guards, instead of collapsing them to three events.
+- `tests/ticket-gate-guard-test.sh`: offline fixture-repo suite (29 cases).
 
 ### Changed
 
 - `pretooluse-destructive-guard.sh` parses hook input with a single python3
   invocation (was two) — lower fixed overhead on every Bash tool call.
-- Stop verification fails closed when its input or runtime adapter is
-  unavailable, while loop prevention and pure Q&A still pass.
 - DISPATCH.md: `qa` gains a routing row (was orphaned — reachable only via
   frontmatter matching); the 3+-files row no longer names nonexistent
   "grill-lite".
