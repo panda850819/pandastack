@@ -75,7 +75,13 @@ Other top-level keys are not warned and not blocked. Stacks may extend.
 advisory audit metadata. Current hosts do not enforce them as a per-skill
 security boundary. Reference adapters under `hooks/` are separate and activate
 only when a host registers them. The Marketplace Plugin registers its three
-documented adapters; portable and manual skill installs remain hook-free.
+documented adapters; manual skill imports remain hook-free.
+
+History: the L5 firewall that once consumed these fields at PreToolUse time
+(per-skill tool-argument allowlists, plus the L3 MCP deny list and L4 context
+recipes it relied on) lived in the retired `pdctx` overlay and was removed with
+it. The narrow `hooks/pretooluse-destructive-guard.sh` command guard does not
+restore it; the fields remain documentation of intent only.
 
 ## HOT / COLD classification
 

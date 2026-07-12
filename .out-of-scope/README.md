@@ -4,8 +4,8 @@ This directory records rejected directions as advisory precedent for future
 skill and abstraction proposals. It is a lookup surface for agents, not an
 enforcement surface.
 
-`skill-creator` consults these entries before proposing a new skill or
-abstraction. If a proposal matches an entry, surface that precedent first.
+Consult these entries before proposing a new skill or abstraction. If a
+proposal matches an entry, surface that precedent first.
 
 ## Entry Format
 
@@ -14,7 +14,7 @@ Use one `<slug>.md` file per rejected direction:
 ```markdown
 ---
 decided: YYYY-MM-DD
-source: "ROADMAP.md:<line> - exact greppable phrase"
+source: "<file>:<line>, issue, or PR URL - exact greppable phrase (git history counts for removed files)"
 ---
 
 ## What was rejected

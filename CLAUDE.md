@@ -1,38 +1,60 @@
-# Verbs (plugin internal)
+# Verbs (repo contract)
 
-An opinionated skill pack for taking software work from ambiguity to verified delivery. Skills are tiered core / ext in `manifest.toml` and grouped under engineering, productivity, writing, and meta. The pack does not own identity, memory, project truth, runtimes, scheduling, connectors, or global model routing.
+Verbs is an opinionated skill pack for taking software work from ambiguity to
+verified delivery. The user-facing README lives at the repo root. This file is
+the iteration contract: what an agent must keep true when changing this repo.
 
-This file is the plugin-internal contract read by skill content. The user-facing README lives at the repo root.
+## Layout
 
-## Skills (top-level surface)
+- `skills/{engineering,productivity,meta}/<name>/SKILL.md` — the active
+  skills, tiered core / ext in `manifest.toml`.
+- `lib/` — canonical shared modules. The copies under `skills/*/lib/` are
+  GENERATED from each skill's `resources[]`; never edit a vendored copy.
+- `hooks/` — the enforcement layer (SessionStart dispatch injection, Bash
+  destructive + ticket-gate guards, Stop verify gate). Prose suggests; hooks
+  block.
+- `maintainer/` — skill-writing lore and the frontmatter spec. Not a runtime
+  surface.
+- `.out-of-scope/` — rejected directions with reopen conditions. Check it
+  before proposing any new skill, folder, or adapter.
 
-Full catalog in `RESOLVER.md` at the repo root. Dev-workflow primitives:
+## Sync obligations (the invariants)
 
-- `/verbs:grill` — adversarial requirement discovery, atomic, no brief output
-- `/verbs:grill --brief` — structured close that produces a brief + executable plan
-- `/verbs:advisor --panel` — blind cross-model critique of a prepared plan
-- `/verbs:review` — parallel 3-pass review + cross-model adversarial check
-- `/verbs:qa` — browser-based QA with structured assertions
-- `/verbs:ship` — test + commit + push + PR for completed code work
-- `/verbs:careful` — confirm before destructive actions (safety)
+When adding, renaming, re-scoping, or removing a skill:
 
-Writing (`/write`) is cataloged in `RESOLVER.md`. Skills are composed explicitly; there is no separate flow layer.
+1. `manifest.toml` `[skill.<name>]` is the single source (tier, requires,
+   resources, description).
+2. Run `python3 scripts/verbs sync` — it regenerates the loader JSONs
+   (`.claude-plugin/`, `.codex-plugin/`, `.agents/plugins/`), the vendored lib
+   copies, and the resource index. Hand-editing a generated file is drift the
+   suite rejects.
+3. Update the `RESOLVER.md` catalog row; touch `DISPATCH.md` only when routing
+   changes.
+4. Bump `[manifest] version` — the bump is what refreshes installed plugin
+   caches on both hosts.
+5. Record the change in `CHANGELOG.md`.
 
-## Scenario flows (single-skill, internally chained)
+To retire a lib resource: remove it from `resources[]`, run sync (it prunes
+the vendored copy against the still-present canonical file), then delete the
+canonical file — in that order; sync fails loud otherwise.
 
-- `/sprint` — focused 1-2h execution: scope → grill-lite → execute → review → ship
-- `/grill --brief` — adversarial intake followed by a written brief + executable plan
-- `/advisor --panel` — blind cross-model critique of a prepared plan, deduped + ranked findings, per-finding apply gate
+## Verify
+
+`bash tests/run-all.sh` — hook truth tables, sync determinism, doctor parity,
+structural lint. Green before any PR; CI runs the same suite on macOS.
+
+## Authoring bar
+
+`maintainer/writing-great-skills.md` (construction lore) and
+`maintainer/SKILL-FRONTMATTER.md` (frontmatter contract). A new skill must
+name the surface it replaces or extends, clear `.out-of-scope/` precedent,
+and take a RESOLVER row plus a dispatch slot if model-routed.
 
 ## Learnings
 
 Skills may read the project path configured under `## verbs > learnings` and
-emit candidates in `lib/learning-format.md` shape. They do not persist knowledge;
-the host/project decides whether and where to store a candidate.
-
-## Goal mapping
-
-`grill --brief` can use the Goal Mapping helper in `lib/goal-mapping.md` when a brief needs to map the current task to L1 (long horizon) / L2 (this season) / L3 (this week) layers.
+emit candidates in `lib/learning-format.md` shape. They do not persist
+knowledge; the host/project decides whether and where to store a candidate.
 
 ## verbs
 
