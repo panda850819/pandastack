@@ -21,6 +21,7 @@ grep -Fq 'rm -f "$profile/.codex/auth.json"' "$script"
 grep -Fq "trap 'exit 130' INT" "$script"
 grep -Fq -- '--setting-sources project,local' "$script"
 grep -Fq -- '--output-format stream-json --verbose' "$script"
+[ "$(grep -Fc 'VERBS_VERIFY_GATE=off' "$script")" = 2 ]
 grep -Fq 'tool_use_result' "$script"
 grep -Fq 'require_exact_checkout "$baseline_root" v0.5.0' "$script"
 grep -Fq 'require_exact_checkout "$source_root" v0.6.0' "$script"

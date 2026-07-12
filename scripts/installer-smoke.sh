@@ -356,6 +356,7 @@ if [ "$host" = claude ]; then
     invocation="$(
       cd "$profile"
       HOME="$real_home" CLAUDE_CONFIG_DIR="$real_claude_config" \
+        VERBS_VERIFY_GATE=off \
         claude -p --setting-sources project,local \
         --plugin-dir "$install_path" --tools Skill --no-session-persistence \
         --output-format stream-json --verbose "$prompt" 2>&1
@@ -363,7 +364,7 @@ if [ "$host" = claude ]; then
   else
     invocation="$(
       cd "$profile"
-      env -u CLAUDE_CONFIG_DIR HOME="$real_home" \
+      env -u CLAUDE_CONFIG_DIR HOME="$real_home" VERBS_VERIFY_GATE=off \
         claude -p --setting-sources project,local \
         --plugin-dir "$install_path" --tools Skill --no-session-persistence \
         --output-format stream-json --verbose "$prompt" 2>&1
