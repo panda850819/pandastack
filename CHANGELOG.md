@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.7.2 — Four-Hook Smoke Truth
+
+Released: 2026-07-12
+
+### Fixed
+
+- `scripts/codex-hook-smoke.py` still asserted "exactly three Verbs hooks";
+  v0.7.1 registers four (second PreToolUse = ticket-gate), so the live proof
+  failed against a correct install. Expected inventory is now the four-entry
+  list (duplicate preToolUse/Bash pair) compared as a sorted multiset.
+
 ## v0.7.1 — Ticket-Gate Guard Reinstated
 
 Released: 2026-07-12
