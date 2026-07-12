@@ -248,12 +248,12 @@ verify_installed_hooks() {
   else
     HOME="$profile" CODEX_HOME="$profile/.codex" \
       python3 "$source/scripts/codex-hook-smoke.py" "$profile" "$INSTALLED_PATH"
-    if python3 "$source/scripts/verbs" doctor --help 2>/dev/null \
-        | grep -Fq -- '--live-hooks'; then
-      HOME="$profile" CODEX_HOME="$profile/.codex" \
-        VERBS_REPO_ROOT="$source" \
-        python3 "$source/scripts/verbs" doctor --host codex --strict --live-hooks
-    fi
+    # A disposable profile has no user-approved hook hashes. Prove exact cache
+    # parity here; live trust belongs to the real post-install profile and must
+    # never be synthesized by release automation.
+    HOME="$profile" CODEX_HOME="$profile/.codex" \
+      VERBS_REPO_ROOT="$source" \
+      python3 "$source/scripts/verbs" doctor --host codex --strict
   fi
   echo "PASS [$host]: installed v0.6 Plugin discovery and hook behavior passed"
 }

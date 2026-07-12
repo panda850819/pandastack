@@ -43,7 +43,11 @@ grep -Fq 'claude_cmd plugin details verbs@verbs' "$script"
 grep -Fq "grep -Fq 'Hooks (3)'" "$script"
 grep -Fq 'for event in SessionStart PreToolUse Stop; do' "$script"
 grep -Fq 'python3 "$source/scripts/codex-hook-smoke.py" "$profile" "$INSTALLED_PATH"' "$script"
-grep -Fq 'python3 "$source/scripts/verbs" doctor --host codex --strict --live-hooks' "$script"
+grep -Fq 'python3 "$source/scripts/verbs" doctor --host codex --strict' "$script"
+if grep -Fq -- '--strict --live-hooks' "$script"; then
+  echo "FAIL: disposable installer smoke must not synthesize user hook trust" >&2
+  exit 1
+fi
 grep -Fq 'if [ -f "$INSTALLED_PATH/hooks/hooks.json" ]; then' "$script"
 grep -Fq 'verify_rollback_hooks_absent' "$script"
 grep -Fq -- '--expect-none "$profile"' "$script"
@@ -111,7 +115,26 @@ with open(os.environ["VERBS_TEST_LOG"], "a", encoding="utf-8") as handle:
     handle.write("{}:{}|{}|{}\n".format(
         operation, version, os.environ["HOME"], os.environ["CODEX_HOME"]))
 PY
-  chmod +x "$root/scripts/conformance-smoke.sh" "$root/tests/plugin-hooks-test.sh"
+  cat >"$root/scripts/verbs" <<'PY'
+#!/usr/bin/env python3
+import os
+from pathlib import Path
+import sys
+
+if sys.argv[1:] != ["doctor", "--host", "codex", "--strict"]:
+    raise SystemExit("unexpected fixture verbs command: {}".format(sys.argv[1:]))
+root = Path(__file__).resolve().parent.parent
+version = next(
+    line.split('"')[1]
+    for line in (root / "manifest.toml").read_text(encoding="utf-8").splitlines()
+    if line.startswith("version = ")
+)
+with open(os.environ["VERBS_TEST_LOG"], "a", encoding="utf-8") as handle:
+    handle.write("doctor:{}|{}|{}\n".format(
+        version, os.environ["HOME"], os.environ["CODEX_HOME"]))
+PY
+  chmod +x "$root/scripts/conformance-smoke.sh" "$root/scripts/verbs" \
+    "$root/tests/plugin-hooks-test.sh"
   if [ "$version" = 0.6.0 ]; then
     printf '{"hooks":{}}\n' >"$root/hooks/hooks.json"
   fi
@@ -299,7 +322,7 @@ expected = [
     "marketplace-add", "install:0.5.0", "conformance:0.5.0",
     "plugin-remove", "marketplace-remove", "marketplace-add",
     "install:0.6.0", "conformance:0.6.0", "hooks:0.6.0",
-    "codex-hooks-present:0.6.0", "plugin-remove", "marketplace-remove",
+    "codex-hooks-present:0.6.0", "doctor:0.6.0", "plugin-remove", "marketplace-remove",
     "marketplace-add", "install:0.5.0", "conformance:0.5.0",
     "codex-hooks-none:0.6.0",
 ]
