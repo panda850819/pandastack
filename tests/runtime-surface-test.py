@@ -49,6 +49,27 @@ def write_skill(root, rel, name):
     )
 
 
+def write_live_hook_smoke(root, returncode, required_args=()):
+    path = root / "scripts" / "codex-hook-smoke.py"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    required = ("--inventory-only", "--require-trusted", "--codex-home") \
+        + tuple(required_args)
+    required_check = "".join(
+        f"assert {arg!r} in sys.argv, 'missing required argument: {arg}'\n"
+        for arg in required
+    )
+    path.write_text(
+        "#!/usr/bin/env python3\n"
+        "import os\n"
+        "import sys\n"
+        "for key in ('AWS_SECRET_ACCESS_KEY', 'DATABASE_URL', 'SSH_AUTH_SOCK'):\n"
+        "    assert key not in os.environ, f'sensitive environment leaked: {key}'\n"
+        f"{required_check}"
+        f"raise SystemExit({returncode})\n",
+        encoding="utf-8",
+    )
+
+
 def write_claude_settings(home, enabled):
     write_json(
         home / ".claude/settings.json",
@@ -126,6 +147,7 @@ def make_fixture(base):
     (root / "DISPATCH.md").write_text("# Dispatch\n", encoding="utf-8")
     (root / "hooks").mkdir(parents=True, exist_ok=True)
     (root / "hooks/hook.sh").write_text("#!/bin/sh\n", encoding="utf-8")
+    write_live_hook_smoke(root, 91)
     return root, home
 
 
@@ -188,6 +210,10 @@ def doctor(root, home, *args):
     env.update(
         {
             "HOME": str(home),
+            "CODEX_HOME": str(home / ".codex"),
+            "AWS_SECRET_ACCESS_KEY": "sentinel-aws-secret",
+            "DATABASE_URL": "postgres://sentinel",
+            "SSH_AUTH_SOCK": "/tmp/sentinel-agent.sock",
             "VERBS_REPO_ROOT": str(root),
             "VERBS_MANIFEST": str(root / "manifest.toml"),
         }
@@ -272,6 +298,7 @@ def case_clean_installed_caches(base):
     assert rc == 0
     report = surface(data)
     assert report["ok"] is True
+    assert set(data["checks"]) == {"manifest", "runtime_surface"}
     for host in ("claude", "codex"):
         assert report["installed"][host]["status"] == "ok"
         strict_rc, _ = doctor(root, home, "--host", host, "--strict")
@@ -280,12 +307,37 @@ def case_clean_installed_caches(base):
 
 def case_codex_enabled_local_marketplace_source(base):
     root, home = make_fixture(base)
+    write_live_hook_smoke(root, 0, ("--allow-external-installed-root",))
     write_codex_config(home, {"verbs@verbs": True}, root)
-    rc, result = doctor(root, home, "--host", "codex", "--strict")
+    rc, result = doctor(
+        root, home, "--host", "codex", "--strict", "--live-hooks")
     assert rc == 0
     codex = surface(result)["installed"]["codex"]
     assert codex["status"] == "ok"
     assert codex["path"] == str(root)
+    assert result["checks"]["live_hooks"]["status"] == "trusted"
+
+
+def case_codex_live_hook_trust_is_strict(base):
+    root, home = make_fixture(base)
+    install_current_caches(root, home)
+    write_live_hook_smoke(root, 0)
+
+    rc, result = doctor(
+        root, home, "--host", "codex", "--strict", "--live-hooks")
+    assert rc == 0
+    assert result["checks"]["live_hooks"] == {
+        "ok": True,
+        "status": "trusted",
+        "issues": [],
+    }
+
+    write_live_hook_smoke(root, 1)
+    rc, result = doctor(
+        root, home, "--host", "codex", "--strict", "--live-hooks")
+    assert rc == 1
+    assert result["checks"]["live_hooks"]["ok"] is False
+    assert result["checks"]["live_hooks"]["status"] == "untrusted"
 
 
 def case_legacy_claude_registry_requires_migration(base):
@@ -448,6 +500,7 @@ CASES = [
     case_source_registration_cannot_escape_root,
     case_clean_installed_caches,
     case_codex_enabled_local_marketplace_source,
+    case_codex_live_hook_trust_is_strict,
     case_legacy_claude_registry_requires_migration,
     case_legacy_codex_cache_requires_migration,
     case_old_and_new_installs_conflict,

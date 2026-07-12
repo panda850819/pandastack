@@ -103,8 +103,9 @@ Artifacts flow between skills; you decide when to invoke each step.
 
 ## Version reset
 
-`v0.5.0` started the Verbs version line; `v0.6.0` adds the explicit native-plugin
-and portable-skill surfaces. Older `v1.*` tags belong to pandastack;
+`v0.5.0` started the Verbs version line; `v0.6.0` added the explicit native-plugin
+and portable-skill surfaces. `v0.6.1` carries the runtime-parity follow-up and
+adds an explicit Codex live-hook trust proof. Older `v1.*` tags belong to pandastack;
 `v4.0.0-rc.1` belongs to the short-lived product name used during the boundary
 cut. Those tags and releases stay immutable history.
 
@@ -121,7 +122,7 @@ claude plugin marketplace add "/absolute/path/to/verbs" --scope user
 claude plugin install verbs@verbs --scope user
 ```
 
-Run `/reload-plugins`, verify `0.6.0`, then repeat for Codex using the exact
+Run `/reload-plugins`, verify `0.6.1`, then repeat for Codex using the exact
 commands in the install guide. `/pandastack:*` has no alias.
 
 ## Development and verification

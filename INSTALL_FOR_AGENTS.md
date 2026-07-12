@@ -80,7 +80,7 @@ Restart Codex, then verify:
 
 ```bash
 codex plugin list --json
-python3 scripts/verbs doctor --host codex --strict
+python3 scripts/verbs doctor --host codex --strict --live-hooks
 bash scripts/conformance-smoke.sh codex
 ```
 
@@ -90,7 +90,7 @@ symlink is not a substitute for either documented surface.
 
 ## Migrate from v4.0.0-rc.1
 
-`v0.5.0` started a new version epoch; the current `v0.6.0` still sorts below
+`v0.5.0` started a new version epoch; the current `v0.6.1` still sorts below
 `v4.0.0-rc.1`. Host package managers cannot express migration from that RC as
 an upgrade. Keep an immutable RC rollback checkout and reinstall one host at a
 time.
