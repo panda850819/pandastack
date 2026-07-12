@@ -28,6 +28,6 @@ status: todo
 
 ### agent-worker-protocol-T03 — Add a thin-contract conformance test
 - scope: tests/agent-worker-contract-test.sh
-- acceptance: `bash tests/agent-worker-contract-test.sh` passes, detects a seeded missing-field mutation, confirms no Agent Worker skill or runner was added, and `bash tests/lint-suite.sh && bash tests/run-all.sh` reports zero failures.
+- acceptance: `bash tests/agent-worker-contract-test.sh` passes, detects a seeded missing-field mutation, proves Claude and Codex SessionStart payloads include the protocol, confirms no Agent Worker skill or runner was added, and `bash tests/lint-suite.sh && bash tests/run-all.sh` reports zero failures.
 - depends-on: agent-worker-protocol-T01, agent-worker-protocol-T02
 - status: todo
