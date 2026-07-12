@@ -1,5 +1,48 @@
 # Changelog
 
+## v0.9.0 — Discipline Cores
+
+Released: 2026-07-13
+
+### Added
+
+- `codebase-design` (engineering, core): deep-module design vocabulary —
+  module / interface / seam / adapter / depth-as-leverage / locality, the
+  deletion test, one-adapter-means-a-hypothetical-seam, and
+  testability-through-the-interface rules. Adapted from mattpocock/skills
+  (MIT, THIRD_PARTY_NOTICES). (#225)
+- `prototype` (engineering, core): throwaway prototype answering ONE design
+  question — logic branch drives a terminal state model (`LOGIC.md`); UI
+  branch renders N structurally different variants behind `?variant=`
+  (`UI.md`). Verdict lands on the tracking issue/brief; the prototype lands
+  on a `prototype/<slug>` branch, never the default branch. (#225)
+- `wayfinder` (productivity, core): cross-session decision-map worker.
+  grill's wayfinder exit writes the map; wayfinder walks it — one frontier
+  entry per session, resolved by type (research / grilling / prototype /
+  task), decision written back, fog graduated. Composes grill + prototype.
+  (#228)
+
+### Changed
+
+- `grill`: facts-vs-decisions protocol rule (derivable answers are legwork,
+  the human gets only genuine forks); brief scaffold gains a Seams section;
+  one-time offer to mint the tracking issue from the brief; Stage C+
+  granularity confirm; wide-refactor expand → migrate → contract exception.
+  (#227)
+- `ship`: gate 8 release truth gate — generated notes verified against the
+  tagged tree (cited PRs/SHAs must be tag ancestors; add/remove claims must
+  match `git diff prev..tag --stat`); on mismatch fix the notes, never
+  re-tag. (#227)
+- `writing-great-skills` + glossary: Negation principle — positive target
+  behaviour wherever a positive form exists; prohibitions only as hard
+  guardrails, paired with the replacement behaviour. (#227)
+- `ui`: description now routes divergent throwaway variant exploration to
+  `prototype`. (#225)
+- DISPATCH: rows for `prototype` and `wayfinder`. (#225, #228)
+- Repo config truth-up: `## verbs` block in CLAUDE.md / AGENTS.md now
+  `tag: semver` + `release: true`, matching actual release practice;
+  RESOLVER.md version line un-drifted (was still v0.7.3). (#229)
+
 ## v0.8.0 — Personal-First Slim
 
 Released: 2026-07-12

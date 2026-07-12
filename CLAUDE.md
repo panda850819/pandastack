@@ -60,7 +60,7 @@ knowledge; the host/project decides whether and where to store a candidate.
 
 test: bash tests/run-all.sh
 main: main
-tag: none
-release: false
+tag: semver
+release: true
 deploy: null
 learnings: docs/learnings
