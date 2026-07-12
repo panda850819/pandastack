@@ -4,7 +4,7 @@
 The caller provides a disposable host profile and its installer-returned plugin
 path. This script talks to the installed Codex app-server over stdio, asks the
 host for its exact hook inventory, then triggers SessionStart from a real Codex
-turn. The installed hook contract suite separately executes all three commands.
+turn. The installed hook contract suite separately executes all four commands.
 This script never edits the source checkout.
 """
 
@@ -20,11 +20,18 @@ import time
 
 
 TIMEOUT_SECONDS = 30
-EXPECTED_EVENTS = {
+# (eventName, matcher) pairs the plugin must register. Since v0.7.1 there are
+# TWO PreToolUse Bash hooks (destructive-guard + ticket-gate), so this is a
+# list carrying the duplicate, not a set.
+EXPECTED_EVENTS = [
+    ("preToolUse", "Bash"),
     ("preToolUse", "Bash"),
     ("sessionStart", "startup|clear|compact"),
     ("stop", None),
-}
+]
+
+def _event_sort_key(item):
+    return (item[0], item[1] or "")
 
 
 def fail(message):
@@ -144,9 +151,12 @@ def assert_inventory(server, profile, installed_root, require_trusted=False):
         hook for hook in hook_inventory(server, profile)
         if hook.get("pluginId") == "verbs@verbs"
     ]
-    actual = {(hook.get("eventName"), hook.get("matcher")) for hook in hooks}
-    if actual != EXPECTED_EVENTS or len(hooks) != 3:
-        fail("Codex did not discover exactly the three Verbs hooks")
+    actual = sorted(
+        ((hook.get("eventName"), hook.get("matcher")) for hook in hooks),
+        key=_event_sort_key,
+    )
+    if actual != sorted(EXPECTED_EVENTS, key=_event_sort_key):
+        fail("Codex did not discover exactly the four Verbs hooks")
 
     manifest = (installed_root / "hooks" / "hooks.json").resolve()
     for hook in hooks:
@@ -266,11 +276,11 @@ def main():
     if args.expect_none:
         print("PASS [codex]: rollback left no Verbs hooks registered")
     elif args.inventory_only and args.require_trusted:
-        print("PASS [codex]: host discovered exactly three trusted Verbs hooks")
+        print("PASS [codex]: host discovered exactly four trusted Verbs hooks")
     elif args.inventory_only:
-        print("PASS [codex]: host discovered exactly three Verbs hooks")
+        print("PASS [codex]: host discovered exactly four Verbs hooks")
     else:
-        print("PASS [codex]: host discovered three hooks and triggered installed SessionStart")
+        print("PASS [codex]: host discovered four hooks and triggered installed SessionStart")
 
 
 if __name__ == "__main__":

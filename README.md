@@ -46,8 +46,13 @@ codex plugin marketplace add panda850819/verbs --json
 codex plugin add verbs@verbs --json
 ```
 
-The Marketplace Plugin registers three narrow adapters: SessionStart dispatch,
-the Bash PreToolUse destructive guard, and the Stop verification gate.
+The Marketplace Plugin registers three lifecycle adapters: SessionStart
+dispatch, Bash PreToolUse destructive + ticket-gate guards, and the Stop
+verification gate. High-signal guard decisions append to
+`$XDG_STATE_HOME/verbs/guard-events.jsonl` when set, otherwise
+`~/.local/state/verbs/guard-events.jsonl`. Override the path with
+`VERBS_GUARD_EVENT_LOG`, disable it with `off`, or set
+`VERBS_GUARD_EVENT_LEVEL=all` to include routine allow decisions.
 
 ### Portable: hook-free skills
 
@@ -119,7 +124,7 @@ claude plugin marketplace add "/absolute/path/to/verbs" --scope user
 claude plugin install verbs@verbs --scope user
 ```
 
-Run `/reload-plugins`, verify `0.7.1`, then repeat for Codex using the exact
+Run `/reload-plugins`, verify `0.7.2`, then repeat for Codex using the exact
 commands in the install guide. `/pandastack:*` has no alias.
 
 ## Development and verification
