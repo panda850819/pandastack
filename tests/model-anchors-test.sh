@@ -7,10 +7,10 @@ anchor="lib/model-anchors.md"
 
 expected_rows=(
   '| `advisor.openai` | direct `codex exec` | `gpt-5.6-sol` | `high` | `codex >= 0.144.1` | read-only sandbox | verified |'
-  '| `advisor.anthropic` | direct `claude -p` | `fable` | `high` | `claude >= 2.1.207` | clear `CLAUDECODE`, tools disabled, no session persistence | verified |'
+  '| `advisor.anthropic` | direct `claude -p` | `opus` | `high` | `claude >= 2.1.206` | clear `CLAUDECODE`, tools disabled, no session persistence | verified |'
   '| `advisor.panel.openai.fast` | direct `codex exec` | `gpt-5.6-terra` | `medium` | `codex >= 0.144.1` | read-only sandbox | verified |'
   '| `advisor.panel.fast` | direct `claude -p` | `sonnet` | `medium` | `claude >= 2.1.206` | clear `CLAUDECODE`, tools disabled, no session persistence | verified |'
-  '| `advisor.panel.deep` | direct `claude -p` | `fable` | `high` | `claude >= 2.1.207` | clear `CLAUDECODE`, tools disabled, no session persistence | verified |'
+  '| `advisor.panel.deep` | direct `claude -p` | `opus` | `high` | `claude >= 2.1.206` | clear `CLAUDECODE`, tools disabled, no session persistence | verified |'
   '| `handover.mechanical` | direct `codex exec` | `gpt-5.6-luna` | `medium` | `codex >= 0.144.1` | workspace-write sandbox | verified |'
   '| `handover.risky` | direct `codex exec` | `gpt-5.6-sol` | `high` | `codex >= 0.144.1` | workspace-write sandbox | verified |'
 )
@@ -44,6 +44,11 @@ if rg -n -g '!**/lib/model-anchors.md' 'gpt-5\.6-(sol|terra|luna)|[0-9]+ (sonnet
   exit 1
 fi
 
+if rg -ni 'fable' "$anchor" skills/engineering/*/lib/model-anchors.md; then
+  echo "FAIL: expired Fable anchor remains in the active model contract"
+  exit 1
+fi
+
 grep -Fq -- '-m "{model}"' skills/engineering/handover/references/codex-invocation.md
 grep -Fq 'model_reasoning_effort="{effort}"' skills/engineering/handover/references/codex-invocation.md
 grep -Fq '<runtime>' skills/engineering/handover/references/codex-invocation.md
@@ -59,6 +64,6 @@ grep -Fq 'Never inherit' "$anchor"
 bash -n scripts/bootstrap.sh
 grep -Fq 'ext_check_version "handover"       "codex"  "0.144.1"' scripts/bootstrap.sh
 grep -Fq 'ext_check_version "advisor/codex"  "codex"  "0.144.1"' scripts/bootstrap.sh
-grep -Fq 'ext_check_version "advisor/claude" "claude" "2.1.207"' scripts/bootstrap.sh
+grep -Fq 'ext_check_version "advisor/claude" "claude" "2.1.206"' scripts/bootstrap.sh
 
 echo "OK: advisor and handover use explicit, single-sourced model anchors."

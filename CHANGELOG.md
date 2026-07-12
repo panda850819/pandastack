@@ -29,9 +29,6 @@ Released: 2026-07-12
   invocation (was two) — lower fixed overhead on every Bash tool call.
 - Stop verification fails closed when its input or runtime adapter is
   unavailable, while loop prevention and pure Q&A still pass.
-- The Anthropic high-judgment counterpart to `gpt-5.6-sol/high` is
-  `fable/high`; a Claude Code 2.1.207 fixed-token probe selected
-  `claude-fable-5`.
 - DISPATCH.md: `qa` gains a routing row (was orphaned — reachable only via
   frontmatter matching); the 3+-files row no longer names nonexistent
   "grill-lite".
