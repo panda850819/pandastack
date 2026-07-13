@@ -29,7 +29,7 @@ forbids:
   - cli: git push origin main
 domain: shared
 classification: exec
-user-invocable: false
+user-invocable: true
 ---
 # Ship
 

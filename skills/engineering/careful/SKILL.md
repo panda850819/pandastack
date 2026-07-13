@@ -14,7 +14,7 @@ forbids:
   - cli: cargo publish
 domain: shared
 classification: exec
-user-invocable: false
+user-invocable: true
 ---
 # Careful Mode
 

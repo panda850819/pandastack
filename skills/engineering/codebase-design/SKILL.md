@@ -12,7 +12,7 @@ writes:
   - cli: stdout
 domain: shared
 classification: tool
-user-invocable: false
+user-invocable: true
 ---
 # Codebase Design
 

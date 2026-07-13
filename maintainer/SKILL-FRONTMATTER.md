@@ -32,6 +32,7 @@ name: <skill-folder-name>
 description: <one-paragraph trigger sentence>
 user-invocable: true | false
 # optional below
+disable-model-invocation: true | false
 allowed-tools: <tool patterns>
 version: <semver>
 type: skill | flow | lib
@@ -44,20 +45,38 @@ type: skill | flow | lib
 |---|---|
 | `name` | Must equal the skill's folder name. Plain. No `verbs:` or `ps-` prefix. The prefix belongs to the consumer side (Claude Code plugin namespace, etc.), not the content. |
 | `description` | Trigger paragraph. Should be short and concrete enough for an AI runtime to decide whether the skill applies. See "On length". |
-| `user-invocable` | Boolean. `true` marks a user-invoked-only skill that the human must call by name; `false` marks a model-dispatched skill that the runtime may choose from its description. |
+| `user-invocable` | Boolean. Gates the HUMAN channel only: `false` removes the skill from the host's manual invocation surface (Claude Code slash menu); `true` keeps it. It never affects model dispatch. Verbs policy: `true` for every skill — the human is never blocked (mattpocock/skills invariant, adopted 2026-07-13, issue #234). |
+
+### Invocation axes (two independent flags)
+
+Human and model invocation are separate axes, not one exclusive binary
+(runtime semantics: code.claude.com/docs/en/skills — "Control who invokes a
+skill"). Defaults when omitted: both channels open.
+
+| Frontmatter | Human can invoke | Model can invoke |
+|---|---|---|
+| (defaults) | yes | yes |
+| `user-invocable: false` | no | yes |
+| `disable-model-invocation: true` | yes | no |
+
+`disable-model-invocation: true` is the flag for a human-initiated-only flow.
+No current Verbs skill sets it: model-side restraint is carried by the
+DISPATCH protocol (announce the match), not by blocking the channel. Codex
+reads neither field; both are Claude Code surface controls.
 
 ### Description cost rule
 
-User-invoked-only skills (`user-invocable: true` and not model-dispatched) carry
-a one-line human-facing description with trigger lists stripped. Model-invoked
-skills keep rich "Use when" / "Triggers" phrasing because the description is
-the routing surface.
+Model-dispatched skills (every current Verbs skill) keep rich "Use when" /
+"Triggers" phrasing because the description is the routing surface. A skill
+that sets `disable-model-invocation: true` carries a one-line human-facing
+description with trigger lists stripped — the model never routes on it.
 
 ### Dependency rule
 
-A user-invoked-only skill body may reference model-invoked skills, never another
-user-invoked-only skill. If the workflow needs that much user memory, put the
-routing in a model-dispatched router instead.
+A model-blocked skill body (`disable-model-invocation: true`) may reference
+model-dispatched skills, never another model-blocked skill. If the workflow
+needs that much user memory, put the routing in a model-dispatched router
+instead.
 
 ## Optional fields
 

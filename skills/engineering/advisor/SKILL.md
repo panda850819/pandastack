@@ -19,7 +19,7 @@ forbids:
   - cli: git push
 domain: shared
 classification: read
-user-invocable: false
+user-invocable: true
 ---
 
 # Advisor
