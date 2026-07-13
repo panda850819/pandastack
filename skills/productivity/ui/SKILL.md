@@ -8,7 +8,7 @@ description: |
   backend logic, browser-test verification (use `qa`), root-cause debugging
   of a broken render (use `debug`), or throwaway variant exploration before a
   direction is chosen (use `prototype`).
-user-invocable: false
+user-invocable: true
 ---
 # UI
 

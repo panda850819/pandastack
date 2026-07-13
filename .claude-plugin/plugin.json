@@ -1,7 +1,7 @@
 {
   "name": "verbs",
   "description": "An opinionated skill pack for taking software work from ambiguity to verified delivery. Includes 14 composable skills.",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "author": {
     "name": "Panda Zeng"
   },

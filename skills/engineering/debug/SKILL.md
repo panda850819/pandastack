@@ -7,7 +7,7 @@ description: |
   反覆修不好, debug, why is this broken, regression, root cause, used to work,
   stack trace. NOT for code-diff review (use `review`), UI taste complaints
   (use `ui`), or building new features.
-user-invocable: false
+user-invocable: true
 ---
 # Debug
 

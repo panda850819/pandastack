@@ -16,7 +16,7 @@ writes:
   - cli: stdout
 domain: shared
 classification: exec
-user-invocable: false
+user-invocable: true
 ---
 # Prototype
 

@@ -21,7 +21,7 @@ capability_required:
   - writable-cwd
   - skill: grill
   - skill: prototype
-user-invocable: false
+user-invocable: true
 ---
 # Wayfinder
 

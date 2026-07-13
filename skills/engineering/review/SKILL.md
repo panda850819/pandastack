@@ -16,7 +16,7 @@ forbids:
   - cli: gh pr create
 domain: shared
 classification: hybrid
-user-invocable: false
+user-invocable: true
 ---
 # Code Review
 

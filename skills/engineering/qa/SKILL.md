@@ -7,7 +7,7 @@ description: |
   verification path); NOT for code-diff review (use `review`).
 capability_required:
   - host browser automation
-user-invocable: false
+user-invocable: true
 ---
 # QA
 

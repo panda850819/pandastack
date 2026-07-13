@@ -9,7 +9,7 @@ description: |
   (alias), "is this safe to install", "check this repo".
 license: MIT
 upstream: https://github.com/slowmist/slowmist-agent-security
-user-invocable: false
+user-invocable: true
 ---
 # Gatekeeper — Pre-adoption Trust Check 🛡️
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.9.2 — Invocation axis fix
+
+### Fixed
+
+- All 14 skills flipped `user-invocable: false` → `true`. The field gates the
+  HUMAN channel in Claude Code (manual slash invocation), not model dispatch;
+  the old spec defined it as an exclusive binary and every skill inherited the
+  inverted value, blocking manual invocation across the whole pack. (#234)
+- `maintainer/SKILL-FRONTMATTER.md`: invocation semantics rewritten as two
+  independent axes (`user-invocable` gates the human,
+  `disable-model-invocation` gates the model; defaults both open, per Claude
+  Code docs); Description cost rule and Dependency rule re-keyed to
+  `disable-model-invocation`; `writing-great-skills.md` mechanics line
+  corrected. Policy adopted from the mattpocock/skills invariant: the human is
+  never blocked. (#234)
+
 ## v0.9.1 — Wayfinder charting bootstrap
 
 ### Changed

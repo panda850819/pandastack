@@ -24,7 +24,7 @@ capability_required:
   - skill: debug
   - skill: review
   - skill: ship
-user-invocable: false
+user-invocable: true
 ---
 # Sprint
 
