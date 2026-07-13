@@ -6,7 +6,10 @@ never ran a test or verify command; the model gets one chance to run the
 check or state the change is unverified. The second stop
 (stop_hook_active=true) passes to prevent a hook loop. Missing/malformed
 verification infrastructure fails closed with a visible block; pure Q&A and
-turns with no successful code edit still pass.
+turns with no successful code edit still pass. A transcript_path whose file
+does not exist is a headless run (codex exec, install smoke tests) that never
+writes a transcript — blocking there can produce no verification behavior, so
+the gate allows with a stderr notice and a high-signal guard event instead.
 
 stdin: Claude Code or Codex Stop-hook JSON (transcript_path, stop_hook_active).
 stdout: exactly one {"decision":"block","reason":...} object, or nothing.
@@ -46,11 +49,15 @@ RUNTIME_FAIL_CLOSED_REASON = (
     "[verbs verify-gate] unavailable: runtime event adapter missing; "
     "blocking once. State that verification is unavailable and reinstall Verbs."
 )
+TRANSCRIPT_MISSING_NOTICE = (
+    "[verbs verify-gate] transcript not found; assuming headless run with no "
+    "transcript; skipping verify gate."
+)
 
 
 def record(payload, decision, reason_code):
     level = os.environ.get("VERBS_GUARD_EVENT_LEVEL", "").strip().lower()
-    high_signal_allow = reason_code == "kill_switch_off"
+    high_signal_allow = reason_code in ("kill_switch_off", "transcript_missing")
     if decision == "allow" and level != "all" and not high_signal_allow:
         return
     if GUARD_EVENTS_IMPORT_OK:
@@ -159,7 +166,13 @@ def main():
             raise ValueError("missing transcript_path")
         entries = []
         malformed_lines = 0
-        with open(transcript_path, encoding="utf-8") as f:
+        try:
+            transcript = open(transcript_path, encoding="utf-8")
+        except FileNotFoundError:
+            print(TRANSCRIPT_MISSING_NOTICE, file=sys.stderr)
+            allow(data, "transcript_missing")
+            return 0
+        with transcript as f:
             for line in f:
                 line = line.strip()
                 if not line:
