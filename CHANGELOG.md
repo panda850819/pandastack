@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.9.3 — Ticket-gate cd tracking
+
+### Fixed
+
+- `ticket_gate.py` now tracks `cd`/`pushd`/`popd` targets across the command
+  chain, so `cd <repo> && git commit` is judged against the cd target instead
+  of the session cwd. Before: committing to an opted-out repo from a gated cwd
+  was falsely denied, and `cd <gated-repo> && git commit` from elsewhere
+  escaped the gate. Unresolvable targets (`cd -`, `popd`, `cd "$VAR"`) fail
+  open, matching the guard's existing posture. (#236)
+- `git -C ~/path` values and cd targets are now `expanduser`'d; tilde paths
+  previously never resolved to a repo and silently failed open. (#236)
+
 ## v0.9.2 — Invocation axis fix
 
 ### Fixed

@@ -107,11 +107,31 @@ def _git_start(tokens):
     return None
 
 
-def _parse_git(tokens, cwd):
+def _apply_cd(tokens, current_dir):
+    """Working directory after a cd/pushd segment; None means unresolvable."""
+    target = None
+    for token in tokens[1:]:
+        if token == "-":
+            return None
+        if token.startswith("-"):
+            continue
+        target = token
+        break
+    if target is None:
+        return Path(os.path.expanduser("~"))
+    candidate = Path(os.path.expanduser(target))
+    if candidate.is_absolute():
+        return candidate
+    if current_dir is None:
+        return None
+    return current_dir / candidate
+
+
+def _parse_git(tokens, current_dir):
     git_index = _git_start(tokens)
     if git_index is None:
         return None
-    repo_dir = Path(cwd)
+    repo_dir = current_dir
     index = git_index + 1
     while index < len(tokens):
         token = tokens[index]
@@ -127,8 +147,13 @@ def _parse_git(tokens, cwd):
                 value = tokens[index]
             else:
                 return None
-            candidate = Path(value)
-            repo_dir = candidate if candidate.is_absolute() else repo_dir / candidate
+            candidate = Path(os.path.expanduser(value))
+            if candidate.is_absolute():
+                repo_dir = candidate
+            elif repo_dir is None:
+                return None
+            else:
+                repo_dir = repo_dir / candidate
             index += 1
             continue
         if option in GIT_OPTIONS_WITH_VALUE:
@@ -140,7 +165,7 @@ def _parse_git(tokens, cwd):
             index += 1
             continue
         break
-    if index >= len(tokens):
+    if index >= len(tokens) or repo_dir is None:
         return None
     return tokens[index], tokens[index + 1 :], repo_dir.resolve()
 
@@ -206,8 +231,19 @@ def classify(payload):
     if not isinstance(cwd, str):
         cwd = os.getcwd()
 
+    current_dir = Path(cwd)
     for tokens in _segments(command):
-        parsed = _parse_git(tokens, cwd)
+        base = tokens[0].rsplit("/", 1)[-1]
+        if base == "cd":
+            current_dir = _apply_cd(tokens, current_dir)
+            continue
+        if base == "pushd":
+            current_dir = _apply_cd(tokens, current_dir) if len(tokens) > 1 else None
+            continue
+        if base == "popd":
+            current_dir = None
+            continue
+        parsed = _parse_git(tokens, current_dir)
         if parsed is None:
             continue
         subcommand, args, repo_dir = parsed

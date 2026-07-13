@@ -88,6 +88,12 @@ check 2 "nice compact priority"         "$REPO_MAIN"   'nice -n10 git commit -m 
 check 2 "timeout wrapper commit"        "$REPO_MAIN"   'timeout 5 git commit -m x'
 check 2 "stdbuf wrapper commit"         "$REPO_MAIN"   'stdbuf -oL git commit -m x'
 check 2 "backtick command commit"       "$REPO_MAIN"   'echo `git commit -m x`'
+check 2 "cd into main repo, commit"     "$NONREPO"     "cd $REPO_MAIN && git commit -m x"
+check 2 "relative cd, commit"           "$TMPROOT"     'cd main-repo && git commit -m x'
+check 2 "cd then bare push on main"     "$NONREPO"     "cd $REPO_MAIN && git push"
+check 2 "pushd into main repo, commit"  "$NONREPO"     "pushd $REPO_MAIN && git commit -m x"
+check 2 "tilde -C resolves via HOME"    "$NONREPO"     'git -C ~/main-repo commit -m x' "HOME=$TMPROOT"
+check 2 "cd elsewhere, -C back to main" "$REPO_MAIN"   "cd $NONREPO && git -C $REPO_MAIN commit -m x"
 
 # --- must ALLOW (exit 0) ---
 check 0 "commit on issue branch"      "$REPO_FEAT"   'git commit -m msg'
@@ -114,6 +120,12 @@ check 0 "marker repo push main"       "$REPO_OFF"    'git push origin main'
 check 0 "kill switch off"             "$REPO_MAIN"   'git commit -m msg' 'VERBS_TICKET_GATE=off'
 check 0 "PSTICKET_FORCE bypass"       "$REPO_MAIN"   'git commit -m msg' 'PSTICKET_FORCE=1'
 check 0 "PANDA_FORCE bypass"          "$REPO_MAIN"   'git commit -m msg' 'PANDA_FORCE=1'
+check 0 "cd into marker repo, commit" "$REPO_MAIN"   "cd $REPO_OFF && git commit -m x"
+check 0 "cd into feat repo, commit"   "$REPO_MAIN"   "cd $REPO_FEAT && git commit -m x"
+check 0 "cd dash unresolvable"        "$REPO_MAIN"   'cd - && git commit -m x'
+check 0 "popd unresolvable"           "$REPO_MAIN"   'popd && git commit -m x'
+check 0 "cd variable unresolvable"    "$REPO_MAIN"   'cd "$DIR" && git commit -m x'
+check 0 "cd nonrepo, commit"          "$REPO_MAIN"   "cd $NONREPO && git commit -m x"
 
 # --- payload shapes ---
 raw_check 0 "tool is not Bash"        '{"tool_name":"Read","tool_input":{"file_path":"/tmp/git"}}'

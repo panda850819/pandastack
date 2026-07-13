@@ -8,8 +8,11 @@
 # Opt-out: .verbs-ticket-gate-off at repo top.
 # Bypass: PSTICKET_FORCE=1 or PANDA_FORCE=1. Kill switch: VERBS_TICKET_GATE=off.
 # Malformed input and unresolvable repo state fail open visibly.
-# Residuals: `sh -c`/`bash -c` quoted payloads, git aliases, `cd repo && git`,
-# and default branches with names other than main/master remain outside scope.
+# cd/pushd/popd targets are tracked across the command chain, so `cd repo &&
+# git ...` is judged against the cd target, not the session cwd; unresolvable
+# targets (`cd -`, `popd`, `cd "$VAR"`) make later segments fail open.
+# Residuals: `sh -c`/`bash -c` quoted payloads, git aliases, subshell-scoped
+# cd leaking past `)`, and default branches with names other than main/master.
 set -euo pipefail
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
