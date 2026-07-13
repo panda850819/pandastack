@@ -227,8 +227,9 @@ run_gate "$T"; expect_block "Codex App nested patch is visible to Stop gate"
 { cturn turn-current; capp_exec outer1 'tools.apply_patch("...")'; capp_patch_result exec-nested /tmp/proj/app.py; capp_out outer1 "Script completed"; capp_exec outer2 'tools.exec_command({cmd:"pytest -q"})'; capp_out outer2 "Script completed"; } > "$T"
 run_gate "$T"; expect_block "Codex App outer cell success is not test evidence"
 
-# Loop prevention, kill switches, and pure Q&A pass. Missing verification
-# infrastructure fails closed.
+# Loop prevention, kill switches, and pure Q&A pass. Malformed verification
+# infrastructure fails closed; a transcript file that never existed is a
+# headless run and allows with a stderr notice.
 { u "fix"; cedit e1 Edit /tmp/proj/app.py; cresult e1 false; } > "$T"
 run_gate "$T" true; expect_allow "stop_hook_active soft pass"
 run_gate "$T" false off; expect_allow "VERBS_VERIFY_GATE kill switch off"
@@ -236,7 +237,15 @@ run_gate "$T" false "" turn-current off; expect_allow "PANDA_VERBS_VERIFY_GATE r
 run_gate "$T" false "" turn-current "" off; expect_allow "PANDASTACK_VERIFY_GATE remains a legacy fallback"
 run_gate "$T" false on turn-current off off; expect_block "VERBS_VERIFY_GATE wins over legacy env"
 rm -f "$FAIL_MARKER"
-run_gate "$WORK/missing.jsonl"; expect_block_reason "missing transcript fails closed" "$WANT_UNAVAILABLE"
+run_gate "$WORK/missing.jsonl"; expect_allow "missing transcript file allows headless run"
+ERR=$(python3 -c 'import json,sys; print(json.dumps({"session_id":"t","turn_id":"turn-current","hook_event_name":"Stop","stop_hook_active":False,"transcript_path":sys.argv[1],"cwd":"/tmp/proj"}))' "$WORK/missing.jsonl" \
+  | env -u VERBS_VERIFY_GATE -u PANDA_VERBS_VERIFY_GATE -u PANDASTACK_VERIFY_GATE "VERBS_VERIFY_GATE_FAILURE_MARKER=$FAIL_MARKER" python3 "$GATE" 2>&1 >/dev/null)
+if printf '%s' "$ERR" | grep -Fq 'transcript not found; assuming headless run'; then
+  pass=$((pass+1))
+else
+  fail=$((fail+1))
+  printf 'FAIL  %-58s expected stderr notice, got: %s\n' "missing transcript emits stderr notice" "$ERR"
+fi
 printf 'NOT-JSON\n{broken\n' > "$T"
 rm -f "$FAIL_MARKER"
 run_gate "$T"; expect_block_reason "malformed transcript fails closed" "$WANT_UNAVAILABLE"

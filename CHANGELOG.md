@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.9.4 — Verify-gate headless allowance
+
+### Fixed
+
+- `stop-verify-gate.py` no longer fail-closes when the payload's
+  `transcript_path` points to a file that does not exist. Headless runs
+  (codex exec, install smoke tests) never write a transcript, so the block
+  could not produce any verification behavior — five spurious
+  `verification_input_unavailable` denies over 2026-07-12/13. The gate now
+  allows with a stderr notice and records a high-signal
+  `transcript_missing` guard event so headless skips stay observable.
+  Malformed transcript content, missing `transcript_path` in the payload,
+  and unreadable hook stdin still fail closed. (#238)
+
 ## v0.9.3 — Ticket-gate cd tracking
 
 ### Fixed
