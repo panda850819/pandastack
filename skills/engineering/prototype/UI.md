@@ -49,6 +49,9 @@ Fixed at bottom-centre: left arrow · current label (`B — Sidebar layout`) ·
 right arrow, wrapping both ways. Arrows update the URL param through the
 framework's router so a variant is shareable and reload-stable; `←`/`→` keys
 also cycle, except when an input, textarea, or contenteditable is focused.
+When the design has meaningful states (an inbox: full vs empty; a table:
+loading vs loaded), add toggle buttons to the bar that flip the mock between
+them — every variant must be judged in every state.
 Visually distinct from the design under judgment (high-contrast pill), and
 hidden in production builds (`NODE_ENV !== 'production'` or equivalent) so a
 stray merge can't ship it. One shared component, located with the project's
@@ -59,7 +62,26 @@ shared UI.
 Surface the URL and the variant keys. The real feedback is usually "the header
 from B with the sidebar from C" — that's the design they want.
 
-### 6. Capture and clean up
+### 6. Converge over rounds (optional)
+
+One round usually answers the question. When the ONE question is surface-sized
+("what should this whole feature look like?") — the user asks to design it by
+taste, or a wayfinder entry names converge — decompose it into one question
+per round, walking down the visual design tree:
+
+- **Round 1: overall design.** Variants disagree about the page's structure.
+  The verdict picks a direction (or a hybrid).
+- **Next rounds: zoom one level per verdict** — component groups, then
+  individual components. Each round regenerates the variants in place, scoped
+  to the surviving branch: everything already decided stays fixed, only the
+  current level varies.
+- Ask for the verdict grill-style: one question per round ("which structure —
+  and what's wrong with the closest loser?"). Before regenerating, record the
+  round's verdict where Capture puts the final one — the tracking issue or
+  brief driving the work — so no decision lives only in the discarded mock.
+  Stop when the user stops caring about the next level down.
+
+### 7. Capture and clean up
 
 Per [SKILL.md](SKILL.md): fold the winner into the existing page (A) or
 promote it to a real route (B). The full variant set and the switcher land on
