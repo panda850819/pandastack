@@ -60,6 +60,18 @@ after ~4 weeks):**
   — all 14 skills dual-channel (`user-invocable: true`, no
   `disable-model-invocation`); root cause was inverted semantics in the
   frontmatter spec; fixed in #234.
+- [Skill-model fitness audit](2026-07-13-verbs-v1-direction-map/08-skill-model-fitness-audit.md)
+  — use paired field-grounded canaries keyed by host + exact model + effort;
+  full sweeps are event-triggered, and ordinary releases audit only affected
+  skills.
+- [Priority skill-model pilot](2026-07-13-verbs-v1-direction-map/09-priority-skill-model-pilot.md)
+  — `sol/low` routing passed 8/8; pilot verdicts are `grill` EDIT,
+  `wayfinder` KEEP, `review` EDIT, and `sprint` UNPROVEN pending a real
+  write-enabled lifecycle case.
+- [Pilot evidence gaps](2026-07-13-verbs-v1-direction-map/10-close-pilot-evidence-gaps.md)
+  — two real diffs confirm `review` EDIT and justify a low-risk fast path; two
+  write-enabled cases promote `sprint` from UNPROVEN to KEEP for Codex CLI +
+  `gpt-5.6-sol` + low effort.
 
 ## Entries
 
@@ -114,6 +126,49 @@ is constrained to maintenance-class tickets and the PR ceiling (labels +
 PreToolUse guard? allowlist? branch rules). Deliverable: the mechanism decision
 and its enforcement point; implementation itself hands off to sprint.
 
+### 8. Skill-model fitness audit — `research` (AFK)
+status: closed (2026-07-16) · decision: [08-skill-model-fitness-audit](2026-07-13-verbs-v1-direction-map/08-skill-model-fitness-audit.md)
+
+Turn recent Matt Pocock field observations about model + effort, skill usage,
+and workflow failures into a repeatable audit for whether each Verbs skill still
+earns its slot on the current model. Compare that method with the existing
+`current-model-recut` and define the evidence and cut/keep/edit gates. Output:
+a cited decision note and follow-up entries for running the audit.
+
+### 9. Priority skill-model pilot — `task` (AFK)
+status: closed (2026-07-16) · blocked-by: [8. Skill-model fitness audit](#8-skill-model-fitness-audit--research-afk) · decision: [09-priority-skill-model-pilot](2026-07-13-verbs-v1-direction-map/09-priority-skill-model-pilot.md)
+
+Run the canary triplet on `grill`, `wayfinder`, `review`, and `sprint` against
+the exact current host/model/effort combinations, starting at the lowest useful
+effort. Record paired evidence and assign KEEP / EDIT / PIN / CUT; the output is
+a decision note, not an eval-harness implementation.
+
+### 10. Close pilot evidence gaps — `task` (AFK)
+status: closed (2026-07-16) · blocked-by: [9. Priority skill-model pilot](#9-priority-skill-model-pilot--task-afk) · decision: [10-close-pilot-evidence-gaps](2026-07-13-verbs-v1-direction-map/10-close-pilot-evidence-gaps.md)
+
+Run `review` against two real repository diffs and run `sprint` inside a
+disposable write-enabled repo through acceptance, bounded review, and its
+no-remote delivery boundary. Output: decision-grade verdicts for `review` and
+`sprint`, or a cited reason the audit method still cannot distinguish their
+native and skill-added behavior.
+
+### 11. Remaining skill-model matrix — `task` (AFK)
+status: open · blocked-by: [10. Close pilot evidence gaps](#10-close-pilot-evidence-gaps--task-afk)
+
+If the pilot's gates then produce stable decisions, apply the same audit to
+`careful`, `gatekeeper`, `debug`, `ui`, `qa`, `codebase-design`, `prototype`,
+`ship`, `advisor`, and `handover`. Stop and revise the method first if the pilot
+cannot distinguish native parity, skill lift, and effort lift.
+
+### 12. Slim the low-risk review path — `task` (AFK)
+status: open · blocked-by: [10. Close pilot evidence gaps](#10-close-pilot-evidence-gaps--task-afk)
+
+Implement and evaluate a low-risk fast path for `review`: preserve provenance,
+one correctness pass, and self-refutation, but skip the full multi-pass envelope
+unless the diff or repository context raises a risk trigger. Keep the current
+trust-boundary behavior unchanged. Delivery runs through `sprint` from an
+issue-keyed worktree.
+
 ## Not yet specified
 
 - What the ATTENDED development path still lacks for 流程完善 — expect
@@ -122,8 +177,6 @@ and its enforcement point; implementation itself hands off to sprint.
   seat; does Hermes matter here at all).
 - Goal alignment ABOVE a single repo — whether maps ever span repos, and what
   "project-level goals" look like when the project is a fleet.
-- The role of `evals/` in the v1.0 gate — whether the behavioral audit becomes
-  a per-release gate or stays ad hoc.
 - Whether G-A..G-D numbers survive contact with dogfooding.
 
 ## Out of scope
