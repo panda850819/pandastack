@@ -1,6 +1,6 @@
 # lib/push-once.md — Pushback patterns
 
-> Shared module. Loaded by `grill` and `grill --brief`. Gives the model a fixed menu of 5 named pushback prompts to use when a first reply is rehearsed / vague / unsupported. Replaces ad-hoc improvised pushes with named, audit-able patterns.
+> Shared module. Loaded by `grill`. Gives the model a fixed menu of 5 named pushback prompts to use when a first reply is rehearsed / vague / unsupported. Replaces ad-hoc improvised pushes with named, audit-able patterns.
 >
 > Origin: a gstack structured-brief precursor ships five pushback patterns.
 > Verbs keeps the reusable pattern catalog here.
@@ -10,7 +10,7 @@
 Skills that take user input on a fuzzy / unverified claim and need to drill before accepting it. Specifically:
 
 - `grill` Protocol step — a reply is rehearsed, vague, or unsupported
-- `grill --brief` premise challenge — a claim needs one concrete challenge
+- `grill` premise challenge — a claim needs one concrete challenge
 
 Do NOT load for skills where input is already concrete (bug fix, typo, executing a confirmed plan).
 
@@ -78,7 +78,7 @@ or unsupported reply. Escape hatch handles user signaling enough.
 A rule ("push once before switching axes") leaves the prompt shape to the model, which improvises with drift over sessions. A 5-named-pattern menu:
 
 - Audit-able: log records "Q3 pushed with pattern [3] reverse-premise" instead of "Q3 pushed with some prompt"
-- Composable: same 5 patterns work across grill / `grill --brief`, so user learns the menu once
+- Composable: same 5 patterns work across grill's drilling and structured close, so user learns the menu once
 - User-correctable: if user prefers [3] always, they can say so; if [1] feels too aggressive in brief mode, can disable per-skill
 
 This is the gstack residue lift: copy the discipline, not the body.
@@ -86,4 +86,4 @@ This is the gstack residue lift: copy the discipline, not the body.
 ## Origin
 
 - gstack structured-brief precursor (943 lines) — 5 pushback patterns embedded inside skill body, repeated 11x
-- Verbs — shared by `grill` and `grill --brief`
+- Verbs — shared by `grill`

@@ -8,9 +8,9 @@
 
 Skills that present:
 
-- ≥2 alternatives that need user choice (e.g. `grill --brief` alternatives)
+- ≥2 alternatives that need user choice (e.g. `grill` alternatives)
 - Per-finding apply gates (`review` Step 6.5, `gatekeeper` STRIDE findings)
-- Per-stage gates inside a flow command (`sprint`, `grill --brief`)
+- Per-stage gates inside a flow command (`sprint`, `grill`)
 
 Skip for skills with single linear output (no decision branches).
 
@@ -88,10 +88,10 @@ stop-rule enforces gate per decision. escape-hatch enforces a session-wide max-s
 - stop-rule: "you must ask, not assume"
 - escape-hatch: "you must stop asking when user says enough"
 
-Both load together in interrogation skills (grill, `grill --brief`).
+Both load together in the interrogation skill (`grill`).
 
 ## Origin
 
 - gstack structured-brief precursor — STOP rule repeated 11x
 - pandastack `grill/SKILL.md` Step 4 — MANDATORY forced-alternatives + per-approach AskUserQuestion gate (2026-05-03)
-- pandastack 2026-05-04 — extracted to `lib/stop-rule.md` so other multi-decision skills (review / sprint / `grill --brief`) ref the same contract
+- pandastack 2026-05-04 — extracted to `lib/stop-rule.md` so other multi-decision skills (review / sprint / `grill`) ref the same contract

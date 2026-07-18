@@ -16,7 +16,7 @@ needs an additional public CLI. Full spec in `manifest.toml`.
 
 | Skill | Tier | Purpose |
 |---|---|---|
-| `/verbs:grill` | core | Atomic adversarial discovery, 5-10 min. Use `--brief` for a written brief + executable plan. |
+| `/verbs:grill` | core | Adversarial discovery, one question at a time. Drills then writes a brief + executable plan by default; say "quick" for a chat-only log. |
 | `/verbs:careful` | core | Confirmation gate before destructive commands (prod, rm -rf, force-push). |
 | `/verbs:debug` | core | Root-cause debugging: hypothesis → instrument → bisect → scope-blast. NOT diff review. |
 | `/verbs:ui` | core | Build/fix UI with a point of view. NOT browser-test (qa) or render-bug (debug). |
@@ -87,7 +87,7 @@ prints the local install commands without changing the host.
 
 Dev work: grill then sprint.
 ```
-/verbs:grill --brief "<problem>"
+/verbs:grill "<problem>"
 /verbs:sprint
 ```
 

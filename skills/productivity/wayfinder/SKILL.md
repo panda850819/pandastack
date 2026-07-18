@@ -4,7 +4,7 @@ type: skill
 description: |
   Chart or work a decision map across sessions until the route to its
   destination is clear. With a large, fuzzy topic and no map, delegate charting
-  to grill --brief and stop after the map is created. With an existing map, take
+  to grill and stop after the map is created. With an existing map, take
   ONE unblocked entry, resolve it by type (research / grilling / prototype /
   task), write the decision back, and graduate the fog. Use when starting or
   resuming a multi-session effort. NOT executing a locked plan (sprint).
@@ -34,7 +34,7 @@ Use this mode when the user gives a large, fuzzy topic and no map exists.
 
 1. **Name the destination.** If the user has not supplied a topic, ask for the
    destination before charting. Do not invent the effort the map should cover.
-2. **Delegate charting to `grill --brief`.** Grill runs its structured close and
+2. **Delegate charting to `grill`.** Grill runs its structured close and
    its wayfinder exit writes the map at
    `docs/briefs/{YYYY-MM-DD}-{slug}-map.md`.
 3. **Stop after creation.** Report the map path and leave its entries unresolved.
@@ -90,7 +90,7 @@ skill consumes that format and never forks it.
    entries updates or removes them.
 6. **Stop.** One entry resolved is the session's work; continue only on an
    explicit ask. Frontier empty AND fog empty → the map is done: re-enter
-   `grill --brief` Stage A for the build brief, or go straight to `sprint` when
+   `grill` Stage A for the build brief, or go straight to `sprint` when
    the way is already an executable plan.
 
 ## Disciplines

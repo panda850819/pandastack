@@ -1,6 +1,6 @@
 # lib/skill-decision-tree.md — Workflow shape → execution skill
 
-> Shared module. Loaded by `grill --brief` and any skill that recommends the next execution step.
+> Shared module. Loaded by `grill` and any skill that recommends the next execution step.
 >
 > Origin: 2026-05-05 — structured briefs did not point to the next skill. The current split is foreground judgment (`sprint`) versus a planned mechanical batch (`handover`).
 
@@ -54,14 +54,14 @@ If no → reconsider. The work likely fits Q1 better, or the framing is wrong.
 
 ## Brief shape → skill mapping
 
-Use this when reading a `grill --brief` brief:
+Use this when reading a `grill` brief:
 
 | Brief shape | Skill |
 |---|---|
 | "Ship X in 1-2 hr; iteration expected" | `/sprint` |
 | "These N steps in order" | N × `/sprint` (run sequentially) |
 | "These ≥3 planned units are mechanical and file-scoped" | `/handover` |
-| "I need a brief / I have a fuzzy idea" | (you're earlier in the flow — `/grill --brief` first) |
+| "I need a brief / I have a fuzzy idea" | (you're earlier in the flow — `/grill` first) |
 
 ## Anti-patterns
 
@@ -72,5 +72,5 @@ Use this when reading a `grill --brief` brief:
 
 ## When this lib is loaded
 
-- `grill --brief` — read this lib to recommend next skill in the brief
+- `grill` — read this lib to recommend next skill in the brief
 - Any skill that must recommend foreground execution versus bounded delegation
