@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.11.0 — Grill closes into a brief by default
+
+### Changed
+
+- `grill` collapses to a single skill with no `--brief` flag. The drilling now
+  ends in the structured close (Stage A alternatives, premise refresh, written
+  brief + executable plan) **by default**; roughly 80% of grill uses wanted that
+  artifact and had to remember a flag the model could not route to from intent.
+- A chat-only opt-out ("quick", "just talk", "don't write files", "不用寫檔")
+  short-circuits the close and leaves only the confirmed/open log — the rare
+  case now costs one natural-language phrase instead of the common case costing
+  a flag.
+- Swept every `grill --brief` reference across `DISPATCH.md`, `RESOLVER.md`,
+  `README.md`, `wayfinder`, and the shared `lib/` modules to plain `grill`.
+  Rejected adopting Matt Pocock's `grill-with-docs` (a skill-wrapping
+  anti-pattern whose only delta, domain-modeling, the personal brain covers).
+  (#252)
+
 ## v0.10.1 — Low-risk review fast path
 
 ### Changed

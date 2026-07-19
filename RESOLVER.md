@@ -18,7 +18,7 @@ This is the pattern used by gstack and alirezarezvani: monorepo + RESOLVER.md be
 
 | Skill | Purpose | Trigger |
 |---|---|---|
-| `verbs:grill` | Adversarial requirement discovery, atomic 5-10 min, surfaces unknown unknowns. Use `grill --brief` for structured-brief output. | grill me, stress test, draft a brief, structured intake |
+| `verbs:grill` | Adversarial requirement discovery, one question at a time, surfaces unknown unknowns; drills then writes a structured brief by default, chat-only on "quick". | grill me, stress test, draft a brief, structured intake |
 | `verbs:wayfinder` | Chart or work a cross-session decision map: with a large, fuzzy topic, grill creates the map and stops; with an existing map, wayfinder takes ONE unblocked entry per session, writes the decision back, and graduates the fog. | start or resume a large effort, continue the map, 接續 map |
 | `verbs:codebase-design` | Deep-module design vocabulary: interface / seam / adapter / depth-as-leverage, deletion test, testable through the interface. Reference core other skills cite. | design this module, where does the seam go, interface feels too wide |
 | `verbs:careful` | Confirmation gates for production / shared infra / destructive commands. | working on prod |
@@ -34,7 +34,7 @@ This is the pattern used by gstack and alirezarezvani: monorepo + RESOLVER.md be
 
 For multi-step sequential work, run multiple sprints in sequence.
 
-Scope greenfield design (DB schema, service topology, ADRs) with `grill --brief`, then build in a sprint.
+Scope greenfield design (DB schema, service topology, ADRs) with `grill`, then build in a sprint.
 
 ### Trust evaluation
 
@@ -57,8 +57,7 @@ If you are reviewing your own PR -> `verbs:review`. If you are deciding whether 
 
 ### Requirement discovery
 
-- `verbs:grill` — adversarial, one-question-at-a-time, surfaces unknown unknowns. Atomic 5-10 min, no brief output.
-- `verbs:grill --brief` — the same drilling, then a structured close that writes a brief + executable plan.
+- `verbs:grill` — adversarial, one-question-at-a-time, surfaces unknown unknowns. Drills, then a structured close writes a brief + executable plan by default; a chat-only opt-out ("quick", "don't write files") leaves just the log.
 
 ## Version
 

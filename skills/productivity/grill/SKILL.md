@@ -2,11 +2,12 @@
 name: grill
 description: |
   Adversarial requirement discovery. Ask ONE question at a time, hunting for hidden
-  requirements / unknown unknowns. Atomic 5-10 min by default (a confirmed/open log);
-  `--brief` mode adds a structured close that writes a brief (+ executable plan) to
-  docs/. Use when the user says "grill me on X", "interrogate this idea", "stress test
-  this scope", "what am I missing", "draft a brief", "structured intake". Skip for
-  tasks where scope is already concrete.
+  requirements / unknown unknowns. Drills one angle at a time, then by default runs a
+  structured close that writes a brief (+ executable plan) to docs/. Say "quick" or
+  "don't write files" to stop at a chat-only log instead. Use when the user says
+  "grill me on X", "interrogate this idea", "stress test this scope", "what am I
+  missing", "draft a brief", "structured intake". Skip for tasks where scope is
+  already concrete.
 reads:
   - skill: lib/push-once.md
   - skill: lib/stop-rule.md
@@ -25,13 +26,14 @@ user-invocable: true
 
 The point is NOT to fill a structured questionnaire. The point is to surface
 **unknown unknowns** by interrogating one angle at a time until the answer
-surprises you. Default grill emits a confirmed/open log to chat; `--brief` adds
-a structured close that writes a brief and executable plan.
+surprises you. By default the drilling ends in a structured close that writes a
+brief and executable plan; a chat-only opt-out ("quick", "just talk", "don't
+write files") leaves only the confirmed/open log instead.
 
 ## When to use
 
 - Feature scope is fuzzy ("I want a points system" → backfill? retroactive? UI placement? streak rules?)
-- Before writing a PRD, or run `--brief` (below) to leave with a written brief + executable plan
+- Before writing a PRD — the default close (below) leaves a written brief + executable plan; say "quick" to skip it
 - When you suspect hidden constraints (compliance, migration, downstream consumers)
 - User explicitly says "grill me", "stress test this", "what am I missing"
 
@@ -98,6 +100,15 @@ Proceed to Output. Flag unprocessed axes as OPEN_QUESTIONS in the log.
 
 **Do NOT ask a third time.** No "are you sure?", no "one more thing". Respect the second stop.
 
+### Chat-only opt-out
+
+Distinct from the escape hatch. The escape hatch stops the DRILLING early; the
+chat-only opt-out keeps the drilling but skips the structured close. When the
+user signals they want no written artifact — "quick", "just talk it through",
+"don't write files", "不用寫檔", "grill 一下就好" — end at the Output log below
+and do NOT run the structured close. Absent that signal, the close is the
+default: roughly 80% of grill uses want the brief.
+
 ## Output
 
 After grilling ends, produce:
@@ -115,18 +126,18 @@ After grilling ends, produce:
 - [if any]
 
 ### Recommended next step
-- Re-run in `--brief` mode (below) to produce a brief + executable plan (if implementation track)
+- (implementation track) the structured close below already produces the brief + executable plan unless the chat-only opt-out fired
 - Feed into PRD draft (if planning track)
 - Park as memo (if not ready to act)
 ```
 
-Emit the log to chat. Persist only when the host/user supplied an output path;
-default grill does not choose or write a project-state destination.
+Emit this log to chat. It is the complete output ONLY when the chat-only opt-out
+fired; otherwise it is the running record and the structured close below follows.
 
-## `--brief` mode (structured close)
+## Structured close (default)
 
-Default grill is atomic and leaves only the log above. `--brief` runs the same
-drilling, then adds a structured close with a written brief and executable plan.
+Unless the chat-only opt-out fired, the drilling ends here: a structured close
+with a written brief and executable plan, layered on top of the log above.
 After the stopping rule fires, run three stages in order; do not skip or reorder.
 
 **Stage A — Alternatives (forced).** @lib/stop-rule.md Generate 2-3 named approaches: one minimal-viable (fewest files, ships fastest), one ideal-architecture (best long-term trajectory), optional lateral. Each carries Summary / Effort {S/M/L} / Pros / Cons. Print a **RECOMMENDATION**: {A/B/C} because {one-line reason}. Then a per-approach gate, one at a time, never batched — `APPROACH {X}: Apply to brief? [Add / Defer / Reject]` — STOP and wait on each.
@@ -143,7 +154,7 @@ After the stopping rule fires, run three stages in order; do not skip or reorder
 
 ### Wayfinder exit (effort too big for one session)
 
-If the drilling reveals the effort is BOTH too big for one session AND still foggy — the way to the destination isn't visible, scope keeps expanding, decisions hang on decisions not yet made — do NOT force a single brief. Write a local **decision map** at `docs/briefs/{YYYY-MM-DD}-{slug}-map.md`: one typed investigation entry per visible open decision (`research` / `prototype` / `grilling` / `task`), with explicit blocking links. Three disciplines: **don't chart what you can't yet see** (fog-of-war — leave it as "not yet specified", not a fake task); **one investigation per session**; **each investigation's deliverable is a decision note, not code**. External tracker creation and knowledge-store filing remain host actions. Work the map with `wayfinder` — one entry per session. Once the route is clear, re-enter at Stage A `--brief` or go straight to `/sprint`.
+If the drilling reveals the effort is BOTH too big for one session AND still foggy — the way to the destination isn't visible, scope keeps expanding, decisions hang on decisions not yet made — do NOT force a single brief. Write a local **decision map** at `docs/briefs/{YYYY-MM-DD}-{slug}-map.md`: one typed investigation entry per visible open decision (`research` / `prototype` / `grilling` / `task`), with explicit blocking links. Three disciplines: **don't chart what you can't yet see** (fog-of-war — leave it as "not yet specified", not a fake task); **one investigation per session**; **each investigation's deliverable is a decision note, not code**. External tracker creation and knowledge-store filing remain host actions. Work the map with `wayfinder` — one entry per session. Once the route is clear, re-enter at the structured close's Stage A or go straight to `/sprint`.
 
 ## Anti-patterns
 
@@ -155,6 +166,6 @@ If the drilling reveals the effort is BOTH too big for one session AND still fog
 
 ## Relationship to other skills
 
-- **For structured-brief output** — run `grill --brief`: writes a brief and
-  executable plan to `docs/`.
+- **Structured-brief output is the default** — grill drills, then writes a brief
+  and executable plan to `docs/` unless the chat-only opt-out fired.
 - **Before a host closes a decision record** — if you're closing a work topic and realize scope was never grilled.

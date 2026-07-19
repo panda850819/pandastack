@@ -1,6 +1,6 @@
 # Brief + plan output templates
 
-Fill-in scaffolds for the two artifacts `grill --brief` emits (brief + executable
+Fill-in scaffolds for the two artifacts `grill` emits (brief + executable
 plan). The behavioural rules (what each section means, the WHY-vs-WHAT split, the
 acceptance-must-be-checkable rule) stay in the skill body; this file is the
 verbatim shape only.
