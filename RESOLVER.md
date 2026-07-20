@@ -41,10 +41,11 @@ Scope greenfield design (DB schema, service topology, ADRs) with `grill`, then b
 | Skill | Purpose |
 |---|---|
 | `verbs:gatekeeper` | Pre-adoption trust check for external skills / MCP / repos / packages / software services. NOT a code review skill. STRIDE classification at Step 0. |
+| `verbs:harness-slim` | Post-adoption evaluation of a live multi-runtime harness: installed parity, cold context, routing overlap, telemetry semantics, and attention load. Proposes reversible reductions; does not mutate. |
 
 ## Disambiguation
 
-### Four review surfaces
+### Five review surfaces
 
 | Surface | What it reviews |
 |---|---|
@@ -52,6 +53,7 @@ Scope greenfield design (DB schema, service topology, ADRs) with `grill`, then b
 | Built-in `/security-review` | Branch code for security issues |
 | `verbs:review` | YOUR code via risk-adaptive passes, grounded findings, and earned cold review |
 | `verbs:gatekeeper` | EXTERNAL agents / MCP / repos BEFORE you adopt them |
+| `verbs:harness-slim` | LIVE multi-runtime harness AFTER adoption |
 
 If you are reviewing your own PR -> `verbs:review`. If you are deciding whether to install someone else's MCP server or clone their skill repo -> `verbs:gatekeeper`.
 
@@ -61,7 +63,7 @@ If you are reviewing your own PR -> `verbs:review`. If you are deciding whether 
 
 ## Version
 
-This RESOLVER.md is for Verbs v0.9.1. Update it when adding, removing, or renaming skills.
+This RESOLVER.md is for Verbs v0.12.0. Update it when adding, removing, or renaming skills.
 
 ---
 

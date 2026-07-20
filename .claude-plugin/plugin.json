@@ -1,7 +1,7 @@
 {
   "name": "verbs",
-  "description": "An opinionated skill pack for taking software work from ambiguity to verified delivery. Includes 14 composable skills.",
-  "version": "0.11.0",
+  "description": "An opinionated skill pack for taking software work from ambiguity to verified delivery. Includes 15 composable skills.",
+  "version": "0.12.0",
   "author": {
     "name": "Panda Zeng"
   },
@@ -23,6 +23,7 @@
     "./skills/meta/gatekeeper",
     "./skills/productivity/grill",
     "./skills/engineering/handover",
+    "./skills/meta/harness-slim",
     "./skills/engineering/prototype",
     "./skills/engineering/qa",
     "./skills/engineering/review",
