@@ -27,6 +27,7 @@ needs an additional public CLI. Full spec in `manifest.toml`.
 | `/verbs:ship` | ext | Test + commit + push + PR, including QA evidence comments when present. Needs cli:gh. |
 | `/verbs:handover` | ext | Hand unfinished work to Codex (sync or async). Needs cli:codex. |
 | `/verbs:advisor` | ext | Cross-model second opinion. Needs cli:codex and cli:claude for opposite-seat routing. |
+| `/verbs:harness-slim` | ext | Post-adoption multi-runtime harness evaluation. Needs cli:git, cli:codex, and cli:claude. |
 
 ## Install
 

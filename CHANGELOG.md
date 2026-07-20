@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.12.0 — Post-adoption harness evaluation
+
+### Added
+
+- `harness-slim` is a public ext evaluator for a live multi-runtime agent
+  harness. It keeps source, installed, live-runtime, telemetry, cold-context,
+  and human-attention evidence separate, then proposes reversible reductions.
+- The evaluator absorbs the generic contract from Panda's personal overlay
+  without carrying personal paths or mutating a host. `gatekeeper` remains
+  pre-adoption trust review and `review` remains code-diff review. (#254)
+
 ## v0.11.0 — Grill closes into a brief by default
 
 ### Changed
