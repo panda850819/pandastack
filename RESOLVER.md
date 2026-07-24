@@ -28,9 +28,20 @@ unclear request
   v
 grill
   |
-  +-- bounded outcome and acceptance --> sprint
-  |                                      |
-  |                                      +--> verify --> review --> ship
+  +-- smaller work --> local brief / plan --> selected Issue
+  |                                               |
+  |                                               +--> sprint --> review --> ship
+  |
+  +-- spec-sized --> to-spec --> canonical GitHub Spec Issue
+  |                                  |
+  |                                  +--> to-tickets --> child Issue graph
+  |                                                           |
+  |                                                           +--> human selects
+  |                                                                one frontier Issue
+  |                                                                  |
+  |                                                                  +--> sprint
+  |                                                                       --> review
+  |                                                                       --> ship
   |
   +-- several unresolved decisions ----> decision map
                                          |
@@ -41,15 +52,24 @@ grill
 This route answers three common selection questions:
 
 1. Use `grill` when intent, scope, constraints, or acceptance are still
-   unknown. It asks one question at a time and normally closes with a brief and
-   executable plan.
+   unknown. It asks one question at a time, then chooses a close based on the
+   resulting work shape.
 2. Add `wayfinder` when the uncertainty itself spans multiple decisions or
    sessions. With no map, `grill` charts it and stops. With a map, `wayfinder`
    takes one unblocked frontier entry, records the decision, and updates the
    map.
-3. Use `sprint` when the outcome and acceptance are concrete enough to execute.
-   Sprint owns the build-to-delivery loop and calls specialist stages when the
-   work requires them.
+3. Use `to-spec` when the work is expected to need at least two implementation
+   Issues, or when even one PR changes a public contract, schema or migration,
+   or security boundary. Its GitHub Spec Issue becomes the only requirements
+   source of truth.
+4. Use `to-tickets` to decompose that complete Spec into vertical-slice child
+   Issues and blocking edges. It reports the frontier but does not choose work.
+5. A human selects one unblocked implementation Issue. `sprint` owns only that
+   finish line through verification, review, and one independently reviewable
+   and revertible PR.
+
+Work below the Spec threshold retains Grill's local brief and executable-plan
+close. A small reversible fix may use the repository's direct branch/PR path.
 
 `handover` is not an alternative planning path. It is allowed only after a
 plan contains one bounded, mechanical build unit with a locked specification
@@ -85,9 +105,9 @@ stages remain independently callable because each has a distinct contract:
 - `ship` tests, commits, pushes, and creates the PR for completed work.
 - `handover` executes one unfinished mechanical unit in fresh context.
 
-For several independent outcomes, run several bounded sprints. Do not turn
-`sprint` into a permanent autonomous driver or use `wayfinder` as a task
-scheduler.
+For several independent outcomes, run several bounded sprints. Selection stays
+manual: do not turn `sprint` into a permanent autonomous driver, let it claim
+the next frontier, or use `wayfinder` as a task scheduler.
 
 ### Enforcement versus guidance
 
@@ -110,7 +130,7 @@ enforcement guarantees.
 
 | Skill | Purpose | Trigger |
 |---|---|---|
-| `verbs:grill` | Adversarial requirement discovery, one question at a time. Normally writes a structured brief and executable plan; “quick” keeps the result in chat. | grill me, stress test, draft a brief, scope this |
+| `verbs:grill` | Adversarial requirement discovery, one question at a time. Routes large foggy work to Wayfinder, spec-sized work to `to-spec`, and smaller work to a local brief/plan. | grill me, stress test, draft a brief, scope this |
 | `verbs:setup-verbs` | Configure or repair the existing repository-level issue-tracker setting with an idempotent preview and approval gate. | set up Verbs, configure tracker, missing tracker config |
 | `verbs:to-spec` | Synthesize established intent and repository evidence into one canonical GitHub Spec Issue; no new interview or ticket creation. | turn this discussion into a spec, publish the requirements |
 | `verbs:to-tickets` | Decompose a complete canonical Spec into approved vertical-slice child Issues, native dependencies, body fallbacks, and a current frontier. | create implementation tickets, decompose this Spec |

@@ -35,15 +35,37 @@ request
   v
 grill -- clarify the outcome and acceptance conditions
   |
-  +-- bounded plan, one execution context --> sprint
-  |                                           |
-  |                                           +--> verify --> review --> ship
+  +-- smaller work --> local brief / plan --> selected Issue
+  |                                               |
+  |                                               +--> sprint --> review --> ship
   |
-  +-- large or cross-session uncertainty --> decision map
-                                              |
-                                              +--> wayfinder resolves one frontier
-                                                   until a bounded plan can sprint
+  +-- spec-sized --> to-spec --> canonical GitHub Spec Issue
+  |                                  |
+  |                                  +--> to-tickets --> child Issue graph
+  |                                                           |
+  |                                                           +--> manually selected
+  |                                                                frontier Issue
+  |                                                                  |
+  |                                                                  +--> sprint
+  |                                                                       --> review
+  |                                                                       --> ship
+  |
+  +-- large and still foggy --> decision map --> wayfinder resolves one
+                                                  decision frontier at a time
 ```
+
+Work is spec-sized when it is expected to require at least two implementation
+Issues, or when even one PR changes a public contract, schema or migration, or
+security boundary. The GitHub Spec Issue is then the only requirements source
+of truth. Smaller work keeps the local brief/plan path; a trivial reversible
+fix may still go directly through its repository's branch and PR contract.
+
+The tracker-native path is `grill -> to-spec -> to-tickets -> manually selected
+frontier Issue -> sprint -> review -> ship`.
+
+`to-tickets` reports the unblocked frontier but never schedules it. A human
+selects one implementation Issue, and one Sprint owns that Issue through one
+independently reviewable and revertible PR.
 
 Use `handover` only when a plan already contains a bounded, mechanical build
 unit that benefits from fresh context. The worker returns evidence to the
@@ -103,7 +125,7 @@ needs an additional public CLI. Full spec in `manifest.toml`.
 |---|---|---|
 | `/verbs:careful` | core | Confirmation gate before destructive commands. |
 | `/verbs:gatekeeper` | core | Pre-adoption trust check for external skills / MCPs / repos. |
-| `/verbs:grill` | core | Adversarial requirement discovery that drills then writes a structured brief by default. |
+| `/verbs:grill` | core | Adversarial requirement discovery that routes large foggy work to Wayfinder, spec-sized work to one canonical GitHub Spec Issue, and smaller work to a local brief and plan. |
 | `/verbs:setup-verbs` | core | Configure or repair the existing per-repository Verbs issue-tracker setting with Git-derived identity, an idempotent preview, and one approval gate. |
 | `/verbs:review` | core | Risk-adaptive diff review with a bounded low-risk fast path, scoped evidence, and cold-context escalation. |
 | `/verbs:debug` | core | Systematic root-cause debugging: hypothesis gate, instrument-first by bug class, bisect, scope-blast, known bug classes. NOT diff review (review) or UI taste (ui). |

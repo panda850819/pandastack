@@ -5,7 +5,7 @@ Before responding to any task-shaped message, match it against this table. On ma
 | Signal | Invoke |
 |---|---|
 | Large/fuzzy effort spanning sessions / start or resume a decision map / 建立 map | `wayfinder` (chart via `grill`, then work one frontier entry per session) |
-| Fuzzy idea / scope not locked / 想討論 | `grill` (drills, then a structured brief by default; say "quick" for a chat-only log) |
+| Fuzzy idea / scope not locked / 想討論 | `grill` (drills, then routes large foggy, spec-sized, or smaller work; say "quick" for a chat-only log) |
 | Prepared plan, want independent multi-angle critique | `advisor --panel` (blind cross-model critics) |
 | Load-bearing judgment / design fork / decision expensive-if-wrong, want a second opinion | `advisor` (pull a decorrelated cross-model take) |
 | Touching prod, shared infra, or harness paths (`~/.agents`, `~/.claude`, `~/.codex`) | `careful` first |
@@ -20,7 +20,7 @@ Before responding to any task-shaped message, match it against this table. On ma
 | Build / fix a UI surface, "looks off" / feels dead / janky, 不好看 / 很醜 / 排版 / 字體 / 很死 / 生硬 / 切換好硬 | `ui` (lock direction, fight defaults) |
 | Design question answerable by building it — try a few variants / does this state model feel right / 做個原型 | `prototype` (throwaway build; verdict outlives the code) |
 | UI already changed, verify it live — "test this", "QA", "check the page" | `qa` (browser evidence, not code reading) |
-| Focused build-to-ship session | `sprint` |
+| Focused build-to-ship session / manually selected implementation Issue | `sprint` (owns only the selected finish line; never schedules or claims the next frontier) |
 | About to commit | `review`, then `ship` |
 | External artifact before install / adopt | `gatekeeper` |
 | Non-trivial but no row matches | classify the load-bearing unknown: fact→inspect first (code/docs/knowledge base) · intent→`grill` · taste→`ui` · architecture→`grill` · risk→`careful` · verification→`debug` · mechanical→`handover`; still unclear → Verbs `RESOLVER.md`, pick closest |
