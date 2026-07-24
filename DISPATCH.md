@@ -10,6 +10,7 @@ Before responding to any task-shaped message, match it against this table. On ma
 | Load-bearing judgment / design fork / decision expensive-if-wrong, want a second opinion | `advisor` (pull a decorrelated cross-model take) |
 | Touching prod, shared infra, or harness paths (`~/.agents`, `~/.claude`, `~/.codex`) | `careful` first |
 | Audit/reduce a live multi-runtime agent harness, installed skill/plugin surface, cold context, or attention load | `harness-slim` (post-adoption evaluation; propose reversible moves before execution) |
+| Set up or repair a repository's Verbs issue tracker / tracker-dependent workflow reports missing config | `setup-verbs` (derive GitHub identity from Git, preview one idempotent `## verbs` edit, then confirm) |
 | Bug fix / feature / refactor (3+ files or new abstraction) | a light `grill` plan pass first, not direct edits |
 | Explicit Agent Worker / parallel read-only research | use native subagents with the Agent Worker protocol below; main agent orchestrates and synthesizes |
 | Mechanical, file-scoped build unit with locked spec that benefits from fresh context | `handover` to one selected fresh Claude or Codex worker; original model orchestrates |

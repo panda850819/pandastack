@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.14.0 — Repository tracker setup
+
+### Added
+
+- `setup-verbs` configures GitHub as a repository's issue tracker through the
+  existing `## verbs` block. It derives repository identity from Git, previews
+  one idempotent edit, asks before writing, preserves existing configuration,
+  and stops on ambiguous documents, remotes, or tracker conflicts. It does not
+  introduce `.verbs.toml` or a second configuration surface. (#266)
+
 ## v0.13.2 — advisor description cut to routing signal
 
 ### Changed
