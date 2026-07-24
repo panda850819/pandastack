@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.17.0 — Tracker-native planning lifecycle
+
+### Changed
+
+- `grill` now routes work expected to need two or more implementation Issues,
+  or any PR crossing a public contract, schema or migration, or security
+  boundary, to `to-spec`. Spec-sized work creates no competing local brief or
+  plan; smaller work retains the existing local close. (#269)
+- README, Resolver, and Dispatch now expose the complete
+  `grill -> to-spec -> to-tickets -> manual frontier -> sprint -> review ->
+  ship` route while preserving Wayfinder as the large-foggy on-ramp and keeping
+  scheduling outside Verbs. (#269)
+
 ## v0.16.0 — Vertical-slice Issue graphs
 
 ### Added
