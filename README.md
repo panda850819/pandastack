@@ -104,6 +104,7 @@ needs an additional public CLI. Full spec in `manifest.toml`.
 | `/verbs:careful` | core | Confirmation gate before destructive commands. |
 | `/verbs:gatekeeper` | core | Pre-adoption trust check for external skills / MCPs / repos. |
 | `/verbs:grill` | core | Adversarial requirement discovery that drills then writes a structured brief by default. |
+| `/verbs:setup-verbs` | core | Configure or repair the existing per-repository Verbs issue-tracker setting with Git-derived identity, an idempotent preview, and one approval gate. |
 | `/verbs:review` | core | Risk-adaptive diff review with a bounded low-risk fast path, scoped evidence, and cold-context escalation. |
 | `/verbs:debug` | core | Systematic root-cause debugging: hypothesis gate, instrument-first by bug class, bisect, scope-blast, known bug classes. NOT diff review (review) or UI taste (ui). |
 | `/verbs:sprint` | core | Acceptance-driven execution with bounded review and delivery evidence. |
@@ -135,6 +136,10 @@ Codex:
 codex plugin marketplace add panda850819/verbs --json
 codex plugin add verbs@verbs --json
 ```
+
+Inside a repository, invoke `verbs:setup-verbs` once to configure the issue
+tracker in its existing `## verbs` block. Repository identity stays derived
+from the Git remote.
 
 The Marketplace Plugin registers three lifecycle adapters: SessionStart
 dispatch, Bash PreToolUse destructive + ticket-gate guards, and the Stop
