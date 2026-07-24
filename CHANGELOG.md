@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.16.0 — Vertical-slice Issue graphs
+
+### Added
+
+- `to-tickets` decomposes one canonical Spec Issue into approved child
+  implementation Issues, native sub-issue and blocking relations, durable body
+  fallbacks, and a verified unblocked frontier. It keeps one Issue/one PR and
+  uses expand, migrate batches, then contract for wide refactors. (#268)
+
 ## v0.15.0 — Canonical GitHub Spec Issues
 
 ### Added
