@@ -72,6 +72,7 @@ route:
 | A load-bearing judgment needs independent challenge | `advisor` | The executor evaluates the second opinion; agreement is not a mandate. |
 | A live multi-runtime harness has accumulated complexity | `harness-slim` | A verified, reversible reduction proposal exists. |
 | A repository lacks an unambiguous Verbs issue-tracker setting | `setup-verbs` | The existing `## verbs` block names the tracker; repository identity remains derived from Git. |
+| Established requirements need one durable source of truth | `to-spec` | One canonical GitHub Spec Issue is published after test-seam confirmation. |
 
 ### Execution and closing stages
 
@@ -110,6 +111,7 @@ enforcement guarantees.
 |---|---|---|
 | `verbs:grill` | Adversarial requirement discovery, one question at a time. Normally writes a structured brief and executable plan; “quick” keeps the result in chat. | grill me, stress test, draft a brief, scope this |
 | `verbs:setup-verbs` | Configure or repair the existing repository-level issue-tracker setting with an idempotent preview and approval gate. | set up Verbs, configure tracker, missing tracker config |
+| `verbs:to-spec` | Synthesize established intent and repository evidence into one canonical GitHub Spec Issue; no new interview or ticket creation. | turn this discussion into a spec, publish the requirements |
 | `verbs:wayfinder` | Chart or work a cross-session decision map, one unblocked frontier entry at a time. | establish a map, resume the map, continue a large effort |
 | `verbs:sprint` | Execute a concrete outcome through acceptance, bounded review, and delivery evidence. | focused build-to-ship session, execute this plan |
 | `verbs:debug` | Establish root cause through hypotheses, instrumentation, bisecting, and scope analysis before changing code. | error, crash, regression, failing test, used to work |

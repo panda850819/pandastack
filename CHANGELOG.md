@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.15.0 — Canonical GitHub Spec Issues
+
+### Added
+
+- `to-spec` synthesizes established discussion and repository evidence into one
+  canonical GitHub Spec Issue. It orders test seams from behavioral boundaries
+  down, confirms them once, prevents duplicate Specs, and creates neither local
+  spec copies nor implementation tickets. (#267)
+
 ## v0.14.0 — Repository tracker setup
 
 ### Added
